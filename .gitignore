@@ -1,0 +1,25 @@
+.DS_Store
+readme.html
+design-sheet.html
+
+# sublime text
+*.sublime-workspace
+
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+
+#latex
+latex_out/
+*.aux
+*.bbl
+*.blg
+*.out
+*.fls
+*.lof
+*.lot
+*.log
+*.toc
+*.fdb_latexmk
+*.synctex.gz

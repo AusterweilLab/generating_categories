@@ -1,0 +1,1 @@
+This directory contains LaTeX documents, both for our reference or for publication.

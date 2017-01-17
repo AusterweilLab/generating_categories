@@ -1,0 +1,63 @@
+%!TEX output_directory = latex_out/
+
+\documentclass[12pt]{article}
+\usepackage[letterpaper, margin=1in, headheight=15pt]{geometry}
+\usepackage{amsmath, listings}
+
+
+\begin{document}
+
+\section{The PACKER Model: Producing Alike or Contrasting Knowledge with Exemplar Representations}
+
+
+This model assumes that people represent categories as exemplars in a multidimensional space, and that generation is constrained by both similarity to members of the category being generated \textit{and} dissimilarity to members of other categories. The model assumes people generate categories that are dissimilar to known categories and have strong within-class similarity.
+
+First, let's assume exemplars $x$ are represented as points within an $k$-dimensional space. When prompted to generate the first member of a new class, participants seek out stimuli that have low similarity to all assigned examples.
+
+Distance between exemplars $X_i$ and $X_j$ is computed using the city-block metric:
+
+\begin{equation}
+  d(x_i,x_j) = \sum_{k}{|x_{ik} - x_{jk}|}w_k
+\end{equation}
+
+Where $w_k$ is a vector of feature weights, corresponding to the importance of each feature in the similarity computation. The attention weights are of interest in explaining individual differences in generation strategy, and they may have some relation to the relative dimensional variance of existing categories, but for the general case they can be uniform.
+
+The similarity between exemplars $x_i$ and $x_j$ is then computed using Shepard's law:
+
+\begin{equation}
+  s(x_i,x_j) = exp( {-c d(x_i,x_j)} )
+\end{equation}
+
+Where $c$ is a free parameter setting the specificity of examples. Larger values of $c$ produce more \textit{specific} exemplars -- only stimuli very close to the exemplar will be viewed as similar. Due to the nature of the exponential function, similarity values will lie in range $0-1$, with a value of $1$ indicating an exact match between $x_i$ and $x_j$.
+
+When prompted to make a generation decision, participants are thought to consider both similarity to examples from other categories as well as similarity to examples in the target category. More formally, the summed similarity $ss$ between item $x_i$ and the model's stored exemplars $x_j$ can be computed as:
+
+\begin{equation}
+  ss(x_i, x_j) = \sum_j{f_j s(x_i, x_j)}
+\end{equation}
+
+Where $f_j$ is a function specifying each stored example's degree of contribution toward generation. Although $f_j$ may be set arbitrarily, for our purposes it is relevant to use the class assignment. For known members of contrast categories, $f_j = -\phi$. For known members of the target category, $f_j = \gamma$. $\phi$ and $\gamma$ are free parameters ($\geq 0$) that control the contribution of same- and opposite- category members to generation. Larger values for either parameter produce greater consideration of either constraint. Values of 0 for either parameter result in no effect for that type of similarity.
+
+This arrangement has a number of desirable properties. When $\phi = \gamma$, the similarity to contrast categories is effectively subtracted from the similarity to the target category -- negative values for $ss(x, x_j)$ thus indicate more contrast category similarity, and positive values indicate more target category similarity. Because $\phi$ and $\gamma$ are parameterized, this trade off can be managed explicitly. 
+
+The probability that a given item $x$ will be generated given the model's memory $x_j$ is computed using relative summed similarity values across all generation candidates $x_i$:
+
+\begin{equation}
+p(x|x_j) = \dfrac
+    { exp( { \theta ss(x, x_j) } ) }
+    { \sum_i{ exp( { \theta ss(x_i, x_j) } ) } }
+\end{equation}
+
+Where $\theta$ ($\geq 0$) is a free parameter controlling overall response determinism. Larger values of $\theta$ produce greater adherence to the relative probabilities of the choices (items with larger probabilities become more likely), and the special case of $\theta = 0$ produces random responding. Participants are not allowed to generate the same example twice, thus $p_x$ for these items is manually set to 0.
+
+
+
+\end{document}
+
+
+
+
+
+
+
+

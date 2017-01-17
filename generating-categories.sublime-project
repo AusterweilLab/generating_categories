@@ -1,0 +1,22 @@
+{
+
+	// super+alt+up to sync with remote
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"*.sublime-workspace",
+			],
+			"path": "."
+		}
+	],
+
+	"settings":
+	{
+		"tab_size": 2,
+		"translate_tabs_to_spaces":false,
+
+
+	}
+}

@@ -1,0 +1,138 @@
+%!TEX output_directory = latex_out/
+
+\documentclass[12pt]{article}
+\usepackage[letterpaper, margin=1in, headheight=15pt]{geometry}
+\usepackage{amsmath,fancyvrb}
+
+
+
+\begin{document}
+\VerbatimFootnotes
+
+\section*{Updated Version of the Jern \& Kemp (2013) Model}
+
+Working backwards, what is needed for simulation of exemplar generation is the probability of generating a stimulus $x$ given exposure to members of the target category $x_b$:
+\
+\begin{equation}
+p(x | x_b) = ?
+\end{equation}
+\
+where $x_b$ may be empty. Jern \& Kemp's model achieves this using a generative process. Category members ($x_a$ or $x_b$; more generally written as $x_y$) are assumed to have been generated using an underlying category distribution (specifically, multivariate normal):
+\
+\begin{equation}
+  x_y \sim Normal(\mu_{y}, \Sigma_{y})
+\end{equation}
+\
+$p(x | x_y)$ is proportional to the candidate's density under the target category's distribution. Thus, obtaining the category distribution parameters $(\mu_{y}, \Sigma_{y})$ is key for generation.
+
+In Jern \& Kemp's original model, category distribution parameters are inferred exclusively from exposure to the category's members. To better simulate our paradigm, category distribution parameters (specifically, the $\Sigma_{y}$ parameter) in our implementation are also affected by a higher level domain distribution (specifically, Inverse-Wishart), from which $\Sigma_{y}$ are assumed to be generated:
+
+\begin{equation}
+  \Sigma_{y} \sim Wishart^{-1}(\Sigma_D, df_D)
+\end{equation}
+\
+This document describes how we have obtained the relevant distributions.
+
+\subsection*{Computing $\mu_y$}
+Because Jern \& Kemp assume that the location of $x_y$ is independent of contrast categories, the category $\mu_{y}$ can be inferred exclusively based on exposure to the category's members. Assuming $(\mu_y, \Sigma_y)$ are Normal-Inverse-Wishart distributed (unknown mean, unknown variance):
+\
+\begin{equation}
+  \mu_y = \dfrac
+    {\kappa\mu_{0} + n_y \bar{x_y}}
+    {\kappa + n_y}
+    \label{eq:category_mus}
+\end{equation}
+\ 
+where:
+\begin{itemize}
+    \setlength\itemsep{-0.5em}
+    \item $\mu_{0}$ is the prior mean along $p$ dimensions. Here we set it to the middle of the space.
+    \item $\kappa$ is a scalar hyper-parameter, roughly weighting the importance of $\mu_{0}$. $\kappa$ must be greater than zero.
+    \item $n_y$ is the number of observations in $x_y$
+    \item $\bar{x_y}$ is the sample mean along $p$ dimensions
+\end{itemize}
+
+In the case of a populated class, $\mu_{y}$ ends up lying somewhere between $\mu_{0}$ and $\bar{x_y}$, depending on $\kappa_{0}$ and $n_y$. In the case of an empty class, $n_y = 0$, thus Equation \ref{eq:category_mus} reduces to $\mu_{y} = \mu_{0}$. Because we set $\mu_0$ to the center of the space, this outcome is the same as if we had integrated over all possible $\mu_y$.
+
+
+\subsection*{Computing $\Sigma_D$}
+
+Unlike $\mu_y$, $\Sigma_y$ cannot be computed considering only the members of category $y$. Instead, $\Sigma_y$ is influenced both by the distribution of $x_y$ and by members of other categories through $\Sigma_D$.
+
+$\Sigma_D$ is inferred based on the observed (empirical) category covariances $C_y$. We assume these covariances to be Wishart-distributed, and so $\Sigma_D$ can be computed as:
+
+\
+\begin{equation}
+    \Sigma_D = \Sigma_0 + \sum_{y}{C_y}
+\end{equation}
+\
+$\Sigma_{0}$ is a $p$-by-$p$ prior covariance matrix. We use a $p$-dimensional identity matrix $I_p$ multiplied element-wise against a free parameter, $\gamma$, controlling the amount of variance assumed by the prior:
+\
+\begin{equation}
+    \Sigma_0 =  I_p\gamma
+\end{equation}
+
+
+\subsubsection*{Note}
+In actuality, we ended up doing a bunch of matrix inverting that I do not understand:
+\begin{verbatim}
+Domain_Sigma = np.linalg.inv(Prior_Sigma)
+for y in ncategories:
+  Domain_Sigma += np.linalg.inv(Category_Sigmas[:,:,y])
+Domain_Sigma = np.linalg.inv(Domain_Sigma)
+\end{verbatim}
+This is definitely not in the math, and I think it has something to do with Wishart vs. Inverse-Wishart. I think it also had something to do with the issue that its weird to just take the sum of the covariance matrices: the domain ends up assuming much larger covariances compared to any of the categories. We've never nailed it down. \textbf{Joe}, do you know what this is about?
+
+
+\subsection*{Computing $\Sigma_y$}
+
+In previous versions, we sampled $\Sigma_y \sim Wishart^{-1}(\Sigma_D, df_D)$, with which we sampled $x \sim Normal(\mu_y, \Sigma_y)$. That was the approach taken by Jern \& Kemp. Sampling $x$, however, is not the primary goal of the model -- the main purpose of the model is to predict $p(x | x_b)$, and from those data we can sample $x$.
+
+We could monte-carlo sample $x$ as described above to obtain $p(x | x_b)$. But this is computationally intensive, as each trial would need a separate sampler. Instead, it would be better to develop a method to infer $\Sigma_y$ without sampling.
+
+Assuming $(\mu_y, \Sigma_y)$ are Normal-Inverse-Wishart distributed, $\Sigma_y$ can be computed as:
+
+\begin{equation}
+  \Sigma_y = [\Sigma_D\nu + C_y +
+    \dfrac
+    {\kappa n_y}
+    {\kappa + n_y}
+    (\bar{x_y}-\mu_y)(\bar{x_y}-\mu_y)^T
+  ] (\nu + n_y)^{-1}
+  \label{eq:Sigma_y}
+\end{equation}
+\
+$\kappa$, $\bar{x_y}$, $C_y$, $n_y$, $\mu_0$,  are the same values as described above. $\nu$ is an additional free parameter, weighting the importance of $\Sigma_{D}$. $\nu$ must be greater than $p-1$. When $x_b$ is empty, Equation \ref{eq:Sigma_y} reduces to $\Sigma_y = \Sigma_D$. 
+
+\subsection*{Computing response probabilities $p(x | x_b)$}
+
+$x$ are assumed to be drawn from a the distribution given by $Normal(\mu_{y}, \Sigma_{y})$. Thus, 
+
+
+\begin{equation}
+  p(x) \propto Normal(x | \mu_{b}, \Sigma_{b})
+\end{equation}
+
+In practice, $p(x)$ is computed by first obtaining the relative density of every possible generation candidate $x_i$ under the category distribution. The end probability is a normalization of these values:
+
+\begin{equation}
+  p(x) = \dfrac
+    {exp( \theta Normal(x | \mu_{b}, \Sigma_{b}))}
+    {\sum_i exp( \theta Normal(x_i |\mu_{b}, \Sigma_{b}))} 
+\end{equation}
+\
+where $\theta$ is a response determinism parameter.
+
+\subsection*{Description of free parameters}
+
+\begin{itemize}
+    \setlength\itemsep{-0.5em}
+    \item $\kappa$. Scalar, $\kappa>0$. Weights the importance of $\mu_{0}$ in inferring category $\mu_{y}$.
+    \item $\gamma$. Scalar, $\gamma>0$. Weights the importance of $\Sigma_{0}$ in inferring the domain $\Sigma_{D}$.
+    \item $\nu$. Scalar, $\nu > p-1$. Weights the importance of $\Sigma_{D}$ in inferring the domain $\Sigma_{y}$.
+    \item $\theta$. Scalar, $\theta > 0$. Response determinism parameter.
+\end{itemize}
+
+
+
+\end{document}
