@@ -9,10 +9,6 @@ sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
 from models import Packer
 import utils
 
-
-np.set_printoptions(precision = 2)
-pd.set_option('precision', 2)
-
 # import data
 con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT * from participants", con)
@@ -22,6 +18,12 @@ alphas = pd.read_sql_query("SELECT * from alphas", con)
 stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
 con.close()
 
+# get observed data
+observed = pd.DataFrame(generation)
+observed['F1'] = stimuli[observed.stimulus,0]
+observed['F2'] = stimuli[observed.stimulus,1]
+observed = pd.merge(observed, stats[['participant', 'drange']],    on='participant')
+observed.drange = (observed.drange + 2.0) / 4.0
 
 # params for PACKER
 params = dict(
@@ -31,59 +33,72 @@ params = dict(
         determinism = 1.99990124401,
         )
 
-info.set_index('participant',inplace=True)
-conditions = list(pd.unique(info.condition))
+simulated = pd.DataFrame(dict(
+	participant = observed['participant'],
+	stimulus = None,
+	drange = None),
+	index = observed.index
+)
 
-
-
-def plotbs(h, Bs, color):
-	pts = utils.jitterize(Bs,sd = 0.1)
-	h.plot(pts[:,0], pts[:,1], 'o', 
-		color = color, 
-		alpha = 0.4, 
-		markeredgecolor = 'none')
-fontsettings = dict(fontsize = 12.0)
-
-f, ax = plt.subplots(2,2,figsize = (5,5))
 for i, row in stats.groupby('participant'):
-	pcond = info.loc[i, 'condition']
+	pcond = info.loc[info.participant == i, 'condition'].iloc[0]
+	As = stimuli[alphas[pcond],:]
 
+	# get weights
 	rs = np.array(row[['xrange','yrange']])[0]
 	rs = 1.0 / (rs + 1.0/9.0)
+	params['wts'] = rs / float(np.sum(rs))
 
-	d = (float(row.drange) + 2.0) / 4.0
-	
-	# get wts and beta color
-
-	wts = rs / float(np.sum(rs))
-
-	# wts = np.array([0.5, 0.5])
-	color = [1-d, 1-d, d]
-
-	colnum = conditions.index(pcond)
-	h = ax[0][colnum]
-
-	# plot behavioral data
-	Bs = generation.loc[generation.participant == i, 'stimulus']
-	Bs = stimuli[Bs,:]
-	h = ax[0][conditions.index(pcond)]
-	plotbs(h, Bs, color)
-
-	h = ax[1][colnum]
-	params['wts'] = wts
-	model = Packer([stimuli[alphas[pcond],:]], params)
+	model = Packer([As], params)
 	nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
-	simulated_Bs = stimuli[nums,:]
-	rs = np.ptp(simulated_Bs,axis=0)
-	d = (float(rs[0] - rs[1]) + 2.0) / 4.0
-	color = [1-d, 1-d, d]
-	plotbs(h, simulated_Bs, color)
+	ranges = np.ptp(stimuli[nums,:], axis = 0)
+	drange = ((ranges[0] - ranges[1]) + 2.0) / 4.0
 
-# add alphas
+	idx = simulated.participant == i
+	simulated.loc[idx, 'stimulus'] = nums
+	simulated.loc[idx, 'drange'] = drange
+
+simulated['F1'] = stimuli[simulated.stimulus,0]
+simulated['F2'] = stimuli[simulated.stimulus,1]
+
+def d2color(vec):
+	d = np.array(vec)
+	static = np.zeros(len(d))
+	return np.array([d, d, static]).T
+
+def plotbs(h, Bs, color):
+	pts = utils.jitterize(Bs, sd = 0.05)
+	for i, row in enumerate(pts):
+		h.plot(row[0], row[1], 'o', 
+			color = color[i,:], 
+			alpha = 0.4, 
+			markersize = 7,
+			markeredgecolor = 'none')
+
+# plot betas
+f, ax = plt.subplots(2,2,figsize = (5,5))
+for colnum, c in enumerate(pd.unique(info.condition)):
+
+	# get rows
+	pids = info.loc[info.condition == c, 'participant']
+	obs = observed.loc[observed.participant.isin(pids)]
+	sim = simulated.loc[simulated.participant.isin(pids)]
+
+	dfs = [observed, simulated]
+	for j in range(2):
+		df = dfs[j].loc[dfs[j].participant.isin(pids)]
+		Bs = df[['F1','F2']].as_matrix()
+		colors = d2color(df.drange)
+		h = ax[j][colnum]
+		plotbs(h, Bs, colors)
+
+
+
+# plot alphas
+fontsettings = dict(fontsize = 12.0)
 for i in range(2):
-	for j in conditions:
-		colnum = conditions.index(j)
-		h = ax[i][conditions.index(j)]
+	for colnum, j in enumerate(pd.unique(info.condition)):
+		h = ax[i][colnum]
 		utils.plotclasses(h, stimuli, alphas[j], [])
 
 		if colnum == 0:
@@ -95,7 +110,7 @@ for i in range(2):
 		if i==0:
 			h.set_title(j, **fontsettings)
 
-
+plt.tight_layout(pad=0.0, w_pad=0.3, h_pad= -4.0)
 f.savefig('range.x.location.png', bbox_inches='tight', transparent=False)
 
 
