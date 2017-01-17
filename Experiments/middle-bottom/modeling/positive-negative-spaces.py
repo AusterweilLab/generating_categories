@@ -5,41 +5,40 @@ from itertools import product
 import sys
 sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
 import utils
+from models import Packer
 
 vals = np.linspace(-1, 1, 100).tolist()
 space = np.fliplr(utils.cartesian([vals, vals]))
 
 A = np.array([[-0.25, -0.25]])
 B = np.array([[ 0.25,  0.25]])
+cats = [A,B]
 
-def getss(examples, space, direction, c = 2.0):
-    D = utils.pdist(space, examples)
-    S = np.exp(-1.0 * float(c) * D)
-    S *= direction
-    return np.sum(S, axis=1)
+# params for PACKER
+c, phi = 1.0, 3.0
 
-neg = getss(A, space, -1.0) * 1.0
-pos = getss(B, space, 1.0) * 0.5
-
+pos =     [c, 0.0, 1.0, phi]
+neg =     [c, 1.0, 0.0, phi]
+pos_neg = [c, 1.0, 1.0, phi]
 
 prob_spaces = {
-    'Target Influence': pos,
-    'Contrast Influence': neg,
-    'Combination': pos + neg
+    'Target Influence': Packer(cats,pos),
+    'Contrast Influence': Packer(cats,neg),
+    'Combination': Packer(cats,pos_neg)
 }
 
 f, ax = plt.subplots(1,3, figsize = (7, 2.5))
 counter = 0
 
 for k in ['Contrast Influence', 'Target Influence', 'Combination']:
-    v = prob_spaces[k] 
+    m = prob_spaces[k] 
     h = ax[counter]
 
-    ps = np.exp(v * 3.0)
-    ps = ps / float(sum(ps))
+    ps = m.get_generation_ps(space,1)
     print max(ps)
+
     g = utils.gradientroll(ps, 'roll')[:,:,0]
-    im = utils.plotgradient(h, g, A, B, clim = (0, 0.00025), cmap = 'Blues')
+    im = utils.plotgradient(h, g, A, B, cmap = 'PuBu', beta_col = 'w')
     h.set_title(k, fontsize = 11)
 
     counter += 1
@@ -50,4 +49,4 @@ import os, matplotlib
 os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
 opts = {'pgf.texsystem': 'pdflatex'}
 matplotlib.rcParams.update(opts)
-f.savefig('../../../Manuscripts/cogsci-2017/figs/example-prob-spaces.pgf', bbox_inches='tight')
+# f.savefig('../../../Manuscripts/cogsci-2017/figs/example-prob-spaces.pgf', bbox_inches='tight')

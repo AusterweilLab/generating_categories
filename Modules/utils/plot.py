@@ -21,7 +21,12 @@ def plotclasses(h, stimuli, alphas, betas):
 	h.set_aspect('equal', adjustable='box')
 
 
-def plotgradient(h, G, alphas, betas, clim = (), cmap = 'Blues'):
+def plotgradient(h, G, alphas, betas, 
+								clim = (), 
+								cmap = 'Blues',
+								alpha_col = 'red',
+								beta_col = 'black',
+								):
 	"""
 	Plot a gradient using matplotlib.
 	 - h is the handle to the axis
@@ -29,6 +34,7 @@ def plotgradient(h, G, alphas, betas, clim = (), cmap = 'Blues'):
 	 - alphas/betas are the [-1 +1] coordinates of category memebers
 	 - clim (optional) defines the limits of the colormap.
 	 - cmap (optional) deinfes the colormap
+	 - [alpha/beta]_col: color of alpha and beta markers
 	"""
 
 	# generate clims if not provided
@@ -48,20 +54,17 @@ def plotgradient(h, G, alphas, betas, clim = (), cmap = 'Blues'):
 	)
 
 	# show annotations
-	textsettings = dict(
-		verticalalignment='center', 
-		horizontalalignment='center',
-		fontsize = 12.0)
+	textsettings = dict(va = 'center', ha = 'center', fontsize = 12.0)
 
 	coords = gradientspace(alphas, G.shape[0])
 	for j in range(coords.shape[0]):
 		h.text(coords[j,0],coords[j,1], 'A',
-			color = 'red', **textsettings)
+			color = alpha_col, **textsettings)
 
 	coords = gradientspace(betas, G.shape[0])
 	for j in range(coords.shape[0]):
 		h.text(coords[j,0],coords[j,1], 'B',
-			color = 'k', **textsettings)
+			color = beta_col, **textsettings)
 
 	h.set_yticks([])
 	h.set_xticks([])

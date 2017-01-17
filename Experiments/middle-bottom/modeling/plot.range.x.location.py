@@ -13,13 +13,12 @@ import utils
 con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT * from participants", con)
 stats = pd.read_sql_query("SELECT * from betastats", con)
-generation = pd.read_sql_query("SELECT participant, stimulus from generation", con)
+observed = pd.read_sql_query("SELECT participant, stimulus from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
 stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
 con.close()
 
 # get observed data
-observed = pd.DataFrame(generation)
 observed['F1'] = stimuli[observed.stimulus,0]
 observed['F2'] = stimuli[observed.stimulus,1]
 observed = pd.merge(observed, stats[['participant', 'drange']],    on='participant')
@@ -35,8 +34,8 @@ params = dict(
 
 simulated = pd.DataFrame(dict(
 	participant = observed['participant'],
-	stimulus = None,
-	drange = None),
+	stimulus = -1,
+	drange = np.nan),
 	index = observed.index
 )
 
@@ -48,6 +47,7 @@ for i, row in stats.groupby('participant'):
 	rs = np.array(row[['xrange','yrange']])[0]
 	rs = 1.0 / (rs + 1.0/9.0)
 	params['wts'] = rs / float(np.sum(rs))
+	# params['wts'] = np.array([0.5, 0.5])
 
 	model = Packer([As], params)
 	nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
@@ -61,19 +61,6 @@ for i, row in stats.groupby('participant'):
 simulated['F1'] = stimuli[simulated.stimulus,0]
 simulated['F2'] = stimuli[simulated.stimulus,1]
 
-def d2color(vec):
-	d = np.array(vec)
-	static = np.zeros(len(d))
-	return np.array([d, d, static]).T
-
-def plotbs(h, Bs, color):
-	pts = utils.jitterize(Bs, sd = 0.05)
-	for i, row in enumerate(pts):
-		h.plot(row[0], row[1], 'o', 
-			color = color[i,:], 
-			alpha = 0.4, 
-			markersize = 7,
-			markeredgecolor = 'none')
 
 # plot betas
 f, ax = plt.subplots(2,2,figsize = (5,5))
@@ -84,14 +71,17 @@ for colnum, c in enumerate(pd.unique(info.condition)):
 	obs = observed.loc[observed.participant.isin(pids)]
 	sim = simulated.loc[simulated.participant.isin(pids)]
 
-	dfs = [observed, simulated]
-	for j in range(2):
-		df = dfs[j].loc[dfs[j].participant.isin(pids)]
-		Bs = df[['F1','F2']].as_matrix()
-		colors = d2color(df.drange)
+	for j, data in enumerate([observed, simulated]):
+		df = data.loc[data.participant.isin(pids)]
 		h = ax[j][colnum]
-		plotbs(h, Bs, colors)
 
+		df.plot(x = 'F1', y = 'F2', kind = 'scatter', ax = h, 
+			c = 'drange', s = 235, alpha = 0.2, marker = 's',
+			edgecolors = 'gray', linewidth = 0.5, 
+			colorbar = False, cmap = 'PuOr')
+
+		h.set_xlabel('')
+		h.set_ylabel('')
 
 
 # plot alphas
