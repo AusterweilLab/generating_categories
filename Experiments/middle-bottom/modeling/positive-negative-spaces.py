@@ -38,7 +38,7 @@ for k in ['Contrast Influence', 'Target Influence', 'Combination']:
     print max(ps)
 
     g = utils.gradientroll(ps, 'roll')[:,:,0]
-    im = utils.plotgradient(h, g, A, B, cmap = 'PuBu', beta_col = 'w')
+    utils.plotgradient(h, g, A, B, cmap = 'PuBu', beta_col = 'w')
     h.set_title(k, fontsize = 11)
 
     counter += 1

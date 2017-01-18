@@ -23,18 +23,10 @@ where $x_b$ may be empty. Jern \& Kemp's model achieves this using a generative 
   x_y \sim Normal(\mu_{y}, \Sigma_{y})
 \end{equation}
 \
-$p(x | x_y)$ is proportional to the candidate's density under the target category's distribution. Thus, obtaining the category distribution parameters $(\mu_{y}, \Sigma_{y})$ is key for generation.
-
-In Jern \& Kemp's original model, category distribution parameters are inferred exclusively from exposure to the category's members. To better simulate our paradigm, category distribution parameters (specifically, the $\Sigma_{y}$ parameter) in our implementation are also affected by a higher level domain distribution (specifically, Inverse-Wishart), from which $\Sigma_{y}$ are assumed to be generated:
-
-\begin{equation}
-  \Sigma_{y} \sim Wishart^{-1}(\Sigma_D, df_D)
-\end{equation}
-\
-This document describes how we have obtained the relevant distributions.
+$p(x | x_y)$ is proportional to the candidate's density under the target category's distribution. Thus, obtaining the category distribution parameters $(\mu_{y}, \Sigma_{y})$ is key for generation. This document describes how we compute these variables in a conjugate model. 
 
 \subsection*{Computing $\mu_y$}
-Because Jern \& Kemp assume that the location of $x_y$ is independent of contrast categories, the category $\mu_{y}$ can be inferred exclusively based on exposure to the category's members. Assuming $(\mu_y, \Sigma_y)$ are Normal-Inverse-Wishart distributed (unknown mean, unknown variance):
+Assuming $(\mu_y, \Sigma_y)$ are Normal-Inverse-Wishart distributed (unknown mean, unknown variance):
 \
 \begin{equation}
   \mu_y = \dfrac
@@ -72,23 +64,9 @@ $\Sigma_{0}$ is a $p$-by-$p$ prior covariance matrix. We use a $p$-dimensional i
     \Sigma_0 =  I_p\gamma
 \end{equation}
 
-
-\subsubsection*{Note}
-In actuality, we ended up doing a bunch of matrix inverting that I do not understand:
-\begin{verbatim}
-Domain_Sigma = np.linalg.inv(Prior_Sigma)
-for y in ncategories:
-  Domain_Sigma += np.linalg.inv(Category_Sigmas[:,:,y])
-Domain_Sigma = np.linalg.inv(Domain_Sigma)
-\end{verbatim}
-This is definitely not in the math, and I think it has something to do with Wishart vs. Inverse-Wishart. I think it also had something to do with the issue that its weird to just take the sum of the covariance matrices: the domain ends up assuming much larger covariances compared to any of the categories. We've never nailed it down. \textbf{Joe}, do you know what this is about?
-
+Thus, categories are assumed to have some degree of variance along each feature (specified by $\gamma$), but not are assumed to possess feature-feature correlations.
 
 \subsection*{Computing $\Sigma_y$}
-
-In previous versions, we sampled $\Sigma_y \sim Wishart^{-1}(\Sigma_D, df_D)$, with which we sampled $x \sim Normal(\mu_y, \Sigma_y)$. That was the approach taken by Jern \& Kemp. Sampling $x$, however, is not the primary goal of the model -- the main purpose of the model is to predict $p(x | x_b)$, and from those data we can sample $x$.
-
-We could monte-carlo sample $x$ as described above to obtain $p(x | x_b)$. But this is computationally intensive, as each trial would need a separate sampler. Instead, it would be better to develop a method to infer $\Sigma_y$ without sampling.
 
 Assuming $(\mu_y, \Sigma_y)$ are Normal-Inverse-Wishart distributed, $\Sigma_y$ can be computed as:
 

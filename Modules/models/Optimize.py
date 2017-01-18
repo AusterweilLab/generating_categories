@@ -12,8 +12,8 @@ def _callback_fun_(xk):
 	"""
 	Function executed at each step of the hill-climber
 	"""
-	print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + ']'
-	# print '\b.',
+	# print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + ']'
+	print '\b.',
 	sys.stdout.flush()
 
 
@@ -39,8 +39,12 @@ def costfun(params, model_obj, dataset, stimuli):
 		predictions = obj.get_generation_ps(stimuli, 1)
 		ps[i] = predictions[trial['response']]
 
+	# check for NaN
 	if np.any(np.isnan(ps)):
 		raise Exception('You got nan probabilities. Sorry :-(')
+
+	# remove zeros to prevent infs
+	ps[ps<1e-308] = 1e-308
 
 	lps = np.log(ps)
 	loglike = np.sum(lps)

@@ -13,16 +13,34 @@ import utils
 con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT * from participants", con)
 stats = pd.read_sql_query("SELECT * from betastats", con)
-observed = pd.read_sql_query("SELECT participant, stimulus from generation", con)
+generation = pd.read_sql_query("SELECT participant, stimulus from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
 stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
 con.close()
 
-# get observed data
-observed['F1'] = stimuli[observed.stimulus,0]
-observed['F2'] = stimuli[observed.stimulus,1]
-observed = pd.merge(observed, stats[['participant', 'drange']],    on='participant')
-observed.drange = (observed.drange + 2.0) / 4.0
+
+# make a template df
+template_df = pd.DataFrame(utils.cartesian([[0,1], range(stimuli.shape[0])]), 
+	columns = ['condition', 'stimulus'])
+for i, c in enumerate(pd.unique(info.condition)):
+	template_df.loc[template_df.condition == i, 'condition'] = c
+template_df['drange'] = 0
+template_df['size'] = 0
+template_df['stimulus'] = template_df['stimulus'].astype(int)
+
+# fill out template with behavioral data
+observed = template_df.copy()
+generation = pd.merge(generation, stats[['participant', 'drange']],    on='participant')
+for (c,n), rows in observed.groupby(['condition', 'stimulus']):
+	pids = info.loc[info.condition == c, 'participant']
+	
+	g_idx = generation.participant.isin(pids) & (generation.stimulus == n)
+	trials = generation.loc[g_idx, 'drange']
+	if trials.shape[0] == 0: continue
+
+	o_idx = (observed.condition == c) & (observed.stimulus == n)
+	observed.loc[o_idx, 'drange'] = np.sum(trials)
+	observed.loc[o_idx, 'size'] = trials.shape[0]
 
 # params for PACKER
 params = dict(
@@ -32,13 +50,9 @@ params = dict(
         determinism = 1.99990124401,
         )
 
-simulated = pd.DataFrame(dict(
-	participant = observed['participant'],
-	stimulus = -1,
-	drange = np.nan),
-	index = observed.index
-)
+nsamples = 1
 
+simulated = template_df.copy()
 for i, row in stats.groupby('participant'):
 	pcond = info.loc[info.participant == i, 'condition'].iloc[0]
 	As = stimuli[alphas[pcond],:]
@@ -47,42 +61,53 @@ for i, row in stats.groupby('participant'):
 	rs = np.array(row[['xrange','yrange']])[0]
 	rs = 1.0 / (rs + 1.0/9.0)
 	params['wts'] = rs / float(np.sum(rs))
-	# params['wts'] = np.array([0.5, 0.5])
+	params['wts'] = np.array([0.5, 0.5])
 
 	model = Packer([As], params)
-	nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
-	ranges = np.ptp(stimuli[nums,:], axis = 0)
-	drange = ((ranges[0] - ranges[1]) + 2.0) / 4.0
+	for j in range(nsamples):	
 
-	idx = simulated.participant == i
-	simulated.loc[idx, 'stimulus'] = nums
-	simulated.loc[idx, 'drange'] = drange
+		nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
+		model.forget_category(1)
 
-simulated['F1'] = stimuli[simulated.stimulus,0]
-simulated['F2'] = stimuli[simulated.stimulus,1]
+		ranges = np.ptp(stimuli[nums,:], axis = 0)
+		drange = ranges[0] - ranges[1]
 
+		idx = (simulated.condition == pcond) & simulated.stimulus.isin(nums)
+		simulated.loc[idx, 'drange'] += drange
+		simulated.loc[idx, 'size'] += 1
 
-# plot betas
+print simulated
+# plotting
 f, ax = plt.subplots(2,2,figsize = (5,5))
 for colnum, c in enumerate(pd.unique(info.condition)):
-
-	# get rows
-	pids = info.loc[info.condition == c, 'participant']
-	obs = observed.loc[observed.participant.isin(pids)]
-	sim = simulated.loc[simulated.participant.isin(pids)]
-
+	A = stimuli[alphas[c],:]
 	for j, data in enumerate([observed, simulated]):
-		df = data.loc[data.participant.isin(pids)]
 		h = ax[j][colnum]
+		df = data.loc[data.condition == c]
 
-		df.plot(x = 'F1', y = 'F2', kind = 'scatter', ax = h, 
-			c = 'drange', s = 235, alpha = 0.2, marker = 's',
-			edgecolors = 'gray', linewidth = 0.5, 
-			colorbar = False, cmap = 'PuOr')
+		x = stimuli[df.stimulus,0]
+		y = stimuli[df.stimulus,1]
 
-		h.set_xlabel('')
-		h.set_ylabel('')
 
+		# compute color
+		# vals = df.drange / df['size']
+		# vals = ((vals + 2.) / 4.).as_matrix()
+		# vals[np.isnan(vals)] = 0.5
+
+		
+		# n = sum(df['size']) / 4
+		vals = df.drange.as_matrix() / sum(df['size'])
+		vals = vals * 10 + 0.5
+		vals[np.isnan(vals)] = 0.5
+		print c, j, min(vals), max(vals)
+
+		alpha = 1.
+		# if j==1: alpha /= nsamples
+
+		h.scatter(x, y, c=vals, 
+			s=235,alpha = 0.2, marker = 's', 
+			edgecolors = 'gray', linewidth = 0.5,
+			cmap = 'PuOr')
 
 # plot alphas
 fontsettings = dict(fontsize = 12.0)
