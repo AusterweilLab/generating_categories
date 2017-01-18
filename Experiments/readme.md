@@ -18,4 +18,4 @@ https://alab.psych.wisc.edu/experiments/generate-categories/?assignmentId=12ALON
 ## Data Weirdness
 
 1. Sometimes the final 25 characters are appended twice to the end of the JSON data files? 
- 2. Some participants are not assigned a finish time, but are marked as complete. I think these may be the same as those with weird JSON above.
+2. Some participants are not assigned a finish time, but are marked as complete. I think these may be the same as those with weird JSON above.

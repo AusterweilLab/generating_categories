@@ -18,6 +18,8 @@ alphas = pd.read_sql_query("SELECT * from alphas", con)
 stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
 con.close()
 
+# assumed distribution of range differential
+sig = 0.2
 
 # make a template df
 template_df = pd.DataFrame(utils.cartesian([[0,1], range(stimuli.shape[0])]), 
@@ -27,6 +29,8 @@ for i, c in enumerate(pd.unique(info.condition)):
 template_df['drange'] = 0
 template_df['size'] = 0
 template_df['stimulus'] = template_df['stimulus'].astype(int)
+
+# condition, stimulus, mean, variance, n
 
 # fill out template with behavioral data
 observed = template_df.copy()
@@ -50,7 +54,7 @@ params = dict(
         determinism = 1.99990124401,
         )
 
-nsamples = 1
+nsamples = 50
 
 simulated = template_df.copy()
 for i, row in stats.groupby('participant'):
@@ -61,7 +65,7 @@ for i, row in stats.groupby('participant'):
 	rs = np.array(row[['xrange','yrange']])[0]
 	rs = 1.0 / (rs + 1.0/9.0)
 	params['wts'] = rs / float(np.sum(rs))
-	params['wts'] = np.array([0.5, 0.5])
+	# params['wts'] = np.array([0.5, 0.5])
 
 	model = Packer([As], params)
 	for j in range(nsamples):	
@@ -76,7 +80,8 @@ for i, row in stats.groupby('participant'):
 		simulated.loc[idx, 'drange'] += drange
 		simulated.loc[idx, 'size'] += 1
 
-print simulated
+
+
 # plotting
 f, ax = plt.subplots(2,2,figsize = (5,5))
 for colnum, c in enumerate(pd.unique(info.condition)):
@@ -87,18 +92,13 @@ for colnum, c in enumerate(pd.unique(info.condition)):
 
 		x = stimuli[df.stimulus,0]
 		y = stimuli[df.stimulus,1]
-
-
-		# compute color
-		# vals = df.drange / df['size']
-		# vals = ((vals + 2.) / 4.).as_matrix()
-		# vals[np.isnan(vals)] = 0.5
-
 		
-		# n = sum(df['size']) / 4
-		vals = df.drange.as_matrix() / sum(df['size'])
-		vals = vals * 10 + 0.5
-		vals[np.isnan(vals)] = 0.5
+
+		sumx = df.drange.as_matrix()
+		n = df['size'].as_matrix()
+		vals  = (0.0/sig +  sumx / sig) / (1.0/sig + n / sig)
+		vals = (vals + 2.0) / 4.0
+
 		print c, j, min(vals), max(vals)
 
 		alpha = 1.
