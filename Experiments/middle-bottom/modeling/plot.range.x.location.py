@@ -18,33 +18,16 @@ alphas = pd.read_sql_query("SELECT * from alphas", con)
 stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
 con.close()
 
-# assumed distribution of range differential
-sig = 0.2
+nstimuli = stimuli.shape[0]
 
-# make a template df
-template_df = pd.DataFrame(utils.cartesian([[0,1], range(stimuli.shape[0])]), 
-	columns = ['condition', 'stimulus'])
-for i, c in enumerate(pd.unique(info.condition)):
-	template_df.loc[template_df.condition == i, 'condition'] = c
-template_df['drange'] = 0
-template_df['size'] = 0
-template_df['stimulus'] = template_df['stimulus'].astype(int)
+# get observed dataframe
+# condition, stimulus, mean, var, size
+observed = pd.merge(generation, stats[['participant', 'drange']], on='participant')
+observed = pd.merge(observed, info[['participant', 'condition']], on='participant')
+observed = observed.groupby(['condition','stimulus'])['drange'].agg(['mean', 'var', 'size'])
+observed = observed.reset_index()
+observed.loc[pd.isnull(observed['var']),'var'] = 1.0
 
-# condition, stimulus, mean, variance, n
-
-# fill out template with behavioral data
-observed = template_df.copy()
-generation = pd.merge(generation, stats[['participant', 'drange']],    on='participant')
-for (c,n), rows in observed.groupby(['condition', 'stimulus']):
-	pids = info.loc[info.condition == c, 'participant']
-	
-	g_idx = generation.participant.isin(pids) & (generation.stimulus == n)
-	trials = generation.loc[g_idx, 'drange']
-	if trials.shape[0] == 0: continue
-
-	o_idx = (observed.condition == c) & (observed.stimulus == n)
-	observed.loc[o_idx, 'drange'] = np.sum(trials)
-	observed.loc[o_idx, 'size'] = trials.shape[0]
 
 # params for PACKER
 params = dict(
@@ -54,9 +37,10 @@ params = dict(
         determinism = 1.99990124401,
         )
 
-nsamples = 50
+nsamples = 40
 
-simulated = template_df.copy()
+# get simulated data
+simulated = pd.DataFrame(dict(condition = [], stimulus = [], drange = []))
 for i, row in stats.groupby('participant'):
 	pcond = info.loc[info.participant == i, 'condition'].iloc[0]
 	As = stimuli[alphas[pcond],:]
@@ -69,18 +53,26 @@ for i, row in stats.groupby('participant'):
 
 	model = Packer([As], params)
 	for j in range(nsamples):	
-
 		nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
 		model.forget_category(1)
 
 		ranges = np.ptp(stimuli[nums,:], axis = 0)
 		drange = ranges[0] - ranges[1]
 
-		idx = (simulated.condition == pcond) & simulated.stimulus.isin(nums)
-		simulated.loc[idx, 'drange'] += drange
-		simulated.loc[idx, 'size'] += 1
+		rows = dict(condition = [pcond] *4, stimulus = nums, drange = [drange] *4)
+		simulated = simulated.append(pd.DataFrame(rows), ignore_index = True)
+
+simulated = simulated.groupby(['condition','stimulus'])['drange'].agg(['mean', 'var', 'size'])
+simulated = simulated.reset_index()
+simulated.loc[pd.isnull(simulated['var']),'var'] = 1.0
+simulated['size'] /= nsamples
 
 
+scatter_settings = dict(s = 220, alpha = 1.0, marker = 's', 
+			edgecolors = 'gray', linewidth = 0.5, cmap = 'PuOr',
+			vmin = -2, vmax = 2)
+
+from scipy.interpolate import interp2d
 
 # plotting
 f, ax = plt.subplots(2,2,figsize = (5,5))
@@ -90,24 +82,29 @@ for colnum, c in enumerate(pd.unique(info.condition)):
 		h = ax[j][colnum]
 		df = data.loc[data.condition == c]
 
-		x = stimuli[df.stimulus,0]
-		y = stimuli[df.stimulus,1]
-		
-
-		sumx = df.drange.as_matrix()
+		# get x/y pos of examples
+		nums = df.stimulus.as_matrix().astype(int)
+		x = stimuli[nums,0]
+		y = stimuli[nums,1]
+	
+		# compute color
 		n = df['size'].as_matrix()
-		vals  = (0.0/sig +  sumx / sig) / (1.0/sig + n / sig)
-		vals = (vals + 2.0) / 4.0
+		sumx = df['mean'].as_matrix() * n
+		sig = df['var'].as_matrix()
+		sig[sig==0] = 0.01
+		vals  = (0.0/sig +  sumx / sig) / (1.0/sig + n/sig)
 
 		print c, j, min(vals), max(vals)
+		h.scatter(x, y, c=vals, **scatter_settings)
+		
+		# plot missing items as white squares
+		missing = [i for i in range(nstimuli) if i not in nums]
+		x = stimuli[missing,0]
+		y = stimuli[missing,1]
+		vals = [0.0 for i in missing]
+		h.scatter(x, y, c = vals, **scatter_settings)
+		
 
-		alpha = 1.
-		# if j==1: alpha /= nsamples
-
-		h.scatter(x, y, c=vals, 
-			s=235,alpha = 0.2, marker = 's', 
-			edgecolors = 'gray', linewidth = 0.5,
-			cmap = 'PuOr')
 
 # plot alphas
 fontsettings = dict(fontsize = 12.0)
