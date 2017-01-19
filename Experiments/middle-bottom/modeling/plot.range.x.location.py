@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # add modeling module
 sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-from models import Packer
+from models import Packer, CopyTweak, ConjugateJK13
 import utils
 
 # import data
@@ -30,14 +30,29 @@ observed.loc[pd.isnull(observed['var']),'var'] = 1.0
 
 
 # params for PACKER
-params = dict(
+model_param_pairs = [
+    [CopyTweak, dict(
+        specificity = 9.4486327043,
+        within_pref = 17.0316650379,
+        tolerance = 0.403108523886,
+        determinism = 7.07038770338,
+        )],
+    [Packer, dict(
         specificity = 0.562922970884,
         between = 1.76500997943,
         within = 1.55628620461,
         determinism = 1.99990124401,
-        )
+        )],
+    [ConjugateJK13, dict(
+        category_mean_bias = 0.0167065365661,
+        category_variance_bias = 1.00003245067,
+        domain_variance_bias = 0.163495499745,
+        determinism = 2.10276377982,
+        )],
+]
 
-nsamples = 40
+model_obj, params = model_param_pairs[2]
+nsamples = 20
 
 # get simulated data
 simulated = pd.DataFrame(dict(condition = [], stimulus = [], drange = []))
@@ -51,7 +66,7 @@ for i, row in stats.groupby('participant'):
 	params['wts'] = rs / float(np.sum(rs))
 	# params['wts'] = np.array([0.5, 0.5])
 
-	model = Packer([As], params)
+	model = model_obj([As], params)
 	for j in range(nsamples):	
 		nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
 		model.forget_category(1)
@@ -68,7 +83,7 @@ simulated.loc[pd.isnull(simulated['var']),'var'] = 1.0
 simulated['size'] /= nsamples
 
 
-scatter_settings = dict(s = 220, alpha = 1.0, marker = 's', 
+scatter_settings = dict(s = 185, alpha = 1.0, marker = 's', 
 			edgecolors = 'gray', linewidth = 0.5, cmap = 'PuOr',
 			vmin = -2, vmax = 2)
 
@@ -117,7 +132,7 @@ for i in range(2):
 				if i== 0:
 					h.set_ylabel('Behavioral', rotation = 0, ha = 'right', **fontsettings)
 				if i == 1:
-					h.set_ylabel('PACKER', rotation = 0, ha = 'right', **fontsettings)
+					h.set_ylabel(model_obj.model, rotation = 0, ha = 'right', **fontsettings)
 
 		if i==0:
 			h.set_title(j, **fontsettings)

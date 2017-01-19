@@ -19,26 +19,10 @@ class Packer(Model):
 
 	def _param_handler_(self):
 		super(Packer, self)._param_handler_()
-
-		# correct ranges
 		if self.specificity <= 0: self.specificity = 1e-10
 		if self.between <= 0: self.between = 1e-10
 		if self.within <= 0: self.within = 1e-10
 		if self.determinism <= 0: self.determinism = 1e-10
-
-		# make wts if needed
-		if 'wts' not in self.params.keys():
-			self.wts = np.ones(self.nfeatures) / self.nfeatures
-		else:
-			self.wts = self.params['wts']
-			if sum(self.wts) > 1:
-				self.wts = self.wts / np.sum(self.wts)
-				self.params['wts'] = self.wts
-
-		# reset param dict
-		for k in self.params.keys():
-			self.params[k] = getattr(self, k)
-
 
 
 	def _get_ss(self, candidates, class_items, contribution_param):

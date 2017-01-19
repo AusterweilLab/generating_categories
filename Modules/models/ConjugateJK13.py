@@ -5,9 +5,7 @@ from scipy.stats import multivariate_normal
 import utils
 from Model import Model
 
-def jitterize(x, sd = 1e-10):
-	# return x + np.random.normal(x.shape, scale = sd)
-	return x + 1e-10
+
 class ConjugateJK13(Model):
 	"""
 	A conjugate version of the Jern & Kemp (2013) heirarchical sampling
@@ -33,12 +31,11 @@ class ConjugateJK13(Model):
 		# standard update procedure
 		super(ConjugateJK13, self)._update_()
 
-		# set priors
+		# set prior mean.
 		self.category_prior_mean = np.zeros(self.nfeatures)
-		self.prior_variance = np.eye(self.nfeatures) * self.domain_variance_bias
 
 		# infer domain Sigma
-		self.Domain = self.prior_variance
+		self.Domain = np.array(self.prior_variance, copy=True)
 		for y in range(self.ncategories):
 			if self.nexemplars[y] < 2: continue
 			C = np.cov(self.categories[y], rowvar = False)
@@ -47,20 +44,23 @@ class ConjugateJK13(Model):
 
 	def _param_handler_(self):
 		super(ConjugateJK13, self)._param_handler_()
-
-		# correct ranges
 		if self.category_mean_bias <= 0: self.category_mean_bias = 1e-10
 		if self.category_variance_bias <= self.nfeatures - 1.0: 
 			self.category_variance_bias = self.nfeatures + 1e-10
 		if self.domain_variance_bias <= 0: self.domain_variance_bias = 1e-10
 		if self.determinism <= 0: self.determinism = 1e-10
 
-		# reset param dict
-		for k in self.params.keys():
-			self.params[k] = getattr(self, k)
 
-
-
+	def _wts_handler_(self):
+		"""
+			Converts wts into a covaraince matrix.
+			Weights are implemented as differences in the assumed [prior]
+			Domain covariance.
+		"""
+		super(ConjugateJK13, self)._wts_handler_()
+		self.prior_variance = np.eye(self.nfeatures) * self.nfeatures
+		inds = np.diag_indices(self.nfeatures)
+		self.prior_variance[inds] *= self.wts
 
 	def get_generation_ps(self, stimuli, category):
 		target_is_populated = any(self.assignments == category)

@@ -43,19 +43,18 @@ class Model(object):
 
 		# setup functions
 		self._param_handler_()
+		self._wts_handler_()
+		self._reset_param_dict_()
 		self._update_()
 
 
 	def __str__(self):
 			S = self.model + ' Model. Current state:' 
-
 			for k in self.parameter_names:
 				S += '\n\t' + k + ' = ' + str(getattr(self, k))
-
 			for j in range(self.ncategories):
 				S += '\n\t' + 'Category ' +  str(j) + ': ' 
 				S += str(self.nexemplars[j]) + ' examples.'
-
 			return S + '\n'
 
 
@@ -68,23 +67,44 @@ class Model(object):
 		Models must add custom logic to ensure values lie within 
 		the allowed range.
 		"""
-
 		for k in self.parameter_names:
-			
 			if k not in self.params.keys():
 				raise Exception("There is no '" + k + "' parameter!!!")
-			
 			else:
 				setattr(self, k, self.params[k])
+
+	def _wts_handler_(self):
+		"""
+			Sets feature weight parameters for models.
+			Raises exception of wts is not the right size.
+		"""
+
+		if 'wts' not in self.params.keys():
+			self.wts = np.ones(self.nfeatures) / self.nfeatures
+			return
+
+		if len(self.params['wts']) != self.nfeatures:
+			raise Exception("Invalid wts parameter!")
+
+		wts = np.array(self.params['wts'])
+		self.wts = wts / float(np.sum(wts))
+		self.params['wts'] = self.wts
+
+
+	def _reset_param_dict_(self):
+		"""
+			Resets self.params given updated values.
+		"""
+		for k in self.params.keys():
+			self.params[k] = getattr(self, k)
 
 
 	def _params_to_dict_(self, params):
 		"""
 		Convert list parameters to dict, assuming order set by
-		self.parameter_names
+		self.parameter_names. Raises exception if there are not 
+		enough params.
 		"""
-
-		# make sure all parameters are there.
 		if len(params) != len(self.parameter_names):
 			S = 'Not enough (or too many) parameters!\nRequired:'
 			S += ''.join(['\n\t' + i  for i in self.parameter_names])
