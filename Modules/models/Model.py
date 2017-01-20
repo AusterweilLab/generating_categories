@@ -143,8 +143,9 @@ class Model(object):
 		if nexemplars is None:
 			nexemplars = sum(self.nexemplars)
 
-		# open up the new category
-		self.categories.append(np.empty((0, self.nfeatures)))
+		# open up the new category if needed
+		if category >= self.ncategories:
+			self.categories.append(np.empty((0, self.nfeatures)))
 
 		# iterate over examples
 		generated_examples = []
@@ -157,8 +158,8 @@ class Model(object):
 			generated_examples.append(num)
 
 			# add the item to the category
-			self.categories[-1] = np.concatenate(
-				[self.categories[-1], values], 
+			self.categories[category] = np.concatenate(
+				[self.categories[category], values], 
 				axis = 0)
 
 			# update knowledge

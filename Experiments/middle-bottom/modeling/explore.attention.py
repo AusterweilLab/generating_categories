@@ -26,14 +26,14 @@ stimuli = np.fliplr(np.array(list(product(vals, vals))))
 
 alphas =  [30, 32, 48, 50]
 alphas =  [12, 30, 14, 32]
-betas = [62]
+betas = []
 
 models = [
     [CopyTweak, dict(
         specificity = 9.4486327043,
         within_pref = 17.0316650379,
         tolerance = 0.403108523886,
-        determinism = 7.07038770338,
+        determinism = 10.07038770338,
         )],
     [Packer, dict(
         specificity = 0.562922970884,
@@ -45,24 +45,32 @@ models = [
         category_mean_bias = 0.0167065365661,
         category_variance_bias = 1.00003245067,
         domain_variance_bias = 0.163495499745,
-        determinism = 4.10276377982,
+        determinism = 18.10276377982,
         )],
 ]
 
+wt_list = [[0.5, 0.5], [0.15, 0.85],[0.85,0.15]]
+FUN, PARAMS = models[2]
 
 f, ax = plt.subplots(1, 3, figsize = (6.5, 2))
 pltnum = 0
-for FUN, params in models:
+for wts in wt_list:
     A = stimuli[alphas,:]
     B = stimuli[betas,:]
-    
-    M = FUN([A, B], params) 
+    PARAMS['wts'] = wts
+
+    M = FUN([A, B], PARAMS) 
+    simulated_betas = M.simulate_generation(stimuli, 1, nexemplars = 3)
+    simulated_B = stimuli[simulated_betas,:]
     ps = M.get_generation_ps(stimuli, 1)
 
     g = utils.gradientroll(ps,'roll')[:,:,0]
     h = ax[pltnum]
-    utils.plotgradient(h, g, A, B, clim = (0, 0.15))
-    h.set_title(FUN.model, fontsize = 12)
+    utils.plotgradient(h, g, A, simulated_B, clim = (0, 0.15))
+
+    h.set_title(str(wts), fontsize = 10)
+    if wts == wt_list[0]:
+        h.set_ylabel(FUN.model)
     pltnum += 1
 
-f.savefig('model-comparison.png', bbox_inches='tight', transparent=False)
+f.savefig('explore.attention.png', bbox_inches='tight', transparent=False)
