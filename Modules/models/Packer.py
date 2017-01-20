@@ -11,17 +11,15 @@ class Packer(Model):
 
 	model = 'PACKER'
 	parameter_names = [
-		'specificity', # > 0 
-		'between',  # > 0
-		'within', # > 0
-		'determinism' # > 0
-	] # OPTIONAL: wts
+		'specificity', # c > 0 
+		'between',  # phi, any real
+		'within', # gamma, any real
+		'determinism' # theta > 0
+	] 
 
 	def _param_handler_(self):
 		super(Packer, self)._param_handler_()
 		if self.specificity <= 0: self.specificity = 1e-10
-		if self.between <= 0: self.between = 1e-10
-		if self.within <= 0: self.within = 1e-10
 		if self.determinism <= 0: self.determinism = 1e-10
 
 
@@ -37,7 +35,7 @@ class Packer(Model):
 
 		# compute contrast sum similarity
 		contrast_examples   = self.exemplars[self.assignments != category]
-		contrast_ss   = self._get_ss(stimuli, contrast_examples, -1.0 * self.between)
+		contrast_ss   = self._get_ss(stimuli, contrast_examples, self.between)
 
 		# compute target sum similarity
 		target_examples = self.exemplars[self.assignments == category]

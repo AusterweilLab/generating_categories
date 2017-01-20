@@ -17,9 +17,9 @@ cats = [A,B]
 # params for PACKER
 c, phi = 1.0, 3.0
 
-pos =     [c, 0.0, 1.0, phi]
-neg =     [c, 1.0, 0.0, phi]
-pos_neg = [c, 1.0, 1.0, phi]
+pos =     [c,  0.0, 1.0, phi]
+neg =     [c, -1.0, 0.0, phi]
+pos_neg = [c, -1.0, 1.0, phi]
 
 prob_spaces = {
     'Target Influence': Packer(cats,pos),
@@ -38,7 +38,7 @@ for k in ['Contrast Influence', 'Target Influence', 'Combination']:
     print max(ps)
 
     g = utils.gradientroll(ps, 'roll')[:,:,0]
-    utils.plotgradient(h, g, A, B, cmap = 'PuBu', beta_col = 'w')
+    utils.plotgradient(h, g, A, B, cmap = 'Blues', beta_col = 'w')
     h.set_title(k, fontsize = 11)
 
     counter += 1
@@ -49,4 +49,4 @@ import os, matplotlib
 os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
 opts = {'pgf.texsystem': 'pdflatex'}
 matplotlib.rcParams.update(opts)
-# f.savefig('../../../Manuscripts/cogsci-2017/figs/example-prob-spaces.pgf', bbox_inches='tight')
+f.savefig('../../../Manuscripts/cogsci-2017/figs/example-prob-spaces.pgf', bbox_inches='tight')

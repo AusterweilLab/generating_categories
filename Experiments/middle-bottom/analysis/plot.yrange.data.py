@@ -24,6 +24,7 @@ def plotlines(h, data, stats):
 	sort_df = stats.sort_values(by = ['yrange','condition'])
 	condition_colors = dict(Middle = 'r', Bottom = 'b')
 	n = 0
+
 	for num, info in sort_df.iterrows():
 		pid = info.participant
 		g = info.condition
@@ -43,9 +44,10 @@ def plotlines(h, data, stats):
 			fillstyle = 'full',
 			markeredgecolor = condition_colors[g],
 			color = condition_colors[g],
-			alpha = 1)
-		
+			alpha = 1)		
 		n += 1
+
+
 
 	h.axis([-1.5, stats.shape[0] + 0.5,  -1.05, 1.05])
 	h.set_yticks([])

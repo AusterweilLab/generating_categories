@@ -24,6 +24,6 @@ for i in ['top_used', 'bottom_used', 'top_and_bottom', 'bottom_only', 'top_only'
 	pval = fisher_exact(c)[1]
 	pval = round(pval,4)
 	print 'Fishers exact test comparing groups on: ' + i + '\t\tp = ' + str(pval)
-	# print c
+	print c
 
 
