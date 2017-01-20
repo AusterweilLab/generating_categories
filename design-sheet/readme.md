@@ -40,21 +40,3 @@ At this point in time, it was well established that existing concepts constrain 
 
 
 ____
-
-
-____
-## Experiment Idea
-
-The above work does not address the possible role of attention (or focusing) in generation. However, while it is evident that people use knowledge of existing categories to generate new concepts, it is not clear if all aspects of class structure are used, or if some aspects will be focal to generation.
-
-Consider the starting category below (in a 4D binary space):
-
-```
-        F1  F2  F3  F4
-    A1  1   1   1   0 
-    A2  1   1   0   1
-    A3  1   0   1   1
-    A4  1   1   1   1
-```
-
-All members of category A share a value on the first feature, but there is a family resemblance on features 2-4. Given the existing research, we would expect people to (A) generate category B so that it is structurally similar to category A, and (B) generate category B in unoccupied space (using more zero values on all features). Critically, however, these are several aspects of class structure that may be mimicked: individuals may generate categories with a unique value on feature 1 (differing the categories on a single dimension),  they may generate categories with a family resemblance on features 2-4, or they may use both aspects.

@@ -36,7 +36,7 @@ counter = 0
 for k, a  in alphas.items():
 	h = ax[counter]
 	utils.plotclasses(h, stimuli, a, [])		
-	h.text(-1.1,1.1, k, **textsettings)
+	h.set_title(k)
 	h.axis([-1.2, 1.2, -1.2, 1.2])
 	[i.set_linewidth(0.75) for i in h.spines.itervalues()]
 

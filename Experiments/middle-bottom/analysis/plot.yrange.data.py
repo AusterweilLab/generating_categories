@@ -51,7 +51,7 @@ def plotlines(h, data, stats):
 	h.set_yticks([])
 	h.set_xticks([])
 	h.set_ylabel('Y Axis Value', fontsize = 11)
-	h.set_xlabel('Participant', fontsize = 11)
+	h.set_xlabel('Y-Axis Range', fontsize = 11)
 
 	for k, v in condition_colors.items():
 		plt.plot(np.NaN, np.NaN, '-', color = v, label = k)
