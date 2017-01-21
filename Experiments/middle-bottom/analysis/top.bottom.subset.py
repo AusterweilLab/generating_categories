@@ -21,9 +21,15 @@ from scipy.stats import fisher_exact
 for i in ['top_used', 'bottom_used', 'top_and_bottom', 'bottom_only', 'top_only']:
 	g = stats.groupby(['condition', i]).size().reset_index()
 	c = pd.pivot_table(g, index = 'condition', columns = i, fill_value=0)
-	pval = fisher_exact(c)[1]
+	odds, pval = fisher_exact(c)
 	pval = round(pval,4)
-	print 'Fishers exact test comparing groups on: ' + i + '\t\tp = ' + str(pval)
-	print c
+	odds = round(odds,4)
+
+	S  = 'Fishers exact test comparing groups on: ' + i 
+	S +='\t\tp = ' + str(pval)
+	S +='\t\todds = ' + str(odds)
+	
+	print S
+	# print c
 
 

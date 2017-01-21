@@ -46,7 +46,7 @@ def plotgradient(h, G, alphas, betas,
 		raise Exception("G has too many dimensions. Size: " + str(G.shape))
 
 	# plot gradient
-	h.imshow(np.flipud(G), 
+	im = h.imshow(np.flipud(G), 
 		clim = clim, 
 		origin='lower', 
 		interpolation="nearest", 
@@ -70,7 +70,8 @@ def plotgradient(h, G, alphas, betas,
 	h.set_xticks([])
 	h.set_aspect('equal', adjustable='box')
 	h.axis([-0.5, G.shape[1]-0.5, -0.5, G.shape[0]-0.5])
-
+	return im
+	
 def gradientspace(coords, side):
 	"""
 	Converts a set of coordinates into integer locations within a

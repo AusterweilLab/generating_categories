@@ -26,7 +26,7 @@ stimuli = np.fliplr(np.array(list(product(vals, vals))))
 
 alphas =  [30, 32, 48, 50]
 alphas =  [12, 30, 14, 32]
-betas = [62]
+betas = [0, 9]
 
 models = [
     [CopyTweak, dict(
@@ -37,7 +37,7 @@ models = [
         )],
     [Packer, dict(
         specificity = 0.562922970884,
-        between = 1.76500997943,
+        between = -1.76500997943,
         within = 1.55628620461,
         determinism = 1.99990124401,
         )],
@@ -45,7 +45,7 @@ models = [
         category_mean_bias = 0.0167065365661,
         category_variance_bias = 1.00003245067,
         domain_variance_bias = 0.163495499745,
-        determinism = 4.10276377982,
+        determinism = 30.10276377982,
         )],
 ]
 

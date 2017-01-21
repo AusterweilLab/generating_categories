@@ -60,7 +60,7 @@ def plotlines(h, data, stats):
 	h.legend(loc="center left", fontsize = 11, frameon=False)
 
 
-fh = plt.figure(figsize = (7,2))
+fh = plt.figure(figsize = (8,2))
 plotlines(fh.gca(), df, stats)
 [i.set_linewidth(1.0) for i in fh.gca().spines.itervalues()]
 

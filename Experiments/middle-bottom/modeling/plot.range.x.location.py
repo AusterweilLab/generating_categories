@@ -39,7 +39,7 @@ model_param_pairs = [
         )],
     [Packer, dict(
         specificity = 0.562922970884,
-        between = 1.76500997943,
+        between = -1.76500997943,
         within = 1.55628620461,
         determinism = 1.99990124401,
         )],
@@ -51,7 +51,7 @@ model_param_pairs = [
         )],
 ]
 
-model_obj, params = model_param_pairs[2]
+model_obj, params = model_param_pairs[1]
 nsamples = 20
 
 # get simulated data
@@ -62,7 +62,6 @@ for i, row in stats.groupby('participant'):
 
 	# get weights
 	rs = np.array(row[['xrange','yrange']])[0]
-	rs = 1.0 / (rs + 1.0/9.0)
 	params['wts'] = rs / float(np.sum(rs))
 	# params['wts'] = np.array([0.5, 0.5])
 
@@ -83,42 +82,45 @@ simulated.loc[pd.isnull(simulated['var']),'var'] = 1.0
 simulated['size'] /= nsamples
 
 
-scatter_settings = dict(s = 185, alpha = 1.0, marker = 's', 
+scatter_settings = dict(s = 185, marker = 's', 
 			edgecolors = 'gray', linewidth = 0.5, cmap = 'PuOr',
-			vmin = -2, vmax = 2)
+			vmin = -2.0, vmax = 2.0)
 
-from scipy.interpolate import interp2d
+
+from scipy.ndimage.filters import gaussian_filter
+
 
 # plotting
 f, ax = plt.subplots(2,2,figsize = (5,5))
 for colnum, c in enumerate(pd.unique(info.condition)):
 	A = stimuli[alphas[c],:]
+	
 	for j, data in enumerate([observed, simulated]):
 		h = ax[j][colnum]
 		df = data.loc[data.condition == c]
 
 		# get x/y pos of examples
-		nums = df.stimulus.as_matrix().astype(int)
-		x = stimuli[nums,0]
-		y = stimuli[nums,1]
+		x, y = stimuli[:,0], stimuli[:,1]
 	
-		# compute color
-		n = df['size'].as_matrix()
-		sumx = df['mean'].as_matrix() * n
-		sig = df['var'].as_matrix()
-		sig[sig==0] = 0.01
-		vals  = (0.0/sig +  sumx / sig) / (1.0/sig + n/sig)
+		# compute colors
+		vals = np.zeros(nstimuli)
+		for i, row in df.groupby('stimulus'):
+			n = row['size'].as_matrix()
+			sumx = row['mean'].as_matrix() * n
+			sig = row['var'].as_matrix()
+			if sig == 0: 
+				sig = 0.001
+			vals[int(i)] = (0.0/sig +  sumx / sig) / (1.0/sig + n/sig)
 
 		print c, j, min(vals), max(vals)
-		h.scatter(x, y, c=vals, **scatter_settings)
+
+		# smoothing
+		g = utils.gradientroll(vals,'roll')
+		g = gaussian_filter(g, 0.8)
+		vals = utils.gradientroll(g,'unroll')
 		
-		# plot missing items as white squares
-		missing = [i for i in range(nstimuli) if i not in nums]
-		x = stimuli[missing,0]
-		y = stimuli[missing,1]
-		vals = [0.0 for i in missing]
 		h.scatter(x, y, c = vals, **scatter_settings)
-		
+	
 
 
 # plot alphas
@@ -137,7 +139,7 @@ for i in range(2):
 		if i==0:
 			h.set_title(j, **fontsettings)
 
-plt.tight_layout(pad=0.0, w_pad=0.3, h_pad= -4.0)
+plt.tight_layout(w_pad=0.3, h_pad= -4.0)
 f.savefig('range.x.location.png', bbox_inches='tight', transparent=False)
 
 
