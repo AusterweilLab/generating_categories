@@ -1,20 +1,24 @@
 import numpy as np
 import utils
 
-def plotclasses(h, stimuli, alphas, betas):
-	textsettings = dict(
+def plotclasses(h, stimuli, alphas, betas,
+	textsettings = None):
+
+	final_textsettings = dict(
 		verticalalignment='center', 
 		horizontalalignment='center',
 		fontsize = 11.0)
 
+	final_textsettings.update(textsettings)
+
 	h.axis(np.array([-1, 1, -1, 1])*1.2)
 	for i in alphas:
 		x, y = stimuli[i,0], stimuli[i,1]
-		h.text(x,y,'A',color = 'r', **textsettings)
+		h.text(x,y,'A',color = 'r', **final_textsettings)
 
 	for i in betas:
 		x, y = stimuli[i,0], stimuli[i,1]
-		h.text(x,y,'B',color = 'b', **textsettings)
+		h.text(x,y,'B',color = 'b', **final_textsettings)
 
 	h.set_yticks([])
 	h.set_xticks([])

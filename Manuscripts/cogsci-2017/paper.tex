@@ -56,12 +56,17 @@ In a more recent report, \citet{jern2013probabilistic} developed a hierarchical 
 
 \citet{jern2013probabilistic} reported several experiments in support of their model's predictions. In their paradigm, participants are first exposed to members from a set of known categories within a $k$-dimensional feature space (in their experiments, $k=3$). After observing the assigned examples, participants are asked to generate exemplars from a new category within the domain. Participants presented with a set of scales scales that can be used to adjust the feature values of the generated stimulus, and are given unlimited time to create each example. As in the classic \cite{ward1994structured} experiment, \citet{jern2013probabilistic} found that people generated categories possessing the same feature correlations as the known categories in the domain.
 
+The work presented by Ward \& Colleagues, as well as that of \citet{jern2013probabilistic}, undoubtedly captures a core principle of the creative use of conceptual knowledge: category generation is informed by the distributional characteristics of known concepts in the target domain. However, this work fails to describe the inverse: how do generated categories \textit{differ} from known categories? In this paper, we introduce a novel exemplar-based approach to category generation, the PACKER model (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}), which creates new categories by balancing two constraints: (1) new categories should be different from known categories (minimizing between-class similarity), and (2) new categories should be internally coherent (maximizing within-class similarity). We then report a behavioral experiment testing the predictions of the PACKER model, and report formal simulations comparing PACKER to the model proposed by \cite{jern2013probabilistic}.
 
 \section{PACKER: An Exemplar Model}
 
-The work presented by Ward \& Colleagues, as well as that of \citet{jern2013probabilistic}, undoubtedly captures a core principle of the creative use of conceptual knowledge: category generation is informed by the distributional characteristics of known concepts in the target domain. However, this work fails to describe the inverse: how do generated categories \textit{differ} from known categories? In this paper, we introduce a novel exemplar-based approach to category generation, the PACKER model (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}), which creates new categories by balancing two constraints: (1) new categories should be different from known categories (minimizing between-class similarity), and (2) new categories should be internally coherent (maximizing within-class similarity). 
-
-% Is this evident?: "we are not suggesting Jern \& Kemp have failed to capture a core aspect of generation, but that there are other properties that can be explained through one of the field's oldest traditions."
+\begin{figure*}
+    \begin{center}
+    \inputpgf{figs/}{example-prob-spaces.pgf}
+    \caption{PACKER generation of a category `B' example, following exposure to one member of category `A' and one member of category `B'. Areas in which generation is not likely are shaded white; high probability areas are shaded blue. \textit{Left}: Predictions given $\{\phi = -1$, $\gamma = 0\}$ (contrast influence only). \textit{Center}: Predictions given $\{\phi = 0$, $\gamma = 1\}$ (target influence only).  \textit{Right}: Predictions given $\{\phi = -1$, $\gamma = 1\}$ (both constraints considered).  }
+    \label{fig:example-prob-spaces}
+    \end{center}
+\end{figure*}
 
 The PACKER model is an extension of the highly influential Generalized Context Model of category learning (GCM; \citealp{nosofsky1984choice}). The model assumes that each category is represented by a collection of exemplars within in a $k$-dimensional psychological space, and that generation is constrained by both similarity to members of the target category (the category in which a stimulus is being generated) as well as similarity to members of other categories. 
 
@@ -71,6 +76,8 @@ As in the GCM, the similarity between two examples, $s(x_i, x_j)$, is defined as
 \end{equation}
 where $w_k$ is a vector of attention parameters ($\sum_k{w_k} = 1$), weighting to the importance of each feature in the similarity computation. The $c$ parameter controls the specificity of examples: larger values of $c$ produce more \textit{specific} representations (exemplars that do not generalize broadly). The attention weights are of interest in explaining individual differences in generation strategy (discussed below), but for our formal simulations they are set uniformly.
 
+% Note something about euclidean distance for integral dims?  Or is the field over that?
+
 When prompted to generate a new example, the model considers both the summed similarity to examples from other categories as well as the summed similarity to examples in the target category. More formally, the summed similarity $ss$ between generation candidate $y$ and the model's stored exemplars $x$ can be computed as:
 \begin{equation}
   ss(y, x) = \sum_j{\hat{f_j} s(y, x_j)}
@@ -78,7 +85,6 @@ When prompted to generate a new example, the model considers both the summed sim
 where $\hat{f_j}$ is a function specifying each example's degree of contribution toward generation. Although $\hat{f_j}$ may be set arbitrarily, in PACKER it is set according to class assignment. For known members of contrast categories, $\hat{f_j} = \phi$. For known members of the target category, $\hat{f_j} = \gamma$. $\phi$ and $\gamma$ are free parameters ($-\infty \leq \phi, \gamma \leq \infty$) controlling the contribution of target- and contrast-category similarity to generation. Larger absolute values for either parameter produce greater consideration of that type of similarity, with values of 0 producing no effect. Negative values produce a `repelling' effect (exemplars are less likely to be generated nearby). Conversely, positive values produce a `pulling' effect (exemplars are more likely to be generated nearby). 
 
 Because the model's main proposals are that new categories should be different from existing categories, and exemplars belonging to the same category should be similar to one another, PACKER is commonly simulated under the constraints that $\phi < 0$, $\gamma > 0$, thus, similarity to contrast categories is effectively subtracted from similarity to the target category. When $-\phi = \gamma$, negative summed similarities indicate that $y$ is more similar to members of contrast categories, and positive values indicate $y$ is more similar to members of the target category.
-
 
 The probability that a given candidate $y$ will be generated is evaluated using the \citet{luce1977choice} choice axiom. Candidates with larger summed similarity are more likely to be generated compared to candidates with smaller summed similarity:
 \begin{equation}
@@ -88,27 +94,15 @@ p(y) = \dfrac
 \end{equation}
 where $\theta$ ($\geq 0$) is a free parameter controlling overall response determinism. 
 
-
-\subsubsection{Summary.}
+\subsection{Summary}
 
 The PACKER model described above explains exemplar and category generation under the traditional exemplar-similarity approach that has guided much of the field's theoretical and empirical work for over three decades. The model proposes that people generate categories by maximizing within-category similarity and minimizing between-category similarity. See Figure \ref{fig:example-prob-spaces} for a depiction of the model's behavior.
 
-\begin{figure*}
-    \begin{center}
-    \inputpgf{figs/}{example-prob-spaces.pgf}
-    \caption{Predicted generation of a category `B' example, following exposure to one member of category `A' and one member of category `B'. Areas in which generation is not likely are shaded white; high probability areas are shaded blue. \textit{Left}: Predictions given $\{\phi = -1$, $\gamma = 0\}$ (contrast influence only). \textit{Center}: Predictions given $\{\phi = 0$, $\gamma = 1\}$ (target influence only).  \textit{Right}: Predictions given $\{\phi = -1$, $\gamma = 1\}$ (both constraints considered).  }
-    \label{fig:example-prob-spaces}
-    \end{center}
-\end{figure*}
-
-Although PACKER appeals to the well-studied exemplar framework, it remains unique as an account of conceptual generation because, unlike the accounts put forward by \citet{jern2013probabilistic} and Ward \& colleagues, it specifies precisely how generated categories should \textit{differ} from known classes in the domain. In this paper, we explore whether an exemplar-similarity approach can offer insight into the creative use of conceptual knowledge. In particular, we focus on a key difference between PACKER and previous accounts: unlike the model proposed by \citeauthor{jern2013probabilistic}, the distributional properties of known categories affects performance in PACKER only insofar as it constrains inter-exemplar similarities. Instead, the \textit{location} of known categories in the domain is crucial because it constrains remaining possible locations for new categories.
+In the sections below, we report a behavioral experiment testing a key difference between PACKER and previous accounts: unlike the model proposed by \citeauthor{jern2013probabilistic}, the distributional properties of known categories affects performance in PACKER only insofar as it constrains inter-exemplar similarities. Instead, the \textit{location} of known categories in the domain is crucial because it constrains remaining possible locations for new categories. We then report formal simulations evaluating the fit of the PACKER and \citet{jern2013probabilistic} models to our data.
 
 \section{Behavioral Experiment}
 
-The behavioral experiment described below was designed to test the prediction made that the \textit{location} of contrast categories (as opposed to their structure), influences generation. As such, our experiment manipulates only the location of the known categories within the domain (the structure of the categories is held constant). 
-
-The experiment follows the paradigm set by \citet{jern2013probabilistic}: first, participants are exposed to members of a known category (`Alpha', or `A'), and are then asked to generate exemplars belonging to a new category (`Beta', or `B'). In both conditions, members of the Alpha category are tightly clustered, with equal variance on both features and no correlation between features. See Figure \ref{fig:middle-bottom-conditions} for a depiction of the experimental conditions. Our manipulation is fairly `weak': the conditions have only a slight difference in the Y-Axis position of the Alpha category. In the `Middle' condition the Alpha category is placed in the center of the space, in the `Bottom' condition the Alpha category is placed in the bottom-center of the space. 
-
+The behavioral experiment described below was designed to test whether the \textit{location} of contrast categories (as opposed to their structure), influences generation. As such, our experiment manipulates only the location of the known categories within the domain (the structure of the categories is held constant). 
 
 \begin{figure}
     \begin{center}
@@ -118,7 +112,10 @@ The experiment follows the paradigm set by \citet{jern2013probabilistic}: first,
     \end{center}
 \end{figure}
 
-Because the distributional characteristics of the domain do not differ between the Middle and Bottom conditions, the \citet{jern2013probabilistic} model predicts that there should be no difference in the categories generated within each domain. However, the PACKER model proposes that exemplars are generated such that each category has strong within-class similarity and weak between-class similarity. By consequence, the upper areas of the stimulus space should be used for generation more frequently in the Bottom condition compared to Middle, as stimuli in this area possess weaker similarity to members of the Alpha category. Conversely, the bottom areas of the space should be less frequently used for generation in the Bottom condition compared to Middle, as stimuli in this area possess greater similarity to the Alpha category.
+The experiment follows the paradigm set by \citet{jern2013probabilistic}: first, participants are exposed to members of a known category (`Alpha', or `A'), and are then asked to generate exemplars belonging to a new category (`Beta', or `B'). In both conditions, members of the Alpha category are tightly clustered, with equal variance on both features and no correlation between features. Our manipulation is fairly `weak' (see Figure \ref{fig:middle-bottom-conditions}): the conditions have only a slight difference in the Y-Axis position of the Alpha category. In the `Middle' condition the Alpha category is placed in the center of the space, in the `Bottom' condition the Alpha category is placed in the bottom-center of the space. 
+
+Because the distributional characteristics of the domain do not differ between the Middle and Bottom conditions, the \citet{jern2013probabilistic} model predicts that there should be no difference in the categories generated within each domain. However, the PACKER model proposes that exemplars are generated such that each category has strong within-class similarity and weak between-class similarity. By consequence, the upper areas of the stimulus space should be used for generation more frequently in the Bottom condition compared to Middle, as stimuli in this area possess weaker similarity to members of the Alpha category. Conversely, the bottom areas of the space should be less frequently used for generation in the Bottom condition compared to Middle, as stimuli in this area possess greater similarity to the Alpha category. 
+% there has GOT to be a more concise way of expressing those final two sentences...
 
 \subsection{Participants \& Materials}
 
@@ -134,11 +131,11 @@ We recruited 122 participants from Amazon Mechanical Turk. All participants were
 
 \subsection{Procedure}
 
-Participants began the experiment with a short training phase (3 blocks of 4 trials), where they iteratively observed exemplars belonging to the `Alpha' category. Participants were instructed to learn as much as they can about the Alpha category, and that they would answer a series of test questions afterwards. On each trial, a single exemplar from the Alpha category was presented, and participants were given as much time as they desired before moving on. 
+Participants began the experiment with a short training phase (3 blocks of 4 trials), where they iteratively observed exemplars belonging to the `Alpha' category. Participants were instructed to learn as much as they can about the Alpha category, and that they would answer a series of test questions afterwards. On each trial, a single exemplar from the Alpha category was presented, and participants were given as much time as they desired before moving on. Participants were shown a preview of the range of possible colors and sizes prior to training.
 
 Following the training phase, participants were asked to generate four examples belonging to another category called `Beta'. Participants were instructed that members of the Beta category could be quite similar or different depending on what they think makes the most sense for the category, but that they were not allowed to make the same example twice. 
 
-As in the \citet{jern2013probabilistic} experiments, generation was completed using a sliding-scale interface. Participants were presented with two scales that could be used to change the color and size of the generated example. An on-screen preview of the example updated whenever one of the features was changed. Participants could generate any example along an evenly-spaced 9x9 grid, and they could change the example as much as they wanted before moving on. Neither the members of the Alpha category nor the previously generated Beta examples were visible during generation.
+As in the \citet{jern2013probabilistic} experiments, generation was completed using a sliding-scale interface. Participants were presented with two scales that could be used to change the color and size of the generated example. An on-screen preview of the example updated whenever one of the features was changed. Participants could generate any example along an evenly-spaced 9x9 grid, and they could change the example as much as they wanted before moving on. Neither the members of the Alpha category nor the previously generated Beta examples were visible during generation. Participants were not informed if they generated a member of the Alpha category, but could not complete the trial if they generated the same Beta two times.
 
 % % Should we bother reporting this? we never even looked at the data.
 % Following generation participants completed a generalization phase where they were asked to classify 81 stimuli sampled across the domain space (along a 9x9 grid). On each trial, a single stimulus was presented and participants were asked to classify the item into either the Alpha or Beta category. The members of the Alpha and Beta categories were presented during the generalization phase, but feedback was not provided on responses.
@@ -146,7 +143,7 @@ As in the \citet{jern2013probabilistic} experiments, generation was completed us
 
 \subsection{Results}
 
-Because the conditions differ only in their location along the vertical axis (see Figure \ref{fig:middle-bottom-conditions}), our main interest is in the generation of Beta examples above and below the contrast category. A highly detailed picture of these data is shown in Figure \ref{fig:middle-bottom-yranges}, wherein each participant's generated category is depicted in terms of its use of the vertical axis. As is evident in Figure \ref{fig:middle-bottom-yranges}, we observed a great deal of variance in generation strategy: whereas some participants generated all four Beta examples within a narrow range of the Y axis, others generated Beta examples along a fairly wide range. 
+Because the conditions differ only in their location along the vertical axis (see Figure \ref{fig:middle-bottom-conditions}), our main interest is in the generation of Beta examples above and below the contrast category. A highly detailed depiction of our results is shown in Figure \ref{fig:middle-bottom-yranges}, wherein each participant's generated category is depicted in terms of its use of the vertical axis. As is evident in Figure \ref{fig:middle-bottom-yranges}, we observed a great deal of individual differences in generation strategy: whereas some participants generated all four Beta examples within a narrow range of the Y axis, others generated Beta examples along a fairly wide range. 
 
 \begin{figure*}
     \begin{center}
@@ -156,7 +153,7 @@ Because the conditions differ only in their location along the vertical axis (se
     \end{center}
 \end{figure*}
 
-To obtain a more abstracted view of our results, we determined the number of participants in each condition who placed at least one Beta example within the top `rows' of the space (one of the top two possible Y axis values), as well as the number of participants who placed at least one example in one of the bottom rows. The resulting contingency tables data are shown in Table \ref{table:subset-table}.
+To more specifically evaluate the key predictions made by PACKER, we determined the number of participants in each condition who placed at least one Beta example within the top `rows' of the space (one of the top two possible Y axis values), as well as the number of participants who placed at least one example in one of the bottom rows. The resulting contingency tables data are shown in Table \ref{table:subset-table}.
 
 \begin{table}
 \begin{center} 
@@ -178,19 +175,37 @@ To obtain a more abstracted view of our results, we determined the number of par
 \end{table}
 
 
-Fisher's Exact Tests reveal that a greater number of participants assigned to the Middle condition generated at least one Beta example in the bottom rows of the space, $p < 0.001$. Participants in the Bottom condition were more marginally more likely to generate at least one Beta example in the top rows of the space, $p = 0.088$. The conditions did not differ in the number of participants who placed at least one Beta example in the top rows \textit{and} at least one Beta example in the bottom rows, $p = 0.14$. Finally, a greater number of Middle participants generated all four Beta examples in the bottom rows of the space, $p = 0.003$, and a greater number of Bottom participants generated all four examples in the top rows of the space, $p = 0.017$. 
+Fisher's Exact Tests reveal that a greater number of participants assigned to the Middle condition generated a Beta example in the bottom rows of the space, $p < 0.001$. Participants in the Bottom condition were more marginally more likely to generate a Beta example in the top rows of the space, $p = 0.088$. The conditions did not differ in the number of participants who placed Beta examples in the top rows \textit{and} the bottom rows, $p = 0.14$. Finally, a greater number of Middle participants generated all four Beta examples in the bottom rows of the space, $p = 0.003$, and a greater number of Bottom participants generated all four examples in the top rows of the space, $p = 0.017$. 
 
+These results are broadly supportive of PACKER's predictions, and are not predicted by existing accounts \citep[i.e.,][]{jern2013probabilistic}. However, the results described above are somewhat commonsense: they simply demonstrate that Beta examples tend to be generated in areas not occupied by the Alphas. Beyond these effects, we observed a great deal of differences in generation strategy. Figure \ref{fig:range-diff-gradient} depicts the average difference in range between the two features (e.g., horizontal -- vertical) across the participant-generated categories, with respect to the location of each category's members. These data reveal highly systematic patterns of generation: whereas many participants generated categories with more vertical range (i.e., `column'-like categories), others generated categories with horizontal range (`row'-like categories). Furthermore, these two different types of categories appear in distinct locations of the domain space. Whereas vertically aligned categories more often appear to the left or right of the Alpha class, horizontally aligned categories appear above and below the Alpha class. Thus, even beyond generating Betas in locations not occupied by the Alphas, participants appear to modify the internal structure of their categories in order to maximize distance from the Alphas.
 
-
-
+\begin{figure}[ht!]
+    \begin{center}
+    \inputpgf{figs/}{range-diff-gradient.pgf}
+    \caption{Generated category structure as a function of location in the domain space. Orange areas in each gradient correspond to stimuli that were commonly generated into category possessing greater vertical (Y-Axis) range. Purple areas correspond to categories possessing greater horizontal range. White areas correspond to equal range along both features (or infrequent generation).}
+    \label{fig:range-diff-gradient}
+    \end{center}
+\end{figure}
 
 \subsection{Summary}
 
+Our behavioral experiment revealed strong effects of the role of category location on generation. Not only are participants more likely to generate Betas in locations
 
 \section{Simulations}
+
+We conducted formal simulations to our data using the PACKER model described above, as well as a conjugate implementation of the hierarchical sampling model proposed by \citet{jern2013probabilistic}.
+
+% do we need to describe the implementation?
+
+\subsection{Model-Fitting}
+In order to obtain an overall sense of each model's ability to explain our results, we fitted each model trial-wise, maximizing the log-likelihood of the its predictions against our results. For each trial, models were initialized with the participant's Alpha category (Middle or Bottom), and the configuration of the participant's Beta category during that trial. Four parameters were fitted for the PACKER model: $c$, $\phi$, $\gamma$, and $\theta$. Likewise, four parameters were fitted to the \cite{jern2013probabilistic} model: $\kappa$, $\gamma$, $\nu$, and $\theta$. Parameters were not allowed to vary between participants or conditions -- the goal was to obtain the best-fit to our entire dataset.
+
 \section{Discussion}
+
+The creative use of conceptual knowledge is a highly intriguing yet understudied topic in category learning research. In this paper, we presented a novel exemplar-based approach to explaining category generation.
+
 \section{Acknowledgments}
-Support for this research was provided by the Office of the Vice Chancellor for Research and Graduate Education at the University of Wisconsin - Madison with funding from the Wisconsin Alumni Research Foundation. We would like to thank Kenneth J. Kurtz for helpful comments on this work.
+Support for this research was provided by the Office of the Vice Chancellor for Research and Graduate Education at the University of Wisconsin - Madison with funding from the Wisconsin Alumni Research Foundation. We would like to thank Kenneth Kurtz for helpful comments on this work. We also thank Alan Jern \& Charles Kemp for providing code and data from their experiments.
 % any other thanks?
 
 

@@ -2,6 +2,7 @@ import sqlite3, sys
 import numpy as np
 import pandas as pd
 
+from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
 
 # add modeling module
@@ -52,7 +53,7 @@ model_param_pairs = [
 ]
 
 model_obj, params = model_param_pairs[1]
-nsamples = 20
+nsamples = 50
 
 # get simulated data
 simulated = pd.DataFrame(dict(condition = [], stimulus = [], drange = []))
@@ -82,16 +83,12 @@ simulated.loc[pd.isnull(simulated['var']),'var'] = 1.0
 simulated['size'] /= nsamples
 
 
-scatter_settings = dict(s = 185, marker = 's', 
-			edgecolors = 'gray', linewidth = 0.5, cmap = 'PuOr',
-			vmin = -2.0, vmax = 2.0)
-
-
-from scipy.ndimage.filters import gaussian_filter
 
 
 # plotting
-f, ax = plt.subplots(2,2,figsize = (5,5))
+fontsettings = dict(fontsize = 10.0)
+
+f, ax = plt.subplots(2,2,figsize = (3.5,3.5))
 for colnum, c in enumerate(pd.unique(info.condition)):
 	A = stimuli[alphas[c],:]
 	
@@ -115,31 +112,38 @@ for colnum, c in enumerate(pd.unique(info.condition)):
 		print c, j, min(vals), max(vals)
 
 		# smoothing
-		g = utils.gradientroll(vals,'roll')
+		g = utils.gradientroll(vals,'roll')[:,:,0]
 		g = gaussian_filter(g, 0.8)
 		vals = utils.gradientroll(g,'unroll')
 		
-		h.scatter(x, y, c = vals, **scatter_settings)
-	
+		im = utils.plotgradient(h, g, A, [], clim = (-2, 2), cmap = 'PuOr')
 
-
-# plot alphas
-fontsettings = dict(fontsize = 12.0)
-for i in range(2):
-	for colnum, j in enumerate(pd.unique(info.condition)):
-		h = ax[i][colnum]
-		utils.plotclasses(h, stimuli, alphas[j], [])
-
+		# axis labelling
 		if colnum == 0:
-				if i== 0:
-					h.set_ylabel('Behavioral', rotation = 0, ha = 'right', **fontsettings)
-				if i == 1:
-					h.set_ylabel(model_obj.model, rotation = 0, ha = 'right', **fontsettings)
+			lab = ['Behavioral', model_obj.model][j]
+			h.set_ylabel(lab, rotation = 0, ha = 'right', va = 'center', **fontsettings)
 
-		if i==0:
-			h.set_title(j, **fontsettings)
+		if j == 0:
+			h.set_title(c, fontsize = 12.0)
+
+
+
+# add colorbar
+cbar = f.add_axes([0.375, 0.05, 0.45, 0.05])
+f.colorbar(im, cax=cbar, ticks=[-2, 2], orientation='horizontal')
+cbar.set_xticklabels([
+	'Vertically\nAligned Category', 
+	'Horizontally\nAligned Category', 
+],**fontsettings)
+cbar.tick_params(length = 0)
+
+
 
 plt.tight_layout(w_pad=0.3, h_pad= -4.0)
 f.savefig('range.x.location.png', bbox_inches='tight', transparent=False)
 
-
+import os, matplotlib
+os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
+opts = {'pgf.texsystem': 'pdflatex'}
+matplotlib.rcParams.update(opts)
+f.savefig('../../../Manuscripts/cogsci-2017/figs/range-diff-gradient.pgf', bbox_inches='tight')
