@@ -49,11 +49,6 @@ Similar results were obtained more recently in a study conducted within a tradit
 Results such as these have motivated formal accounts of generation that explicitly invoke the idea that people re-purpose existing knowledge to generate something new -- either by copying-and-tweaking an observation retrieved from memory \citep{ward2002role,ward1995s}, or by abstracting the distributional structure of categories in the domain \citep{jern2013probabilistic}.
 
 
- % An early account, which \citet{jern2013probabilistic} termed the \textit{copy-and-tweak} account, proposed that people complete the generation task by retrieving observations from memory, and slightly changing them to create something new \citep{ward2002role,ward1995s}. This account can be casted within a formal exemplar approach -- first, participants retrieve an exemplar from memory, and then slightly change its features until it is sufficiently novel. 
-
-% \citet{jern2013probabilistic} developed a hierarchical model of generation in order to explain their results. In their model, categories are represented as probability distributions in a multidimensional space (with each stimulus feature corresponding to a dimension of the space). Observed exemplars (represented as points in this space) are viewed as samples from an underlying category distribution (e.g., a multivariate normal distribution). These category distributions are in turn viewed as samples from an underlying domain distribution, which represents the common distributional characteristics among known categories (e.g., feature variance, feature correlations). When asked to generate a novel class, people are thought to sample a category distribution from the domain distribution, and then sample exemplars from the category distribution. Thus, exemplars generated into novel classes tend to obey the same distributional properties of known categories. 
-
-
 \begin{figure*}
     \begin{center}
     \inputpgf{figs/}{example-prob-spaces.pgf}
@@ -64,7 +59,7 @@ Results such as these have motivated formal accounts of generation that explicit
 
 In this paper, we introduce a novel exemplar-based approach to category generation, the PACKER model (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}), which creates new categories by balancing two constraints: (1) new categories should be different from known categories (minimizing between-class similarity), and (2) new categories should be internally coherent (maximizing within-class similarity). As such, PACKER is a significant departure from previous accounts of generation -- rather than proposing that people create new categories by re-purposing existing knowledge, PACKER explains generation exclusively in terms of the well-studied mechanics of exemplar representations and therefore possesses a rich connection to the wider body of research on category learning.
 
-In the sections below, we formally describe the PACKER model. We then explore the model's predictions using a behavioral experiment and simulations. Rather than formally evaluate PACKER on the benchmarks reviewed above, we instead focus on testing predictions made by PACKER that distinguish the model from previous approaches.
+In the sections below, we formally describe the PACKER model and explore its predictions in a behavioral experiment and simulations. Rather than formally evaluate PACKER on the benchmarks reviewed above, however, we instead focus on testing predictions made by PACKER that distinguish the model from previous approaches.
 
 
 \section{PACKER: An Exemplar Model}
@@ -87,7 +82,7 @@ When prompted to generate a new example, the model considers both the similarity
 \end{equation}
 where $\hat{f_j}$ is a function specifying each example's degree of contribution toward generation. Although $\hat{f_j}$ may be set arbitrarily, in PACKER it is set according to class assignment. For known members of contrast categories, $\hat{f_j} = \phi$. For known members of the target category, $\hat{f_j} = \gamma$. $\phi$ and $\gamma$ are free parameters ($-\infty \leq \phi, \gamma \leq \infty$) controlling the contribution of target- and contrast-category similarity to generation. Larger absolute values for either parameter produce greater consideration of that type of similarity, with values of 0 producing no effect. Negative values produce a `repelling' effect (exemplars are less likely to be generated nearby). Conversely, positive values produce a `pulling' effect (exemplars are more likely to be generated nearby). 
 
-Because the model's main proposals are that new categories should be different from existing categories, and exemplars belonging to the same category should be similar to one another, PACKER is commonly simulated under the constraints that $\phi < 0$, $\gamma > 0$, thus, similarity to contrast categories is effectively subtracted from similarity to the target category. When $-\phi = \gamma$, negative aggregate similarities indicate that $y$ is more similar to members of contrast categories, and positive values indicate $y$ is more similar to the target category.
+Because the model's main proposals are that new categories should be different from existing categories, and exemplars belonging to the same category should be similar to one another, PACKER is commonly simulated under the constraints that $\phi \leq 0$, $\gamma \geq 0$, thus, similarity to contrast categories is effectively subtracted from similarity to the target category. When $-\phi = \gamma$, negative aggregate similarities indicate that $y$ is more similar to members of contrast categories, and positive values indicate $y$ is more similar to the target category.
 
 The probability that a given candidate $y$ will be generated is evaluated using the \citet{luce1977choice} choice axiom. Candidates with larger aggregate similarity are more likely to be generated compared to candidates with smaller aggregate similarity:
 \begin{equation}
@@ -100,62 +95,98 @@ where $\theta$ ($\geq 0$) is a free parameter controlling overall response deter
 
 \subsection{Summary}
 
-The PACKER model described above explains exemplar and category generation under a traditional exemplar-similarity approach, proposing that people generate categories by maximizing within-category similarity and minimizing between-category similarity. By consequence, PACKER is unique as a model of generation in several respects. Not only does the model lack mechanisms for copying knowledge of existing categories, but it also specifies precisely how generated classes should \textit{differ} from existing ones. Thus, unlike previous accounts distributional properties of known categories affect generation only insofar as they constrain inter-exemplar similarities. Instead, the \textit{location} of known categories in the domain is crucial because it constrains remaining possible locations for new categories.
+The PACKER model described above explains exemplar and category generation under a traditional exemplar-similarity approach, proposing that people generate categories by maximizing within-category similarity and minimizing between-category similarity. These core design principles yield unique predictions about the generation. Not only does the model lack mechanisms for copying knowledge of existing categories, but it also specifies precisely how generated classes should \textit{differ} from existing ones. Thus, unlike previous accounts, distributional properties of known categories affect generation only insofar as they constrain inter-exemplar similarities. Instead, the \textit{location} of known categories in the domain is crucial because it constrains remaining possible locations for new categories.
 
 
 
 
 
 
+\section{Previous Accounts of Category Generation}
 
-\section{Alternative Models}
+As noted above, existing accounts of category generation focus primarily on explaining the phenomenon that generated categories tend to possess distributional similarities with existing categories. \citet{jern2013probabilistic} were the first (as far as we know) to conduct formal simulations on category generation. Thus, the models they considered represent the strongest alternatives to PACKER. Below, we describe in detail two of these alternatives: a \textit{copy-and-tweak} account that was initially proposed within the creative cognition literature \citep{ward2002role,ward1995s}, and the \textit{hierarchical sampling} model developed by \citet{jern2013probabilistic}.
+
 
 \subsection{Copy-and-Tweak}
-The copy-and-tweak model proposes that generation is a two-part process: first, learners retrieve a source exemplar from memory, and then they change it in some way so that the generated item is sufficiently dissimilar. In our model, the probability that a given exemplar $z$ is retrieved from memory is given by: 
+
+The \textit{copy-and-tweak} model implemented by \citet{jern2013probabilistic} instantiates one of the earliest accounts of category generation \citep[see][]{ward2002role,ward1995s}. The model proposes that generation is a two-part process: first, learners retrieve an observation from memory, and then they change it to create something new. \citet{jern2013probabilistic} interpreted this proposal in terms of a formal exemplar approach -- first, participants retrieve an exemplar from memory, and slightly change its features until it is sufficiently novel. In our implementation of the copy-and-tweak model, the probability that a given exemplar $z$ is retrieved from memory is given by: 
 
 \begin{equation}
 p(z) = exp(\hat{f}_z) / \sum_z{ exp(\hat{f}_z) }
 \end{equation}
+%
+where $\hat{f}_z$ is a function specifying each item's relative chance of being selected. As in Equation \ref{eq:packer-ss}, $\hat{f}_j$ may be set arbitrarily. However, in our simulations, $\hat{f}_z = -\gamma$ for members of contrast categories, and $\hat{f}_z = \gamma$ for members of the target category. The resulting free parameter $\gamma$ ($>0$) thus controls the relative chances that a member of the target category will be retrieved as the source. \citet{jern2013probabilistic} did not implement any mechanisms to differentially weigh retrieval probabilities, and so our model encompasses theirs as a special case when $\gamma = 0$ (uniform probabilities).
 
-$\hat{f}_z$ is a function specifying each item's relative chance of being selected. As in Equation \ref{eq:packer-ss}, $\hat{f}_j$ may be set arbitrarily. However, in our simulations, $\hat{f}_z = -\gamma$ for members of contrast categories, and $\hat{f}_z = \gamma$ for members of the target category. The resulting free parameter $\gamma$ ($>0$) thus controls the probability that a member of the target category will be retrieved from memory.
-
-After a source example is retrieved, the similarity between generation candidates $y$ and the source is computed as per Equation \ref{eq:similarity}. The model's goal is to generate an item that is similar to $z$, but exceeds a dissimilarity threshold (such that the new item is similar-but-not-too-similar). Formally, the probability that $y$ will be generated based on a source $z$, is given by:
+After a source exemplar is retrieved, the similarity between generation candidates $y$ and the source is computed as per Equation \ref{eq:similarity}. The model's goal is to generate an item that is similar to $z$, but does not exceed a given similarity threshold: the generated item should be similar-but-not-too-similar to $z$. Formally, the probability that $y$ will be generated based on a source $z$, is given by:
 
 \begin{equation}
     p(y|z)  = \dfrac
     { exp(\theta \cdot s(y,z)) g(y,z,\tau)}
     {\sum_i{exp(\theta \cdot s(y_i,z)) g(y_i,z,\tau)}} 
 \end{equation}
-where $\theta$ is a response determinism parameter. $g$ is a function specifying whether $y$ is sufficiently dissimilar to $z$. The dissimilarity threshold is specified by a free parameter, $\tau$ ($0<\tau\leq1$). $g = 1$ when $s(y,z) < \tau$ and $g = 0$ otherwise.
+% 
+where $\theta$ is a response determinism parameter. $g$ is a function specifying whether $y$ exceeds the similarity threshold, $\tau$, which is treated as a free parameter ($0<\tau\leq1$). $g = 1$ when $s(y,z) < \tau$ and $g = 0$ otherwise. \citet{jern2013probabilistic} did not implement any similarity threshold mechanism, thus, their model is a special case when $\tau = 1$ (any exemplar may be selected).
 
 To obtain predictions not depending on a given source example, the model's predictions can be aggregated over all possible sources:
 
 \begin{equation}
   p(y) = \sum_z{p(z)p(y|z) }
 \end{equation}
-
+% 
 Thus, the probability that an example $y$ will be selected is a function of its similarity to each of the possible sources, as well as the probability each source will be retrieved.
 
 
 \subsection{Hierarchical Sampling}
 
-In the \cite{jern2013probabilistic} model, examples are viewed as samples of an underlying category distribution, which is in turn viewed as a sample of an underlying domain distribution. As in the implementation reported by \cite{jern2013probabilistic}, we assume that exemplars are distributed according to a multivariate normal distribution with parameters ($\mu, \Sigma$). To obtain a conjugate model, we assume that the domain of categories is inverse-Wishart distributed. Space does not allow for a full derivation of this model, and so we will simply report how generated category parameters ($\mu_B, \Sigma_B$) are inferred.
+\citet{jern2013probabilistic} reported several experiments revealing systematic flaws in the copy-and-tweak account. Instead, their results supported a hierarchical sampling model, in where categories are represented as probability distributions in a multidimensional space, with each stimulus feature corresponding to a dimension of the space. Observed exemplars (represented as points in this space) are viewed as samples from their underlying category distribution (e.g., a multivariate normal distribution). These category distributions are in turn viewed as samples from an underlying domain distribution, which represents the common distributional characteristics among known categories (e.g., feature variance, feature correlations). When asked to generate a novel class, people are thought to sample a category distribution from the domain distribution, and then sample exemplars from the category distribution. Thus, exemplars generated into novel classes tend to obey the same distributional properties of known categories. 
 
+As in the implementation reported by \cite{jern2013probabilistic}, we assume that each category's exemplars are distributed according to a multivariate normal distribution with parameters ($\mu, \Sigma$). To obtain a conjugate model, we assume that the domain of categories is inverse-Wishart distributed. Space does not allow for a full derivation of this model, and so we will simply report how the target category parameters ($\mu_B, \Sigma_B$) are inferred.
 
+The \citet{jern2013probabilistic} implementation does not assume anything about the central tendency of categories, and in their model generated $\mu_B$ are sampled uniformly across all possible values. Thus, we infer $\mu_B$ with:
 
-% do we need to describe the implementation?
+\begin{equation}
+  \mu_B = \dfrac
+    {\kappa\mu_{0} + n_B \bar{x_B}}
+    {\kappa + n_B}
+    \label{eq:hs_mus}
+\end{equation}
+% 
+where $\mu_0$ is the prior on $\mu_B$. Because \citet{jern2013probabilistic} sample $\mu_B$ uniformly, we set $\mu_0$ to the center of the domain space. $\kappa$ ($>0$) is a free parameter, weighting the importance of $\mu_0$. $n_B$ and $\bar{x_B}$ are the target category sample size and mean, respectively.In the case where the target class is populated (i.e., $n_B > 0$), $\mu_{B}$ ends up lying somewhere between $\mu_{0}$ and $\bar{x_y}$, depending on $\kappa$ and $n_B$. When the target class has no members, Equation \ref{eq:hs_mus} reduces to $\mu_{B} = \mu_{0}$. Because we set $\mu_0$ to the center of the space, this outcome is the same as if we had integrated over all possible $\mu_0$.
 
+Unlike $\mu_B$, $\Sigma_B$ cannot be computed considering only the members of the target category. Instead, $\Sigma_B$ is influenced both by the distribution of the members of the target category as well as members of other categories through the domain distribution, $\Sigma_D$. In our implementation, $\Sigma_D$ is inferred based on the observed (empirical)  covariance matrices of the known categories in the domain, $C$. We assume these covariance matrices to be Wishart-distributed, and so $\Sigma_D$ can be computed as:
 
+\begin{equation}
+    \Sigma_D = \Sigma_0 + \sum_{i}{C_i}
+\end{equation}
+%
+where $\Sigma_{0}$ is a $k$-by-$k$ prior covariance matrix. We use a $k$-dimensional identity matrix $I_k$ multiplied element-wise against a free parameter, $\rho$, controlling the amount of variance assumed by the prior, $\Sigma_0 =  I_k\rho$. Thus, categories are assumed to have some degree of variance along each feature (specified by $\rho$), but are not assumed to possess feature-feature correlations.
 
+Finally, assuming $(\mu_B, \Sigma_B)$ are Normal-Inverse-Wishart distributed, $\Sigma_B$ can be computed as:
 
+\begin{equation}
+  \Sigma_B = [\Sigma_D \nu + C_B +
+    \dfrac
+    {\kappa n_B}
+    {\kappa + n_B}
+    (\bar{x_B}-\mu_B)(\bar{x_B}-\mu_B)^T
+  ] (\nu + n_B)^{-1}
+  \label{eq:Sigma_B}
+\end{equation}
+%
+where $\nu$ ($>k-1$) is an additional free parameter weighting the importance of $\Sigma_{D}$. When the target category has no members, Equation \ref{eq:Sigma_B} reduces to $\Sigma_B = \Sigma_D$. 
 
+Generated exemplars are then assumed to be drawn from the multivariate normal distribution specified by $(\mu_{B}, \Sigma_{B})$. Thus, $p(y)$ can be computed as:
 
-
-
+\begin{equation}
+  p(y) = \dfrac
+    {exp( \theta \cdot Normal(y, \mu_{B}, \Sigma_{B}))}
+    {\sum_i exp( \theta \cdot Normal(y_i, \mu_{B}, \Sigma_{B}))} 
+\end{equation}
+\
+where $\theta$ is a response determinism parameter.
 
 \section{Behavioral Experiment}
 
-The PACKER model predicts
 The behavioral experiment described below was designed to test whether the \textit{location} of contrast categories (as opposed to their structure), influences generation. The experiment follows the paradigm developed by \citet{jern2013probabilistic}: first, participants are exposed to members of a known category (`Alpha', or `A'), and are then asked to generate exemplars belonging to a new category (`Beta', or `B'). 
 
 We developed two Alpha categories (see Figure \ref{fig:middle-bottom-conditions}), instantiating the two conditions of the experiment. In both conditions, members of the Alpha category are tightly clustered, with equal variance on both features and no correlation between features. Our manipulation is fairly `weak': the conditions have only a slight difference in the Y-Axis position of the Alpha category. In the `Middle' condition the Alpha category is placed in the center of the space, in the `Bottom' condition the Alpha category is placed in the bottom-center of the space. 
