@@ -57,4 +57,4 @@ import os, matplotlib
 os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
 opts = {'pgf.texsystem': 'pdflatex'}
 matplotlib.rcParams.update(opts)
-f.savefig('../../../Manuscripts/cogsci-2017/figs/example-prob-spaces.pgf', bbox_inches='tight')
+f.savefig('../../../Manuscripts/cogsci-2017/figs/example-prob-spaces.pgf', bbox_inches='tight', pad_inches=0.0)

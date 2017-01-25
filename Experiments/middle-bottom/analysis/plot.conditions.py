@@ -26,4 +26,4 @@ os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
 opts = {'pgf.texsystem': 'pdflatex'}
 matplotlib.rcParams.update(opts)
 f.savefig('../../../Manuscripts/cogsci-2017/figs/middle-bottom-conditions.pgf',
-	bbox_inches='tight', transparent=False)
+	bbox_inches='tight', transparent=False,  pad_inches=0.0)

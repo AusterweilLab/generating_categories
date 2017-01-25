@@ -26,7 +26,7 @@ for o in [CopyTweak, Packer, ConjugateJK13]:
 
 	# edit for model specific ranges
 	if o == CopyTweak:
-		inits[1] = inits[1] - 1.5 # within pref could be positive or negative
+		# inits[1] = inits[1] - 1.5 # within pref could be positive or negative
 		inits[2] = inits[2] - 1.0 # tolerance is [0 1]
 
 	if o == ConjugateJK13:

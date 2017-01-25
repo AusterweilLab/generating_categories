@@ -9,7 +9,8 @@ def plotclasses(h, stimuli, alphas, betas,
 		horizontalalignment='center',
 		fontsize = 11.0)
 
-	final_textsettings.update(textsettings)
+	if textsettings is not None:
+		final_textsettings.update(textsettings)
 
 	h.axis(np.array([-1, 1, -1, 1])*1.2)
 	for i in alphas:
@@ -58,7 +59,7 @@ def plotgradient(h, G, alphas, betas,
 	)
 
 	# show annotations
-	textsettings = dict(va = 'center', ha = 'center', fontsize = 12.0)
+	textsettings = dict(va = 'center', ha = 'center', fontsize = 10.0)
 
 	coords = gradientspace(alphas, G.shape[0])
 	for j in range(coords.shape[0]):

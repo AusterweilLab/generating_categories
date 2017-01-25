@@ -66,7 +66,7 @@ In the sections below, we formally describe the PACKER model and explore its pre
 
 The PACKER model is an extension of the highly influential Generalized Context Model of category learning (GCM; \citealp{nosofsky1984choice}). The model assumes that each category is represented by a collection of exemplars within in a $k$-dimensional psychological space, and that generation is constrained by both similarity to members of the target category (the category in which a stimulus is being generated) as well as similarity to members of other categories. 
 
-As in the GCM, the similarity between two examples, $s(x_i, x_j)$, is defined as an inverse-exponential function of distance:
+As in the GCM, the similarity between two examples, $s(x_i, x_j)$, is an inverse-exponential function of distance:
 \begin{equation}
   s(x_i,x_j) = exp( -c \sum_{k}{|x_{ik} - x_{jk}|}w_k )
   \label{eq:similarity}
@@ -95,7 +95,7 @@ where $\theta$ ($\geq 0$) is a free parameter controlling overall response deter
 
 The PACKER model described above explains exemplar and category generation under a traditional exemplar-similarity approach, proposing that people generate categories by maximizing within-category similarity and minimizing between-category similarity. The underlying processes assumed by PACKER are highly similar to those in the GCM \citep{nosofsky1984choice}, with the only alteration being that the model's response is a function of the $a$ metric, which is the aggregate of potentially counteracting similarities (positive or negative values), rather than the relative summed similarity assumed in the original model.
 
-In a later section, we will explore the unique predictions yielded by these design principles. First, however, we contrast PACKER with existing approaches in the field. 
+In later sections, we will explore the unique predictions yielded by these design principles. First, however, we contrast PACKER with existing approaches in the field. 
 
 
 \section{Previous Accounts of Category Generation}
@@ -111,7 +111,7 @@ The \textit{copy-and-tweak} model implemented by \citet{jern2013probabilistic} i
 p(z) = exp(\hat{f}_z) / \sum_z{ exp(\hat{f}_z) }
 \end{equation}
 %
-where $\hat{f}_z$ is a function specifying each item's relative chance of being selected. As in Equation \ref{eq:packer-ss}, $\hat{f}_j$ may be set arbitrarily. However, in our simulations, $\hat{f}_z = -\gamma$ for members of contrast categories, and $\hat{f}_z = \gamma$ for members of the target category. The resulting free parameter $\gamma$ ($>0$) thus controls the relative chances that a member of the target category will be retrieved as the source. \citet{jern2013probabilistic} did not implement any mechanisms to differentially weigh retrieval probabilities, and so our model encompasses theirs as a special case when $\gamma = 0$ (uniform probabilities).
+where $\hat{f}_z$ is a function specifying each item's relative chance of being selected. As in Equation \ref{eq:packer-ss}, $\hat{f}_j$ may be set arbitrarily. However, in our simulations, $\hat{f}_z = -\lambda$ for members of contrast categories, and $\hat{f}_z = \lambda$ for members of the target category. The resulting free parameter $\lambda$ ($>0$) thus controls the relative chances that a member of the target category will be retrieved as the source. \citet{jern2013probabilistic} did not implement any mechanisms to differentially weigh retrieval probabilities, and so our model encompasses theirs as a special case when $\lambda = 0$ (uniform probabilities).
 
 After a source exemplar is retrieved, the similarity between generation candidates $y$ and the source is computed as per Equation \ref{eq:similarity}. The model's goal is to generate an item that is similar to $z$, but does not exceed a given similarity threshold: the generated item should be similar-but-not-too-similar to $z$. Formally, the probability that $y$ will be generated based on a source $z$, is given by:
 
@@ -205,6 +205,15 @@ More generally, the PACKER model proposes that the probability a stimulus $y$ wi
 
 We recruited 122 participants from Amazon Mechanical Turk. All participants were located in the United States. 61 Participants were assigned to the `Middle' condition, 61 were assigned to the `Bottom' condition. Stimuli were squares varying in color (RGB 25--230) and size (3.0--5.8cm). The assignment of perceptual features (color, size) to axes of the domain space (x, y) was counterbalanced across participants.
 
+\begin{figure}[ht!]
+    \begin{center}
+    \inputpgf{figs/}{beta.samples.pgf}
+    \caption{Sample generated categories. }
+    \label{fig:beta.samples}
+    \end{center}
+\end{figure}
+
+
 \subsection{Procedure}
 
 Participants began the experiment with a short training phase (3 blocks of 4 trials), where they observed exemplars belonging to the `Alpha' category. Participants were instructed to learn as much as they can about the Alpha category, and that they would answer a series of test questions afterwards. On each trial, a single Alpha category exemplar was presented, and participants were given as much time as they desired before moving on. Exemplars were randomly ordered within each block. Participants were shown a preview of the range of possible colors and sizes prior to training.
@@ -213,25 +222,18 @@ Following the training phase, participants were asked to generate four examples 
 
 As in the \citet{jern2013probabilistic} experiments, generation was completed using a sliding-scale interface. Participants were presented with two scales that could be used to change the color and size of the generated example. An on-screen preview of the example updated whenever one of the features was changed. Participants could generate any example along an evenly-spaced 9x9 grid, and they could change the example as much as they wanted before moving on. Neither the members of the Alpha category nor the previously generated Beta examples were visible during generation. Participants were not informed if they generated a member of the Alpha category, but could not complete the trial if they generated the same Beta two times.
 
+
 % % Should we bother reporting this? we never even looked at the data.
 % Following generation participants completed a generalization phase where they were asked to classify 81 stimuli sampled across the domain space (along a 9x9 grid). On each trial, a single stimulus was presented and participants were asked to classify the item into either the Alpha or Beta category. The members of the Alpha and Beta categories were presented during the generalization phase, but feedback was not provided on responses.
 
 
 \subsection{Results}
 
-Because the conditions differ only in their location along the y-axis (see Figure \ref{fig:middle-bottom-conditions}), our main interest is in the generation of Beta examples above and below the contrast category. Several sample Beta categories are depicted in Figure \textbf{???????}. As is evident in Figure \textbf{???????}, we observed a great deal of individual differences in generation strategy: whereas some participants generated all four Beta examples within a narrow range, others generated Beta examples along a fairly wide range. 
 
-\begin{figure}
-    \begin{center}
-    \inputpgf{figs/}{distance.figs.pgf}
-    \caption{Behavioral results. \textit{Top}: Frequency of exemplar generation as a function of distance from the center of the Alpha category. \textit{Bottom}: Relation between average within- and Between-category distance for every participant. }
-    \label{fig:distance.figs}
-    \end{center}
-\end{figure}
+Because the conditions differ only in their location along the y-axis (see Figure \ref{fig:middle-bottom-conditions}), our main interest is in the generation of Beta examples above and below the contrast category. Several sample Beta categories are depicted in Figure \ref{fig:beta.samples}. As is evident in Figure \ref{fig:beta.samples}, we observed a great deal of individual differences in generation strategy: whereas some participants generated all four Beta examples within a narrow y-axis range, others generated Beta examples along a wide range. 
 
 
-
-To more specifically evaluate the key predictions made by PACKER, we determined the number of participants in each condition who placed at least one Beta example within the top `rows' of the space (one of the top two possible Y axis values), as well as the number of participants who placed at least one example in one of the bottom rows. The resulting contingency tables data are shown in Table \ref{table:subset-table}.
+To more specifically evaluate the key predictions made by PACKER, we determined the number of participants in each condition who placed at least one Beta example on the top `row' of the space (the maximum possible y-axis value), as well as the number of participants who placed at least one example on the bottom row. The resulting contingencies data are shown in Table \ref{table:subset-table}. Fisher's Exact Tests on these data reveal that a greater number of participants assigned to the Middle condition generated a Beta example in the bottom row of the space, $p < 0.001$, but the conditions did not differ in use of the top of the space, $p = 0.16$. A greater number of participants in the Middle condition placed Beta examples in the top rows \textit{and} the bottom rows, $p = 0.038$. 
 
 \begin{table}
 \begin{center} 
@@ -239,25 +241,68 @@ To more specifically evaluate the key predictions made by PACKER, we determined 
 \label{table:subset-table} 
 \vskip 0.12in
 \begin{tabular}{ l r r}
-    \textbf{Middle}         & Used top rows & No top rows \\
+    \textbf{Middle}         & Used top row & No top row \\
     \hline
-    Used bottom rows        &  31 & 18  \\
-    No bottom rows          &  11 &  1  \\
+    Used bottom rows       &  28 & 18  \\
+    No bottom row          &  11 &  4  \\
     \\
-    \textbf{Bottom}         & Used top rows & No top rows \\
+    \textbf{Bottom}         & Used top row & No top row \\
     \hline
-    Used bottom rows        & 22 & 8 \\
-    No bottom rows          & 29 & 2 \\
+    Used bottom row        & 16 & 8 \\
+    No bottom row          & 31 & 6 \\
 \end{tabular}
 \end{center} 
 \end{table}
 
 
-Fisher's Exact Tests reveal that a greater number of participants assigned to the Middle condition generated a Beta example in the bottom rows of the space, $p < 0.001$. Participants in the Bottom condition were more marginally more likely to generate a Beta example in the top rows of the space, $p = 0.088$. The conditions did not differ in the number of participants who placed Beta examples in the top rows \textit{and} the bottom rows, $p = 0.14$. Finally, a greater number of Middle participants generated all four Beta examples in the bottom rows of the space, $p = 0.003$, and a greater number of Bottom participants generated all four examples in the top rows of the space, $p = 0.017$. 
+The top panel of Figure \ref{fig:distance.figs} displays the stimulus generation frequency as a function of distance from the center of the Alpha category. There was a strong preference for stimuli that are dissimilar to the members of the Alpha category: maximally distant items were by far the most frequently generated. The bottom panel of Figure \ref{fig:distance.figs} depicts for each participant the distance between exemplars, within- and between-categories. As observed by \citet{ward1994structured}, most people generated Beta categories in which members are closer to one another than they are to members of the Alpha category. We did however, observe a notable subset of individuals with greater within-class distance. Inspection of these individuals reveals that they tended to adopted a `corners' approach, in which a Beta examples were placed almost exclusively in the furthest corners of the space, thereby producing more within-class distance.
+ 
 
-These results are broadly supportive of PACKER's predictions, and are not predicted by existing accounts \citep[i.e.,][]{jern2013probabilistic}. However, the results described above are somewhat commonsense: they simply demonstrate that Beta examples tend to be generated in areas not occupied by the Alphas. Beyond these effects, we observed a great deal of differences in generation strategy. Figure \ref{fig:range-diff-gradient} depicts the average difference in range between the two features (e.g., horizontal -- vertical) across the participant-generated categories, with respect to the location of each category's members. These data reveal highly systematic patterns of generation: whereas many participants generated categories with more vertical range (i.e., `column'-like categories), others generated categories with horizontal range (`row'-like categories). Furthermore, these two different types of categories appear in distinct locations of the domain space. Whereas vertically aligned categories more often appear to the left or right of the Alpha class, horizontally aligned categories appear above and below the Alpha class. Thus, even beyond generating Betas in locations not occupied by the Alphas, participants appear to modify the internal structure of their categories in order to maximize distance from the Alphas.
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{distance.figs.pgf}
+    \caption{Behavioral results. \textit{Top}: Frequency of exemplar generation as a function of distance from the center of the Alpha category. \textit{Bottom}: Relation between average within- and between-category distance for every participant. }
+    \label{fig:distance.figs}
+    \end{center}
+\end{figure}
 
-\begin{figure}[ht!]
+
+\subsection{Summary}
+
+Our results are broadly supportive of PACKER's predictions: people prefer to generate items that are maximally dissimilar from members of the Alpha category, and they tended to generate categories possessing greater within-class similarity than between-class similarity (with some notable exceptions, see Figure \ref{fig:distance.figs}). By consequence, we observed considerable differences in generation between the Middle and Bottom conditions: participants in the Bottom condition were less likely to use the bottom row of the stimulus space for generation, and participants in the Middle condition were more likely to create categories spanning the entire y-axis (utilizing the top and bottom row of the space). This latter result is especially interesting, as it shows that qualitatively different types of categories are generated, depending on only the location of the Alphas in the domain.
+
+The results described above are somewhat commonsense: they simply demonstrate that the location (rather than distributional structure) of existing categories imposes constraints on generation because people tend to generate examples in areas not occupied by existing categories. This principle, however, is not predicted by existing models of generation -- these models are instead designed to explain distributional correspondences between generated and existing categories.  
+
+
+\section{Simulations}
+
+We conducted formal simulations to our data using the PACKER, copy-and-tweak, and hierarchical sampling models described above. In order to obtain an overall sense of each model's ability to explain our results, we fitted each model trial-wise, using a hill-climbing algorithm to maximize the log-likelihood of the model's predictions against our results. For each trial, models were initialized with the participant's Alpha category (Middle or Bottom), and the configuration of the participant's Beta category during that trial. 
+
+Four free parameters were fitted in each model. The $c$, $\phi$, $\gamma$, and $\theta$ parameters were fitted for PACKER; $c$, $\lambda$, $\tau$, and $\theta$ were fitted for the copy-and-tweak model, and $\kappa$, $\rho$, $\nu$, and $\theta$ were fitted for the hierarchical sampling model. Note that each model possess as $\theta$ parameter fulfilling the same role (response determinism), and PACKER shares with copy-and-tweak a specificity parameter, $c$. Parameters were not allowed to vary between participants or conditions -- the goal was to obtain the best-fitting values to our entire dataset.
+
+\begin{table}
+\centering
+\caption{Model-fitting results.}
+\label{table:model-fits}
+\begin{tabular}{ l l l}
+\\
+ \textbf{PACKER} & \textbf{Copy \& Tweak} & \textbf{Hierarchical} \\
+ & & \textbf{Sampling} \\ \hline
+ $L = -1733$ & $L = -2040$ & $L = -2055$  \\ 
+ $c=0.56$ & $c=9.445$  & $\kappa<0.001$\\
+$\phi=-21.2$& $\lambda=15.115$ & $\rho=1.001$ \\ 
+$\gamma=18.707$  & $\tau=0.415$ & $\nu=0.451$  \\ 
+ $\theta=0.166$  & $\theta=7.068$ & $\theta=6.137$  \\ 
+\end{tabular}
+\end{table}
+
+Each model's best-fitting parameterization is shown in Table \ref{table:model-fits}. Overall, PACKER outperformed copy-and-tweak and the hierarchical sampling model by a considerable margin. The parameter settings associated with PACKER's best fit are exactly as expected: a strong preference for items that are similar to members of the target category but are dissimilar to members of the contrast category. A similar pattern of results was obtained when each participant's first trial was excluded (i.e., when the target category has no members).
+
+
+
+\subsection{Category structure \& location}
+
+\begin{figure}
     \begin{center}
     \inputpgf{figs/}{range-diff-gradient.pgf}
     \caption{Generated category structure as a function of location in the domain space. Orange areas in each gradient correspond to stimuli that were commonly generated into category possessing greater vertical (Y-Axis) range. Purple areas correspond to categories possessing greater horizontal range. White areas correspond to equal range along both features (or infrequent generation).}
@@ -265,17 +310,9 @@ These results are broadly supportive of PACKER's predictions, and are not predic
     \end{center}
 \end{figure}
 
-\subsection{Summary}
 
-Our behavioral experiment revealed strong effects of the role of category location on generation. Not only are participants more likely to generate Betas in locations
+% Beyond these effects, we observed a great deal of differences in generation strategy. Figure \ref{fig:range-diff-gradient} depicts the average difference in range between the two features (e.g., horizontal -- vertical) across the participant-generated categories, with respect to the location of each category's members. These data reveal highly systematic patterns of generation: whereas many participants generated categories with more vertical range (i.e., `column'-like categories), others generated categories with horizontal range (`row'-like categories). Furthermore, these two different types of categories appear in distinct locations of the domain space. Whereas vertically aligned categories more often appear to the left or right of the Alpha class, horizontally aligned categories appear above and below the Alpha class. Thus, even beyond generating Betas in locations not occupied by the Alphas, participants appear to modify the internal structure of their categories in order to maximize distance from the Alphas.
 
-\section{Simulations}
-
-We conducted formal simulations to our data using the PACKER model described above, as well as an exemplar-based \textit{copy-and-tweak} model, and conjugate implementation of the hierarchical sampling model proposed by \citet{jern2013probabilistic}. Below, we briefly describe the formal basis of the copy-and-tweak and hierarchical sampling models.
-
-
-\subsection{Model-Fitting}
-In order to obtain an overall sense of each model's ability to explain our results, we fitted each model trial-wise, maximizing the log-likelihood of the its predictions against our results. For each trial, models were initialized with the participant's Alpha category (Middle or Bottom), and the configuration of the participant's Beta category during that trial. Four parameters were fitted for the PACKER model: $c$, $\phi$, $\gamma$, and $\theta$. Likewise, four parameters were fitted to the \cite{jern2013probabilistic} model: $\kappa$, $\gamma$, $\nu$, and $\theta$. Parameters were not allowed to vary between participants or conditions -- the goal was to obtain the best-fit to our entire dataset.
 
 \section{Discussion}
 

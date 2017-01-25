@@ -111,8 +111,10 @@ alphas = pd.DataFrame(dict(
 ))
 
 # compute beta category betastats for each participant
-bottom_nums = range(18)
-top_nums = range(63,81)
+# bottom_nums = range(18)
+# top_nums = range(63,81)
+bottom_nums = range(9)
+top_nums = range(72,81)
 betastats = []
 for pid, rows in generation.groupby('participant'):
 

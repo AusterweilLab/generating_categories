@@ -29,70 +29,72 @@ observed = observed.groupby(['condition','stimulus'])['drange'].agg(['mean', 'va
 observed = observed.reset_index()
 observed.loc[pd.isnull(observed['var']),'var'] = 1.0
 
+nsamples = 50
 
-# params for PACKER
-model_param_pairs = [
-    [CopyTweak, dict(
+
+model_param_pairs = {
+    'Copy and\nTweak': [CopyTweak, dict(
         specificity = 9.4486327043,
         within_pref = 17.0316650379,
         tolerance = 0.403108523886,
         determinism = 7.07038770338,
         )],
-    [Packer, dict(
+    'PACKER': [Packer, dict(
         specificity = 0.562922970884,
         between = -1.76500997943,
         within = 1.55628620461,
         determinism = 1.99990124401,
         )],
-    [ConjugateJK13, dict(
+    'Heirarchical\nSampling': [ConjugateJK13, dict(
         category_mean_bias = 0.0167065365661,
         category_variance_bias = 1.00003245067,
         domain_variance_bias = 0.163495499745,
         determinism = 2.10276377982,
         )],
-]
+}
 
-model_obj, params = model_param_pairs[1]
-nsamples = 50
+all_data = dict(Behavioral = observed)
+for k, (model_obj, params) in model_param_pairs.items():
+	print 'Running: ' + model_obj.model
+	model_data = pd.DataFrame(dict(condition = [], stimulus = [], drange = []))
 
-# get simulated data
-simulated = pd.DataFrame(dict(condition = [], stimulus = [], drange = []))
-for i, row in stats.groupby('participant'):
-	pcond = info.loc[info.participant == i, 'condition'].iloc[0]
-	As = stimuli[alphas[pcond],:]
+	for i, row in stats.groupby('participant'):
+		pcond = info.loc[info.participant == i, 'condition'].iloc[0]
+		As = stimuli[alphas[pcond],:]
 
-	# get weights
-	rs = np.array(row[['xrange','yrange']])[0]
-	params['wts'] = rs / float(np.sum(rs))
-	# params['wts'] = np.array([0.5, 0.5])
+		# get weights
+		rs = np.array(row[['xrange','yrange']])[0]
+		params['wts'] = rs / float(np.sum(rs))
+		# params['wts'] = np.array([0.5, 0.5])
 
-	model = model_obj([As], params)
-	for j in range(nsamples):	
-		nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
-		model.forget_category(1)
+		model = model_obj([As], params)
+		for j in range(nsamples):	
+			nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
+			model.forget_category(1)
 
-		ranges = np.ptp(stimuli[nums,:], axis = 0)
-		drange = ranges[0] - ranges[1]
+			ranges = np.ptp(stimuli[nums,:], axis = 0)
+			drange = ranges[0] - ranges[1]
 
-		rows = dict(condition = [pcond] *4, stimulus = nums, drange = [drange] *4)
-		simulated = simulated.append(pd.DataFrame(rows), ignore_index = True)
+			rows = dict(condition = [pcond] *4, stimulus = nums, drange = [drange] *4)
+			model_data = model_data.append(pd.DataFrame(rows), ignore_index = True)
 
-simulated = simulated.groupby(['condition','stimulus'])['drange'].agg(['mean', 'var', 'size'])
-simulated = simulated.reset_index()
-simulated.loc[pd.isnull(simulated['var']),'var'] = 1.0
-simulated['size'] /= nsamples
+		print '\t' + str(i)
 
-
+	model_data = model_data.groupby(['condition','stimulus'])['drange'].agg(['mean', 'var', 'size'])
+	model_data = model_data.reset_index()
+	model_data.loc[pd.isnull(model_data['var']),'var'] = 1.0
+	model_data['size'] /= nsamples
+	all_data[k] = model_data
 
 
 # plotting
-fontsettings = dict(fontsize = 10.0)
+fontsettings = dict(fontsize = 9.0)
 
-f, ax = plt.subplots(2,2,figsize = (3.5,3.5))
+f, ax = plt.subplots(4,2,figsize = (3.3,5.5))
 for colnum, c in enumerate(pd.unique(info.condition)):
 	A = stimuli[alphas[c],:]
 	
-	for j, data in enumerate([observed, simulated]):
+	for j, (lab, data) in enumerate(sorted(all_data.items())):
 		h = ax[j][colnum]
 		df = data.loc[data.condition == c]
 
@@ -120,16 +122,15 @@ for colnum, c in enumerate(pd.unique(info.condition)):
 
 		# axis labelling
 		if colnum == 0:
-			lab = ['Behavioral', model_obj.model][j]
 			h.set_ylabel(lab, rotation = 0, ha = 'right', va = 'center', **fontsettings)
 
 		if j == 0:
-			h.set_title(c, fontsize = 12.0)
+			h.set_title(c, fontsize = 10.0)
 
 
 
 # add colorbar
-cbar = f.add_axes([0.375, 0.05, 0.45, 0.05])
+cbar = f.add_axes([0.38, -0.01, 0.45, 0.05])
 f.colorbar(im, cax=cbar, ticks=[-2, 2], orientation='horizontal')
 cbar.set_xticklabels([
 	'Vertically\nAligned Category', 
@@ -139,11 +140,11 @@ cbar.tick_params(length = 0)
 
 
 
-plt.tight_layout(w_pad=0.3, h_pad= -4.0)
+plt.tight_layout(w_pad=1.6, h_pad= -1.6)
 f.savefig('range.x.location.png', bbox_inches='tight', transparent=False)
 
 import os, matplotlib
 os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
 opts = {'pgf.texsystem': 'pdflatex'}
 matplotlib.rcParams.update(opts)
-f.savefig('../../../Manuscripts/cogsci-2017/figs/range-diff-gradient.pgf', bbox_inches='tight')
+f.savefig('../../../Manuscripts/cogsci-2017/figs/range-diff-gradient.pgf', bbox_inches='tight', pad_inches=0.0)

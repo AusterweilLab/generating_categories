@@ -34,8 +34,9 @@ for c in pd.unique(info.condition):
 
 
 
-fh, ax = plt.subplots(2,1,figsize = (3.5,5.5))
-condition_styles = dict(Middle = 'r-o', Bottom = 'b-s')
+fh, ax = plt.subplots(2,1,figsize = (3.5,4.6))
+styles = dict(Middle = '-o', Bottom = '-s')
+colors = dict(Middle = 'orange', Bottom = 'purple')
 
 h = ax[0]
 for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
@@ -54,7 +55,7 @@ for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
 
 	x = x - min(x)
 	x = x / max(x)
-	h.plot(x, y, condition_styles[c], alpha = 0.7, label = c)
+	h.plot(x, y, styles[c], color = colors[c], alpha = 0.7, label = c)
 
 h.xaxis.grid(False)
 h.set_xticks([])
@@ -62,18 +63,22 @@ h.legend(loc = 'upper left', frameon = True, framealpha = 1)
 
 
 xax = h.axis()
-h.text(xax[0],xax[2] -1, 'Min Distance', fontsize = 10, va = 'top')
-h.text(xax[1],xax[2] -1, 'Max Distance', fontsize = 10, va = 'top', ha = 'right')
-
-h.set_ylabel('Generations Per Stimulus')
+h.text(xax[0],xax[2] -1, 'Min Distance', fontsize = 9, va = 'top')
+h.text(xax[1],xax[2] -1, 'Max Distance', fontsize = 9, va = 'top', ha = 'right')
+h.set_yticks(np.arange(0,35, 5))
+h.set_yticklabels(np.arange(0,35, 5),fontsize = 9)
+h.set_ylabel('Generations Per Stimulus', fontsize = 10)
 
 
 h = ax[1]
-condition_styles = dict(Middle = 'ro', Bottom = 'bs')
-h.plot([0,2],[0,2], '--', color = 'gray', linewidth = 0.5, label = 'Within = Between')
+styles = dict(Middle = 'o', Bottom = 's')
+colors = dict(Middle = 'orange', Bottom = 'purple')
+h.plot([0,2],[0,2], '--', color = 'gray', linewidth = 0.5, label = 'Within $=$ Between')
+
 for c, rows in stats.groupby('condition'):
-	h.plot(rows.within, rows.between, condition_styles[c], 
-		alpha = 0.5, label = c)
+	h.plot(rows.within, rows.between, styles[c], color = colors[c],
+		alpha = 0.5, label = '')
+
 h.grid(False)
 
 
@@ -82,12 +87,12 @@ h.set_yticks([])
 
 h.axis([0, 2, 0, 2])
 h.legend(loc = 'upper right', frameon = True, framealpha = 1, 
-	ncol = 2, columnspacing = 0.1, labelspacing = 0.1)
-h.set_xlabel('Within-Category Distance')
-h.set_ylabel('Between-Category Distance')
+	ncol = 2, columnspacing = 0.1, labelspacing = 0.1, fontsize = 10)
+h.set_xlabel('Within-Category Distance',fontsize = 10)
+h.set_ylabel('Between-Category Distance',fontsize = 10)
 
 
-plt.tight_layout(h_pad=2.0)
+plt.tight_layout(h_pad=1.2)
 
 
 fname = 'distance.figs'
@@ -99,7 +104,7 @@ matplotlib.rcParams.update(opts)
 fh.savefig('../../../Manuscripts/cogsci-2017/figs/' + fname +'.pgf',	bbox_inches='tight')
 
 
-fh.savefig(fname + '.png', bbox_inches = 'tight')
+fh.savefig(fname + '.png', bbox_inches = 'tight', pad_inches=0.0)
 
 
 		
