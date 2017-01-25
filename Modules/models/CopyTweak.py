@@ -9,7 +9,7 @@ class CopyTweak(Model):
 		Exemplar similarity implementation of the copy-and-tweak model.
 	"""
 
-	model = 'Copy & Tweak'
+	model = 'Copy and Tweak'
 	parameter_names = [
 		'specificity', # > 0
 		'within_pref', # any value

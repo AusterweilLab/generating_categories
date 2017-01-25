@@ -63,7 +63,7 @@ def format_plot(h, label):
 
 
 # plot between and within scatter
-fh, ax = plt.subplots(2,2, figsize = (3.5,3.5))
+fh, ax = plt.subplots(2,2, figsize = (3,3))
 ax = ax.flat
 
 ax[0].plot([0, 2],[0,2], '--', color = 'gray', linewidth = 0.5)
@@ -93,11 +93,24 @@ for i, (model_obj, params) in enumerate(models):
 
     format_plot(h, model_obj.model)
     if i == 1:
-        h.text(-0.2, 1.7, 'Between Category Distance', 
+        h.text(-0.2, 1.6, 'Between Category Distance', 
             ha = 'center', va = 'center', rotation = 'vertical')
-h.legend(frameon = True, bbox_to_anchor = (0.75,-0.3), ncol = 2)
-h.text(-0.2, -0.2, 'Within Category Distance', ha = 'center', va = 'center')
-
-
-fh.savefig('between.within.png', bbox_inches = 'tight')
     
+    if i==0:
+        h.legend(frameon = True, bbox_to_anchor = (0.75,1.3), ncol = 2)
+h.text(0.0, -0.2, 'Within Category Distance', ha = 'center', va = 'center')
+
+
+plt.tight_layout(pad = 0 , w_pad=0.0, h_pad= 0.0)
+
+
+fname = 'between.within'
+
+import os, matplotlib
+os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
+opts = {'pgf.texsystem': 'pdflatex'}
+matplotlib.rcParams.update(opts)
+fh.savefig('../../../Manuscripts/cogsci-2017/figs/' + fname +'.pgf',  bbox_inches='tight')
+
+
+fh.savefig(fname + '.png', bbox_inches = 'tight')    

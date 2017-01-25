@@ -13,7 +13,7 @@ class ConjugateJK13(Model):
 	domain covariance is inverse-wishart.
 	"""
 
-	model = "Jern & Kemp '13"
+	model = "Hierarchical Sampling"
 	parameter_names = [
 		'category_mean_bias', # > 0
 		'category_variance_bias', # > p - 1
