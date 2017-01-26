@@ -20,6 +20,34 @@ class Model(object):
 	def parameter_names(self):
 		pass
 
+	@abc.abstractmethod
+	def rvs():
+		"""	Static method to generate random parameters. """
+		pass
+
+	@abc.abstractmethod
+	def _param_handler_(self):
+		""" 
+		Ensures all the right parameters are in place, and creates
+		class attributes based on values.
+
+		Models must add custom logic to ensure values lie within 
+		the allowed range.
+		"""
+		for k in self.parameter_names:
+			if k not in self.params.keys():
+				raise Exception("There is no '" + k + "' parameter!!!")
+			else:
+				setattr(self, k, self.params[k])
+
+	@abc.abstractmethod
+	def get_generation_ps(self, stimuli, category):
+		"""
+		Function to return probability of generating 'stimuli' into
+		'category', given the model's current state.
+		"""
+		pass
+
 
 	def __init__(self, categories, params):
 		"""
@@ -58,25 +86,10 @@ class Model(object):
 			return S + '\n'
 
 
-	@abc.abstractmethod
-	def _param_handler_(self):
-		""" 
-		Ensures all the right parameters are in place, and creates
-		class attributes based on values.
-
-		Models must add custom logic to ensure values lie within 
-		the allowed range.
-		"""
-		for k in self.parameter_names:
-			if k not in self.params.keys():
-				raise Exception("There is no '" + k + "' parameter!!!")
-			else:
-				setattr(self, k, self.params[k])
-
 	def _wts_handler_(self):
 		"""
 			Sets feature weight parameters for models.
-			Raises exception of wts is not the right size.
+			Raises exception if wts is not the right size.
 		"""
 
 		if 'wts' not in self.params.keys():
@@ -166,12 +179,3 @@ class Model(object):
 			self._update_()
 
 		return generated_examples
-
-
-	@abc.abstractmethod
-	def get_generation_ps(self, stimuli, category):
-		"""
-		Function to return probability of generating 'stimuli' into
-		'category', given the model's current state.
-		"""
-		pass

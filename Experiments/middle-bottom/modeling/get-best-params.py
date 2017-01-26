@@ -1,8 +1,4 @@
 import sys, pickle
-import pandas as pd
-import numpy as np
-
-import scipy.optimize as op
 
 # add modeling module
 sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
@@ -21,16 +17,13 @@ options = dict(
 	tol = 0.01,
 ) 
 
-for o in [Packer, ConjugateJK13]:
-	inits = np.random.uniform(low = 1.0001, high = 2.0, size = (4,)).tolist()
+for o in [CopyTweak, Packer, ConjugateJK13]:
+	inits = o.rvs()
 
-	# edit for model specific ranges
-	if o == CopyTweak:
-		# inits[1] = inits[1] - 1.5 # within pref could be positive or negative
-		inits[2] = inits[2] - 1.0 # tolerance is [0 1]
-
-	if o == ConjugateJK13:
-		inits[0] = inits[0] - 1.0 # categiry mean bias should be smallish
-		inits[2] = inits[2] - 1.0 # domain variance assumption should be smallish
+	print '\nInit values:'
+	print dict(zip(o.parameter_names, [round(i,3) for i in inits]))
 
 	Optimize.hillclimber(o, inits, trials, stimuli, options)
+
+
+	

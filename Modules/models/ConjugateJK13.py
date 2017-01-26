@@ -21,6 +21,15 @@ class ConjugateJK13(Model):
 		'determinism' # > 0 
 		]
 
+	@staticmethod
+	def rvs(nf = 2):
+		params = [
+			np.random.uniform(0.01, 3.0), # category_mean_bias
+			np.random.uniform(nf-0.99, nf+2.0), # category_variance_bias
+			np.random.uniform(0.01, 5.0), # domain_variance_bias
+			np.random.uniform(0.1, 6.0) # determinism
+		]
+		return params
 
 	def _update_(self):
 		"""

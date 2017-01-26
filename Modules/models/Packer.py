@@ -17,6 +17,16 @@ class Packer(Model):
 		'determinism' # theta > 0
 	] 
 
+	@staticmethod
+	def rvs():
+		params = [
+			np.random.uniform(0.1, 6.0), # specificity
+			np.random.uniform(-6.0, 0.0), # between. biased negative.
+			np.random.uniform(0.0, 6.0), # within. biased positive
+			np.random.uniform(0.1, 6.0) # determinism
+		]
+		return params
+
 	def _param_handler_(self):
 		super(Packer, self)._param_handler_()
 		if self.specificity <= 0: self.specificity = 1e-10

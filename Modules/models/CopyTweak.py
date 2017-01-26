@@ -17,6 +17,17 @@ class CopyTweak(Model):
 		'determinism' # > 0
 	]
 
+	@staticmethod
+	def rvs():
+		params = [
+			np.random.uniform(0.1, 6.0), # specificity
+			np.random.uniform(0.0, 6.0), # within pref. biased positive.
+			np.random.uniform(0.01, 1.0), # tolerance
+			np.random.uniform(0.1, 6.0) # determinism
+		]
+		return params
+
+
 	def _param_handler_(self):
 		super(CopyTweak, self)._param_handler_()
 		if self.specificity <= 0: self.specificity = 1e-10

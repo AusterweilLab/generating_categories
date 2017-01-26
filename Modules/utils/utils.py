@@ -113,6 +113,7 @@ def jitterize(points, sd = 0.0001):
 	jitter = np.random.normal(loc = 0, scale = sd, size = points.shape);
 	return points + jitter
 
+
 def wpick(ps):
 	"""
 	Function to pick from a set a probabilities.
