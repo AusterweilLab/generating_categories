@@ -21,7 +21,7 @@ options = dict(
 	tol = 0.01,
 ) 
 
-for o in [CopyTweak, Packer, ConjugateJK13]:
+for o in [Packer, ConjugateJK13]:
 	inits = np.random.uniform(low = 1.0001, high = 2.0, size = (4,)).tolist()
 
 	# edit for model specific ranges
