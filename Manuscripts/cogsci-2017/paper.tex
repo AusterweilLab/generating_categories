@@ -7,6 +7,15 @@
 \usepackage{mathtools}
 \usepackage[natbibapa]{apacite}
 
+%though some work has recently been conducted using traditional classification learning approaches . 
+%Similar results were obtained in a more recent study conducted within a traditional categorization paradigm.
+
+%%Results such as these have motivated formal accounts of generation that explicitly invoke the idea that people re-purpose existing knowledge to generate something new -- either by copying-and-tweaking an observation retrieved from memory \citep{ward2002role,ward1995s}, or by abstracting the distributional structure of categories in the domain \citep{jern2013probabilistic}.
+
+%Rather than evaluate PACKER on the benchmarks reviewed above, however, we instead focus on testing predictions made by PACKER that distinguish it from previous approaches.
+
+%The attention weights are of interest in explaining individual differences in generation strategy (discussed below), but for our formal simulations they are set uniformly.
+
 % set up PGF
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.13}
@@ -40,14 +49,11 @@ Categorization; etc
 
 \section{Introduction}
 
-One of the most intriguing capabilities of human cognition is the ability to creatively generate new ideas and concepts. The creative use of knowledge has, however, only infrequently been the subject of inquiry in the field of categorization. To date, most of what we understand about human concept generation comes from foundational studies in the field of creative cognition \citep[e.g.,][]{marsh1999inadvertent,smith1993constraining,ward2002role,ward1994structured,ward1995s}, though some work has recently been conducted using traditional classification learning approaches \citep{jern2013probabilistic}. 
+One of the most intriguing capabilities of human cognition is the ability to creatively generate new ideas and concepts. The creative use of knowledge has only been infrequently the subject of formal inquiry. This paper focuses on one topic within creative cognition, category generation. Foundational work on category generation \citep[e.g.,][]{marsh1999inadvertent,smith1993constraining,ward2002role,ward1994structured,ward1995s} found that people tend to create new categories that are similar to related previously known categories: New exemplars from the new categories tend to be copied from exemplars for a similar categories, but tweaked on one or a few dimensions. Thus, people generate a new category containing similar distributional properties to the categories it is based on, while being different from those categories in some manner. 
 
-Existing work on the creative use of conceptual knowledge predominantly explores the role of prior knowledge in generating novel concepts. The core experimental phenomenon is that people generate categories possessing the same distributional properties as known categories. For example, in a canonical study \citet{ward1994structured} asked participants to draw and describe species of plants and animals that might exist on other planets. Generation was strongly constrained by prior knowledge of Earth plants and animals: people generated alien species using the same structural forms found on Earth (e.g., eyes, legs, wings) and possessing the same feature correlations observed on Earth (e.g., feathers co-occur with wings). Likewise, exemplars drawn from the same species were less variable than animals drawn from different species, and possessed features that were adaptive for their environment (as is the case on Earth).
+Existing work on the creative use of conceptual knowledge predominantly explores the role of prior knowledge in generating novel concepts. A core experimental phenomenon is that people generate categories possessing the same distributional properties as known categories. For example, in a canonical study \citet{ward1994structured} asked participants to draw and describe species of plants and animals that might exist on other planets. Generation was strongly constrained by prior knowledge of Earth plants and animals: people generated alien species using the same structural forms found on Earth (e.g., eyes, legs, wings) and possessing the same feature correlations observed on Earth (e.g., feathers co-occur with wings). Likewise, exemplars drawn from the same species were less variable than animals drawn from different species, and possessed features that were adaptive for their environment (as is the case on Earth).
 
-Similar results were obtained in a more recent study conducted within a traditional categorization paradigm. \citet{jern2013probabilistic} trained participants on a set of experimenter-defined categories composed of exemplars within an artificial three-dimensional domain (e.g., 2D shapes varying in size, hue, and saturation). After a short training phase, participants were asked to generate exemplars from a new category. Participants were provided with a set of scales to adjust the feature values of each generated stimulus, and were given unlimited time to create each example. As in the classic \cite{ward1994structured} experiment, \citet{jern2013probabilistic} found that people generated artificial categories possessing the same feature variance and correlations as the experimenter-defined categories in the domain.
-
-Results such as these have motivated formal accounts of generation that explicitly invoke the idea that people re-purpose existing knowledge to generate something new -- either by copying-and-tweaking an observation retrieved from memory \citep{ward2002role,ward1995s}, or by abstracting the distributional structure of categories in the domain \citep{jern2013probabilistic}.
-
+Recent work has proposed and tested computational models of how new categories are generated based on prior knowledge \citep{jern2013probabilistic}. In their experiments, \citet{jern2013probabilistic} trained participants on a set of experimenter-defined categories composed of exemplars within an artificial three-dimensional domain (e.g., 2D shapes varying in size, hue, and saturation). After a short training phase, participants were asked to generate exemplars from a new category. Participants were provided with a set of scales to adjust the feature values of each generated stimulus, and were given unlimited time to create each example. As in the classic \cite{ward1994structured} experiment, \citet{jern2013probabilistic} found that people generated artificial categories possessing the same feature variance and correlations as the experimenter-defined categories in the domain. They evaluated different possible computational models of how people generate categories (such as "copy-and-tweak" and exemplar accounts) and found that a hierarchical Bayesian model generating new categories by abstracting the distributional structure of the categories in the domain.
 
 \begin{figure*}
     \begin{center}
@@ -57,21 +63,22 @@ Results such as these have motivated formal accounts of generation that explicit
     \end{center}
 \end{figure*}
 
-In this paper, we introduce a novel exemplar-based approach to category generation, the PACKER model (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}), which creates new categories by balancing two constraints: (1) new categories should be different from known categories (minimizing between-class similarity), and (2) new categories should be internally coherent (maximizing within-class similarity). As such, PACKER is a significant departure from previous accounts of generation -- rather than proposing that people create new categories by re-purposing existing knowledge, PACKER explains generation exclusively in terms of the well-studied mechanics of exemplar representations and therefore possesses a rich connection to the wider body of research on category learning.
+In this paper, we introduce a novel exemplar-based approach to category generation, the PACKER model (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}), which creates new categories by balancing two constraints: (1) new categories should be different from known categories (minimizing between-class similarity), and (2) new categories should be internally coherent (maximizing within-class similarity). As such, PACKER is a significant departure from previous accounts of generation -- rather than proposing that people create new categories that are mostly similar to related categories, PACKER creates new categories that are different from related categories. Further, it does so using the well-studied mechanics of exemplar representations and therefore possesses a rich connection to the wider body of research on category learning.
 
-In the sections below, we formally describe the PACKER model and explore its predictions in a behavioral experiment. Rather than evaluate PACKER on the benchmarks reviewed above, however, we instead focus on testing predictions made by PACKER that distinguish it from previous approaches.
-
+In the sections below, we formally describe the PACKER model and explore its predictions in a behavioral experiment. We compare its performance to a copy-and-tweak and hierarchical Bayesian model by examining their fits to aggregate results and individual differences.
 
 \section{PACKER: An Exemplar Model}
 
-The PACKER model is an extension of the highly influential Generalized Context Model of category learning (GCM; \citealp{nosofsky1984choice}). The model assumes that each category is represented by a collection of exemplars within in a $k$-dimensional psychological space, and that generation is constrained by both similarity to members of the target category (the category in which a stimulus is being generated) as well as similarity to members of other categories. 
+The PACKER model is an extension of the prominent Generalized Context Model of category learning (GCM; \citealp{nosofsky1984choice}). The model assumes that each category is represented by a collection of exemplars within in a $k$-dimensional psychological space, and that generation is constrained by both similarity to members of the target category (the category in which a stimulus is being generated) as well as similarity to members of other categories. 
 
-As in the GCM, the similarity between two examples, $s(x_i, x_j)$, is an inverse-exponential function of distance:
+As in the GCM, the similarity between two examples, $s\left(x_i, x_j\right)$, is an inverse-exponential function of distance:
 \begin{equation}
-  s(x_i,x_j) = exp( -c \sum_{k}{|x_{ik} - x_{jk}|}w_k )
+  s\left(x_i,x_j\right) = \exp \left\{ -c \sum_{k}{ \left| x_{ik} - x_{jk} \right|}w_k \right\}
   \label{eq:similarity}
 \end{equation}
-where $w_k$ is a vector of attention parameters ($\sum_k{w_k} = 1$), weighting to the importance of each feature in the similarity computation, and $c$ ($<0$) is a specificity parameter controlling the spread of exemplar generalization. The attention weights are of interest in explaining individual differences in generation strategy (discussed below), but for our formal simulations they are set uniformly.
+where $w_k$ is the attention weighting of dimension $k$ ($\sum_k{w_k} = 1$), accounting for the relative importance of each dimension when calculating similarity, and $c$ ($c>0$) is a specificity parameter controlling the spread of exemplar generalization. For simplicity, most simulations will use uniform attention weights. We will use non-uniform attention weights in our discussion of individual differences.  
+
+%%%%%%%% stop before section at 2:30. will resume after section at 4pm.
 
 When prompted to generate a new example, the model considers both the similarity to examples from other categories as well as the similarity to examples in the target category. The aggregated similarity $a$ between generation candidate $y$ and the model's stored exemplars $x$ can be computed as:
 \begin{equation}
