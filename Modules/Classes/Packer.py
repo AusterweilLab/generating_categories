@@ -1,7 +1,7 @@
 import numpy as np
 
 # imports from module
-import utils
+import Modules.Funcs as Funcs
 from Model import Model
 
 class Packer(Model):
@@ -35,7 +35,7 @@ class Packer(Model):
 
 	def _get_ss(self, candidates, class_items, contribution_param):
 		""" function to compute summed similarity """
-		distance   = utils.pdist(candidates, class_items, w = self.wts)
+		distance   = Funcs.pdist(candidates, class_items, w = self.wts)
 		similarity = np.exp(-float(self.specificity) * distance)
 		similarity = similarity * float(contribution_param)
 		return np.sum(similarity, axis = 1)
@@ -57,7 +57,7 @@ class Packer(Model):
 
 		# zero out members of the target category
 		if any(self.assignments == category):
-			known_members = utils.intersect2d(stimuli, target_examples)
+			known_members = Funcs.intersect2d(stimuli, target_examples)
 			total[known_members] = 0.0
 
 		ps = total / float(sum(total))

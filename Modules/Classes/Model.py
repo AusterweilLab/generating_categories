@@ -2,7 +2,7 @@ import abc
 import numpy as np
 
 # imports from module
-import utils
+import Modules.Funcs as utils
 
 
 class Model(object):

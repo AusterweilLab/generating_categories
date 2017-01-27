@@ -1,7 +1,7 @@
 import numpy as np
 
 # imports from module
-import utils
+import Modules.Funcs as Funcs
 from Model import Model
 
 class CopyTweak(Model):
@@ -22,7 +22,7 @@ class CopyTweak(Model):
 		params = [
 			np.random.uniform(0.1, 6.0), # specificity
 			np.random.uniform(0.0, 6.0), # within pref. biased positive.
-			np.random.uniform(0.01, 1.0), # tolerance
+			np.random.uniform(0.5, 1.0), # tolerance. biased high tolerance.
 			np.random.uniform(0.1, 6.0) # determinism
 		]
 		return params
@@ -44,7 +44,7 @@ class CopyTweak(Model):
 		source_ps = source_ps / float(sum(source_ps))
 
 		# get pairwise similarities
-		distances  = utils.pdist(stimuli, self.exemplars, w = self.wts)
+		distances  = Funcs.pdist(stimuli, self.exemplars, w = self.wts)
 		similarity = np.exp(-1.0 * self.specificity * distances)
 
 		# get generation probabilities given each source
@@ -55,7 +55,7 @@ class CopyTweak(Model):
 
 		# zero out examples already in the target category
 		if any(self.assignments == category):
-			known_members = utils.intersect2d(stimuli, self.categories[category])
+			known_members = Funcs.intersect2d(stimuli, self.categories[category])
 			generation_ps[known_members] = 0.0
 
 		# normalize

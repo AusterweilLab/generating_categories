@@ -1,18 +1,27 @@
 # Modules
 
-This is the directory containing custom modules for model classes and various utility functions. It can be imported by:
+This is the directory containing custom modules for model classes and various utility functions. To use the modules, you need to append the base directory of this repository (`generating-categories/`) to the system path.
+
+If you know where that is relative to your script, then you can do:
 
 ```python
 import sys
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-from models import Optimize, CopyTweak, Packer, ConjugateJK13
-import utils
+sys.path.insert(0, "generate-categories/") # or wherever this is!
+from Modules.Classes import CopyTweak, Packer, ConjugateJK13, Optimize
+import Modules.Funcs as funcs
 ```
 
-Alternative methods of importing the modules may not work (based on my experience).
+If you don't want to keep track, I have written a an `Imports.py` script that finds the main directory (assumed to be a parent directory ) and inserts it into the system path. `Imports.py` can be copied to wherever you are scripting so that you can do this:
+
+```python
+execfile('Import.py') 
+from Modules.Classes import ...
+...
+```
+
 
 ## Todo
 
-- Make this module easier to import with. Use main module title from which `utils` and `models` can be imported (i.e., `from custom.models import ...`).
 - Optimize `costfun()` so that probabilities are only evaluated once per unique category set.
-- Use things like `**kwargs` to make plot utils more flexible.
+- Use things like `**kwargs` to make plotting functions more flexible.
+- 

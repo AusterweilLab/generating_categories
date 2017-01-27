@@ -2,9 +2,8 @@ import numpy as np
 from scipy.stats import multivariate_normal
 
 # imports from module
-import utils
+import Modules.Funcs as Funcs
 from Model import Model
-
 
 class ConjugateJK13(Model):
 	"""
@@ -107,7 +106,7 @@ class ConjugateJK13(Model):
 
 		# zero out examples already in the target category
 		if target_is_populated:
-			known_members = utils.intersect2d(stimuli, self.categories[category])
+			known_members = Funcs.intersect2d(stimuli, self.categories[category])
 			density[known_members] = 0.0
 
 		# convert to probability distribution

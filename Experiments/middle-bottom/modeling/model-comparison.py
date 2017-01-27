@@ -3,10 +3,10 @@ import numpy as np
 from itertools import product
 import pandas as pd
 
-import sys
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-from models import CopyTweak, Packer, ConjugateJK13
-import utils
+
+execfile('Imports.py')
+from Modules.Classes import CopyTweak, Packer, ConjugateJK13
+import Modules.Funcs as funcs
 
 pd.set_option('precision', 3)
 np.set_printoptions(precision = 3)
@@ -59,9 +59,9 @@ for FUN, params in models:
     M = FUN([A, B], params) 
     ps = M.get_generation_ps(stimuli, 1)
 
-    g = utils.gradientroll(ps,'roll')[:,:,0]
+    g = funcs.gradientroll(ps,'roll')[:,:,0]
     h = ax[pltnum]
-    utils.plotgradient(h, g, A, B, clim = (0, 0.15))
+    funcs.plotgradient(h, g, A, B, clim = (0, 0.15))
     h.set_title(FUN.model, fontsize = 12)
     pltnum += 1
 

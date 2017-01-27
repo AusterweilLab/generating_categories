@@ -1,11 +1,7 @@
-import sys
 import matplotlib.pyplot as plt
 
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-import utils
-
-	# var Color = linspace(25, 230, 9);
-	# var Size = linspace(3.0, 5.8, 9);
+execfile('Imports.py')
+import Modules.Funcs as funcs
 
 # params
 linewidth = 1
@@ -34,8 +30,5 @@ for i, (color, size) in enumerate(combos):
 plt.tight_layout(pad=-0.0, w_pad=-0.0)
 f.savefig('stimuli.samples.png', bbox_inches = 'tight')
 
-import os, matplotlib
-os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
-opts = {'pgf.texsystem': 'pdflatex'}
-matplotlib.rcParams.update(opts)
-f.savefig('../../../Manuscripts/cogsci-2017/figs/stimuli-samples.pgf', bbox_inches='tight')
+path = '../../../Manuscripts/cogsci-2017/figs/stimuli-samples.pgf'
+# funcs.save_as_pgf(f, path)

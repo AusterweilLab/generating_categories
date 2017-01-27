@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import sys
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-import utils
+execfile('Imports.py')
+import Modules.Funcs as funcs
+
 
 con = sqlite3.connect('../data/experiment.db')
 participants = pd.read_sql_query("SELECT * from participants", con)
@@ -38,15 +38,13 @@ for k, v in samples.items():
 
 		A = alphas[k]
 		B = generation.loc[generation.participant == pid, 'stimulus']
-		utils.plotclasses(h, stimuli, A, B, textsettings = dict(fontsize = 9))
+		funcs.plotclasses(h, stimuli, A, B, textsettings = dict(fontsize = 9))
 		plotnum += 1
 		
 
 plt.tight_layout(pad=-0.0, w_pad=-0.0)
 fh.savefig('beta.samples.png', bbox_inches = 'tight')
 
-import os, matplotlib
-os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
-opts = {'pgf.texsystem': 'pdflatex'}
-matplotlib.rcParams.update(opts)
-fh.savefig('../../../Manuscripts/cogsci-2017/figs/beta.samples.pgf', bbox_inches='tight', pad_inches=0.0)
+path = '../../../Manuscripts/cogsci-2017/figs/beta.samples.pgf'
+# funcs.save_as_pgf(f, path)
+

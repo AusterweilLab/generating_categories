@@ -1,4 +1,4 @@
-import sqlite3, sys
+import sqlite3
 import numpy as np
 import pandas as pd
 
@@ -6,9 +6,9 @@ from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
 
 # add modeling module
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-from models import Packer, CopyTweak, ConjugateJK13
-import utils
+execfile('Imports.py')
+from Modules.Classes import CopyTweak, Packer, ConjugateJK13, Optimize
+import Modules.Funcs as funcs
 
 # import data
 con = sqlite3.connect('../data/experiment.db')
@@ -29,7 +29,7 @@ observed = observed.groupby(['condition','stimulus'])['drange'].agg(['mean', 'va
 observed = observed.reset_index()
 observed.loc[pd.isnull(observed['var']),'var'] = 1.0
 
-nsamples = 50
+nsamples = 2
 
 
 model_param_pairs = {
@@ -114,11 +114,11 @@ for colnum, c in enumerate(pd.unique(info.condition)):
 		print c, j, min(vals), max(vals)
 
 		# smoothing
-		g = utils.gradientroll(vals,'roll')[:,:,0]
+		g = funcs.gradientroll(vals,'roll')[:,:,0]
 		g = gaussian_filter(g, 0.8)
-		vals = utils.gradientroll(g,'unroll')
+		vals = funcs.gradientroll(g,'unroll')
 		
-		im = utils.plotgradient(h, g, A, [], clim = (-2, 2), cmap = 'PuOr')
+		im = funcs.plotgradient(h, g, A, [], clim = (-2, 2), cmap = 'PuOr')
 
 		# axis labelling
 		if colnum == 0:
@@ -143,8 +143,6 @@ cbar.tick_params(length = 0)
 plt.tight_layout(w_pad=1.6, h_pad= -1.6)
 f.savefig('range.x.location.png', bbox_inches='tight', transparent=False)
 
-import os, matplotlib
-os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
-opts = {'pgf.texsystem': 'pdflatex'}
-matplotlib.rcParams.update(opts)
-f.savefig('../../../Manuscripts/cogsci-2017/figs/range-diff-gradient.pgf', bbox_inches='tight', pad_inches=0.0)
+path = '../../../Manuscripts/cogsci-2017/figs/range-diff-gradient.pgf'
+# funcs.save_as_pgf(f, path)
+

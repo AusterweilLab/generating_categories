@@ -1,9 +1,9 @@
-import sys, pickle
+import pickle
 
-# add modeling module
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-from models import CopyTweak, Packer, ConjugateJK13, Optimize
-import utils
+execfile('Imports.py')
+from Modules.Classes import CopyTweak, Packer, ConjugateJK13, Optimize
+import Modules.Funcs as funcs
+
 
 # get data from pickle
 with open( "data.pickle", "rb" ) as f:

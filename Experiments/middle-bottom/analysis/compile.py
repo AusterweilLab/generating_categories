@@ -5,8 +5,8 @@ from scipy.spatial import ConvexHull
 
 pd.set_option('display.width', 200, 'precision', 2)
 
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-import utils
+execfile('Imports.py')
+import Modules.Funcs as funcs
 
 db_dst = '../data/experiment.db'
 assignmentdb = '../data/assignments.db'
@@ -77,7 +77,7 @@ generalization = pd.DataFrame(rows, dtype = int)
 
 # create stimulus table
 values = np.linspace(-1,1, 9)
-stimuli = np.fliplr(utils.cartesian([values, values]))
+stimuli = np.fliplr(funcs.cartesian([values, values]))
 stimuli = pd.DataFrame(stimuli, columns = ['F1', 'F2'])
 stimuli.index.rename('stimulus')
 
@@ -127,11 +127,11 @@ for pid, rows in generation.groupby('participant'):
 
 	p_alphas = alphas[condition].as_matrix()[:,0]
 	p_alphas = stimuli.as_matrix()[p_alphas,:]
-	within = utils.pdist(betas, betas)
+	within = funcs.pdist(betas, betas)
 	within = np.mean(within[np.triu(within)>0])
-	between = np.mean(utils.pdist(p_alphas, betas))
+	between = np.mean(funcs.pdist(p_alphas, betas))
 
-	area = ConvexHull(utils.jitterize(betas)).volume
+	area = ConvexHull(funcs.jitterize(betas)).volume
 
 	correlation = np.corrcoef(betas, rowvar = False)[0][1]
 	if np.isnan(correlation):

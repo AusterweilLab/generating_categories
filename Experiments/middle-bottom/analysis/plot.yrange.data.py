@@ -67,9 +67,5 @@ plotlines(fh.gca(), df, stats)
 
 fh.savefig('yranges.png', bbox_inches = 'tight')
 
-import os, matplotlib
-os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
-opts = {'pgf.texsystem': 'pdflatex'}
-matplotlib.rcParams.update(opts)
-fh.savefig('../../../Manuscripts/cogsci-2017/figs/middle-bottom-yranges.pgf',
-	bbox_inches='tight')
+path = '../../../Manuscripts/cogsci-2017/figs/middle-bottom-yranges.pgf'
+# funcs.save_as_pgf(f, path)
