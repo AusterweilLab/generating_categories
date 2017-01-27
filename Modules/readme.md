@@ -11,7 +11,7 @@ from Modules.Classes import CopyTweak, Packer, ConjugateJK13, Optimize
 import Modules.Funcs as funcs
 ```
 
-If you don't want to keep track, I have written a an `Imports.py` script that finds the main directory (assumed to be a parent directory ) and inserts it into the system path. `Imports.py` can be copied to wherever you are scripting so that you can do this:
+If you don't want to keep track, I have written an `Imports.py` script that finds the main directory (assumed to be a parent directory ) and inserts it into the system path. `Imports.py` can be copied to wherever you are scripting so that you can do this:
 
 ```python
 execfile('Import.py') 
@@ -24,4 +24,3 @@ from Modules.Classes import ...
 
 - Optimize `costfun()` so that probabilities are only evaluated once per unique category set.
 - Use things like `**kwargs` to make plotting functions more flexible.
-- 
