@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("whitegrid")
 
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-import utils
+execfile('Imports.py')
+import Modules.Funcs as funcs
 
 # import data
 con = sqlite3.connect('../data/experiment.db')
@@ -42,7 +42,7 @@ h = ax[0]
 for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
 
 	As = stimuli[alphas[c],:]
-	D = utils.pdist(stimuli, As)
+	D = funcs.pdist(stimuli, As)
 	D = np.mean(D, axis = 1)
 	x = np.unique(D)
 	y = []
@@ -96,15 +96,8 @@ plt.tight_layout(h_pad=1.2)
 
 
 fname = 'distance.figs'
-
-import os, matplotlib
-os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
-opts = {'pgf.texsystem': 'pdflatex'}
-matplotlib.rcParams.update(opts)
-fh.savefig('../../../Manuscripts/cogsci-2017/figs/' + fname +'.pgf',	bbox_inches='tight')
-
-
 fh.savefig(fname + '.png', bbox_inches = 'tight', pad_inches=0.0)
-
+path = '../../../Manuscripts/cogsci-2017/figs/' + fname +'.pgf'
+# funcs.save_as_pgf(f, path)
 
 		

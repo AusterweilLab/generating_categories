@@ -2,13 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from itertools import product
 
-import sys
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-import utils
-from models import Packer
+execfile('Imports.py')
+from Modules.Classes import Packer
+import Modules.Funcs as funcs
 
 vals = np.linspace(-1, 1, 100).tolist()
-space = np.fliplr(utils.cartesian([vals, vals]))
+space = np.fliplr(funcs.cartesian([vals, vals]))
 
 A = np.array([[-0.25, -0.25]])
 B = np.array([[ 0.25,  0.25]])
@@ -37,8 +36,8 @@ for k in ['Contrast Influence', 'Target Influence', 'Combination']:
     ps = m.get_generation_ps(space,1)
     print max(ps)
 
-    g = utils.gradientroll(ps, 'roll')[:,:,0]
-    im = utils.plotgradient(h, g, A, B, cmap = 'Blues', beta_col = 'w')
+    g = funcs.gradientroll(ps, 'roll')[:,:,0]
+    im = funcs.plotgradient(h, g, A, B, cmap = 'Blues', beta_col = 'w')
     h.set_title(k, fontsize = 11)
 
     counter += 1
@@ -53,8 +52,5 @@ cbar.tick_params(length = 0)
 
 f.savefig('example-prob-spaces.png', bbox_inches='tight', transparent=False)
 
-import os, matplotlib
-os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin/'
-opts = {'pgf.texsystem': 'pdflatex'}
-matplotlib.rcParams.update(opts)
-f.savefig('../../../Manuscripts/cogsci-2017/figs/example-prob-spaces.pgf', bbox_inches='tight', pad_inches=0.0)
+path = '../../../Manuscripts/cogsci-2017/figs/example-prob-spaces.pgf'
+# funcs.save_as_pgf(f, path)

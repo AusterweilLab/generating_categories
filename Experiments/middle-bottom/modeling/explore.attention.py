@@ -3,10 +3,10 @@ import numpy as np
 from itertools import product
 import pandas as pd
 
-import sys
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-from models import CopyTweak, Packer, ConjugateJK13
-import utils
+
+execfile('Imports.py')
+from Modules.Classes import CopyTweak, Packer, ConjugateJK13, Optimize
+import Modules.Funcs as funcs
 
 pd.set_option('precision', 3)
 np.set_printoptions(precision = 3)
@@ -64,9 +64,9 @@ for wts in wt_list:
     simulated_B = stimuli[simulated_betas,:]
     ps = M.get_generation_ps(stimuli, 1)
 
-    g = utils.gradientroll(ps,'roll')[:,:,0]
+    g = funcs.gradientroll(ps,'roll')[:,:,0]
     h = ax[pltnum]
-    utils.plotgradient(h, g, A, simulated_B, clim = (0, 0.15))
+    funcs.plotgradient(h, g, A, simulated_B, clim = (0, 0.15))
 
     h.set_title(str(wts), fontsize = 10)
     if wts == wt_list[0]:

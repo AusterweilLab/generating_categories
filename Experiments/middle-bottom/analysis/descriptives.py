@@ -2,9 +2,6 @@ import sqlite3, sys
 import pandas as pd
 import numpy as np
 
-sys.path.insert(0, "../../../Modules/") # generate-categories/Modules
-import utils
-
 pd.set_option('display.width', 120, 'precision', 2)
 
 con = sqlite3.connect('../data/experiment.db')

@@ -1,10 +1,10 @@
-import sqlite3, os, sys
+import sqlite3, os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-sys.path.insert(0, "../../../Modules/")
-import utils
+execfile('Imports.py')
+import Modules.Funcs as funcs
 
 pd.set_option('precision', 2)
 
@@ -26,7 +26,7 @@ for i, row in info.iterrows():
 	palphas = alphas[condition]
 	pbetas = df.stimulus[df.participant == pid]
 
-	utils.plotclasses(ax, stimuli, palphas, pbetas)
+	funcs.plotclasses(ax, stimuli, palphas, pbetas)
 	
 	fname = os.path.join(savedir,condition + '-' + str(pid) + '.png')
 	f.savefig(fname, bbox_inches='tight', transparent=False)
