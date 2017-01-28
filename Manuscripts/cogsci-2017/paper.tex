@@ -20,6 +20,10 @@
 
 % so that is 1 when specifying whether $y$ exceeds the similarity threshold, $\tau$, which is treated as a free parameter ($0<\tau\leq1$). $g = 1$ when $s(y,z) < \tau$ and $g = 0$ otherwise. Thus, exemplars exceeding the similarity threshold will not be generated, but exemplars just under the threshold are most likely. \citet{jern2013probabilistic} did not implement any similarity threshold mechanism, and so their model is the special case where $\tau = 1$ (any exemplar may be selected).
 
+%JLA: I took this one out because it's not really something we're dealing with in our paper.
+%Further, exemplars drawn from the same species were less variable than animals drawn from different species, and possessed features that were adaptive for their environment (as is the case on Earth).
+
+
 
 % set up PGF
 \usepackage{pgfplots}
@@ -46,7 +50,7 @@ Madison, WI 53706 USA
 \maketitle
 
 \begin{abstract}
-FILLER
+FILLER (make very short)
 
 \textbf{Keywords:} 
 Categorization; etc
@@ -54,11 +58,12 @@ Categorization; etc
 
 \section{Introduction}
 
-One of the most intriguing capabilities of human cognition is the ability to creatively generate new ideas and concepts. The creative use of knowledge has only been infrequently the subject of formal inquiry. This paper focuses on one topic within creative cognition, category generation. Foundational work on category generation \citep[e.g.,][]{smith1993constraining,ward2002role,ward1994structured,ward1995s} found that people tend to create new categories that are similar to related previously known categories: New exemplars from the new categories tend to be copied from exemplars for a similar categories, but tweaked on one or a few dimensions. Thus, people generate a new category containing similar distributional properties to the categories it is based on, while being different from those categories in some manner. 
+One of the most intriguing capabilities of human cognition is the ability to generate new ideas and concepts. The creative creation of knowledge is an infrequent subject of formal inquiry. This paper focuses on one topic within creative cognition, category generation. Foundational work \citep[e.g.,][]{smith1993constraining,ward2002role,ward1994structured,ward1995s} found that people tend to create new categories that are similar to related previously known categories: New exemplars from the new categories tend to be copied from exemplars for a similar categories, but tweaked on one or a few dimensions. Thus, people generate a new category containing similar distributional properties to the categories it is based on, while being different from those categories in some manner. 
 
-Existing work on the creative use of conceptual knowledge predominantly explores the role of prior knowledge in generating novel concepts. A core experimental phenomenon is that people generate categories possessing the same distributional properties as known categories. For example, in a canonical study \citet{ward1994structured} asked participants to draw and describe species of plants and animals that might exist on other planets. Generation was strongly constrained by prior knowledge of Earth plants and animals: people generated alien species using the same structural forms found on Earth (e.g., eyes, legs, wings) and possessing the same feature correlations observed on Earth (e.g., feathers co-occur with wings). Likewise, exemplars drawn from the same species were less variable than animals drawn from different species, and possessed features that were adaptive for their environment (as is the case on Earth).
+Existing work on the creative use of conceptual knowledge  explores the role of prior knowledge in generating novel concepts. A core phenomenon is that people generate new categories with similar distributional properties as existing categories. For example, \citet{ward1994structured} asked participants to draw and describe plants and animals that might exist on other planets. Generation was strongly constrained by prior knowledge of Earth plants and animals: People generated alien species with the same features as those found on Earth (e.g., eyes, legs, wings) and possessing the same feature correlations observed on Earth (e.g., feathers co-occur with wings). 
 
-Recent work has proposed and tested computational models of how new categories are generated based on prior knowledge \citep{jern2013probabilistic}. In their experiments, \citet{jern2013probabilistic} trained participants on a set of experimenter-defined categories composed of exemplars within an artificial three-dimensional domain (e.g., 2D shapes varying in size, hue, and saturation). After a short training phase, participants were asked to generate exemplars from a new category. Participants were provided with a set of scales to adjust the feature values of each generated stimulus, and were given unlimited time to create each example. As in the classic \cite{ward1994structured} experiment, \citet{jern2013probabilistic} found that people generated artificial categories possessing the same feature variance and correlations as the experimenter-defined categories in the domain. They evaluated different possible computational models of how people generate categories (such as "copy-and-tweak" and exemplar accounts) and found that a hierarchical Bayesian model generating new categories by abstracting the distributional structure of the categories in the domain.
+
+Recent work has proposed and tested computational models of how new categories are generated based on prior knowledge \citep{jern2013probabilistic}. In their experiments, they trained participants on a set of experimenter-defined categories composed of exemplars within an artificial three-dimensional domain (e.g., 2D shapes varying in size, hue, and saturation). After a short training phase, participants were asked to generate exemplars from a new category. Participants were provided with a set of scales to adjust the feature values of each generated stimulus, and were given unlimited time to create each example. As in the classic \cite{ward1994structured} experiment, \citet{jern2013probabilistic} found that people generated artificial categories possessing the same feature variance and correlations as the experimenter-defined categories in the domain. They evaluated different possible computational models of how people generate categories (such as "copy-and-tweak" and exemplar accounts) and found that a hierarchical Bayesian model generating new categories by abstracting the distributional structure of the categories in the domain.
 
 %JLA: Add (a), (b) and (c) to figure and then use those to refer to each subpanel in the caption. It'll save space and be cleaner.
 \begin{figure*}
@@ -96,17 +101,17 @@ p(y) = \dfrac
     { \sum_i{ \exp( { \theta \cdot a(y_i, x) } ) } }
     \label{eq:packer-choice}
 \end{equation}
-where $\theta$ ($\theta \geq 0$) is a free parameter controlling overall response determinism. 
+where $\theta$ ($\theta \geq 0$) controls response determinism. 
 
 \subsection{Summary}
-The proposed PACKER model formulates exemplar and category generation under a traditional exemplar-similarity approach, proposing that people generate categories by minimizing between-category similarity and maximizing within-category similarity. The underlying processes assumed by PACKER are highly similar to those in the GCM \citep{nosofsky1984choice}, with the only alteration being that the model's response is a function of the $a$ metric, which is the aggregate of potentially counteracting similarities (positive or negative values), rather than the relative summed similarity assumed in the original model. 
+The proposed PACKER model suggests people generate categories by minimizing between-category similarity and maximizing within-category similarity. The underlying processes assumed by PACKER are highly similar to those in the GCM \citep{nosofsky1984choice}, with the only alteration being that PACKER aggregates positive- and negative-valued similarities, rather than only aggregating positive-valued similarities.
 
 In later sections, we will explore the unique predictions yielded by these design principles. First, however, we contrast PACKER with other category generation models. 
 
 
 \section{Previous Accounts of Category Generation}
 
-Previous computational models of category generation have focused on capturing the tendency for people to produce new categories that have similar distributional properties to existing categories. To the best of our knowledge, \citet{jern2013probabilistic} were the first to analyze behavioral results quantiatively to computational models of category generation. Based on their work, we describe two alternative models: a formalization of the \textit{copy-and-tweak} hypothesis \citep{ward2002role,ward1995s}, and the \textit{hierarchical sampling} proposed by \citet{jern2013probabilistic}.
+Previous models of category generation focus on capturing the tendency for people to produce new categories that have similar distributional properties to existing categories. To the best of our knowledge, \citet{jern2013probabilistic} were the first to analyze behavioral results quantitatively to computational models. Based on their work, we describe two alternative models: a formalization of the \textit{copy-and-tweak} hypothesis \citep{ward2002role,ward1995s}, and the \textit{hierarchical sampling} proposed by \citet{jern2013probabilistic}.
 
 
 \subsection{Copy-and-Tweak}
@@ -134,7 +139,7 @@ where $\theta$ is a response determinism parameter, $\tau$ is the similarity thr
 
 Based on several results inconsistent with the copy-and-tweak account, \citet{jern2013probabilistic} advocated a hierarchical Bayesian model. Exemplars of each category were generated from a multivariate Gaussian distribution over the dimensions of stimulus space. The mean of each category was independent, but the covariance matrices (encoding feature variances and correlations) were generated from a common prior distribution. New categories are generated then by generating a new mean (uniform over stimulus space) and covariance matrix from the common prior distribution. Because the shared prior distribution's parameters were unobserved, a hierarchical Bayesian model uses information from the previous categories (their feature variances and correlations) to generate the covariance matrix of the new category.
 
-Following \citet{jern2013probabilistic}, we assume that each category's exemplars are distributed according to a multivariate normal distribution with parameters ($\mu, \Sigma$).\footnote{Following \citet{jern2013probabilistic} stimuli were put through a logistic function to constrain the domain to be between 0 and 1.} We assume that each category's covariance matrix is inverse-Wishart distributed with parameters ($v$, $\kappa,$ and $\Sigma_D$).\footnote{Note that \citet{jern2013probabilistic}'s model is slightly different, as they used a non-conjugate model. Their model acts very similar to ours and the differences in model fits to our results are minor.} $\Sigma_D$ is the covariance matrix shared between categories. We assumed the shared covariance matrix $\Sigma_D$ was generated from a Wishart distribution (again, due keep the model conjugate) with parameters $v_0$, $\kappa_0$, and $\Sigma_0$. We set $\nu_0 = \kappa_0 = 1$, and $\Sigma_0 = \rho {\bf I}$, where $\rho$ was a free parameter controlling the expected variance of dimensions (dimensions of the shared covariance are expected to be uncorrelated) and ${\bf I}$ is the identity matrix.
+We assume that each category's exemplars are distributed according to a multivariate normal distribution with parameters ($\mu, \Sigma$).\footnote{Following \citet{jern2013probabilistic} stimuli were put through a logistic function to constrain the domain to be between 0 and 1.} We assume that each category's covariance matrix is inverse-Wishart distributed with parameters ($v$, $\kappa,$ and $\Sigma_D$).\footnote{Note that \citet{jern2013probabilistic}'s model is slightly different, as they used a non-conjugate model. Their model acts very similar to our version of it and receives comparable fits.} $\Sigma_D$ is the covariance matrix shared between categories. We assumed the shared covariance matrix $\Sigma_D$ was generated from a Wishart distribution (for conjugacy) with parameters $v_0$, $\kappa_0$, and $\Sigma_0$. We set $\nu_0 = \kappa_0 = 1$, and $\Sigma_0 = \rho {\bf I}$, where $\rho$ was a free parameter controlling the expected variance of dimensions (dimensions of the shared covariance matrix are expected to be uncorrelated) and ${\bf I}$ is the identity matrix.
 
 To simplify the model predictions, we used {\em maximum a posteriori} (MAP) estimates for the hidden parameters and then generated new categories based on those estimates. Due to conjugacy, the MAP estimate for the shared covariance matrix $\Sigma_D = \Sigma_0 + \sum_c{C_c}$, where $C_c$ is the empirical covariance matrix of category $c$. The MAP estimate of the covariance matrix for category $B$ is 
 \begin{equation}
@@ -147,7 +152,7 @@ To simplify the model predictions, we used {\em maximum a posteriori} (MAP) esti
   \label{eq:Sigma_B}
 \end{equation}
 %
-where $\nu$ ($>k-1$) is an additional free parameter (from the Inverse-Wishart prior on $\Sigma_B$) weighting the importance of $\Sigma_{D}$. When the target category has no members, $\Sigma_B = \Sigma_D$.
+where $\nu$ ($\nu>k-1$) is an additional free parameter (from the Inverse-Wishart prior on $\Sigma_B$) weighting the importance of $\Sigma_{D}$. When the target category has no members, $\Sigma_B = \Sigma_D$.
 
 Generated exemplars are then assumed to be drawn from the multivariate normal distribution specified by $(\mu_{B}, \Sigma_{B})$. Thus, $p(y)$ is
 \begin{equation}
