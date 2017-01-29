@@ -1,6 +1,4 @@
 import numpy as np
-import utils
-
 
 def save_as_pgf(fh, path, 
 	texpath = '/Library/TeX/texbin/',

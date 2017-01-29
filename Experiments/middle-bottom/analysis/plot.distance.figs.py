@@ -34,7 +34,7 @@ for c in pd.unique(info.condition):
 
 
 
-fh, ax = plt.subplots(2,1,figsize = (3.5,4.6))
+fh, ax = plt.subplots(1,2,figsize = (3.45,1.85))
 styles = dict(Middle = '-o', Bottom = '-s')
 colors = dict(Middle = 'orange', Bottom = 'purple')
 
@@ -59,12 +59,13 @@ for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
 
 h.xaxis.grid(False)
 h.set_xticks([])
-h.legend(loc = 'upper left', frameon = True, framealpha = 1)
+h.legend(loc = 'upper left', frameon = True, framealpha = 1, fontsize = 9)
 
 
 xax = h.axis()
-h.text(xax[0],xax[2] -1, 'Min Distance', fontsize = 9, va = 'top')
-h.text(xax[1],xax[2] -1, 'Max Distance', fontsize = 9, va = 'top', ha = 'right')
+h.text(xax[0],xax[2] -1, 'Min', fontsize = 9, va = 'top')
+h.text(xax[1],xax[2] -1, 'Max', fontsize = 9, va = 'top', ha = 'right')
+h.set_xlabel('Distance')
 h.set_yticks(np.arange(0,35, 5))
 h.set_yticklabels(np.arange(0,35, 5),fontsize = 9)
 h.set_ylabel('Generations Per Stimulus', fontsize = 10)
@@ -85,19 +86,19 @@ h.grid(False)
 h.set_xticks([])
 h.set_yticks([])
 
-h.axis([0, 2, 0, 2])
-h.legend(loc = 'upper right', frameon = True, framealpha = 1, 
-	ncol = 2, columnspacing = 0.1, labelspacing = 0.1, fontsize = 10)
-h.set_xlabel('Within-Category Distance',fontsize = 10)
-h.set_ylabel('Between-Category Distance',fontsize = 10)
+h.axis([0, 1.5, 0, 1.5])
+# h.legend(loc = 'upper right', frameon = True, framealpha = 1, 
+# 	ncol = 2, columnspacing = 0.1, labelspacing = 0.1, fontsize = 10)
+h.set_xlabel('Within-Class Distance',fontsize = 9)
+h.set_ylabel('Between-Class Distance',fontsize = 9)
 
 
-plt.tight_layout(h_pad=1.2)
+plt.tight_layout(pad = 0.5)
 
 
 fname = 'distance.figs'
 fh.savefig(fname + '.png', bbox_inches = 'tight', pad_inches=0.0)
 path = '../../../Manuscripts/cogsci-2017/figs/' + fname +'.pgf'
-# funcs.save_as_pgf(f, path)
+funcs.save_as_pgf(fh, path)
 
 		

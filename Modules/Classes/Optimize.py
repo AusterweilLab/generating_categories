@@ -83,8 +83,13 @@ def hillclimber(model_obj, init_params, dataset, stimuli, options):
 	print '\tIterations = ' + str(res.nit)
 	print '\tMessage = ' + str(res.message)
 
-	for k, v in zip(model_obj.parameter_names, res.x):
+	final_obj = model_obj(stimuli, res.x)
+	for k in final_obj.parameter_names:
+		v = getattr(final_obj, k)
 		print '\t' + k + ' = ' + str(v) + ','
 	print '\tLogLike = ' + str(res.fun)
+
+	AIC = 2.0*len(init_params) - 2.0* (-1.0 * res.fun)
+	print '\tAIC = ' + str(AIC)
 
 	return res

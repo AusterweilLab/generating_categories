@@ -29,32 +29,30 @@ observed = observed.groupby(['condition','stimulus'])['drange'].agg(['mean', 'va
 observed = observed.reset_index()
 observed.loc[pd.isnull(observed['var']),'var'] = 1.0
 
-nsamples = 2
+nsamples = 50
 
-
-model_param_pairs = {
-    'Copy and\nTweak': [CopyTweak, dict(
-        specificity = 9.4486327043,
-        within_pref = 17.0316650379,
-        tolerance = 0.403108523886,
-        determinism = 7.07038770338,
+model_param_pairs = [ # these values copied on Jan 29!
+    [CopyTweak, dict(
+    specificity = 4.67536899146,
+    tolerance = 0.895345369763,
+    determinism = 5.60105216678,
         )],
-    'PACKER': [Packer, dict(
-        specificity = 0.562922970884,
-        between = -1.76500997943,
-        within = 1.55628620461,
-        determinism = 1.99990124401,
+    [Packer, dict(
+    specificity = 0.565028848775,
+    between = -4.81445541313,
+    within = 4.2500267818,
+    determinism = 0.731417901569,
         )],
-    'Heirarchical\nSampling': [ConjugateJK13, dict(
-        category_mean_bias = 0.0167065365661,
-        category_variance_bias = 1.00003245067,
-        domain_variance_bias = 0.163495499745,
-        determinism = 2.10276377982,
+    [ConjugateJK13, dict(
+    category_mean_bias = 1e-10,
+    category_variance_bias = 1.00000753396,
+    domain_variance_bias = 1.21974609442,
+    determinism = 7.14705600068,
         )],
-}
+]
 
 all_data = dict(Behavioral = observed)
-for k, (model_obj, params) in model_param_pairs.items():
+for model_obj, params in model_param_pairs:
 	print 'Running: ' + model_obj.model
 	model_data = pd.DataFrame(dict(condition = [], stimulus = [], drange = []))
 
@@ -84,18 +82,20 @@ for k, (model_obj, params) in model_param_pairs.items():
 	model_data = model_data.reset_index()
 	model_data.loc[pd.isnull(model_data['var']),'var'] = 1.0
 	model_data['size'] /= nsamples
-	all_data[k] = model_data
+	all_data[model_obj.model] = model_data
 
 
 # plotting
-fontsettings = dict(fontsize = 9.0)
+fontsettings = dict(fontsize = 10.0)
+col_order = ['Behavioral', 'PACKER', 'Copy and Tweak', 'Hierarchical Sampling']
 
-f, ax = plt.subplots(4,2,figsize = (3.3,5.5))
-for colnum, c in enumerate(pd.unique(info.condition)):
+f, ax = plt.subplots(2,4,figsize = (7.0, 2.5))
+for rownum, c in enumerate(pd.unique(info.condition)):
 	A = stimuli[alphas[c],:]
 	
-	for j, (lab, data) in enumerate(sorted(all_data.items())):
-		h = ax[j][colnum]
+	for colnum, lab, in enumerate(col_order):
+		data = all_data[lab]
+		h = ax[rownum][colnum]
 		df = data.loc[data.condition == c]
 
 		# get x/y pos of examples
@@ -111,7 +111,7 @@ for colnum, c in enumerate(pd.unique(info.condition)):
 				sig = 0.001
 			vals[int(i)] = (0.0/sig +  sumx / sig) / (1.0/sig + n/sig)
 
-		print c, j, min(vals), max(vals)
+		print c, colnum, min(vals), max(vals)
 
 		# smoothing
 		g = funcs.gradientroll(vals,'roll')[:,:,0]
@@ -121,28 +121,28 @@ for colnum, c in enumerate(pd.unique(info.condition)):
 		im = funcs.plotgradient(h, g, A, [], clim = (-2, 2), cmap = 'PuOr')
 
 		# axis labelling
-		if colnum == 0:
-			h.set_ylabel(lab, rotation = 0, ha = 'right', va = 'center', **fontsettings)
+		if rownum == 0:
+			h.set_title(lab, **fontsettings)
 
-		if j == 0:
-			h.set_title(c, fontsize = 10.0)
+		if colnum == 0:
+			h.set_ylabel(c, **fontsettings)
 
 
 
 # add colorbar
-cbar = f.add_axes([0.38, -0.01, 0.45, 0.05])
-f.colorbar(im, cax=cbar, ticks=[-2, 2], orientation='horizontal')
-cbar.set_xticklabels([
-	'Vertically\nAligned Category', 
-	'Horizontally\nAligned Category', 
+cbar = f.add_axes([0.915, 0.2, 0.03, 0.55])
+f.colorbar(im, cax=cbar, ticks=[-2, 2], orientation='vertical')
+cbar.set_yticklabels([
+	'Vertically\nAligned\nCategory', 
+	'Horizontally\nAligned\nCategory', 
 ],**fontsettings)
 cbar.tick_params(length = 0)
 
 
 
-plt.tight_layout(w_pad=1.6, h_pad= -1.6)
-f.savefig('range.x.location.png', bbox_inches='tight', transparent=False)
+plt.tight_layout(w_pad=-8.5, h_pad= 0.1)
+f.savefig('range.diff.gradient.png', bbox_inches='tight', transparent=False)
 
 path = '../../../Manuscripts/cogsci-2017/figs/range-diff-gradient.pgf'
-# funcs.save_as_pgf(f, path)
+funcs.save_as_pgf(f, path)
 

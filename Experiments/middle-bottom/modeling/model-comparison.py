@@ -26,26 +26,25 @@ stimuli = np.fliplr(np.array(list(product(vals, vals))))
 
 alphas =  [30, 32, 48, 50]
 alphas =  [12, 30, 14, 32]
-betas = [0, 9]
+betas = [0, 45]
 
-models = [
+models = [ # these values copied on Jan 29!
     [CopyTweak, dict(
-        specificity = 9.4486327043,
-        within_pref = 17.0316650379,
-        tolerance = 0.403108523886,
-        determinism = 7.07038770338,
+    specificity = 4.67536899146,
+    tolerance = 0.895345369763,
+    determinism = 5.60105216678,
         )],
     [Packer, dict(
-        specificity = 0.562922970884,
-        between = -1.76500997943,
-        within = 1.55628620461,
-        determinism = 1.99990124401,
+    specificity = 0.565028848775,
+    between = -4.81445541313,
+    within = 4.2500267818,
+    determinism = 0.731417901569,
         )],
     [ConjugateJK13, dict(
-        category_mean_bias = 0.0167065365661,
-        category_variance_bias = 1.00003245067,
-        domain_variance_bias = 0.163495499745,
-        determinism = 30.10276377982,
+    category_mean_bias = 1e-10,
+    category_variance_bias = 1.00000753396,
+    domain_variance_bias = 1.21974609442,
+    determinism = 7.14705600068,
         )],
 ]
 

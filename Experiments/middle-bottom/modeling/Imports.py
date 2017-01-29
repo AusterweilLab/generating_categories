@@ -14,6 +14,11 @@ def _add_modules_path():
 	splitted = os.path.split(os.getcwd())
 	while splitted[1] != 'generating-categories':
 		splitted = os.path.split(splitted[0])
+		
+		if splitted[0] == os.sep:
+			S = "generating-categories is not a parent directory. You are here:\n\n"
+			S+= os.getcwd()
+			raise Exception(S)
 
 	# recombine and insert
 	mainpath = os.path.join(splitted[0], splitted[1])

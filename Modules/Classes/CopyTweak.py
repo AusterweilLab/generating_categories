@@ -1,7 +1,7 @@
 import numpy as np
 
 # imports from module
-import Modules.Funcs as Funcs
+import Modules.Funcs as funcs
 from Model import Model
 
 class CopyTweak(Model):
@@ -12,7 +12,6 @@ class CopyTweak(Model):
 	model = 'Copy and Tweak'
 	parameter_names = [
 		'specificity', # > 0
-		'within_pref', # any value
 		'tolerance', # 0 < tolerance <= 1
 		'determinism' # > 0
 	]
@@ -21,8 +20,7 @@ class CopyTweak(Model):
 	def rvs():
 		params = [
 			np.random.uniform(0.1, 6.0), # specificity
-			np.random.uniform(0.0, 6.0), # within pref. biased positive.
-			np.random.uniform(0.5, 1.0), # tolerance. biased high tolerance.
+			np.random.uniform(0.5, 1.0), # tolerance. biased high.
 			np.random.uniform(0.1, 6.0) # determinism
 		]
 		return params
@@ -31,20 +29,24 @@ class CopyTweak(Model):
 	def _param_handler_(self):
 		super(CopyTweak, self)._param_handler_()
 		if self.specificity <= 0: self.specificity = 1e-10
-		if self.tolerance <= 0: self.tolerance = 1e-10
 		if self.tolerance > 1.0: self.tolerance = 1.0
 		if self.determinism <= 0: self.determinism = 1e-10
 
 	def get_generation_ps(self, stimuli, category):
 
+		# return uniform probabilities if there are no exemplars
+		target_is_populated = any(self.assignments == category)
+		if not target_is_populated:
+			ncandidates = stimuli.shape[0]
+			return np.ones(ncandidates) / float(ncandidates)
+
 		# get source probabilities
-		source_ps = np.ones(self.exemplars.shape[0])	* -float(self.within_pref)
-		source_ps[self.assignments == category] = float(self.within_pref)
-		source_ps = np.exp(source_ps)
-		source_ps = source_ps / float(sum(source_ps))
+		nsources = self.nexemplars[category]
+		sources = self.categories[category]
+		source_ps = np.ones(nsources) / float(nsources)
 
 		# get pairwise similarities
-		distances  = Funcs.pdist(stimuli, self.exemplars, w = self.wts)
+		distances  = funcs.pdist(stimuli, sources, w = self.wts)
 		similarity = np.exp(-1.0 * self.specificity * distances)
 
 		# get generation probabilities given each source
@@ -54,9 +56,8 @@ class CopyTweak(Model):
 		generation_ps[similarity > self.tolerance] = 0.0
 
 		# zero out examples already in the target category
-		if any(self.assignments == category):
-			known_members = Funcs.intersect2d(stimuli, self.categories[category])
-			generation_ps[known_members] = 0.0
+		known_members = funcs.intersect2d(stimuli, self.categories[category])
+		generation_ps[known_members] = 0.0
 
 		# normalize
 		generation_ps = generation_ps / generation_ps.sum(axis = 0, keepdims = True)

@@ -23,7 +23,7 @@ class ConjugateJK13(Model):
 	@staticmethod
 	def rvs(nf = 2):
 		params = [
-			np.random.uniform(0.01, 3.0), # category_mean_bias
+			np.random.uniform(0.01, 0.5), # category_mean_bias, biased small
 			np.random.uniform(nf-0.99, nf+2.0), # category_variance_bias
 			np.random.uniform(0.01, 5.0), # domain_variance_bias
 			np.random.uniform(0.1, 6.0) # determinism
@@ -71,33 +71,31 @@ class ConjugateJK13(Model):
 		self.prior_variance[inds] *= self.wts
 
 	def get_generation_ps(self, stimuli, category):
+
+		# random response if there are no target members.
 		target_is_populated = any(self.assignments == category)
+		if not target_is_populated:
+			ncandidates = stimuli.shape[0]
+			return np.ones(ncandidates) / float(ncandidates)
 
 		# get target category stats
-		if target_is_populated:
-			xbar = np.mean(self.categories[category], axis = 0)
-			n = self.nexemplars[category]
-			if n < 2:
-				C = np.zeros((self.nfeatures, self.nfeatures))
-			else:
-				C = np.cov(self.categories[category], rowvar = False)
-
-		# infer target category mu
-		if not target_is_populated:
-			mu = self.category_prior_mean
+		xbar = np.mean(self.categories[category], axis = 0)
+		n = self.nexemplars[category]
+		if n < 2:
+			C = np.zeros((self.nfeatures, self.nfeatures))
 		else:
-			mu =  self.category_mean_bias * self.category_prior_mean
-			mu += n * xbar
-			mu /= self.category_mean_bias + n
+			C = np.cov(self.categories[category], rowvar = False)
+
+		# compute mu for target category
+		mu =  self.category_mean_bias * self.category_prior_mean
+		mu += n * xbar
+		mu /= self.category_mean_bias + n
 
 		# compute target category Sigma
-		if not target_is_populated:
-			Sigma = self.Domain
-		else:
-			ratio = (self.category_mean_bias * n) / (self.category_mean_bias + n)
-			Sigma = ratio * np.outer(xbar - mu, xbar - mu)
-			Sigma += self.Domain * self.category_variance_bias + C
-			Sigma /= self.category_variance_bias + n
+		ratio = (self.category_mean_bias * n) / (self.category_mean_bias + n)
+		Sigma = ratio * np.outer(xbar - mu, xbar - mu)
+		Sigma += self.Domain * self.category_variance_bias + C
+		Sigma /= self.category_variance_bias + n
 
 		# get relative densities
 		target_dist = multivariate_normal(mean = mu, cov = Sigma)
@@ -105,9 +103,8 @@ class ConjugateJK13(Model):
 		density = np.exp(self.determinism * density)
 
 		# zero out examples already in the target category
-		if target_is_populated:
-			known_members = Funcs.intersect2d(stimuli, self.categories[category])
-			density[known_members] = 0.0
+		known_members = Funcs.intersect2d(stimuli, self.categories[category])
+		density[known_members] = 0.0
 
 		# convert to probability distribution
 		ps = density / float(sum(density))

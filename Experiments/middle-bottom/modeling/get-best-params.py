@@ -17,7 +17,9 @@ options = dict(
 	tol = 0.01,
 ) 
 
-for o in [CopyTweak, Packer, ConjugateJK13]:
+# for o in [CopyTweak, Packer, ConjugateJK13]:
+for o in [ConjugateJK13]:
+
 	inits = o.rvs()
 
 	print '\nInit values:'
