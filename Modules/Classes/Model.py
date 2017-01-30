@@ -64,6 +64,15 @@ class Model(object):
 		if not isinstance(params, dict):
 			params = self._params_to_dict_(params)
 		
+		# create dummy object if needed
+		if categories is None:
+			print 'Warning: creating a dummy Model.'
+			self.params = params
+			self.ncategories, self.nfeatures = 0, 0
+			self._param_handler_()
+			self._reset_param_dict_()
+			return
+
 		# assign descriptives
 		self.categories = [np.atleast_2d(i) for i in categories]
 		self.nfeatures = self.categories[0].shape[1]
