@@ -17,15 +17,21 @@ options = dict(
 	tol = 0.01,
 ) 
 
-# for o in [CopyTweak, Packer, ConjugateJK13]:
-for o in [ConjugateJK13]:
 
-	inits = o.rvs()
+best_fits = dict()
+for model_obj in [CopyTweak, Packer, ConjugateJK13]:
+# for o in [ConjugateJK13]:
+
+	inits = model_obj.rvs()
 
 	print '\nInit values:'
-	print dict(zip(o.parameter_names, [round(i,3) for i in inits]))
+	print dict(zip(model_obj.parameter_names, [round(i,3) for i in inits]))
 
-	Optimize.hillclimber(o, inits, trials, stimuli, options)
+	res = Optimize.hillclimber(model_obj, inits, trials, stimuli, options)
 
+	dummy_model = model_obj(None, res.x)
+	best_fits[model_obj.model] = dummy_model.params
 
-	
+# save to pickle
+with open('best.params.pickle','wb') as f:
+	pickle.dump(best_fits, f)
