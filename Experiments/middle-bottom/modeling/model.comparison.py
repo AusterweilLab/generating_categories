@@ -64,4 +64,4 @@ for FUN, params in models:
     h.set_title(FUN.model, fontsize = 12)
     pltnum += 1
 
-f.savefig('model-comparison.png', bbox_inches='tight', transparent=False)
+f.savefig('model.comparison.png', bbox_inches='tight', transparent=False)

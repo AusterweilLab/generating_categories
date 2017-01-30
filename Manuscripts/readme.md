@@ -1,1 +1,2 @@
-This directory contains LaTeX documents, both for our reference or for publication.
+This directory contains manuscripts written both for our reference (i.e., `model-descriptions/`) or for publication.
+

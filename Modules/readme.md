@@ -24,3 +24,4 @@ from Modules.Classes import ...
 
 - Optimize `costfun()` so that probabilities are only evaluated once per unique category set.
 - Use things like `**kwargs` to make plotting functions more flexible.
+- Do something to behave appropriately when the user asks to simulate a category that is more than 1+ the max.

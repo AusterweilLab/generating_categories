@@ -11,27 +11,27 @@
 
 \section*{Updated Version of the Jern \& Kemp (2013) Model}
 
-Working backwards, what is needed for simulation of exemplar generation is the probability of generating a stimulus $x$ given exposure to members of the target category $x_b$:
+Working backwards, what is needed for simulation of exemplar generation is the probability of generating a stimulus $y$ given exposure to members of the target category $x_B$:
 \
 \begin{equation}
-p(x | x_b) = ?
+p(y | x_B) = ?
 \end{equation}
 \
-where $x_b$ may be empty. Jern \& Kemp's model achieves this using a generative process. Category members ($x_a$ or $x_b$; more generally written as $x_y$) are assumed to have been generated using an underlying category distribution (specifically, multivariate normal):
+where $x_B$ may be empty. Jern \& Kemp's model achieves this using a generative process. Category members ($x_A$ or $x_B$; more generally written as $x_C$) are assumed to have been generated using an underlying category distribution (specifically, multivariate normal):
 \
 \begin{equation}
-  x_y \sim Normal(\mu_{y}, \Sigma_{y})
+  x_C \sim Normal(\mu_{C}, \Sigma_{C})
 \end{equation}
 \
-$p(x | x_y)$ is proportional to the candidate's density under the target category's distribution. Thus, obtaining the category distribution parameters $(\mu_{y}, \Sigma_{y})$ is key for generation. This document describes how we compute these variables in a conjugate model. 
+$p(y | x_C)$ is proportional to the candidate's density under the target category's distribution. Thus, obtaining the category distribution parameters $(\mu_{C}, \Sigma_{C})$ is key for generation. This document describes how we compute these variables in a conjugate model. 
 
-\subsection*{Computing $\mu_y$}
-Assuming $(\mu_y, \Sigma_y)$ are Normal-Inverse-Wishart distributed (unknown mean, unknown variance):
+\subsection*{Computing $\mu_C$}
+Assuming $(\mu_C, \Sigma_C)$ are Normal-Inverse-Wishart distributed (unknown mean, unknown variance):
 \
 \begin{equation}
-  \mu_y = \dfrac
-    {\kappa\mu_{0} + n_y \bar{x_y}}
-    {\kappa + n_y}
+  \mu_C = \dfrac
+    {\kappa\mu_{0} + n_C \bar{x_C}}
+    {\kappa + n_C}
     \label{eq:category_mus}
 \end{equation}
 \ 
@@ -40,63 +40,62 @@ where:
     \setlength\itemsep{-0.5em}
     \item $\mu_{0}$ is the prior mean along $p$ dimensions. Here we set it to the middle of the space.
     \item $\kappa$ is a scalar hyper-parameter, roughly weighting the importance of $\mu_{0}$. $\kappa$ must be greater than zero.
-    \item $n_y$ is the number of observations in $x_y$
-    \item $\bar{x_y}$ is the sample mean along $p$ dimensions
+    \item $n_C$ is the number of observations in $x_C$
+    \item $\bar{x_C}$ is the sample mean along $p$ dimensions
 \end{itemize}
 
-In the case of a populated class, $\mu_{y}$ ends up lying somewhere between $\mu_{0}$ and $\bar{x_y}$, depending on $\kappa_{0}$ and $n_y$. In the case of an empty class, $n_y = 0$, thus Equation \ref{eq:category_mus} reduces to $\mu_{y} = \mu_{0}$. Because we set $\mu_0$ to the center of the space, this outcome is the same as if we had integrated over all possible $\mu_y$.
-
+In the case of a populated class, $\mu_{C}$ ends up lying somewhere between $\mu_{0}$ and $\bar{x_C}$, depending on $\kappa_{0}$ and $n_C$. In the case of an empty class, $n_C = 0$, Equation \ref{eq:category_mus} reduces to $\mu_{C} = \mu_{0}$. Because we set $\mu_0$ to the center of the space, this outcome is the same as if we had integrated over all possible $\mu_C$. In practice, if $n_C = 0$, the model picks a stimulus at random from all candidates (uniform probabilities). 
 
 \subsection*{Computing $\Sigma_D$}
 
-Unlike $\mu_y$, $\Sigma_y$ cannot be computed considering only the members of category $y$. Instead, $\Sigma_y$ is influenced both by the distribution of $x_y$ and by members of other categories through $\Sigma_D$.
+Unlike $\mu_C$, $\Sigma_C$ cannot be computed considering only the members of category $y$. Instead, $\Sigma_C$ is influenced both by the distribution of $x_C$ and by members of other categories through $\Sigma_D$.
 
 $\Sigma_D$ is inferred based on the observed (empirical) category covariances $C_y$. We assume these covariances to be Wishart-distributed, and so $\Sigma_D$ can be computed as:
 
 \
 \begin{equation}
-    \Sigma_D = \Sigma_0 + \sum_{y}{C_y}
+    \Sigma_D = \Sigma_0 + \sum_{C}{C_C}
 \end{equation}
 \
-$\Sigma_{0}$ is a $p$-by-$p$ prior covariance matrix. We use a $p$-dimensional identity matrix $I_p$ multiplied element-wise against a free parameter, $\gamma$, controlling the amount of variance assumed by the prior:
+$\Sigma_{0}$ is a $p$-by-$p$ prior covariance matrix. We use a $p$-dimensional identity matrix $I_p$ multiplied element-wise against a free parameter, $\rho$, controlling the amount of variance assumed by the prior:
 \
 \begin{equation}
-    \Sigma_0 =  I_p\gamma
+    \Sigma_0 =  I_p\rho
 \end{equation}
 
-Thus, categories are assumed to have some degree of variance along each feature (specified by $\gamma$), but not are assumed to possess feature-feature correlations.
+Thus, categories are assumed to have some degree of variance along each feature (specified by $\rho$), but not are assumed to possess feature-feature correlations.
 
-\subsection*{Computing $\Sigma_y$}
+\subsection*{Computing $\Sigma_C$}
 
-Assuming $(\mu_y, \Sigma_y)$ are Normal-Inverse-Wishart distributed, $\Sigma_y$ can be computed as:
+Assuming $(\mu_C, \Sigma_C)$ are Normal-Inverse-Wishart distributed, $\Sigma_C$ can be computed as:
 
 \begin{equation}
-  \Sigma_y = [\Sigma_D\nu + C_y +
+  \Sigma_C = [\Sigma_D\nu + C_C +
     \dfrac
-    {\kappa n_y}
-    {\kappa + n_y}
-    (\bar{x_y}-\mu_y)(\bar{x_y}-\mu_y)^T
-  ] (\nu + n_y)^{-1}
+    {\kappa n_C}
+    {\kappa + n_C}
+    (\bar{x_C}-\mu_C)(\bar{x_C}-\mu_C)^T
+  ] (\nu + n_C)^{-1}
   \label{eq:Sigma_y}
 \end{equation}
 \
-$\kappa$, $\bar{x_y}$, $C_y$, $n_y$, $\mu_0$,  are the same values as described above. $\nu$ is an additional free parameter, weighting the importance of $\Sigma_{D}$. $\nu$ must be greater than $p-1$. When $x_b$ is empty, Equation \ref{eq:Sigma_y} reduces to $\Sigma_y = \Sigma_D$. 
+$\kappa$, $\bar{x_C}$, $C_C$, $n_C$, $\mu_0$,  are the same values as described above. $\nu$ is an additional free parameter, weighting the importance of $\Sigma_{D}$. $\nu$ must be greater than $p-1$. When $x_b$ is empty, Equation \ref{eq:Sigma_y} reduces to $\Sigma_C = \Sigma_D$.
 
-\subsection*{Computing response probabilities $p(x | x_b)$}
+\subsection*{Computing response probabilities $p(y | x_C)$}
 
-$x$ are assumed to be drawn from a the distribution given by $Normal(\mu_{y}, \Sigma_{y})$. Thus, 
+$x$ are assumed to be drawn from a the distribution given by $Normal(\mu_{C}, \Sigma_{C})$. Thus, 
 
 
 \begin{equation}
-  p(x) \propto Normal(x | \mu_{b}, \Sigma_{b})
+  p(y) \propto Normal(y; \mu_{C}, \Sigma_{C})
 \end{equation}
 
-In practice, $p(x)$ is computed by first obtaining the relative density of every possible generation candidate $x_i$ under the category distribution. The end probability is a normalization of these values:
+In practice, $p(y)$ is computed by first obtaining the relative density of every possible generation candidate $y_i$ under the category distribution. The end probability is a normalization of these values:
 
 \begin{equation}
   p(x) = \dfrac
-    {exp( \theta Normal(x | \mu_{b}, \Sigma_{b}))}
-    {\sum_i exp( \theta Normal(x_i |\mu_{b}, \Sigma_{b}))} 
+    {exp( \theta Normal(y ; \mu_{C}, \Sigma_{C}))}
+    {\sum_i exp( \theta Normal(y_i ; \mu_{C}, \Sigma_{C}))} 
 \end{equation}
 \
 where $\theta$ is a response determinism parameter.
@@ -105,9 +104,9 @@ where $\theta$ is a response determinism parameter.
 
 \begin{itemize}
     \setlength\itemsep{-0.5em}
-    \item $\kappa$. Scalar, $\kappa>0$. Weights the importance of $\mu_{0}$ in inferring category $\mu_{y}$.
-    \item $\gamma$. Scalar, $\gamma>0$. Weights the importance of $\Sigma_{0}$ in inferring the domain $\Sigma_{D}$.
-    \item $\nu$. Scalar, $\nu > p-1$. Weights the importance of $\Sigma_{D}$ in inferring the domain $\Sigma_{y}$.
+    \item $\kappa$. Scalar, $\kappa>0$. Weights the importance of $\mu_{0}$ in inferring category $\mu_{C}$.
+    \item $\rho$. Scalar, $\rho>0$. Sets the assumed variance in the domain prior, $\Sigma_{0}$.
+    \item $\nu$. Scalar, $\nu > p-1$. Weights the importance of $\Sigma_{D}$ in inferring the domain $\Sigma_{C}$.
     \item $\theta$. Scalar, $\theta > 0$. Response determinism parameter.
 \end{itemize}
 
