@@ -43,8 +43,8 @@ for k, v in samples.items():
 		
 
 plt.tight_layout(pad=-0.0, w_pad=-0.0)
-fh.savefig('beta.samples.png', bbox_inches = 'tight')
+fh.savefig('beta.samples.pdf', bbox_inches = 'tight')
 
-path = '../../../Manuscripts/cogsci-2017/figs/beta.samples.pgf'
+# path = '../../../Manuscripts/cogsci-2017/figs/beta.samples.pgf'
 # funcs.save_as_pgf(f, path)
 

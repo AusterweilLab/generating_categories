@@ -1,7 +1,6 @@
 import numpy as np
 
-def save_as_pgf(fh, path, 
-	texpath = '/Library/TeX/texbin/',
+def save_as_pgf(fh, path, texpath = '/Library/TeX/texbin/',
 	opts = {'pgf.texsystem': 'pdflatex'}):
 	""" Wrapper to save a pgf file. """
 	import os, matplotlib
@@ -11,12 +10,13 @@ def save_as_pgf(fh, path,
 
 
 def plotclasses(h, stimuli, alphas, betas,
-	textsettings = None):
+	textsettings = None, spinewidth = 0.5):
 
 	final_textsettings = dict(
 		verticalalignment='center', 
 		horizontalalignment='center',
-		fontsize = 11.0)
+		fontsize = 12.0,
+		fontname = 'Courier New')
 
 	if textsettings is not None:
 		final_textsettings.update(textsettings)
@@ -24,15 +24,16 @@ def plotclasses(h, stimuli, alphas, betas,
 	h.axis(np.array([-1, 1, -1, 1])*1.2)
 	for i in alphas:
 		x, y = stimuli[i,0], stimuli[i,1]
-		h.text(x,y,'A',color = 'r', **final_textsettings)
+		h.text(x, y, 'A', color = [0.5,0,0], **final_textsettings)
 
 	for i in betas:
 		x, y = stimuli[i,0], stimuli[i,1]
-		h.text(x,y,'B',color = 'b', **final_textsettings)
+		h.text(x, y, 'B', color = [0,0,0.5], **final_textsettings)
 
 	h.set_yticks([])
 	h.set_xticks([])
 	h.set_aspect('equal', adjustable='box')
+	[i.set_linewidth(spinewidth) for i in h.spines.itervalues()]
 
 
 def plotgradient(h, G, alphas, betas, 

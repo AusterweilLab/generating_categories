@@ -19,7 +19,7 @@ con.close()
 
 savedir = 'individuals'
 
-f, ax= plt.subplots(1,1, figsize=(2, 2))
+f, ax= plt.subplots(1,1, figsize=(1.6, 1.6))
 for i, row in info.iterrows():
 	pid, condition = int(row.participant), row.condition
 
