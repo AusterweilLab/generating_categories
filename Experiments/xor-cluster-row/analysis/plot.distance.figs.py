@@ -34,7 +34,7 @@ for c in pd.unique(info.condition):
 
 
 
-fh, ax = plt.subplots(1,2,figsize = (6,3))
+fh, ax = plt.subplots(1,2,figsize = (6,2.7))
 
 styles = dict(XOR = '-^',	Cluster = '-o', Row = '-s')
 
@@ -88,12 +88,12 @@ h.axis([0, 1.5, 0, 1.5])
 h.set_xlabel('Within-Class Distance',fontsize = 14)
 h.set_ylabel('Between-Class Distance',fontsize = 14)
 
-
-plt.tight_layout(pad = 0.5)
+fh.subplots_adjust(wspace=0.3)
+# plt.tight_layout(pad = 0.5)
 
 
 fname = 'distance.figs'
-fh.savefig(fname + '.png', bbox_inches = 'tight', pad_inches=0.0)
+fh.savefig(fname + '.pdf', bbox_inches = 'tight', pad_inches=0.0)
 # path = '../../../Manuscripts/cogsci-2017/figs/' + fname +'.pgf'
 # funcs.save_as_pgf(fh, path)
 
