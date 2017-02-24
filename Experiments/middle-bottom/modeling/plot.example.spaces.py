@@ -7,7 +7,7 @@ from Modules.Classes import Packer
 import Modules.Funcs as funcs
 
 
-vals = np.linspace(-1, 1, 100).tolist()
+vals = np.linspace(-1, 1, 200).tolist()
 space = np.fliplr(funcs.cartesian([vals, vals]))
 
 A = np.array([[-0.25, -0.25]])
@@ -27,7 +27,7 @@ prob_spaces = {
     'Combination': Packer(cats,pos_neg)
 }
 
-f, ax = plt.subplots(1,3, figsize = (7.5, 1.5))
+f, ax = plt.subplots(1,3, figsize = (7.5, 2.5))
 
 prefix = ['(a)','(b)','(c)']
 for i, k in enumerate(['Contrast Influence', 'Target Influence', 'Combination']):
@@ -51,7 +51,7 @@ f.colorbar(im, cax=cbar, ticks = [0,0.000276585446215])
 cbar.set_yticklabels(['Lowest\nProbability', 'Greatest\nProbability'])
 cbar.tick_params(length = 0)
 
-f.savefig('example.spaces.png', bbox_inches='tight', transparent=False)
+f.savefig('example.spaces.pdf', bbox_inches='tight', transparent=False)
 
-path = '../../../Manuscripts/cogsci-2017/figs/example.spaces.pgf'
-funcs.save_as_pgf(f, path)
+# path = '../../../Manuscripts/cogsci-2017/figs/example.spaces.pgf'
+# funcs.save_as_pgf(f, path)
