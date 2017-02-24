@@ -89,7 +89,7 @@ for model_obj, params in model_param_pairs:
 fontsettings = dict(fontsize = 10.0)
 col_order = ['Behavioral', 'PACKER', 'Copy and Tweak', 'Hierarchical Sampling']
 
-f, ax = plt.subplots(2,4,figsize = (7.0, 2.5))
+f, ax = plt.subplots(2,4,figsize = (8.5, 3.75))
 for rownum, c in enumerate(pd.unique(info.condition)):
 	A = stimuli[alphas[c],:]
 	
@@ -140,9 +140,6 @@ cbar.tick_params(length = 0)
 
 
 
-plt.tight_layout(w_pad=-8.5, h_pad= 0.1)
+plt.tight_layout(w_pad=-8.5, h_pad= 0.2)
 f.savefig('range.diff.gradient.pdf', bbox_inches='tight', transparent=False)
-
-# path = '../../../Manuscripts/cogsci-2017/figs/range-diff-gradient.pgf'
-# funcs.save_as_pgf(f, path)
 

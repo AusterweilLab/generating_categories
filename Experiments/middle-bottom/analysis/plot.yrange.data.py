@@ -65,7 +65,7 @@ plotlines(fh.gca(), df, stats)
 [i.set_linewidth(1.0) for i in fh.gca().spines.itervalues()]
 
 
-fh.savefig('yranges.png', bbox_inches = 'tight')
+fh.savefig('yranges.pdf', bbox_inches = 'tight')
 
-path = '../../../Manuscripts/cogsci-2017/figs/middle-bottom-yranges.pgf'
+# path = '../../../Manuscripts/cogsci-2017/figs/middle-bottom-yranges.pgf'
 # funcs.save_as_pgf(f, path)
