@@ -91,4 +91,3 @@ for j in ['xrange','yrange','correlation']:
 		g2 = stats.loc[stats.condition == b, j]
 		print '\n---- ' + ' ' + j + ': ' + a + ', ' + b
 		print_ttest(g1,g2, ttest_ind)
-

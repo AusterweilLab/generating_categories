@@ -11,16 +11,16 @@
 
 ## Experiment 1
 
-- [ ] Motivate more than: "replicate and see what happens!"
+- [x] Motivate more than: "replicate and see what happens!"
 
 ### Methods
 
-- [ ] _Take it slowwwwwww_
-- [ ] Note that it is between subjects
-- [ ] Show phase prompts, examples
+- [s] _Take it slowwwwwww_
+- [x] Note that it is between subjects
+- [x] Show phase prompts, examples
 - [ ] Again, show what it means to generate a category in the space
-- [ ] Bootstrap multidimensional space thinking. Note that people never saw the spaces, just squares
-- [ ] Show phases before conditions [contingent on strong motivation without reference to conditions].
+- [x] Bootstrap multidimensional space thinking. Note that people never saw the spaces, just squares
+- [s] Show phases before conditions [contingent on strong motivation without reference to conditions].
 
 ### Results
 
@@ -32,14 +32,14 @@
   
 ## Experiment 2
 
-- [ ] Be careful about Hidaka & Smith cite-- just attribute general idea of packing to them.
-- [ ] Describe JK13 predictions (no differences between conditions)
+- [x] Be careful about Hidaka & Smith cite-- just attribute general idea of packing to them.
+- [x] Describe JK13 predictions (no differences between conditions)
 - [ ] Describe between-condition differences in heatmaps
 
 ## Modeling
 
-- [ ] Show the PACKER math for Joe [joke opportunity]. Highlight role of constraint params.
-- [ ] Note the recency of this information, so not much to tell yet.
-- [ ] Report # params per model somewhere.
-- [ ] Future direction combining the JK13 effect with contrast in a model.
+- [x] Show the PACKER math for Joe [joke opportunity]. Highlight role of constraint params.
+- [x] Note the recency of this information, so not much to tell yet.
+- [x] Report # params per model somewhere.
+- [x] Future direction combining the JK13 effect with contrast in a model.
 - [x] thank Jeff <3
