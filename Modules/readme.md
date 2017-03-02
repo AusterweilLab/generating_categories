@@ -14,7 +14,7 @@ import Modules.Funcs as funcs
 If you don't want to keep track, I have written an `Imports.py` script that finds the main directory (assumed to be a parent directory ) and inserts it into the system path. `Imports.py` can be copied to wherever you are scripting so that you can do this:
 
 ```python
-execfile('Import.py') 
+execfile('Imports.py') 
 from Modules.Classes import ...
 ...
 ```

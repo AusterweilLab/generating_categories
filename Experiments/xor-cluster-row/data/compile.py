@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import os
 import sqlite3
-from scipy.spatial import ConvexHull
 
 from Classes import Participant, Conditions
 
@@ -70,33 +69,13 @@ for ss in part_objs:
 	rows = ss.generation[generation.columns.values]
 	generation = generation.append(rows, ignore_index = True)
 
-
 	# compute beta stats
 	alphas = stimuli.as_matrix()[ss.alphas,:]
 	betas = stimuli.as_matrix()[ss.generation.stimulus,:]	
 
-	ranges= np.ptp(betas,axis=0)
-	variances = np.std(betas, axis=0)
-	within = funcs.pdist(betas, betas)
-	within = np.mean(within[np.triu(within)>0])
-	between = np.mean(funcs.pdist(alphas, betas))
-	area = ConvexHull(funcs.jitterize(betas)).volume
-
-	correlation = np.corrcoef(betas, rowvar = False)[0][1]
-	if np.isnan(correlation):
-		correlation = 0.0
-
-	row = dict(
-				participant = ss.participant, 
-				xrange = ranges[0], yrange = ranges[1], 
-				drange = ranges[0] - ranges[1],
-				xstd = variances[0], ystd = variances[1],
-				within = within, between = between, 
-				correlation = correlation, 
-				area = area,
-				)
-
-	betastats = betastats.append(row,ignore_index = True)
+	stats = funcs.stats_battery(betas, alphas = alphas)
+	stats['participant'] = ss.participant
+	betastats = betastats.append(stats,ignore_index = True)
 
 for j in ['participant', 'start', 'finish']:
 	participants[j] = participants[j].astype(int)

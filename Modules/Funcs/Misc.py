@@ -1,4 +1,33 @@
 import numpy as np
+from scipy.spatial import ConvexHull
+
+def stats_battery(betas, alphas = None):
+	"""
+	Compute a battery of category stats, return it all in a dict
+	"""
+	res = dict()
+
+	# feature distributions
+	res['xrange'], res['yrange'] = np.ptp(betas,axis=0)
+	res['drange'] = res['xrange'] - res['yrange']
+	res['xstd'],   res['ystd']   = np.std(betas, axis=0)
+
+	# feature correlation
+	res['correlation'] = np.corrcoef(betas, rowvar = False)[0][1]
+	if np.isnan(res['correlation']):
+		res['correlation'] = 0.0
+
+	# total area of convex hull
+	res['area'] = ConvexHull(jitterize(betas, sd = 0.0001)).volume
+
+	# distances
+	within_mat = pdist(betas, betas)
+	res['within'] = np.mean(within_mat[np.triu(within_mat)>0])
+	if alphas is not None:
+		res['between'] = np.mean(pdist(alphas, betas))
+	
+	return res
+
 
 def histvec(X, bins, density = False):
 	"""
@@ -32,6 +61,7 @@ def gradientroll(G, op):
 	"""
 	Conversion of 3D-gradient matrices "G" to 2D column lists,
 	and vice-versa.
+
 	gradientroll(G,'roll') will convert a 2D maxtrix G into a 3D array of
 	square gradients, the size of which is determined by sqrt(G.shape[0]).
 	

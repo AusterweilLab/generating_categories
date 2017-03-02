@@ -1,8 +1,12 @@
 import numpy as np
 
-def save_as_pgf(fh, path, texpath = '/Library/TeX/texbin/',
+def save_as_pgf(fh, path, 
+	texpath = '/Library/TeX/texbin/',
 	opts = {'pgf.texsystem': 'pdflatex'}):
-	""" Wrapper to save a pgf file. """
+	""" 
+	Wrapper to save a pgf file. 
+	"""
+	
 	import os, matplotlib
 	os.environ["PATH"] += os.pathsep + texpath
 	matplotlib.rcParams.update(opts)
@@ -10,7 +14,8 @@ def save_as_pgf(fh, path, texpath = '/Library/TeX/texbin/',
 
 
 def plotclasses(h, stimuli, alphas, betas,
-	textsettings = None, spinewidth = 0.5):
+	textsettings = None, 
+	spinewidth = 0.5):
 
 	final_textsettings = dict(
 		verticalalignment='center', 
@@ -40,8 +45,7 @@ def plotgradient(h, G, alphas, betas,
 								clim = (), 
 								cmap = 'Blues',
 								alpha_col = 'red',
-								beta_col = 'black',
-								):
+								beta_col = 'black'):
 	"""
 	Plot a gradient using matplotlib.
 	 - h is the handle to the axis

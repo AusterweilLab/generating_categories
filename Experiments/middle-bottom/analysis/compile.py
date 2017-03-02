@@ -111,8 +111,6 @@ alphas = pd.DataFrame(dict(
 ))
 
 # compute beta category betastats for each participant
-# bottom_nums = range(18)
-# top_nums = range(63,81)
 bottom_nums = range(9)
 top_nums = range(72,81)
 betastats = []
@@ -121,22 +119,13 @@ for pid, rows in generation.groupby('participant'):
 	condition = participants.loc[participants.participant == pid, 'condition']
 	betas = rows.stimulus
 	betas = stimuli.as_matrix()[betas,:]
-	
-	ranges= np.ptp(betas,axis=0)
-	variances = np.std(betas, axis=0)
-
 	p_alphas = alphas[condition].as_matrix()[:,0]
 	p_alphas = stimuli.as_matrix()[p_alphas,:]
-	within = funcs.pdist(betas, betas)
-	within = np.mean(within[np.triu(within)>0])
-	between = np.mean(funcs.pdist(p_alphas, betas))
 
-	area = ConvexHull(funcs.jitterize(betas)).volume
+	# stats battery
+	stats = funcs.stats_battery(betas, alphas = p_alphas)
 
-	correlation = np.corrcoef(betas, rowvar = False)[0][1]
-	if np.isnan(correlation):
-		correlation = 0.0
-
+	# compute top and bottom stats
 	nums = rows.stimulus
 	bottom_used = any(nums.isin(bottom_nums))
 	bottom_only = all(nums.isin(bottom_nums))
@@ -144,18 +133,14 @@ for pid, rows in generation.groupby('participant'):
 	top_only = all(nums.isin(top_nums))
 	top_and_bottom = bottom_used & top_used
 
-	row = dict(participant = pid, 
-							xrange = ranges[0], yrange = ranges[1], 
-							drange = ranges[0] - ranges[1],
-							xstd = variances[0], ystd = variances[1],
-							within = within, between = between, 
-							correlation = correlation, 
-							area = area,
+	attl_fields = dict(
+							participant = pid, 
 							bottom_used = bottom_used, bottom_only = bottom_only,
 							top_used = top_used, top_only = top_only,
 							top_and_bottom = top_and_bottom
 							)
-	betastats.append(row)
+	stats.update(attl_fields)
+	betastats.append(stats)
 betastats = pd.DataFrame(betastats)
 
 
