@@ -5,3 +5,4 @@ This is the main repository for the generating categories project. It contains t
 - The `Experiments` directory contains the code and analysis of each experiment.
 - The `Modules` directory contains python modules implementing generation models (and other useful functions).
 - The `Manuscripts` directory contains our LaTeX manuscripts.
+- The `Presentations` directory contains powerpoint slides for the talks given on the project.
