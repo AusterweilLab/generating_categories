@@ -65,8 +65,8 @@ xax = h.axis()
 h.text(xax[0],xax[2] -1, 'Min', fontsize = 12, va = 'top')
 h.text(xax[1],xax[2] -1, 'Max', fontsize = 12, va = 'top', ha = 'right')
 h.set_xlabel('Distance', fontsize = 14)
-h.set_yticks(np.arange(0,12, 2))
-h.set_yticklabels(np.arange(0, 12, 2),fontsize = 12)
+# h.set_yticks(np.arange(0,12, 2))
+# h.set_yticklabels(np.arange(0, 12, 2),fontsize = 12)
 h.set_ylabel('Generations Per Stimulus', fontsize = 14)
 
 

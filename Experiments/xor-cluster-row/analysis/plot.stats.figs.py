@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("whitegrid")
 
+pd.set_option('display.width', 1000, 'precision', 2)
+
+
 execfile('Imports.py')
 import Modules.Funcs as funcs
 
@@ -40,7 +43,7 @@ fh.savefig('statsboxes.pdf', bbox_inches = 'tight', pad_inches=0.0)
 
 
 # hypothesis tests
-from scipy.stats import ttest_ind, ttest_rel, ttest_1samp
+from scipy.stats import ttest_ind, ttest_rel, ttest_1samp, wilcoxon
 from itertools import combinations
 
 def print_ttest(g1, g2, fun):
@@ -69,9 +72,16 @@ g1 = stats.loc[stats.condition == 'XOR', 'xrange']
 g2 = stats.loc[stats.condition == 'XOR', 'yrange']
 print_ttest(g1,g2, ttest_rel)
 
+print '\n---- Cluster positive correlation?'
+g1 = stats.loc[stats.condition == 'Cluster', 'correlation']
+print ttest_1samp(g1, 0).pvalue
+print wilcoxon(g1).pvalue
+
 print '\n---- XOR negative correlation?'
 g1 = stats.loc[stats.condition == 'XOR', 'correlation']
 print ttest_1samp(g1, 0).pvalue
+print wilcoxon(g1).pvalue
+
 
 print '\n---- XOR has more total range than Cluster?'
 g1 = stats.loc[stats.condition == 'Cluster', ['xrange','yrange']].sum(axis = 1)
@@ -91,3 +101,6 @@ for j in ['xrange','yrange','correlation']:
 		g2 = stats.loc[stats.condition == b, j]
 		print '\n---- ' + ' ' + j + ': ' + a + ', ' + b
 		print_ttest(g1,g2, ttest_ind)
+
+cols = ['condition', 'between', 'correlation', 'within', 'xrange', 'yrange']
+print stats[cols].groupby('condition').describe()

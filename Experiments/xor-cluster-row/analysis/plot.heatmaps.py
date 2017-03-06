@@ -21,7 +21,7 @@ from scipy.ndimage.filters import gaussian_filter
 
 clim = (0.0, 0.10)
 
-f, ax = plt.subplots(3,1, figsize = (2,6 ))
+f, ax = plt.subplots(1,3, figsize = (6,2 ))
 for i, (K, rows) in enumerate(infodf.groupby('condition')):
 
 	pids = rows.participant
@@ -37,7 +37,7 @@ for i, (K, rows) in enumerate(infodf.groupby('condition')):
 	print(K, np.max(g))
 
 	h = ax[i]
-	im = funcs.plotgradient(h, g, stimuli[alphas[K],:], [], clim = clim)
+	im = funcs.plotgradient(h, g, stimuli[alphas[K],:], [])
 	h.set_title(K, fontsize = 12)
 
 f.subplots_adjust(hspace=0.4)

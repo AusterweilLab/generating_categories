@@ -1,0 +1,32 @@
+
+<div id='instructions' style="text-align:center">
+	<p>Thank you for participating in our experiment!</p>
+	<p>Please click the button below to submit your work.</p>
+</div>
+
+<center>
+	<form id = 'submitHIT' method = 'POST'>
+	  <input type="submit" class = 'classifybutton' style="width:150px" value="Submit">
+	</form> 
+</center>
+
+
+<script type="text/javascript">
+	// set form action
+	form = document.getElementById("submitHIT");
+	form.action = worker.turkSubmitTo + "/mturk/externalSubmit";
+
+	// add assignment ID
+	assignment = document.createElement('input');
+	assignment.type = 'hidden';
+	assignment.name = "assignmentId";
+	assignment.value = worker.assignmentId;
+	form.appendChild(assignment);
+
+	// add message
+	message = document.createElement('input');
+	message.type = 'hidden';
+	message.name = "code";
+	message.value = 'Finished';
+	form.appendChild(message);
+</script>

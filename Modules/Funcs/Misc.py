@@ -29,6 +29,29 @@ def stats_battery(betas, alphas = None):
 	return res
 
 
+def ndspace(n, d, low = -1.0, high = 1.0):
+	"""
+	Generate coordinates of points based on an evenly distributed d-dimensional
+	grid, sampled at n points along each dimension. User may specify low and high 
+	points of grid. Defaults: low = -1, high = +1
+
+	Example: Making a 3-dimensional binary space
+	>>> ndspace(2, 3, low = 0)
+		[[ 0.  0.  0.]
+		 [ 0.  0.  1.]
+		 [ 0.  1.  0.]
+		 [ 0.  1.  1.]
+		 [ 1.  0.  0.]
+		 [ 1.  0.  1.]
+		 [ 1.  1.  0.]
+		 [ 1.  1.  1.]]
+	"""
+
+	# create value vector for all d
+	values = [np.linspace(low, high, n)  for i in range(d)]
+	return cartesian(values)
+
+
 def histvec(X, bins, density = False):
 	"""
 	MATLAB-like histogram function, with items in vector X being placed
