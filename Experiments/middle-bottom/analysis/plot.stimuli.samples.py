@@ -30,5 +30,5 @@ for i, (color, size) in enumerate(combos):
 plt.tight_layout(pad=-0.0, w_pad=-0.0)
 f.savefig('stimuli.samples.png', bbox_inches = 'tight')
 
-path = '../../../Manuscripts/cogsci-2017/figs/stimuli-samples.pgf'
-# funcs.save_as_pgf(f, path)
+path = '../../../Manuscripts/cog-psych/figs/stimuli-samples.pgf'
+funcs.save_as_pgf(f, path)

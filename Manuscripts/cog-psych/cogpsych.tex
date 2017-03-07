@@ -7,16 +7,22 @@
 \usepackage{pgfplots}
 \usepackage{fancyhdr}
 \usepackage{fancyvrb}
+\usepackage{csquotes}
 \usepackage[natbibapa]{apacite}
 
 % set up PGF
 \pgfplotsset{compat=1.6}
+\newcommand\inputpgf[2]{{
+\let\pgfimageWithoutPath\pgfimage
+\renewcommand{\pgfimage}[2][]{\pgfimageWithoutPath[##1]{#1/##2}}
+\input{#1/#2}
+}}
 
 % set up header % 
 \pagestyle{fancy}
 \fancyhf{} % sets both header and footer to nothing
 \renewcommand{\headrulewidth}{0pt}
-\lhead{RUNNING HEAD: Contrast in Concept Generation}
+\lhead{RUNNING HEAD: Similarity and Contrast in Concept Generation}
 \fancyhead[R]{\thepage}
 
 
@@ -33,7 +39,7 @@
 \hfill
 \\[1in]
 
-The Role of Contrast in Concept Generation.
+Creating Something Different: Similarity and Contrast Effects in Concept Generation.
 % ---- other ideas:
 % - The Role of Contrast in Concept Generation.
 % - Creating Something Different: The Role of Contrast in Concept Generation.
@@ -82,9 +88,61 @@ Filler!
 \setlength\parindent{0.5in}
 
 
+The creation of novel concepts and ideas is a highly intriguing -- yet infrequently studied -- topic of research in human cognition. The creative use of conceptual knowledge is a core element of scientific investigation, wherein the generation of new ideas is critical to designing experiments and explaining observations. However, due to its complexity, little is presently known about the cognitive processes underlying the creative generation of new concepts. 
+
+Much of what we know about conceptual generation comes from the foundational literature on creative cognition. In a classic series of reports, Ward \& colleagues \citep{ward1995s,ward1994structured,ward2002role,marsh1999inadvertent,ward2002role} established that category generation is highly constrained by prior knowledge. For example, \cite{ward1994structured} observed that participants asked to generate new species of alien animals tended to produce features possessed by earth species. Likewise...
+
+
+
+\section{Snippets}
+
+\cite{jern2013probabilistic} showed that difficult topic of creative generation could be studied through the well-developed methodology from the field of categorization. Specifically, they found that learners trained on  artificial categories typically generated new artificial categories with similar distributional properties.
+
+In this paper, we provide a systematic examination of conceptual generation using the well-developed methods and theoretical frameworks from the literature on human category learning. We also introduce a novel exemplar model of category generation, PACKER (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}), which explains much of what we observe in the creative use of conceptual knowledge. One of the core principles of PACKER (as well as its name) are inspired by earlier work in category learning \citep[see][]{hidaka2011packing}.
+
 
 
 \section{Experiment 1}
+
+
+\subsection{Participants \& Materials}
+
+183 participants were recruited from Amazon Mechanical Turk. Participants were randomly assigned to one condition: 64 participants were assigned to the Cluster condition, 61 were assigned to the Row condition, and 58 were assigned to the XOR condition. Stimuli were squares varying in color (RGB 25--230) and side length (3.0--5.8cm).  See Figure \ref{fig:sample-stimuli} for samples. The assignment of perceptual features (color, size) to axes of the domain space (x, y) was counterbalanced across participants.
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{stimuli-samples.pgf}
+    \caption{Sample stimuli used in Experiments 1 and 2.}
+    \label{fig:sample-stimuli}
+    \end{center}
+\end{figure}
+
+\subsection{Procedure}
+
+Participants began the experiment with a short training phase (3 blocks of 4 trials), where they observed exemplars belonging to the `Alpha' category. Participants were instructed to learn as much as they can about the Alpha category, and that they would answer a series of test questions afterwards. On each trial, a single Alpha category exemplar was presented, and participants were given as much time as they desired before moving on. Each block consisted of a single presentation of each of the members of the Alpha category, in a random order. Participants were shown the range of possible colors and sizes prior to training.
+
+Following the training phase, participants were asked to generate four examples belonging to another category called `Beta'. As in \citet{jern2013probabilistic}, generation was completed using a sliding-scale interface. Two scales controlled the features (color, size) of the generated example. An on-screen preview of the example updated whenever one of the features was changed. Participants could generate any example along an evenly-spaced 9x9 grid, except for any previously generated Beta exemplars. Neither the members of the Alpha category nor the previously generated Beta examples were visible during generation. Prior to beginning the generation phase, participants read the following instructions:
+
+\begin{displayquote}
+As it turns out, there is another category of geometric figures called "Beta". Instead of showing you examples of the Beta category, we would like to know what you think is likely to be in the Beta category. 
+
+You will now be given the chance to create examples of any size or color in order to show what you expect about the Beta category. You will be asked to produce 4 Beta examples - they can be quite similar or quite different to each other, depending on what you think makes the most sense for the category.
+
+Each example needs to be unique, but the computer will let you know if you accidentally create a repeat.
+\end{displayquote}
+
+Following generation, participants completed a generalization phase wherein they classified novel examples into the Alpha and Beta categories without feedback. On each trial, a single example was presented, and participants were asked to classify it by clicking buttons labeled ``Alpha'' or ``Beta''. Participants classified a total of 81 items sampled along a 9x9 grid, including the members of the Alpha and Beta categories (randomly intermixed). These data were, however, collected to address a separate set of questions, and we do not discuss them in this paper.
+
+
+
+
+
+
+
+
+
+\section{Acknowledgments}
+A previous version of this work appeared in the Proceedings of the Thirty-Ninth Annual Conference of the Cognitive Science Society. Support for this research was provided by the Office of the VCRGE at the UW - Madison with funding from the WARF. We thank Alan Jern and Charles Kemp for providing code and data.
 
 
 
@@ -93,9 +151,8 @@ Filler!
 
 % references section
 \clearpage
-\setlength{\bibsep}{10pt}
-\setstretch{1}
-\bibliography{references.bib}
+\bibliographystyle{apacite}
+\bibliography{citations.bib}
 \clearpage
 
 
