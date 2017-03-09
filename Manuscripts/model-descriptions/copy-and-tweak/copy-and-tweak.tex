@@ -2,44 +2,87 @@
 
 \documentclass[12pt]{article}
 \usepackage[letterpaper, margin=1in, headheight=15pt]{geometry}
-\usepackage{setspace, amsmath}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{csquotes}
+\usepackage{fancyvrb}
+\usepackage[natbibapa]{apacite}
+
 
 
 \begin{document}
 
-\section{The Exemplar Copy-And-Tweak Model}
+\section{The Copy-And-Tweak Model}
 
-This model assumes that people represent categories as a collection of stored observations. When prompted to generate new examples, they copy and randomly tweak one of the stored examples. Thus, the model's generation is a two-part process:
+This model was originally referred to as the ``Path-of-Least-Resistance'' model \citep{ward1994structured,ward1995s,ward2002role}, and later re-interpreted as the ``Copy-and-Tweak'' model \citep{jern2013probabilistic}. Under each name it was interpreted differently, and indeed the core psychological theory can be reasonably instantiated in a variety of ways.
 
-\begin{enumerate}
-  \item Select a source example from memory.
-  \item Generate an example that is similar-but-not-too-similar to the source.
-\end{enumerate}
+In the broadest sense, the theory claims that people generate a new item by retrieving an observation from memory and changing its features. However, the manner in which observations can be retrieved and changed, was never formally specified. Below, i describe how the model has been interpreted.
 
-More formally, let $x$ be a $j$-exemplar by $k$-feature matrix, corresponding to the stored exemplars associated with the target category. The probability that a source example $z$ is selected is uniform across all exemplars. After a source exemplar $z$ is selected, similarity between candidate generation options $y$ is computed:
+\section{Ward's ``Path-of-Least-Resistance'' model}
 
-\begin{equation}
-  s(y,z) = exp( -c \sum_k{|y_k - z_k|w_k})
-\end{equation}
+Ward never provided a formal specification of his model, though it is described briefly in \cite{ward1994structured,ward1995s} and tested empirically in \cite{ward2002role}. As far as I know, these are the main places where the model is described. Each of these papers describes a similar concept, with some slight differences. Below are key passages from each paper.
 
-Where $c$ and $w_k$ are the standard specificity and attention weights discussed elsewhere. The goal of the model is to generate an item that is similar but sufficiently tweaked from the source. Thus, probability a candidate stimulus will be generated is given by:
-
-\begin{equation}
-    p(y|z)  = \dfrac
-    { \exp \left\{\theta \cdot s(y,z) \right\} I\left(s(y,z) \leq \tau\right) }
-    {\sum_i{\exp \left\{ \theta \cdot s(y_i,z) \right\} I\left(s(y_i,z) \leq \tau\right)}} 
-    \label{eq:generation-choice}
-\end{equation}
-% 
-where $\theta$ is a response determinism parameter, $\tau$ is the similarity threshold, and $I(\cdot)$ is the indicator function, which returns 1 when it is passed a true expression and 0 otherwise. So, $I\left(s(y,z) \leq \tau\right)$ is 1 when the candidate exemplar $y$ is tweaked enough. When $\tau=1$, the threshold has no effect.
-
-To obtain predictions not depending on a given source example, the model's predictions can be aggregated over all possible sources:
-
-\begin{equation}
-  p(y) = \sum_z{p(z)p(y|z) }
-\end{equation}
+\subsection{\cite{ward1994structured}}
+\begin{displayquote}
+``...One simple way to do so would be to suggest that the stored representation that is used for making category decisions is the same information used to generate a novel member of the category. When subjects are given the task of generating a novel animal, for example, the label "animal" might lead them to retrieve typical exemplars of their animal category. They would then use those activated representations as a starting point for the new creation. Because all of the models contain information that would at least translate into characteristic features of known category members, they all would predict that newly generated exemplars will possess those characteristic features. That is, the characteristic properties that are so influential in category decision making should also be influential in the development of novel instances. Presumably, a person using imagination would create a novel entity that was similar to the stored representation by projecting characteristic properties of that representation onto the entity.''
+\end{displayquote}
 
 
+\subsection{\cite{ward1995s}}
+\begin{displayquote}
+``The path-of-least-resistance model assumes that category representations include specific exemplars that are embedded within broader knowledge frameworks, which give the exemplars their categorical coherence. It also states that truly useful, creative innovations that are novel and appropriate to a task are more likely (though not guaranteed) to occur when individuals access broader knowledge structures than when they simply retrieve exemplars. The exemplars are seen as largely static, uninterpreted entities, in contrast to the dynamic and flexible information in broader knowledge structures. Although one might randomly vary attributes of retrieved exemplars, without the guidance provided by access to broader structures, there is little chance of those novel variations' being appropriate for a given task. Thus, to the extent that individuals have access to well-developed explanatory frameworks, they are in a position to modify existing designs or develop new ones.''
+\end{displayquote}
+
+\subsection{\cite{ward2002role}}
+\begin{displayquote}
+``The focus on representativeness stems from the path-of-least-resistance model (Ward, 1994, 1995), which attributes the resemblance between newly generated entities and known ones to the approach people take in generating those novel entities. The model proposes that, although people can adopt a variety of strategies for developing new ideas, a predominant approach is to retrieve specific known instances of the relevant concept and to project the properties of those instances onto the novel idea. Furthermore, the selection of instances is assumed to be guided by their representativeness. Items that are the most representative of the concept are the ones most likely to be retrieved and used as starting points for new ideas. In generating an imaginary animal, for example, a person would tend to move toward a level of abstraction more specific than animal and to gravitate toward representative instances, such as mammal and dog, rather than less representative ones, such as fish or bat.''
+\end{displayquote}
+
+\subsection{What can we conclude about Ward's interpretation?}
+
+In the 1994 paper, Ward argues that the generated item should share the characteristic properties of the retrieved item, and differ along non-characteristic properties. More formally, this can be construed as a claim about how much the generated item will differ from the source, according to how much the known category varies along each feature. If a category does not vary much along a feature, then that feature should be viewed as characteristic to the category, and should not be changed along that feature in generation. 
+
+As an example, imagine asking someone to generate a new breed of dog. Dog breeds do not vary much in \textit{number of legs}: having four legs is characteristic of the dog category, and so generated breeds will probably not differ. However, dog breeds vary a lot in \textit{fur color pattern}, and so this feature is likely to be changed. Key to this concept is hierarchical organization: people are assumed to be generating examples of categories sharing a higher level domain (i.e., dog breeds are examples of dogs). So when asked to generate a breed, they retrieve a representation of a breed, not a specific observation. This claim makes the theory a lot more like that of \cite{jern2013probabilistic}, and is also mirrored in the passage from the 1995 chapter.
+
+Mapping this example to the artificial domain, the new breed of dogs is of course the Beta category: each Beta example corresponds to a single member of the new breed. When asked to generate the Beta category, the theory assumes that people retrieve their knowledge of the Alpha category (the whole thing, not it's specific examples) and change it along non-characteristic features. So the claim is that members of the Beta category should actually be \textit{similar} to members of the Alpha category along features that the Alphas do not vary along, just as a generated breed of dog will also have 4 legs.
+
+\begin{figure}
+    \begin{center}
+    \begin{BVerbatim}
+|
+| AAAA   BBBB
+|_____________
+    \end{BVerbatim}
+
+    \caption{Generated category differs along the variable axis, but do not along homogeneous axis.}
+    \end{center}
+\end{figure}
+
+The 2002 paper is more concerned with the process of selecting the source. The claim is that the most representative examples are the most likely to be spontaneously retrieved, and thus used as the source. This claim makes more sense in a natural category domain where, for example, there are multiple breeds of dogs that are graded in terms of typicality. In an artificial domain, there aren't many categories and we assume that some are not more representative than others. 
+
+However, we do have strong theories about the typicality of examples \textit{within} a category. When generating new members of a known category, the probability of retrieval can be straightforwardly estimated using similarity measures.
+
+
+
+
+\section{\citeauthor{jern2013probabilistic}'s ``Copy-and-Tweak'' model}
+
+
+
+
+
+\section{Our Interpretation}
+
+The core concept of Ward's model is based on hierarchically organized domains of natural categories. The artificial domain differs in that it is not clear Alphas and Betas share some higher level category, and so its not clear they ought to have something in common. 
+
+
+
+
+% references section
+\clearpage
+\bibliographystyle{apacite}
+\bibliography{citations.bib}
+\clearpage
 
 
 \end{document}
