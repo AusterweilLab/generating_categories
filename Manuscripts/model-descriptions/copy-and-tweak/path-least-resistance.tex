@@ -1,0 +1,91 @@
+%!TEX output_directory = latex_out/
+
+\documentclass[12pt]{article}
+\usepackage[letterpaper, margin=1in, headheight=15pt]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{csquotes}
+\usepackage{fancyvrb}
+\usepackage[natbibapa]{apacite}
+
+
+
+\begin{document}
+
+\section{Ward's ``Path-of-Least-Resistance'' model}
+
+This model was originally referred to as the ``Path-of-Least-Resistance'' model \citep{ward1994structured,ward1995s,ward2002role}, and later re-interpreted as the ``Copy-and-Tweak'' model \citep{jern2013probabilistic}. The core psychological theory can be reasonably instantiated in a variety of ways.
+
+In the broadest sense, the theory claims that people generate a new item by retrieving \textit{something} from memory and changing it \textit{somehow}. But Ward never provided a formal specification of his model. It was only described briefly in \cite{ward1994structured,ward1995s} and tested empirically in \cite{ward2002role}. I have pasted passages from these papers in Appendix \ref{ap:passages}. Below I describe what we can interpret from what he has written.
+
+\subsection{An interpretation}
+
+The path of least resistance theory described by Ward is quite a bit different from what \cite{jern2013probabilistic} implemented. The theory is definitely formulated for a hierarchical natural-categories domain, and according to Ward, the theory is of a process, so it ostensibly describes the processes that operate on representations. 
+
+The first distinction is that when people select a source, they are selecting one of many \textit{subcategories} (not examples), all sharing a higher-level class. For example, people are picking among categories of \textit{animals} (e.g., \textit{cat}, \textit{dog}, \textit{bear}), each of which has exemplars. They are thought to pick a subclass according to its representativeness of the higher-level category, and then change the non-characteristic features among members of the subclass to make something new.
+
+Problematically, in an artificial domain, there aren't many categories and we assume that they are all equal in representativeness. Furthermore, unlike in a natural categories domain, it is not clear Alphas and Betas \textit{should} share some higher level category (it wouldn't be unreasonable for participants to view them as opposites), and so its not clear they ought to be related. So it is worth noting that this model is not well-suited for the artificial domain.
+
+Here's what it would look like if we tried to implement Ward's ideas as closely as possible. Since the Alphas are the only other class, they would of course be retrieved. The tweaking is based on how characteristic each feature is of the source: the location of the new category is the same as the source but moved in some (unspecified, maybe random) direction along one or more features that are viewed as uncharacteristic of the source. We can use range as a proxy for characteristic-ness (less range = more representative), so the new category will differ along axes that the sources varies on. 
+
+\begin{figure}[ht]
+    \begin{center}
+    \begin{BVerbatim}
+|
+| AAAA   BBBB
+|_____________
+    \end{BVerbatim}
+    \caption{Generated category differs only along the variable axis.}
+    \label{fig:AB-Sample}
+    \end{center}
+\end{figure}
+
+That means that if the Alphas are a row (taking a single Y-axis value), the Betas will share the same Y-axis value and differ along the X-axis, which is the opposite of what we've observed. See Figure \ref{fig:AB-Sample} for an example. 
+
+\subsubsection{Open questions}
+
+Critically, Ward makes no claims about how categories are represented. For example: \textit{What is the source}? Is it a prototype? Or a (presumably representative) example? Or the parameters to a distribution? 
+
+Likewise, there are no claims about how examples are generated once the source subclass has been tweaked. Maybe the tweaking specifies the prototype of the category, but how are examples of that category distributed? Is it about maximizing similarity like in an exemplar approach? Or is it a sampling approach like \cite{jern2013probabilistic}? This question is dependent on the nature of category representation, but involves additional assumptions about the generation process. 
+
+\section{Formalizing the Model}
+
+I can think of several reasonable formalizations, all following from the core claims made by Ward. Later I will write that math in these.
+
+\subsection{A Prototype Model}
+
+\subsection{An Exemplar Model}
+
+\subsection{A Hierarchical Prototype Model}
+
+
+% references section
+\clearpage
+\bibliographystyle{apacite}
+\bibliography{citations.bib}
+
+
+\clearpage
+\appendix
+\section{Passages from Ward's papers}
+\label{ap:passages}
+
+\subsection{\cite{ward1994structured}}
+\begin{displayquote}
+``...One simple way to do so would be to suggest that the stored representation that is used for making category decisions is the same information used to generate a novel member of the category. When subjects are given the task of generating a novel animal, for example, the label "animal" might lead them to retrieve typical exemplars of their animal category. They would then use those activated representations as a starting point for the new creation. Because all of the models contain information that would at least translate into characteristic features of known category members, they all would predict that newly generated exemplars will possess those characteristic features. That is, the characteristic properties that are so influential in category decision making should also be influential in the development of novel instances. Presumably, a person using imagination would create a novel entity that was similar to the stored representation by projecting characteristic properties of that representation onto the entity.''
+\end{displayquote}
+
+
+\subsection{\cite{ward1995s}}
+\begin{displayquote}
+``The path-of-least-resistance model assumes that category representations include specific exemplars that are embedded within broader knowledge frameworks, which give the exemplars their categorical coherence. It also states that truly useful, creative innovations that are novel and appropriate to a task are more likely (though not guaranteed) to occur when individuals access broader knowledge structures than when they simply retrieve exemplars. The exemplars are seen as largely static, uninterpreted entities, in contrast to the dynamic and flexible information in broader knowledge structures. Although one might randomly vary attributes of retrieved exemplars, without the guidance provided by access to broader structures, there is little chance of those novel variations' being appropriate for a given task. Thus, to the extent that individuals have access to well-developed explanatory frameworks, they are in a position to modify existing designs or develop new ones.''
+\end{displayquote}
+
+\subsection{\cite{ward2002role}}
+\begin{displayquote}
+``The focus on representativeness stems from the path-of-least-resistance model (Ward, 1994, 1995), which attributes the resemblance between newly generated entities and known ones to the approach people take in generating those novel entities. The model proposes that, although people can adopt a variety of strategies for developing new ideas, a predominant approach is to retrieve specific known instances of the relevant concept and to project the properties of those instances onto the novel idea. Furthermore, the selection of instances is assumed to be guided by their representativeness. Items that are the most representative of the concept are the ones most likely to be retrieved and used as starting points for new ideas. In generating an imaginary animal, for example, a person would tend to move toward a level of abstraction more specific than animal and to gravitate toward representative instances, such as mammal and dog, rather than less representative ones, such as fish or bat.''
+\end{displayquote}
+
+
+
+\end{document}
