@@ -2,9 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 np.set_printoptions(precision = 2, linewidth = 120)
 
-
 execfile('Imports.py') 
-from Modules.Classes import PPOLR, Packer
+from Modules.Classes import CopyTweak, Packer, ConjugateJK13
 import Modules.Funcs as funcs
 
 # [[72 73 74 75 76 77 78 79 80]
@@ -19,47 +18,13 @@ import Modules.Funcs as funcs
 stimuli = np.fliplr(funcs.ndspace(9,2))
 
 categories = [
-	stimuli[[10, 19, 28],:],
+	stimuli[[10, 19, 28, 37],:],
+	stimuli[[8,65],:],
 	]
 
-packer_params = dict(
-	specificity = 2, 
-	between = -2,  
-	within = 0, 
-	determinism = 10, 
-	)
-
-ppolr_params = dict(
-	retrieval_determinism = 0,
-	weights_determinism = 0
-	)
-ppolr_params.update(packer_params)
-
-models = [
-	[Packer, packer_params],
-	[PPOLR, ppolr_params]
-]
-
-f, ax = plt.subplots(1,3, figsize = (7, 2))
-pd = dict()
-for i, (M, params) in enumerate(models):
-	ps = M(categories, params).get_generation_ps(stimuli, 1)
-	pd[M.model] = ps
-
-	g = funcs.gradientroll(ps,'roll')[:,:,0]
-	print g
-	print ''
-
-	funcs.plotgradient(ax[i], g, categories[0], [], clim = [0, .1])
-	ax[i].set_title(M.model)
+M = ConjugateJK13(categories,ConjugateJK13.rvs())
+ps = M.get_generation_ps(stimuli,0)
 
 
-h = ax[2]
-plt.plot(pd['PACKER'], pd['PPOLR'], 'o')
-plt.xticks([])
-plt.yticks([])
-plt.xlabel('PACKER')
-plt.ylabel('PPOLR')
 
-
-f.savefig('test.png', bbox_inches='tight', transparent=False)
+print ConjugateJK13.rvs()

@@ -25,7 +25,3 @@ from Modules.Classes import ...
 - Optimize `costfun()` so that probabilities are only evaluated once per unique category set.
 - Use things like `**kwargs` to make plotting functions more flexible.
 - Do something to behave appropriately when the user asks to simulate a category that is more than 1+ the max.
-- allow param rvs to be returned as dict or list.
-- convert softmax post-exponential 0s to pre-exponential -infs
-- sync PACKER and POLR sum-similarity functions somehow. Maybe another subclass?
-- allow for 0 values on softmax params

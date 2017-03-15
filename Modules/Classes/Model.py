@@ -2,7 +2,7 @@ import abc
 import numpy as np
 
 # imports from module
-import Modules.Funcs as utils
+import Modules.Funcs as Funcs
 
 
 class Model(object):
@@ -137,7 +137,7 @@ class Model(object):
 	def _update_(self):
 		"""
 		Generate descriptives about the known categories. 
-		The fields defined below change when items are generated or fotgotten,
+		The fields defined below change when items are generated or forgotten,
 		so this function is called whenever there is a change to model memory.
 		"""
 		self.ncategories = len(self.categories)
@@ -157,9 +157,9 @@ class Model(object):
 
 	def simulate_generation(self, stimuli, category, nexemplars = None):
 		"""
-		Simulate the generation of nexemplars, sourced from stimuli, into a category.
+		Simulate the generation of n-exemplars, sourced from stimuli, into a category.
 		The resulting category will be added to the model's memory, and the identity 
-		of the generated iutems wilol be returned.
+		of the generated items will be returned.
 		"""
 
 		if nexemplars is None:
@@ -175,7 +175,7 @@ class Model(object):
 
 			# compute probabilities, then pick an item
 			ps = self.get_generation_ps(stimuli, category)
-			num = utils.wpick(ps)
+			num = Funcs.wpick(ps)
 			values = np.atleast_2d(stimuli[num,:])
 			generated_examples.append(num)
 
@@ -188,3 +188,34 @@ class Model(object):
 			self._update_()
 
 		return generated_examples
+
+
+
+class Exemplar(Model):
+	"""		
+	Abstract base class for Exemplar models. Basically this is used to add 
+	a function computing summed similarity.
+	"""
+	__metaclass__ = abc.ABCMeta
+
+	def _sum_similarity(self, X, Y, 
+		param = 1.0,	
+		wts  = None, 
+		c = None ):
+		""" 
+		function to compute summed similarity along rows of 
+		X across all items in Y. Resulting array will have one element 
+		per row of X.
+
+		the "param" argument acts as a multiplier for similarities prior to summation
+		"c" and "wts" can be arbitrary if supplied, or based on the model attribute if not
+		"""
+
+		# set weights and c
+		if wts is None: wts = self.wts
+		if c is None: c = self.specificity
+
+		distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts)
+		similarity = np.exp(-float(c) * distance)
+		similarity = similarity * float(param)
+		return np.sum(similarity, axis = 1)

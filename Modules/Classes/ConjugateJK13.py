@@ -21,14 +21,28 @@ class ConjugateJK13(Model):
 		]
 
 	@staticmethod
-	def rvs(nf = 2):
+	def rvs(nf = 2, fmt = dict):
+		"""
+		Return random parameters in dict or list format. User must also
+		supply the number of features for the model (this is required
+		to compute the category variance bias)
+		"""
+
 		params = [
 			np.random.uniform(0.01, 0.5), # category_mean_bias, biased small
 			np.random.uniform(nf-0.99, nf+2.0), # category_variance_bias
 			np.random.uniform(0.01, 5.0), # domain_variance_bias
 			np.random.uniform(0.1, 6.0) # determinism
 		]
-		return params
+		
+		if fmt not in [dict, list]:
+			raise Exception('Format must be dict or list.')
+
+		if fmt == list:
+			return params
+		else:
+			return dict(zip(ConjugateJK13.parameter_names, params))
+
 
 	def _update_(self):
 		"""
@@ -56,7 +70,7 @@ class ConjugateJK13(Model):
 		if self.category_variance_bias <= self.nfeatures - 1.0: 
 			self.category_variance_bias = self.nfeatures + 1e-10
 		if self.domain_variance_bias <= 0: self.domain_variance_bias = 1e-10
-		if self.determinism <= 0: self.determinism = 1e-10
+		if self.determinism < 0: self.determinism = 0.0
 
 
 	def _wts_handler_(self):
@@ -100,14 +114,12 @@ class ConjugateJK13(Model):
 		# get relative densities
 		target_dist = multivariate_normal(mean = mu, cov = Sigma)
 		density = target_dist.pdf(stimuli)
-		density = np.exp(self.determinism * density)
 
-		# zero out examples already in the target category
+		# nan out examples already in the target category
 		known_members = Funcs.intersect2d(stimuli, self.categories[category])
-		density[known_members] = 0.0
+		density[known_members] = np.nan
 
-		# convert to probability distribution
-		ps = density / float(sum(density))
+		ps = Funcs.softmax(density, theta = self.determinism)
 		return ps
 
 
