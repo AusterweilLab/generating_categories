@@ -52,6 +52,18 @@ def ndspace(n, d, low = -1.0, high = 1.0):
 	return cartesian(values)
 
 
+def print2dspace(n, op = 'return'):
+	"""
+	Print to the console the arrangment and numbers of 
+	elements in an n-by-n space.
+	"""
+	vals = gradientroll(np.arange(n**2), 'roll')[:,:,0]
+	if op == 'print':
+		print(vals)
+	else: 
+		return vals
+
+
 def histvec(X, bins, density = False):
 	"""
 	MATLAB-like histogram function, with items in vector X being placed
@@ -173,7 +185,6 @@ def wpick(ps):
 	"""
 	return np.random.choice(range(len(ps)), p = ps)
 
-
 def intersect2d(X, Y):
 	"""
 	Function to find intersection of two arrays.
@@ -185,3 +196,55 @@ def intersect2d(X, Y):
 	eq = np.all(np.equal(X, Y), axis = 1)
 	eq = np.any(eq, axis = 1)
 	return np.nonzero(eq)[0]
+
+
+def softmax(X, theta = 1.0, axis = None):
+	"""
+	Compute the softmax of each element along an axis of X.
+
+	Parameters
+	----------
+	X: ND-Array. NaN values will have probability 0.
+	theta (optional): float parameter, used as a multiplier
+		prior to exponentiation. Default = 1.0
+	axis (optional): axis to compute values along. Default is the 
+		first non-singleton axis.
+
+	Returns an array the same size as X. The result will sum to 1
+	along the specified axis.
+
+	Examples
+	--------
+	>>> X = np.array([[1,2,3], [5,3,1]])
+	>>> softmax(X, theta = 0.5, axis = 0)
+			[[ 0.12  0.38  0.73]
+		 	 [ 0.88  0.62  0.27]]
+	>>> softmax(X, theta = 0.5, axis = 1)
+			[[ 0.19  0.31  0.51]
+			 [ 0.67  0.24  0.09]]
+	"""
+
+	# make X at least 2d
+	y = np.atleast_2d(X)
+
+	# find axis
+	if axis is None:
+		axis = next(j[0] for j in enumerate(y.shape) if j[1] > 1)
+
+	# multiply y against the theta parameter, 
+	# then subtract the max for numerical stability
+	y = y * float(theta)
+	y = y - np.expand_dims(np.nanmax(y, axis = axis), axis)
+	
+	# exponentiate y, then convert nans into 0
+	y = np.exp(y)
+	y[np.isnan(y)] = 0.0
+
+	# take sum along axis, divide elementwise
+	ax_sum = np.expand_dims(np.sum(y, axis = axis), axis)
+	p = y / ax_sum
+
+	# flatten if X was 1D
+	if len(X.shape) == 1:
+		p = p.flatten()
+	return p

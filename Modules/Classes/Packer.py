@@ -33,11 +33,15 @@ class Packer(Model):
 		if self.determinism <= 0: self.determinism = 1e-10
 
 
-	def _get_ss(self, candidates, class_items, contribution_param):
-		""" function to compute summed similarity """
-		distance   = Funcs.pdist(candidates, class_items, w = self.wts)
+	def _get_ss(self, X, Y, param = 1.0):
+		""" 
+		function to compute summed similarity along rows of 
+		X across all items in Y. Resulting array will have one element 
+		per row of X.
+		"""
+		distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = self.wts)
 		similarity = np.exp(-float(self.specificity) * distance)
-		similarity = similarity * float(contribution_param)
+		similarity = similarity * float(param)
 		return np.sum(similarity, axis = 1)
 
 
@@ -45,20 +49,20 @@ class Packer(Model):
 
 		# compute contrast sum similarity
 		contrast_examples   = self.exemplars[self.assignments != category]
-		contrast_ss   = self._get_ss(stimuli, contrast_examples, self.between)
+		contrast_ss   = self._get_ss(stimuli, contrast_examples, param = self.between)
 
 		# compute target sum similarity
 		target_examples = self.exemplars[self.assignments == category]
-		target_ss   = self._get_ss(stimuli, target_examples, self.within)
+		target_ss   = self._get_ss(stimuli, target_examples, param = self.within)
 
 		# aggregate target and contrast similarity
 		total = contrast_ss + target_ss
-		total = np.exp(float(self.determinism) * total)
 
-		# zero out members of the target category
+		# nan out members of the target category
 		if any(self.assignments == category):
 			known_members = Funcs.intersect2d(stimuli, target_examples)
-			total[known_members] = 0.0
+			total[known_members] = np.nan
 
-		ps = total / float(sum(total))
+		ps = Funcs.softmax(total, theta = self.determinism)
 		return ps
+
