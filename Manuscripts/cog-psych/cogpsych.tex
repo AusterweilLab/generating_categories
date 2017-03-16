@@ -6,7 +6,6 @@
 \usepackage{setspace}
 \usepackage{pgfplots}
 \usepackage{fancyhdr}
-\usepackage{fancyvrb}
 \usepackage{csquotes}
 \usepackage{todonotes}
 \usepackage{verbatim}
@@ -128,10 +127,84 @@ The copy-and-tweak model tested by \cite{jern2013probabilistic} also claims litt
 
 As noted in the sections above, research on the creative generation of novel concepts has thusfar focused on the finding that generated categories tend to possess distributional commonalities with known categories. However, a fundamental goal of concept generation is to create something \textit{new} (i.e., different from what is already known). The manner in which generated categories differ from known ones is, nonetheless, poorly understood: existing formal approaches do not make strong predictions about how creatively generated concepts should systematically differ from existing ones. 
 
-In the sections below, we present two experiments demonstrating systematic effects of category contrast on creative generation. We also introduce a novel, exemplar-based model to explain these effects: PACKER (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}). Finally, we report formal simulations comparing PACKER to the hierarchical sampling and copy-and-tweak models developed by \cite{jern2013probabilistic}.
+In the sections below, we present two experiments demonstrating systematic effects of category contrast on creative generation. Our experiments conform strictly to the artificial category learning paradigm from \cite{jern2013probabilistic}: participants are first exposed to a single, experimenter-defined category, and are then asked to generate members of a new category. We also introduce a novel, exemplar-based model to explain these effects: PACKER (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}). Finally, we report formal simulations comparing PACKER to the hierarchical sampling and copy-and-tweak models developed by \cite{jern2013probabilistic}.
+
+\section{Experiment 1}
+
+To begin our investigation, we developed a artificial, two dimensional domain of squares, varying in color and size (see Figure \ref{fig:sample-stimuli} for samples). We created three unique category types within this domain, shown in Figure \ref{fig:e1-conditions}. The category types were designed to possess strong differences in the distributional structure of the experimenter-defined (`A') category, allowing us to observe the effect of category contrast under a variety of types of prior knowledge. These conditions also provide an opportunity to replicate classic effects observed in previous reports \citep[e.g.,][]{jern2013probabilistic,ward1994structured,ward2002role,marsh1999inadvertent,smith1993constraining}.
+
+\nbcnote{This feels a little weak in motivation: how do these conditions specifically allow us to show is these effects? Did we come up with these out of thin air? So maybe foreshadow that you hardly need to look for these effects, they're \textit{everywhere}. Maybe there is also a problem that at this point it is not exactly clear what contrast means within this scenario.}
+
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{e1-conditions.pgf}
+    \caption{Category types tested in Experiment 1.}
+    \label{fig:e1-conditions}
+    \end{center}
+\end{figure}
+
+In the `Cluster' type, the experimenter-defined category is a tight cluster of examples in the space (e.g., all members of category `A' are small and dark in color). In the `Row' type, the category has a row pattern across the space: varying along one feature but not the other (e.g., members of category `A' are small and vary in color). In the `XOR' type, the experiment-defined category consists of two clusters separated in opposite corners of the space category, conforming to the exclusive-or logical structure (e.g., members of category `A' can be small and dark or large and light). 
+
+
+
+
+\subsection{Participants \& Materials}
+
+183 participants were recruited from Amazon Mechanical Turk. Participants were randomly assigned to one condition: 64 participants were assigned to the Cluster condition, 61 were assigned to the Row condition, and 58 were assigned to the XOR condition. Stimuli were squares varying in color (RGB 25--230) and side length (3.0--5.8cm). These stimuli are slight variants of those used by \cite{conaway2016similar}, see Figure \ref{fig:sample-stimuli} for samples. The assignment of perceptual features (color, size) to axes of the domain space (x, y) was counterbalanced across participants.
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{stimuli-samples.pgf}
+    \caption{Sample stimuli used in Experiments 1 and 2.}
+    \label{fig:sample-stimuli}
+    \end{center}
+\end{figure}
+
+\subsection{Procedure}
+
+Participants began the experiment with a short training phase (3 blocks of 4 trials), where they observed exemplars belonging to the `Alpha' category. Participants were instructed to learn as much as they can about the Alpha category, and that they would answer a series of test questions afterwards. On each trial, a single Alpha category exemplar was presented, and participants were given as much time as they desired before moving on. Each block consisted of a single presentation of each of the members of the Alpha category, in a random order. Participants were shown the range of possible colors and sizes prior to training.
+
+Following the training phase, participants were asked to generate four examples belonging to another category called `Beta'. As in \citet{jern2013probabilistic}, generation was completed using a sliding-scale interface. Two scales controlled the features (color, size) of the generated example. An on-screen preview of the example updated whenever one of the features was changed. Participants could generate any example along an evenly-spaced 9x9 grid, except for any previously generated Beta exemplars. Neither the members of the Alpha category nor the previously generated Beta examples were visible during generation. Prior to beginning the generation phase, participants read the following instructions:
+
+\begin{displayquote}
+As it turns out, there is another category of geometric figures called ``Beta''. Instead of showing you examples of the Beta category, we would like to know what you think is likely to be in the Beta category. 
+
+You will now be given the chance to create examples of any size or color in order to show what you expect about the Beta category. You will be asked to produce 4 Beta examples - they can be quite similar or quite different to each other, depending on what you think makes the most sense for the category.
+
+Each example needs to be unique, but the computer will let you know if you accidentally create a repeat.
+\end{displayquote}
+
+Following generation, participants completed a generalization phase wherein they classified novel examples into the Alpha and Beta categories without feedback. On each trial, a single example was presented, and participants were asked to classify it by clicking buttons labeled ``Alpha'' or ``Beta''. Participants classified a total of 81 items sampled along a 9x9 grid, including the members of the Alpha and Beta categories (randomly intermixed). These data were, however, collected to address a separate set of questions, and we do not discuss them in this paper.
+
+
 
 
 \clearpage
+
+\section{Experiment 2}
+
+
+\subsection{Participants \& Materials}
+
+122 participants were recruited from Amazon Mechanical Turk. 61 participants were randomly assigned to the Middle and Bottom conditions each. The stimuli were exactly as in Experiment 1. Again, the assignment of perceptual features (color, size) to axes of the domain space (x, y) was counterbalanced across participants.
+
+\subsection{Procedure}
+
+The procedure was exactly as in Experiment 1: participants first completed a short training phase, followed by the generation phase, followed by the generalization phase (data from this phase is not discussed in this report).
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \section{The PACKER Model}
 
@@ -168,9 +241,6 @@ p(y) = \dfrac
 where $\theta$ ($\theta \geq 0$) controls response determinism. 
 
 
-
-
-
 \section{Snippets}
 
 \nbcnote{Just some random snippets that i don't want to delete yet...}
@@ -180,61 +250,6 @@ How do people generate concepts such that the product is (A) different from what
 We also introduce a novel exemplar-based model of category generation, PACKER (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}), which explains much of what we observe in the creative use of conceptual knowledge. In the sections below, we introduce the PACKER model and its core theoretical claims.
 
 One of the core principles of PACKER (as well as its name) are inspired by earlier work in category learning \citep[see][]{hidaka2011packing}.
-
-
-
-\clearpage
-
-\section{Experiment 1}
-
-
-\subsection{Participants \& Materials}
-
-183 participants were recruited from Amazon Mechanical Turk. Participants were randomly assigned to one condition: 64 participants were assigned to the Cluster condition, 61 were assigned to the Row condition, and 58 were assigned to the XOR condition. Stimuli were squares varying in color (RGB 25--230) and side length (3.0--5.8cm). These stimuli are slight variants of those used by \cite{conaway2016similar}, see Figure \ref{fig:sample-stimuli} for samples. The assignment of perceptual features (color, size) to axes of the domain space (x, y) was counterbalanced across participants.
-
-\begin{figure}
-    \begin{center}
-    \inputpgf{figs/}{stimuli-samples.pgf}
-    \caption{Sample stimuli used in Experiments 1 and 2.}
-    \label{fig:sample-stimuli}
-    \end{center}
-\end{figure}
-
-\subsection{Procedure}
-
-Participants began the experiment with a short training phase (3 blocks of 4 trials), where they observed exemplars belonging to the `Alpha' category. Participants were instructed to learn as much as they can about the Alpha category, and that they would answer a series of test questions afterwards. On each trial, a single Alpha category exemplar was presented, and participants were given as much time as they desired before moving on. Each block consisted of a single presentation of each of the members of the Alpha category, in a random order. Participants were shown the range of possible colors and sizes prior to training.
-
-Following the training phase, participants were asked to generate four examples belonging to another category called `Beta'. As in \citet{jern2013probabilistic}, generation was completed using a sliding-scale interface. Two scales controlled the features (color, size) of the generated example. An on-screen preview of the example updated whenever one of the features was changed. Participants could generate any example along an evenly-spaced 9x9 grid, except for any previously generated Beta exemplars. Neither the members of the Alpha category nor the previously generated Beta examples were visible during generation. Prior to beginning the generation phase, participants read the following instructions:
-
-\begin{displayquote}
-As it turns out, there is another category of geometric figures called "Beta". Instead of showing you examples of the Beta category, we would like to know what you think is likely to be in the Beta category. 
-
-You will now be given the chance to create examples of any size or color in order to show what you expect about the Beta category. You will be asked to produce 4 Beta examples - they can be quite similar or quite different to each other, depending on what you think makes the most sense for the category.
-
-Each example needs to be unique, but the computer will let you know if you accidentally create a repeat.
-\end{displayquote}
-
-Following generation, participants completed a generalization phase wherein they classified novel examples into the Alpha and Beta categories without feedback. On each trial, a single example was presented, and participants were asked to classify it by clicking buttons labeled ``Alpha'' or ``Beta''. Participants classified a total of 81 items sampled along a 9x9 grid, including the members of the Alpha and Beta categories (randomly intermixed). These data were, however, collected to address a separate set of questions, and we do not discuss them in this paper.
-
-
-
-
-\clearpage
-
-\section{Experiment 2}
-
-
-\subsection{Participants \& Materials}
-
-122 participants were recruited from Amazon Mechanical Turk. 61 participants were randomly assigned to the Middle and Bottom conditions each. The stimuli were exactly as in Experiment 1. Again, the assignment of perceptual features (color, size) to axes of the domain space (x, y) was counterbalanced across participants.
-
-\subsection{Procedure}
-
-The procedure was exactly as in Experiment 1: participants first completed a short training phase, followed by the generation phase, followed by the generalization phase (data from this phase is not discussed in this report).
-
-
-
-
 
 
 

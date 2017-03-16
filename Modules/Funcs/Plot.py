@@ -2,15 +2,22 @@ import numpy as np
 
 def save_as_pgf(fh, path, 
 	texpath = '/Library/TeX/texbin/',
-	opts = {'pgf.texsystem': 'pdflatex'}):
+	custom_opts = None):
 	""" 
 	Wrapper to save a pgf file. 
 	"""
 	
+	opts = {
+				'pgf.texsystem': 'pdflatex', 
+				'pgf.rcfonts': True,
+		}
+	if custom_opts is not None:
+		opts.update(textsettings)
+
 	import os, matplotlib
 	os.environ["PATH"] += os.pathsep + texpath
 	matplotlib.rcParams.update(opts)
-	fh.savefig(path, bbox_inches='tight', pad_inches=0.0)
+	fh.savefig(path, bbox_inches='tight', pad_inches=0.01)
 
 
 def plotclasses(h, stimuli, alphas, betas,
@@ -21,7 +28,7 @@ def plotclasses(h, stimuli, alphas, betas,
 		verticalalignment='center', 
 		horizontalalignment='center',
 		fontsize = 12.0,
-		fontname = 'Courier New')
+		fontname = 'sans-serif')
 
 	if textsettings is not None:
 		final_textsettings.update(textsettings)
