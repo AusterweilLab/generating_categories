@@ -217,8 +217,9 @@ The PACKER model is an extension of the influential Generalized Context Model of
 % 
 where $w_k$ is the attention weighting of dimension $k$ ($w_k \geq 0$ and $\sum_k{w_k} = 1$), accounting for the relative importance of each dimension in similarity calculations, and $c$ ($c>0$) is a specificity parameter controlling the spread of exemplar generalization. For simplicity, attention will be distributed uniformly in our simulations (unless otherwise noted). The value of $r$ depends on the nature of the experimental conditions being simulated: $r=1$ is appropriate for separable dimensions, whereas $r=2$ is appropriate for integral dimensions \citep[see][]{shepard1964attention,garner1974processing}.
 
-PACKER's core proposal is that generation is constrained by both similarity to members of the target category (the category in which a stimulus is being generated) as well as similarity to members of other categories: the most desirable generation candidates are similar to members of the target category and not similar to members of contrast categories. This is achieved by aggregating similarity across known exemplars differently according to class membership. The aggregated similarity $a$ between generation candidate $y$ and stored exemplars $x$ is given by:
-% 
+
+PACKER's core proposal (as well as its name) was in part inspired by earlier work from category learning literature \citep[see][]{hidaka2011packing}. PACKER proposes that generation is constrained by both similarity to members of the target category (the category in which a stimulus is being generated) as well as similarity to members of other categories: the most desirable generation candidates are similar to members of the target category and not similar to members of contrast categories. This is achieved by aggregating similarity across known exemplars differently according to class membership. The aggregated similarity $a$ between generation candidate $y$ and stored exemplars $x$ is given by:
+
 \begin{equation}
     a(y, x) = \sum_j{f(x_j) s(y, x_j)}
 \end{equation}
@@ -239,12 +240,14 @@ The probability that a given candidate $y$ will be generated is evaluated using 
 % 
 \begin{equation}
 p(y) = \dfrac
-    { \exp  \{ \theta \cdot a \left( y, x \right) \} } 
-    { \sum_i{ \exp  \{ \theta \cdot a \left( y_i, x \right) \}  } }
+    { \exp  \left \{ \theta \cdot a \left( y, x \right) \right \} } 
+    { \sum_i{ \exp  \left \{ \theta \cdot a \left( y_i, x \right) \right\}  } }
     \label{eq:packer-choice}
 \end{equation}
 % 
 where $\theta$ ($\theta \geq 0$) is a free parameter controlling response determinism. 
+
+\nbcnote{It is worth noting that PACKER is not the only \textit{possible} model that could incorporate a contrast mechanism. However, contrast falls out naturally from the exemplar view and ...  Contrast could, for example, be implemented within... }
 
 \subsection{Relation Between PACKER and Copy-And-Tweak}
 
@@ -253,16 +256,34 @@ The PACKER model is in many senses similar to the copy-and-tweak model reported 
 In the sections below, we report simulations using this copy-and-tweak model.  Due to their mathematical equivalence, the comparison between PACKER and copy-and-tweak provides a test of the explanatory value of the contrast mechanism: the account provided by copy-and-tweak will only equal that of PACKER if the contrast mechanism does not offer an advantage.
 
 
-\section{Snippets}
+\subsection{The Hierarchical Sampling Model}
 
-\nbcnote{Just some random snippets that i don't want to delete yet...}
+\cite{jern2013probabilistic} demonstrated how a hierarchical Bayesian model could explain the distributional correspondences between observed and generated categories. In their model, exemplars of generated category were viewed as samples from a multivariate Normal distribution over the dimensions of stimulus space. The mean of the generated category was independent of the observed categories, but the covariance matrix (encoding feature variances and correlations) was based on a common prior distribution. Generating a new category was thus completed by sampling a new category mean (uniform over stimulus space) and covariance matrix from the common prior distribution. Because the shared prior distribution's parameters were unobserved, the hierarchical Bayesian approach was used to infer its parameters from the previous categories (their feature variances and correlations), and then to generate the covariance matrix of the new category.
 
-How do people generate concepts such that the product is (A) different from what is already known, and (B) internally coherent?
+In our implementation of their model, each category's exemplars are assumed to be sampled from a multivariate Normal distribution with parameters ($\mu, \Sigma$). Each category's covariance matrix is assumed to be inverse-Wishart distributed with parameters ($v$, $\kappa,$ and $\Sigma_D$).\footnote{Note that \citet{jern2013probabilistic}'s model is slightly different, as they used a non-conjugate model. Their model acts very similar to our version of it and receives comparable fits.} $\Sigma_D$ is the covariance matrix shared between categories. We assume the shared covariance matrix $\Sigma_D$ is generated from a Wishart distribution (for conjugacy) with parameters $v_0$, $\kappa_0$, and $\Sigma_0$. We set $\nu_0 = 4$, and $\Sigma_0 = \rho {\bf I}$, where $\rho$ is a free parameter controlling the expected variance of dimensions (dimensions of the shared covariance matrix are expected to be uncorrelated) and ${\bf I}$ is the identity matrix.
 
-We also introduce a novel exemplar-based model of category generation, PACKER (\textit{Producing Alike and Contrasting Knowledge using Exemplar Representations}), which explains much of what we observe in the creative use of conceptual knowledge. In the sections below, we introduce the PACKER model and its core theoretical claims.
+\nbcnote{check on that $\nu_0 = 4$ business}
 
-One of the core principles of PACKER (as well as its name) are inspired by earlier work in category learning \citep[see][]{hidaka2011packing}.
+To simplify the model predictions, we used {\em maximum a posteriori} (MAP) estimates for the hidden parameters and then generated new categories based on those estimates. Due to conjugacy, the MAP estimate for the shared covariance matrix $\Sigma_D = \Sigma_0 + \sum_c{C_c}$, where $C_c$ is the empirical covariance matrix of category $c$. The MAP estimate of the covariance matrix for the target category $B$ is 
+\begin{equation}
+  \Sigma_B = \left[ \Sigma_D \nu + C_B +
+    \dfrac
+    {\kappa n_B}
+    {\kappa + n_B}
+    (\bar{x_B}-\mu_B)(\bar{x_B}-\mu_B)^T
+  \right] (\nu + n_B)^{-1}
+  \label{eq:Sigma_B}
+\end{equation}
+%
+where $\nu$ ($\nu>k-1$) is an additional free parameter (from the Inverse-Wishart prior on $\Sigma_B$) weighting the importance of $\Sigma_{D}$. When the target category has no members (i.e., $n_B = 0$), items are generated at random.
 
+Generated exemplars are drawn from a multivariate Normal distribution specified by $(\mu_{B}, \Sigma_{B})$. Thus, $p(y)$ is
+\begin{equation}
+  p(y) = \dfrac
+    {\exp \left \{ \theta \cdot {\rm Normal}(y; \mu_{B}, \Sigma_{B}) \right \} }
+    {\sum_i \exp \left \{ \theta \cdot {\rm Normal}(y_i; \mu_{B}, \Sigma_{B}) \right \} } 
+\end{equation}
+where $\theta$ is a response determinism parameter and ${\rm Normal}(y; \mu, \Sigma)$ denotes a multivariate Normal density evaluated at $y$. 
 
 
 \section{Acknowledgments}
