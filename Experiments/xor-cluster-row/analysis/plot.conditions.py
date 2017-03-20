@@ -15,7 +15,7 @@ con.close()
 
 
 
-f, ax = plt.subplots(1, 3, figsize=(4.9, 1.5))
+f, ax = plt.subplots(1, 3, figsize=(5.2, 1.5))
 for i, k  in enumerate(list(alphas)):
 	h = ax[i]
 	funcs.plotclasses(h, stimuli, alphas[k], [])		

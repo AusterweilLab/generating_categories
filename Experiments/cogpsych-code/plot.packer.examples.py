@@ -27,7 +27,7 @@ prob_spaces = {
     'Combination': Packer(cats,pos_neg)
 }
 
-f, ax = plt.subplots(1,3, figsize = (7.5, 2.5))
+f, ax = plt.subplots(1,3, figsize = (7.5, 2.))
 
 prefix = ['(a)','(b)','(c)']
 for i, k in enumerate(['Contrast Influence', 'Target Influence', 'Combination']):
@@ -43,15 +43,21 @@ for i, k in enumerate(['Contrast Influence', 'Target Influence', 'Combination'])
     title = prefix[i] + ' ' + k
     h.set_title(title, fontsize = 11)
 
+    xlab  = '$\{ \phi = ' + str(int(m.between)) + '$, '
+    xlab += '$\gamma = ' + str(int(m.within)) + '\}$'
+    h.set_xlabel(xlab)
+
 
 # add colorbar
 f.subplots_adjust(right=0.8)
 cbar = f.add_axes([0.83, 0.16, 0.03, 0.66])
-f.colorbar(im, cax=cbar, ticks = [0,0.000276585446215])
+f.colorbar(im, cax=cbar, ticks = [0, np.max(g)])
 cbar.set_yticklabels(['Lowest\nProbability', 'Greatest\nProbability'])
 cbar.tick_params(length = 0)
 
-f.savefig('example.spaces.pdf', bbox_inches='tight', transparent=False)
 
-# path = '../../../Manuscripts/cogsci-2017/figs/example.spaces.pgf'
-# funcs.save_as_pgf(f, path)
+fname = 'packer-examples'
+# f.savefig('packer-examples.pdf', bbox_inches='tight', transparent=False)
+
+path = '../../Manuscripts/cog-psych/figs/packer-examples.pgf'
+funcs.save_as_pgf(f, path)
