@@ -1,1 +1,1 @@
-This directory contains simulations and code for the Cognitive Psychology paper that are not tied to either experiment.
+This directory contains simulations and code for the Cognitive Psychology submission that are not tied to any particular experiment.
