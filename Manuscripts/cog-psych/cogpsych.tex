@@ -156,7 +156,7 @@ s\left(x_i,x_j\right) = \exp \left\{ -c \left[\sum_{k}{ w_k \left| x_{ik} - x_{j
 \label{eq:similarity}
 \end{equation}
 % 
-where $w_k$ is the attention weighting of dimension $k$ ($w_k \geq 0$ and $\sum_k{w_k} = 1$), accounting for the relative importance of each dimension in similarity calculations, and $c$ ($c>0$) is a specificity parameter controlling the spread of exemplar generalization. For simplicity, attention will be distributed uniformly in our simulations (unless otherwise noted). The value of $r$ depends on the nature of the experimental conditions being simulated: $r=1$ is appropriate for separable dimensions, whereas $r=2$ is appropriate for integral dimensions \citep[see][]{shepard1964attention,garner1974processing}. In our simulations, we set $r=1$ due to the separable nature of the stimulus dimensions used in our experiments (see Figure \ref{fig:sample-stimuli}).
+where $w_k$ is the attention weighting of dimension $k$ ($w_k \geq 0$ and $\sum_k{w_k} = 1$), accounting for the relative importance of each dimension in similarity calculations, and $c$ ($c>0$) is a specificity parameter controlling the spread of exemplar generalization. For simplicity, attention will be distributed uniformly in our simulations (unless otherwise noted). The value of $r$ depends on the nature of the experimental conditions being simulated: $r=1$ is appropriate for separable dimensions, whereas $r=2$ is appropriate for integral dimensions \citep[see][]{shepard1964attention,garner1974processing}. In our simulations, we set $r=1$ due to the separable nature of the stimulus dimensions used in our experiments (see Figure \ref{fig:e1-conditions}).
 
 
 PACKER's core proposal (as well as its name) was in part inspired by earlier work from category learning literature \citep[see][]{hidaka2011packing}. PACKER proposes that generation is constrained by both similarity to members of the target category (the category in which a stimulus is being generated) as well as similarity to members of other categories: the most desirable generation candidates are similar to members of the target category and not similar to members of contrast categories. This is achieved by aggregating similarity across known exemplars differently according to class membership. The aggregated similarity $a$ between generation candidate $y$ and stored exemplars $x$ is given by:
@@ -175,7 +175,7 @@ where $f(x_j)$ is a function specifying each exemplar's contribution to generati
 	\end{center}
 \end{figure}
 
-As noted above, PACKER proposes that new categories should be different from existing categories, and same-category exemplars should be similar to one another. This is realized when $\phi \leq 0$, and $\gamma \geq 0$. Negative $\phi$ values encourage $y$ to be distant from contrast categories (as similarity to contrast category exemplars are subtracted during aggregation). Positive $\gamma$ values encourage $y$ to be close to other exemplars of the target category. When $|\phi| = \gamma$, the repulsion effect from contrast categories is equal to the attraction effect to the target category. See Figure \ref{fig:packer-examples} for an illustration of how these parameters are used.
+As noted above, PACKER proposes that new categories should be different from existing categories, and same-category exemplars should be similar to one another. This is realized when $\phi < 0$, and $\gamma > 0$. Negative $\phi$ values encourage $y$ to be distant from contrast categories (as similarity to contrast category exemplars are subtracted during aggregation). Positive $\gamma$ values encourage $y$ to be close to other exemplars of the target category. When $|\phi| = \gamma$, the repulsion effect from contrast categories is equal to the attraction effect to the target category. See Figure \ref{fig:packer-examples} for an illustration of how these parameters are used.
 
 The probability that a given candidate $y$ will be generated is evaluated using an Exponentiated \citet{luce1977choice} choice rule. Candidates with greater values of $a$ are more likely to be generated than candidates with smaller values:
 % 
@@ -206,40 +206,29 @@ In the sections below, we present two experiments demonstrating systematic effec
 
 \section{Experiment 1}
 
-To begin our investigation, we developed a artificial, two dimensional domain of squares, varying in color and size (see Figure \ref{fig:sample-stimuli} for samples). To foreshadow slightly, effects of contrast are strong and can be widely observed in category generation data. Accordingly, we began by testing the strength of these effects under a variety of learning conditions. This was achieved by training participants on categories possessing qualitatively different distributional structures: We created three unique category types within the domain, shown in Figure \ref{fig:e1-conditions}. 
+To begin our investigation, we developed an artificial, two dimensional domain of squares, varying in color and size (see Figure \ref{fig:e1-conditions}, panel A). To foreshadow slightly, effects of contrast are strong and can be widely observed in category generation data. Accordingly, we began by testing the strength of these effects under a variety of learning conditions. This was achieved by training participants on categories possessing qualitatively different distributional structures, as shown in Figure \ref{fig:e1-conditions}. 
 
-Each panel of Figure \ref{fig:e1-conditions} shows the locations of exemplar belonging to a single, experimenter-defined category (`A', or `Alpha'). In the `Cluster' type, category A is a tight cluster of examples in the space (e.g., all members are small and dark in color). In the `Row' type, the category has a row pattern across the space: varying along one feature but not the other (e.g., members are small and vary in color). In the `XOR' type, the experiment-defined category consists of two clusters separated in opposite corners of the space category, conforming to the exclusive-or logical structure (e.g., members can be small and dark or large and light). 
-
-\nbcnote{what would contrast look like?}
-
-
-% \nbcnote{This feels a little weak in motivation: how do these conditions specifically allow us to show is these effects? Did we come up with these out of thin air? So maybe foreshadow that you hardly need to look for these effects, they're \textit{everywhere}. Maybe there is also a problem that at this point it is not exactly clear what contrast means within this scenario.}
-% \jlanote{Is it possible to get the main individual differences we find in this study from different parameterizations of PACKER? If so, we can motivate it from there. Alternatively, we may want to switch the order of the two studies and motivate the experiment from the next one as a . I like switching the order of the experiments less because I feel like Experiment 2 nails contrast down and Experiment 1 is more showing how it plays a role in more complex category types}
-
+Panels B-D of Figure \ref{fig:e1-conditions} show the locations of exemplars belonging to the experimenter-defined categories (`A', or `Alpha') that participants were assigned to learn about prior to generating a new category. In the `Cluster' type, category A is a tight cluster of examples in the space. Perceptually instantiated, the members of category A might, for example, be large and dark in color. In the `Row' type, category A has a row pattern across the space, varying along one feature but not the other. Thus, its members might all be dark in color but would vary in size. Finally, in the `XOR' type, the experimenter-defined category consists of two clusters separated in opposite corners of the space category, conforming to the exclusive-or logical structure (e.g., members are small and dark or large and light). 
 
 \begin{figure}
     \begin{center}
     \inputpgf{figs/}{e1-conditions.pgf}
-    \caption{Category types tested in Experiment 1.}
+    \caption{Stimulus domain and category types tested in Experiment 1. }
     \label{fig:e1-conditions}
     \end{center}
 \end{figure}
 
+After learning about an experimenter-defined category, participants are asked to generate examples of a new category. Within this paradigm, an effect of category contrast would be realized if participants prefer to generate items in locations that are distant (i.e., perceptually dissimilar) from members of category A. However, generation is left unconstrained: For example, participants assigned to the Cluster condition may generate a tightly clustered category in the corner opposite of the experimenter-defined category. Alternatively, they may generate a tightly clustered category directly overlapping with the experimenter-defined category. Further, they may even generate an entirely different type of category (e.g., a row category). 
 
+In this way, our first experiment also serves to replicate the classic finding that generated categories tend to share distributional properties with known categories in the domain \citep[see][]{jern2013probabilistic,ward1994structured}. From these results, we can predict that, in each condition, participants should generate categories that are distributionally similar to the experimenter-defined category: In the Cluster condition, generated categories should be tightly clustered. In the Row condition, generated categories should very more along the X-axis than the Y-axis. In XOR condition, generated categories should be widely distributed across both dimensions, and the two dimensions should be positively correlated.
 
+\nbcnote{I think that works as a decent motivation, do you think so?}
 
+% \jlanote{Is it possible to get the main individual differences we find in this study from different parameterizations of PACKER? If so, we can motivate it from there. Alternatively, we may want to switch the order of the two studies and motivate the experiment from the next one as a . I like switching the order of the experiments less because I feel like Experiment 2 nails contrast down and Experiment 1 is more showing how it plays a role in more complex category types}
 
 \subsection{Participants \& Materials}
 
-183 participants were recruited from Amazon Mechanical Turk. Participants were randomly assigned to one condition: 64 participants were assigned to the Cluster condition, 61 were assigned to the Row condition, and 58 were assigned to the XOR condition. Stimuli were squares varying in color (RGB 25--230) and side length (3.0--5.8cm). These stimuli are slight variants of those used by \cite{conaway2016similar}, see Figure \ref{fig:sample-stimuli} for samples. The assignment of perceptual features (color, size) to axes of the domain space (x, y) was counterbalanced across participants.
-
-\begin{figure}
-    \begin{center}
-    \inputpgf{figs/}{stimuli-samples.pgf}
-    \caption{Sample stimuli used in Experiments 1 and 2.}
-    \label{fig:sample-stimuli}
-    \end{center}
-\end{figure}
+183 participants were recruited from Amazon Mechanical Turk. Participants were randomly assigned to one condition: 64 participants were assigned to the Cluster condition, 61 were assigned to the Row condition, and 58 were assigned to the XOR condition. Stimuli were squares varying in color (RGB 25--230) and side length (3.0--5.8cm). These stimuli are slight variants of those used by \cite{conaway2016similar}, see Figure \ref{fig:e1-conditions}. The assignment of perceptual features (color, size) to axes of the domain space (x, y) was counterbalanced across participants.
 
 \subsection{Procedure}
 
@@ -257,6 +246,9 @@ Each example needs to be unique, but the computer will let you know if you accid
 
 Following generation, participants completed a generalization phase wherein they classified novel examples into the Alpha and Beta categories without feedback. On each trial, a single example was presented, and participants were asked to classify it by clicking buttons labeled ``Alpha'' or ``Beta''. Participants classified a total of 81 items sampled along a 9x9 grid, including the members of the Alpha and Beta categories (randomly intermixed). These data were, however, collected to address a separate set of questions, and we do not discuss them in this paper.
 
+\subsection{Results}
+
+\subsection{Discussion}
 
 
 
@@ -285,7 +277,9 @@ We developed two Alpha categories (see Figure \ref{fig:e2-conditions}): the `Bot
 The procedure was exactly as in Experiment 1: participants first completed a short training phase, followed by the generation phase, followed by the generalization phase (data from this phase is not discussed in this report).
 
 
+\subsection{Results}
 
+\subsection{Discussion}
 
 
 
