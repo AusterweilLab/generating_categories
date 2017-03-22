@@ -20,26 +20,34 @@ con.close()
 stats = pd.merge(stats, info, on = 'participant')
 
 
-fh, axes = plt.subplots(1,3,figsize = (9,3))
+fh, axes = plt.subplots(1,3,figsize = (7.5,2.5))
 for i, col in enumerate(['xrange','yrange','correlation']):
 	ax = axes[i]
 	sns.factorplot(x = 'condition', y = col, data= stats, ax = ax, kind = 'box', 
 		order = ['Cluster', 'Row','XOR'])
 
-	ax.set_title(col, fontsize = 14)
+	ax.set_title(col, fontsize = 12)
 	ax.set_ylabel('')
 
 	if 'range' in col:
-		ax.set_title(col[0].upper() + ' Range', fontsize = 14)
-	else:
-		ax.set_title('Correlation', fontsize = 14)
+		ax.set_title(col[0].upper() + ' Range', fontsize = 12)
 
-	ax.tick_params(labelsize = 12)
+		ax.set_yticks([0,2])
+		ax.set_yticklabels(['Min','Max'])
+
+	else:
+		ax.set_title('Correlation', fontsize = 12)
+		ax.set_yticks([-1,-0.5,0,0.5,1])
+		ax.set_yticklabels(['-1','-0.5','0','0.5','1'])
+	ax.tick_params(labelsize = 11)
 	ax.set_xlabel('')
 	ax.xaxis.grid(False)
 
 fh.subplots_adjust(wspace=0.4)
-fh.savefig('statsboxes.pdf', bbox_inches = 'tight', pad_inches=0.0)
+fh.savefig('statsboxes.pdf', bbox_inches = 'tight')
+
+path = '../../../Manuscripts/cog-psych/figs/e1-statsboxes.pgf'
+funcs.save_as_pgf(fh, path)
 
 
 # hypothesis tests
@@ -82,7 +90,6 @@ g1 = stats.loc[stats.condition == 'XOR', 'correlation']
 print ttest_1samp(g1, 0).pvalue
 print wilcoxon(g1).pvalue
 
-
 print '\n---- XOR has more total range than Cluster?'
 g1 = stats.loc[stats.condition == 'Cluster', ['xrange','yrange']].sum(axis = 1)
 g2 = stats.loc[stats.condition == 'XOR', ['xrange','yrange']].sum(axis = 1)
@@ -92,6 +99,15 @@ print '\n---- XOR has more total range than Row?'
 g1 = stats.loc[stats.condition == 'Row', ['xrange','yrange']].sum(axis = 1)
 g2 = stats.loc[stats.condition == 'XOR', ['xrange','yrange']].sum(axis = 1)
 print_ttest(g1,g2, ttest_ind)
+
+
+print '\n---- within vs. between?'
+for n, rows in stats.groupby('condition'):
+	print '\t'+n+':'
+	g1 = rows.loc[:,'between']
+	g2 = rows.loc[:,'within']
+	print_ttest(g1,g2, ttest_rel)
+
 
 
 # between conditions

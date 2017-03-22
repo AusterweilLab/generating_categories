@@ -248,6 +248,96 @@ Following generation, participants completed a generalization phase wherein they
 
 \subsection{Results}
 
+To evaluate the role of contrast in category generation, we computed the number of times each stimulus was generated, as a function of its average city-block distance from members of the experimenter-defined ``Alpha'' category. These data, shown in Figure \ref{fig:e1-distanceplots}, reveal a clear pattern: examples that are highly distant from members of the experimenter-defined categories are more likely to be generated into a new category. 
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{e1-distanceplots.pgf}
+    \caption{Experiment 1 results. \textit{Left}: Frequency of generation as a function of distance from members of the experimenter-defined category. \textit{Right}: Scatter plot of within-class versus between-class distance in each of the participant-generated categories.}
+
+    \nbcnote{Need to check on how nice the journal is about color figs!}
+
+    \label{fig:e1-distanceplots}
+    \end{center}
+\end{figure}
+
+
+Figure \ref{fig:e1-distanceplots} also depicts, for each participant, the average amount of distance between members of the generated category (\textit{within-class} distance) against the average amount of distance between members of the generated and experimenter-defined category (\textit{between-class} distance). These data also reveal a systematic pattern: the majority of participants generated categories with more between-class distance than within-class distance. That is, members of the generated category tended to be more similar to one another than to members of the experimenter-defined category. T-Tests comparing the amount of within- and between- class distance among the categories support this claim in each condition: Cluster, $t(63) = 11.43$, $p < 0.001$; Row, $t(60) = 13.16$, $p < 0.001$; and XOR, $t(57) = 3.64$, $p < 0.001$. These results provide clear evidence of an effect of category contrast: participants prefer to generate categories that are dissimilar to the learned category but maintain some level of internal cohesion. 
+
+Clearly, participants tend to generate categories that differ from what is already known. However, the secondary goal of this experiment was to replicate the classic finding that generated and previously-known categories share distributional properties. To evaluate this, we computed, for each participant, the range of the generated category along each axis (X, Y), as well as the correlation between features within each category. These data, shown in Figure \ref{fig:e1-statsboxes}, reveal a broad-yet-incomplete replication. 
+
+With respect to ranges along each axis (X, Y), the generated categories from each condition tend to reflect the ranges of the experimenter-defined categories. The categories generated in the Cluster condition had the less X-axis range compared to Row, $t(123) = 5.61$, $p < 0.001$, and XOR $t(120) = 2.68$, $p = 0.008$. Likewise, categories generated in the Row condition had less Y-axis range compared to Cluster, $t(123) = 4.57$, $p < 0.001$ and XOR $t(117) = 9.26$, $p < 0.001$, and categories from the Cluster condition had less Y-axis range compared to XOR $t(120) = 3.95$, $p < 0.001$. 
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{e1-statsboxes.pgf}
+    \caption{Box-plots of the distributional statistics from the categories generated in Experiment 1. }
+    \nbcnote{Row has significantly \textit{less} X-range compared to XOR, which I do not know how to explain...}
+    \label{fig:e1-statsboxes}
+    \end{center}
+\end{figure}
+
+On average, the axis ranges of generated categories tends to reflect those of the experimenter-defined categories. However, this cannot be said for the correlation between features in the generated categories.
+
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{e1-samples.pgf}
+    \caption{Sample categories generated in Experiment 1. }
+    \label{fig:e1-samples}
+    \end{center}
+\end{figure}
+
+% ----  yrange: Cluster, Row
+% T = 4.5714, p = 1.16282e-05 Means: 0.9023 (0.7495), 0.3566 (0.5553),
+
+% ----  yrange: Cluster, XOR
+% T = -3.952, p = 0.0001313583    Means: 0.9023 (0.7495), 1.4224 (0.6858),
+
+% ----  yrange: Row, XOR
+% T = -9.2603, p = 0.0    Means: 0.3566 (0.5553), 1.4224 (0.6858),
+
+% ---- Row X vs. Y:
+% T = 11.1735, p = 0.0    Means: 1.5738 (0.5678), 0.3566 (0.5553),
+
+% ---- Cluster X vs. Y:
+% T = -0.1258, p = 0.9002773681   Means: 0.8828 (0.7768), 0.9023 (0.7495),
+
+% ---- XOR X vs. Y:
+% T = -1.331, p = 0.1885039643    Means: 1.2586 (0.7542), 1.4224 (0.6858),
+
+% ---- Cluster positive correlation?
+% 0.145647334125
+% 0.137594247941
+
+% ---- XOR negative correlation?
+% 0.0456817132064
+% 0.0213027864542
+
+% ---- XOR has more total range than Cluster?
+% T = -4.8918, p = 3.1371e-06 Means: 1.7852 (0.9012), 2.681 (1.1023),
+
+% ---- XOR has more total range than Row?
+% T = -4.3418, p = 3.0207e-05 Means: 1.9303 (0.7412), 2.681 (1.1023),
+
+% ----  yrange: Cluster, Row
+% T = 4.5714, p = 1.16282e-05 Means: 0.9023 (0.7495), 0.3566 (0.5553),
+
+% ----  yrange: Cluster, XOR
+% T = -3.952, p = 0.0001313583    Means: 0.9023 (0.7495), 1.4224 (0.6858),
+
+% ----  yrange: Row, XOR
+% T = -9.2603, p = 0.0    Means: 0.3566 (0.5553), 1.4224 (0.6858),
+
+% ----  correlation: Cluster, Row
+% T = 2.029, p = 0.044618689  Means: 0.0753 (0.4058), -0.0587 (0.3196),
+
+% ----  correlation: Cluster, XOR
+% T = 2.5588, p = 0.0117466248    Means: 0.0753 (0.4058), -0.1538 (0.5682),
+
+% ----  correlation: Row, XOR
+% T = 1.1219, p = 0.2641961314    Means: -0.0587 (0.3196), -0.1538 (0.5682),
+
 \subsection{Discussion}
 
 

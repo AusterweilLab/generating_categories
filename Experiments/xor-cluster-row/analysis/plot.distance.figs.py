@@ -33,7 +33,6 @@ for c in pd.unique(info.condition):
 		ngenerations = ngenerations.append(row, ignore_index = True)
 
 
-
 fh, ax = plt.subplots(1,2,figsize = (6,2.7))
 
 styles = dict(XOR = '-^',	Cluster = '-o', Row = '-s')
@@ -58,16 +57,16 @@ for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
 
 h.xaxis.grid(False)
 h.set_xticks([])
-h.legend(loc = 'upper left', frameon = True, framealpha = 1, fontsize = 12)
+h.legend(loc = 'upper left', frameon = True, framealpha = 1, fontsize = 10)
 
 
 xax = h.axis()
-h.text(xax[0],xax[2] -1, 'Min', fontsize = 12, va = 'top')
-h.text(xax[1],xax[2] -1, 'Max', fontsize = 12, va = 'top', ha = 'right')
-h.set_xlabel('Distance', fontsize = 14)
+h.text(xax[0],xax[2] -1, 'Min', fontsize = 10, va = 'top')
+h.text(xax[1],xax[2] -1, 'Max', fontsize = 10, va = 'top', ha = 'right')
+h.set_xlabel('Distance', fontsize = 12)
 # h.set_yticks(np.arange(0,12, 2))
-# h.set_yticklabels(np.arange(0, 12, 2),fontsize = 12)
-h.set_ylabel('Generations Per Stimulus', fontsize = 14)
+# h.set_yticklabels(np.arange(0, 12, 2),fontsize = 10)
+h.set_ylabel('Generations Per Stimulus', fontsize = 12)
 
 
 h = ax[1]
@@ -85,8 +84,8 @@ h.set_xticks([])
 h.set_yticks([])
 
 h.axis([0, 1.5, 0, 1.5])
-h.set_xlabel('Within-Class Distance',fontsize = 14)
-h.set_ylabel('Between-Class Distance',fontsize = 14)
+h.set_xlabel('Within-Class Distance',fontsize = 12)
+h.set_ylabel('Between-Class Distance',fontsize = 12)
 
 fh.subplots_adjust(wspace=0.3)
 # plt.tight_layout(pad = 0.5)
@@ -94,7 +93,9 @@ fh.subplots_adjust(wspace=0.3)
 
 fname = 'distance.figs'
 fh.savefig(fname + '.pdf', bbox_inches = 'tight', pad_inches=0.0)
-# path = '../../../Manuscripts/cogsci-2017/figs/' + fname +'.pgf'
-# funcs.save_as_pgf(fh, path)
+
+path = '../../../Manuscripts/cog-psych/figs/e1-distanceplots.pgf'
+funcs.save_as_pgf(fh, path)
+
 
 		

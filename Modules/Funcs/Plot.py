@@ -2,7 +2,8 @@ import numpy as np
 
 def save_as_pgf(fh, path, 
 	texpath = '/Library/TeX/texbin/',
-	custom_opts = None):
+	custom_opts = None,
+	pad_inches = 0.01):
 	""" 
 	Wrapper to save a pgf file. 
 	"""
@@ -17,7 +18,7 @@ def save_as_pgf(fh, path,
 	import os, matplotlib
 	os.environ["PATH"] += os.pathsep + texpath
 	matplotlib.rcParams.update(opts)
-	fh.savefig(path, bbox_inches='tight', pad_inches=0.01)
+	fh.savefig(path, bbox_inches='tight', pad_inches=pad_inches)
 
 
 def plotclasses(h, stimuli, alphas, betas,
