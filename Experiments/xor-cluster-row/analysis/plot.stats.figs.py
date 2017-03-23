@@ -87,6 +87,7 @@ print wilcoxon(g1).pvalue
 
 print '\n---- XOR negative correlation?'
 g1 = stats.loc[stats.condition == 'XOR', 'correlation']
+print_ttest(g1,0, ttest_1samp)
 print ttest_1samp(g1, 0).pvalue
 print wilcoxon(g1).pvalue
 

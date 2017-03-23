@@ -274,9 +274,9 @@ To evaluate the role of contrast in category generation, we computed the number 
 
 Figure \ref{fig:e1-distanceplots} also depicts, for each participant, the average amount of distance between members of the generated category (\textit{within-class} distance) against the average amount of distance between members of the generated and experimenter-defined category (\textit{between-class} distance). These data also reveal a systematic pattern: the majority of participants generated categories with more between-class distance than within-class distance. That is, members of the generated category tended to be more similar to one another than to members of the experimenter-defined category. T-Tests comparing the amount of within- and between- class distance among the categories support this claim in each condition: Cluster, $t(63) = 11.43$, $p < 0.001$; Row, $t(60) = 13.16$, $p < 0.001$; and XOR, $t(57) = 3.64$, $p < 0.001$. These results provide clear evidence of an effect of category contrast: participants prefer to generate categories that are dissimilar to the learned category but maintain some level of internal cohesion. 
 
-Clearly, participants tend to generate categories that differ from what is already known. However, the secondary goal of this experiment was to replicate the classic finding that generated and previously-known categories share distributional properties. To evaluate this, we computed, for each participant, the range of the generated category along each axis (X, Y), as well as the correlation between features within each category. These data, shown in Figure \ref{fig:e1-statsboxes}, reveal a broad-yet-incomplete replication. 
+The secondary goal of this experiment was to replicate the classic finding that generated and previously-known categories share distributional properties. To evaluate this, we computed, for each participant, the range of their generated category along each axis (X, Y), as well as the correlation between features. These data, shown in Figure \ref{fig:e1-statsboxes}, reveal broad individual differences: within each condition, participants generated categories spanning the entire X- and Y- axis as well as categories that spanned very little along each dimension. Likewise, in each condition participants generated categories possessing strongly positive, neutral, and strongly negative correlations between the dimensions. Comparing the distributional statistics between conditions yields a broad-yet-incomplete replication of the classic effect. 
 
-With respect to ranges along each axis (X, Y), the generated categories from each condition tend to reflect the ranges of the experimenter-defined categories. The categories generated in the Cluster condition had the less X-axis range compared to Row, $t(123) = 5.61$, $p < 0.001$, and XOR $t(120) = 2.68$, $p = 0.008$. Likewise, categories generated in the Row condition had less Y-axis range compared to Cluster, $t(123) = 4.57$, $p < 0.001$ and XOR $t(117) = 9.26$, $p < 0.001$, and categories from the Cluster condition had less Y-axis range compared to XOR $t(120) = 3.95$, $p < 0.001$. 
+With respect to ranges along each axis (X, Y), the generated categories from each condition tend to reflect the ranges of the experimenter-defined categories. The categories generated in the Cluster condition were less widely distributed compared to Row, $t(123) = 5.61$, $p < 0.001$, and XOR, $t(120) = 2.68$, $p = 0.008$. Likewise, categories generated in the Row condition had less Y-axis range compared to Cluster, $t(123) = 4.57$, $p < 0.001$ and XOR $t(117) = 9.26$, $p < 0.001$, and categories from the Cluster condition had less Y-axis range compared to XOR, $t(120) = 3.95$, $p < 0.001$. However, whereas the correlations in the Cluster and Row conditions were not systematically positive or negative ($ps > 0.1$), the generated categories in the XOR condition tended to possess a \textit{negatively} correlated dimensions, $t(57) = 2.04$, $p = 0.046$. This is the opposite of what can be expected, assuming learners are emulating the distributional structure of the experimenter-defined class (which possesses perfectly positively correlated features).
 
 \begin{figure}
     \begin{center}
@@ -287,35 +287,20 @@ With respect to ranges along each axis (X, Y), the generated categories from eac
     \end{center}
 \end{figure}
 
-On average, the axis ranges of generated categories tends to reflect those of the experimenter-defined categories. However, this cannot be said for the correlation between features in the generated categories. As in the experimenter-defined categories, 
-
-
-% ---- Cluster positive correlation?
-% 0.145647334125
-% 0.137594247941
-
-% ---- XOR negative correlation?
-% 0.0456817132064
-% 0.0213027864542
-
-
-% ----  correlation: Cluster, Row
-% T = 2.029, p = 0.044618689  Means: 0.0753 (0.4058), -0.0587 (0.3196),
-
-% ----  correlation: Cluster, XOR
-% T = 2.5588, p = 0.0117466248    Means: 0.0753 (0.4058), -0.1538 (0.5682),
-
-% ----  correlation: Row, XOR
-% T = 1.1219, p = 0.2641961314    Means: -0.0587 (0.3196), -0.1538 (0.5682),
 
 \subsection{Discussion}
 
 
+In Experiment 1 we sought to test whether category contrast systematically influences categories that are creatively generated by participants. We found strong evidence for effects of category contrast: participants were more likely to generate stimuli that are more distant from (i.e., less similar to) members of a previously-learned category, and members of participant-generated categories tended to be more similar to one another than to members of previously-learned categories. We also partially replicated the classic finding that the distributional structure of generated categories reflects that of previously learned categories \citep{jern2013probabilistic,ward1994structured}: members of generated categories were more widely distributed along dimensions which were widely distributed in the experimenter-defined category. 
 
-\clearpage
+A notable divergence, however, was the finding that the feature correlations within the categories generated in the XOR condition tended oppose that of the experimenter-defined category. While this is difficult to account for within existing theoretical approaches \citep[i.e.,][]{jern2013probabilistic}, it can be concisely explained from a category contrast perspective. Within the XOR condition, individuals who seek to generate a category that is perceptually distinct from what is already known are left with only the upper-left and bottom-right quadrants, as members of the experimenter-defined XOR category lie in the bottom-right and top-left quadrants. If examples are generated into both of the available quadrants, the generated category will possess a strongly negative correlation, opposing that of the experimenter-defined class.
+
+The negative correlations observed in the XOR condition may therefore indicate something further about the role of category contrast: constraints on creative generation imposed by category contrast may not simply influence the \textit{location} of generated categories, but also their distributional structure. In Experiment 2, we test this claim more systematically.
+
 
 \section{Experiment 2}
 
+In Experiment 1, we observed that participants are less likely to generate stimuli that are highly similar to members of existing categories. Effectively, this demonstrates that members of known categories influence where new categories will be generated within the domain. A related question, however, concerns whether category contrast influences the distributional structure of generated categories. Specifically, does the shape of the unoccupied area within the domain influence the types of categories people generate?
 
 \begin{figure}
     \begin{center}
@@ -325,7 +310,14 @@ On average, the axis ranges of generated categories tends to reflect those of th
     \end{center}
 \end{figure}
 
-We developed two Alpha categories (see Figure \ref{fig:e2-conditions}): the `Bottom' category is a tight cluster in the bottom-center of the space, and the `Middle' category is identical except that it lies in the center of stimulus space. Although this manipulation is minimal (the conditions differ only slightly in the Y-axis position of the experimenter-defined category), the PACKER model predicts strong between-condition differences. According to PACKER, the nature of the space not occupied by the existing categories should determine where members of the Beta category are likely to be generated. Thus, the lower areas of the stimulus space should be less frequently used for generation in the Bottom condition compared to the Middle (as these areas possess greater similarity to the Bottom category). Conversely, the upper areas of the stimulus space should be used for generation more frequently in the Bottom condition compared to Middle.
+To address this question, we developed two new categories within the same domain as Experiment 1 (see Figure \ref{fig:e2-conditions}). The categories possess an identical distributional (both are tight clusters of examples with a neutral feature correlation), and only differ slightly in their Y-axis position: the `Bottom' category is a tight cluster in the bottom-center of the space, and the `Middle' category lies in the center of stimulus space. 
+
+By consequence, approaches focusing on the emulation of distributional structure \citep[i.e.,][]{jern2013probabilistic} would fail to predict any differences in the types of categories generated after learning the 
+
+Importantly, however, the slight change to the position along the Y-axis produces considerable changes to the shape of the space that remains unoccupied after learning. 
+
+
+the PACKER model predicts strong between-condition differences. According to PACKER, the nature of the space not occupied by the existing categories should determine where members of the Beta category are likely to be generated. Thus, the lower areas of the stimulus space should be less frequently used for generation in the Bottom condition compared to the Middle (as these areas possess greater similarity to the Bottom category). Conversely, the upper areas of the stimulus space should be used for generation more frequently in the Bottom condition compared to Middle.
 
 
 \subsection{Participants \& Materials}
