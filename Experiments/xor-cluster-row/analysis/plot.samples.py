@@ -2,7 +2,6 @@ import sqlite3, os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 
 execfile('Imports.py')
 import Modules.Funcs as funcs
@@ -26,6 +25,9 @@ textsettings = dict(fontsize = 6)
 # 11		12		13		14		15		16		17		18		19		20		 21
 # 22		23		24		25		26		27		28		29		30		31		 32
 
+
+P, E = 2, 0.2
+gridspec_kw = {'width_ratios':[P,P,P, E, P,P,P, E, P,P,P]}
 assignments = dict(
 	empty = np.array([3, 14, 25, 7, 18, 29]),
 	Cluster = np.array([0, 1, 2, 11, 12, 13, 22, 23, 24]))
@@ -33,26 +35,10 @@ assignments['Row'] = assignments['Cluster'] + 4
 assignments['XOR'] = assignments['Row'] + 4
 
 
-outer_grid = []
-for i in range(33):
-	x = i%11
-	if i < 11: y = 0
-	elif i > 21: y = 2
-	else: y = 1
-
-	if i in assignments['empty']: size = (1,3)
-	else: size = (3,3)
-
-	outer_grid.append( plt.subplot2grid(size, (x, y)) )
-
-
-fig = plt.figure(figsize=np.array([11,3]) * 0.7)
-
 # plotting
-# f, ax= plt.subplots(3,11, figsize=np.array([11,3]) * 0.7)
-# ax_flat = ax.flatten()
-for i, ax in enumerate(outer_grid):
-	h = plt.Subplot(fig, ax, size = (3,3))
+fig, ax= plt.subplots(3,11, figsize=np.array([7.,2.3]) , gridspec_kw = gridspec_kw)
+ax_flat = ax.flatten()
+for i, h in enumerate(ax_flat):
 
 	if i in assignments['empty']: 
 		h.axis('off')
@@ -68,20 +54,21 @@ for i, ax in enumerate(outer_grid):
 	while True: # AT least make sure the participant was *trying*
 		pid = np.random.choice(info.loc[info.condition==curr_cond, 'participant'])
 		Bs = generation.loc[generation.participant==pid, 'stimulus'].as_matrix()
-		if not any(np.intersect1d(As,Bs).tolist()): break
+		if np.intersect1d(As,Bs).tolist() == []: break
 
+	# drop participant so they cannot be chosen again
+	idx = info.loc[info.participant ==  pid]
+	info.drop(idx.index, inplace=True)
 
 	funcs.plotclasses(h, stimuli, As, Bs, textsettings = textsettings)
 
 	if i in [1, 5, 9]:
 		h.set_title(curr_cond)
 
-	fig.add_subplot(h)
-
-
+fig.subplots_adjust(wspace = 0.09, hspace = 0.01)
 fig.savefig('samples.png', bbox_inches='tight', transparent=False)
 
 
-# path = '../../../Manuscripts/cog-psych/figs/e1-samples.pgf'
-# funcs.save_as_pgf(fig, path)
+path = '../../../Manuscripts/cog-psych/figs/e1-samples.pgf'
+funcs.save_as_pgf(fig, path)
 
