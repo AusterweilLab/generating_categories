@@ -1,11 +1,79 @@
-#####
-# This submodule contains custom code to fit the modules to datasets.
-# it is not written to be very general and I edit it a lot!
-#####
-
 import scipy.optimize as op
 import numpy as np
 import sys
+
+import Modules.Funcs as Funcs
+
+
+class Trialset(object):
+	"""A class representation a collection of trials"""
+	def __init__(self, stimuli = None, nd= None):
+		
+		# figure out what the stimulus domain is
+		if stimuli is not None and nd is not None:
+			print('Warning: using array over nd specification.')
+		elif stimuli is None and nd is None:
+			raise Exception('Need to specify stimuli array or nd space!')
+		elif stimuli is not None and nd is None:
+			self.stimuli = stimuli
+		elif stimuli is None and nd is not None:
+			self.stimuli = np.fliplr(Funcs.ndspace(nd[0], nd[1]))
+
+		# initialize a trials list
+		self.everything = [] # veridical copy
+		self.compactset = [] # compact set
+
+
+	def add(self, response, categories = [], **kwargs):
+		""" Add a single trial to the trial list """
+
+		# sort category lists
+		categories = [np.sort(i) for i in categories]
+
+		# store core data in dict
+		main_dict = dict(response = response, categories = categories)
+
+		# add veridical copy
+		self.everything.append(main_dict.copy())
+		self.everything[-1].update(kwargs)
+
+		# look up if the categories are already in there
+		idx = self._lookup(categories)
+		
+		# if there is no existing configuration, add a new one
+		if idx is None:
+			main_dict['response'] = [main_dict['response']]
+			self.compactset.append(main_dict)
+
+		# if there is an index, just add the response
+		else:
+			self.compactset[idx]['response'] += [response]
+
+	def _lookup(self, categories):
+		"""
+			Look up if a category set is already in the compact set.
+			return the index if so, return None otherwise
+		"""
+
+		for idx, trial in enumerate(self.compactset):
+
+			# if the categories are not the same size, then they are 
+			# not equal...
+			if len(categories) != len(trial['categories']): continue
+
+			# check equality of all pairs of categories
+			equals =[	np.array_equal(*arrs) 
+								for arrs in zip(categories, trial['categories'])]
+
+			# return index if all pairs are equal
+			if all(equals): return idx
+
+		# otherwise, return None
+		return None
+
+
+
+
 
 
 def _callback_fun_(xk):
