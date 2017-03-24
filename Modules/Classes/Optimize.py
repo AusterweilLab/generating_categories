@@ -6,7 +6,11 @@ import Modules.Funcs as Funcs
 
 
 class Trialset(object):
-	"""A class representation a collection of trials"""
+
+	"""
+	A class representing a collection of trials
+	"""
+
 	def __init__(self, stimuli = None, nd= None):
 		
 		# figure out what the stimulus domain is
@@ -17,37 +21,38 @@ class Trialset(object):
 		elif stimuli is not None and nd is None:
 			self.stimuli = stimuli
 		elif stimuli is None and nd is not None:
-			self.stimuli = np.fliplr(Funcs.ndspace(nd[0], nd[1]))
+			self.stimuli = np.fliplr(Funcs.ndspace(*nd))
 
-		# initialize a trials list
-		self.everything = [] # veridical copy
-		self.compactset = [] # compact set
+		# initialize trials list
+		self.Set = [] # compact set
+		self.N = 0
 
+	def __str__(self):
+		N = len(self.Set)
+		S = 'Trialset with ' + str(N) + ' unique trials.'
+		return S
 
-	def add(self, response, categories = [], **kwargs):
-		""" Add a single trial to the trial list """
+	def add(self, response, categories = []):
+		"""
+			Add a single trial to the trial lists
+		"""
 
-		# sort category lists
+		# sort category lists, do a lookup
 		categories = [np.sort(i) for i in categories]
-
-		# store core data in dict
-		main_dict = dict(response = response, categories = categories)
-
-		# add veridical copy
-		self.everything.append(main_dict.copy())
-		self.everything[-1].update(kwargs)
-
-		# look up if the categories are already in there
 		idx = self._lookup(categories)
 		
 		# if there is no existing configuration, add a new one
 		if idx is None:
-			main_dict['response'] = [main_dict['response']]
-			self.compactset.append(main_dict)
+			self.N += 1
+			self.Set.append(dict(
+				response = [response], 
+				categories = categories)
+			)
 
 		# if there is an index, just add the response
 		else:
-			self.compactset[idx]['response'] += [response]
+			self.Set[idx]['response'] = np.append(
+				self.Set[idx]['response'], response)
 
 	def _lookup(self, categories):
 		"""
@@ -55,7 +60,7 @@ class Trialset(object):
 			return the index if so, return None otherwise
 		"""
 
-		for idx, trial in enumerate(self.compactset):
+		for idx, trial in enumerate(self.Set):
 
 			# if the categories are not the same size, then they are 
 			# not equal...
@@ -72,8 +77,50 @@ class Trialset(object):
 		return None
 
 
+	def add_frame(self, generation):
+		"""
+			Add trials from a generation dataframe with columns:
+					participant, trial, stimulus, categories
 
+			Where categories is a embedded list of known categories
+			PRIOR to trial = 0.
+		""" 
 
+		for pid, rows in generation.groupby('participant'):
+			for num, row in rows.groupby('trial'):
+
+				Bs = rows.loc[rows.trial<num, 'stimulus'].as_matrix()
+				categories = row.categories.item() + [Bs]
+				stimulus = row.stimulus.item()
+				self.add(stimulus, categories = categories)
+		return self
+
+	def loglike(self, model_obj, params):
+		"""
+			Evaluate a model object's log-likelihood on the
+			trial set based on the provided parameters.
+		"""
+
+		# iterate over trials
+		ps = np.zeros(self.N)
+		for idx, trial in enumerate(self.Set):
+			print trial
+			lll
+			
+			obj = model_obj(trial['categories'], params)
+			predictions = obj.get_generation_ps(stimuli, 1)
+			ps[i] = predictions[trial['response']]
+
+		# check for NaN
+		if np.any(np.isnan(ps)):
+			raise Exception('You got nan probabilities. Sorry :-(')
+
+		# remove zeros to prevent infs
+		ps[ps<1e-308] = 1e-308
+
+		lps = np.log(ps)
+		loglike = np.sum(lps)
+		return -1.0 * loglike
 
 
 def _callback_fun_(xk):
