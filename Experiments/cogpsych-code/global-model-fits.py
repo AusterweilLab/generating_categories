@@ -1,9 +1,5 @@
-import sqlite3
-import os
 import pickle
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 
 execfile('Imports.py')
 import Modules.Funcs as funcs
@@ -12,36 +8,30 @@ from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 
-np.set_printoptions(precision = 2)
-pd.set_option('display.width', 200, 'precision', 2)
-
-con = sqlite3.connect('experiments.db')
-participants = pd.read_sql_query("SELECT participant, condition from participants", con)
-generation = pd.read_sql_query("SELECT * from generation", con)
-alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
-con.close()
+# get trials pickle
+# get data from pickle
+with open("pickles/all_data_e1_e2.p", "rb" ) as f:
+	trials = pickle.load( f )
 
 
-# create categories mapping
-mapping = pd.DataFrame(columns = ['condition', 'categories'])
-for i in alphas.columns:
-	As = alphas[i].as_matrix().flatten()
-	mapping = mapping.append(
-		dict(condition = i, categories =[As]), 
-		ignore_index = True
-	)
+# options for the optimization routine
+options = dict(
+	method = 'Nelder-Mead',
+	options = dict(maxiter = 500, disp = False),
+	tol = 0.01,
+) 
 
-# merge categories into generation
-generation = pd.merge(generation, participants, on='participant')
-generation = pd.merge(generation, mapping, on='condition')
+best_fits = dict()
+for model_obj in [CopyTweak, Packer, ConjugateJK13]:
+# for o in [ConjugateJK13]:
 
-if not os.path.exists('all_trials_e1_e2.p'):
+	inits = model_obj.rvs(fmt = list)
 
-	# create trial set object
-	trials = Optimize.Trialset(stimuli = stimuli)
-	trials = trials.add_frame(generation)
+	print '\nInit values:'
+	print dict(zip(model_obj.parameter_names, [round(i,3) for i in inits]))
 
+	res = Optimize.hillclimber(model_obj, inits, trials, options)
+	dummy_model = model_obj(None, res.x)
+	best_fits[model_obj.model] = dummy_model.params
 
-trials.loglike(Packer, Packer.rvs())
 
