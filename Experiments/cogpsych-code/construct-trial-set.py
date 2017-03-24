@@ -4,7 +4,7 @@ import pickle
 import pandas as pd
 
 execfile('Imports.py')
-from Modules.Classes import Optimize
+from Modules.Classes import Simulation
 
 con = sqlite3.connect('experiments.db')
 participants = pd.read_sql_query("SELECT participant, condition from participants", con)
@@ -28,7 +28,7 @@ generation = pd.merge(generation, participants, on='participant')
 generation = pd.merge(generation, mapping, on='condition')
 
 # create trial set object
-trials = Optimize.Trialset(stimuli = stimuli)
+trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(generation)
 
 with open('pickles/all_data_e1_e2.p','wb') as f:

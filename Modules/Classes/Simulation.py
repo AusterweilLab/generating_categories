@@ -11,25 +11,21 @@ class Trialset(object):
 	A class representing a collection of trials
 	"""
 
-	def __init__(self, stimuli = None, nd= None):
+	def __init__(self, stimuli):
 		
 		# figure out what the stimulus domain is
-		if stimuli is not None and nd is not None:
-			print('Warning: using array over nd specification.')
-		elif stimuli is None and nd is None:
-			raise Exception('Need to specify stimuli array or nd space!')
-		elif stimuli is not None and nd is None:
-			self.stimuli = stimuli
-		elif stimuli is None and nd is not None:
-			self.stimuli = np.fliplr(Funcs.ndspace(*nd))
+		self.stimuli = stimuli
 
 		# initialize trials list
 		self.Set = [] # compact set
-		self.N = 0
+		self.nunique = 0
+		self.nresponses = 0
 
 	def __str__(self):
 		N = len(self.Set)
-		S = 'Trialset with ' + str(N) + ' unique trials.'
+		S  = 'Trialset containing: ' 
+		S += '\n\t ' + str(self.nunique) + ' unique trials '
+		S += '\n\t ' + str(self.nresponses) + ' total responses'
 		return S
 
 	def add(self, response, categories = []):
@@ -40,10 +36,10 @@ class Trialset(object):
 		# sort category lists, do a lookup
 		categories = [np.sort(i) for i in categories]
 		idx = self._lookup(categories)
-		
+
 		# if there is no existing configuration, add a new one
 		if idx is None:
-			self.N += 1
+			self.nunique += 1
 			self.Set.append(dict(
 				response = [response], 
 				categories = categories)
@@ -53,6 +49,9 @@ class Trialset(object):
 		else:
 			self.Set[idx]['response'] = np.append(
 				self.Set[idx]['response'], response)
+
+		# increment response counter
+		self.nresponses += 1
 
 	def _lookup(self, categories):
 		"""
@@ -95,7 +94,7 @@ class Trialset(object):
 				self.add(stimulus, categories = categories)
 		return self
 
-	def loglike(self, params, model_obj ):
+	def loglike(self, params, model):
 		"""
 			Evaluate a model object's log-likelihood on the
 			trial set based on the provided parameters.
@@ -105,33 +104,25 @@ class Trialset(object):
 		loglike = 0
 		for idx, trial in enumerate(self.Set):
 
-			# format categories, initalize object
+			# format categories
 			categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
-			obj = model_obj(categories, params)
 
-			# evaluate probabilities
-			ps = obj.get_generation_ps(self.stimuli, 1)
-			
+			# compute probabilities
+			ps = model(categories, params).get_generation_ps(self.stimuli, 1)
+			ps = ps[trial['response']]
+
+			# check for nans and zeros
 			if np.any(np.isnan(ps)):
-				raise Exception('You got nan probabilities. Sorry :-(')
-
-			# remove zeros to prevent infs, the add log probs
+				S = model.model  + ' returned NAN probabilities.'
+				raise Exception(S)
 			ps[ps<1e-308] = 1e-308
+
 			loglike += np.sum(np.log(ps))
-			
+		
 		return -1.0 * loglike
 
 
-def _callback_fun_(xk):
-	"""
-	Function executed at each step of the hill-climber
-	"""
-	# print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + ']'
-	print '\b.',
-	sys.stdout.flush()
-
-
-def hillclimber(model_obj, init_params, trials_obj, options):
+def hillclimber(model_obj, trials_obj, options, inits = None):
 	"""
 	Run an optimization routine.
 
@@ -147,26 +138,38 @@ def hillclimber(model_obj, init_params, trials_obj, options):
 	object.
 	"""
 
+	# set initial params
+	if inits is None:	
+		inits = model_obj.rvs(fmt = list)
+
 	# run search
 	print '\nFitting: ' + model_obj.model
-	res = op.minimize(
-		trials_obj.loglike, init_params, 
-		args = (model_obj),
-		callback = _callback_fun_, **options
-	)
+	res = op.minimize(	trials_obj.loglike, 
+											inits, 
+											args = (model_obj),
+											callback = _callback_fun_, 
+											**options
+									)
 
 	# print results
 	print '\n' + model_obj.model + ' Results:'
 	print '\tIterations = ' + str(res.nit)
 	print '\tMessage = ' + str(res.message)
 
-	final_obj = model_obj(None, res.x)
-	for k in final_obj.parameter_names:
-		v = getattr(final_obj, k)
+	for k, v in zip(model_obj.parameter_names, res.x):
 		print '\t' + k + ' = ' + str(v) + ','
 	print '\tLogLike = ' + str(res.fun)
 
-	AIC = 2.0*len(init_params) - 2.0* (-1.0 * res.fun)
+	AIC = 2.0*len(inits) - 2.0* (-1.0 * res.fun)
 	print '\tAIC = ' + str(AIC)
 
 	return res
+
+
+def _callback_fun_(xk):
+	"""
+	Function executed at each step of the hill-climber
+	"""
+	# print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + ']'
+	print '\b.',
+	sys.stdout.flush()

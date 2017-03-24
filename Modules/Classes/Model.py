@@ -120,13 +120,13 @@ class Model(object):
 		for k in self.params.keys():
 			self.params[k] = getattr(self, k)
 
-
 	def _params_to_dict_(self, params):
 		"""
 		Convert list parameters to dict, assuming order set by
 		self.parameter_names. Raises exception if there are not 
 		enough params.
 		"""
+
 		if len(params) != len(self.parameter_names):
 			S = 'Not enough (or too many) parameters!\nRequired:'
 			S += ''.join(['\n\t' + i  for i in self.parameter_names])

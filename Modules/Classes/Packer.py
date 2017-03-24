@@ -22,6 +22,7 @@ class Packer(Exemplar):
 		"""
 		Return random parameters in dict or list format.
 		"""
+
 		params = [
 			np.random.uniform(0.1, 6.0), # specificity
 			np.random.uniform(-6.0, 0.0), # between. biased negative.
