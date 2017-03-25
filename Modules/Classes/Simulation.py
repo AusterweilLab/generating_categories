@@ -156,7 +156,8 @@ def hillclimber(model_obj, trials_obj, options, inits = None):
 	print '\tIterations = ' + str(res.nit)
 	print '\tMessage = ' + str(res.message)
 
-	for k, v in zip(model_obj.parameter_names, res.x):
+	final_params = model_obj.clipper(res.x)
+	for k, v in zip(model_obj.parameter_names, final_params):
 		print '\t' + k + ' = ' + str(v) + ','
 	print '\tLogLike = ' + str(res.fun)
 

@@ -10,34 +10,17 @@ class CopyTweak(Exemplar):
 	"""
 
 	model = 'Copy and Tweak'
-	parameter_names = [
-		'specificity', # > 0
-		'determinism' # > 0
-	]
-
+	parameter_names = ['specificity', 'determinism']
+	parameter_rules = dict(
+			specificity = dict(min = 1e-10),
+			determinism = dict(min = 0),
+		)
 
 	@staticmethod
-	def rvs(fmt = dict):
-		"""
-		Return random parameters in dict or list format.
-		"""
-		params = [np.random.uniform(0.1, 6.0), # specificity
-							np.random.uniform(0.1, 6.0)] # determinism
-
-		if fmt not in [dict, list]:
-			raise Exception('Format must be dict or list.')
-
-		if fmt == list:
-			return params
-		else:
-			return dict(zip(CopyTweak.parameter_names, params))
-
-
-	def _param_handler_(self):
-		super(CopyTweak, self)._param_handler_()
-		if self.specificity <= 0: self.specificity = 1e-10
-		if self.determinism < 0: self.determinism = 0.0
-
+	def _make_rvs(fmt = dict):
+		""" Return random parameters """
+		return [np.random.uniform(0.1, 6.0), # specificity
+						np.random.uniform(0.1, 6.0)] # determinism
 
 	def get_generation_ps(self, stimuli, category):
 

@@ -13,36 +13,28 @@ class ConjugateJK13(Model):
 	"""
 
 	model = "Hierarchical Sampling"
-	parameter_names = [
-		'category_mean_bias', # > 0
-		'category_variance_bias', # > p - 1
-		'domain_variance_bias', # > 0
-		'determinism' # > 0 
-		]
+	num_features    = 2 # hard coded number of assumed features
+	parameter_names = [	'category_mean_bias',   'category_variance_bias',
+											'domain_variance_bias', 'determinism' ]
+	parameter_rules = dict(
+			category_mean_bias = dict(min = 1e-10),
+			category_variance_bias = dict(min = num_features - 1 + 1e-10),
+			domain_variance_bias = dict(min = 1e-10),
+			determinism = dict(min = 0),
+		)
+
 
 	@staticmethod
-	def rvs(nf = 2, fmt = dict):
-		"""
-		Return random parameters in dict or list format. User must also
-		supply the number of features for the model (this is required
-		to compute the category variance bias)
-		"""
-
-		params = [
+	def _make_rvs():
+		""" Return random parameters """
+		nf = ConjugateJK13.num_features
+		return [
 			np.random.uniform(0.01, 0.5), # category_mean_bias, biased small
 			np.random.uniform(nf-0.99, nf+2.0), # category_variance_bias
 			np.random.uniform(0.01, 5.0), # domain_variance_bias
 			np.random.uniform(0.1, 6.0) # determinism
 		]
-		
-		if fmt not in [dict, list]:
-			raise Exception('Format must be dict or list.')
-
-		if fmt == list:
-			return params
-		else:
-			return dict(zip(ConjugateJK13.parameter_names, params))
-
+	
 
 	def _update_(self):
 		"""
@@ -62,15 +54,6 @@ class ConjugateJK13(Model):
 			if self.nexemplars[y] < 2: continue
 			C = np.cov(self.categories[y], rowvar = False)
 			self.Domain += C
-
-
-	def _param_handler_(self):
-		super(ConjugateJK13, self)._param_handler_()
-		if self.category_mean_bias <= 0: self.category_mean_bias = 1e-10
-		if self.category_variance_bias <= self.nfeatures - 1.0: 
-			self.category_variance_bias = self.nfeatures + 1e-10
-		if self.domain_variance_bias <= 0: self.domain_variance_bias = 1e-10
-		if self.determinism < 0: self.determinism = 0.0
 
 
 	def _wts_handler_(self):

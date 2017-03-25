@@ -13,6 +13,7 @@ from Modules.Classes import ConjugateJK13
 with open("pickles/all_data_e1_e2.p", "rb" ) as f:
 	trials = pickle.load( f )
 
+
 # options for the optimization routine
 options = dict(
 	method = 'Nelder-Mead',

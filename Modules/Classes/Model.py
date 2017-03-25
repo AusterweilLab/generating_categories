@@ -13,41 +13,76 @@ class Model(object):
 	__metaclass__ = abc.ABCMeta
 
 	@abc.abstractproperty
-	def model(self):
-		pass
+	def model(self): pass
 
 	@abc.abstractproperty
-	def parameter_names(self):
-		pass
+	def parameter_names(self): pass
+
+	@abc.abstractproperty
+	def parameter_rules(self): pass
 
 	@abc.abstractmethod
-	def rvs():
-		"""	Static method to generate random parameters. """
-		pass
+	def _make_rvs(): pass
+
+	@classmethod
+	def rvs(cls, fmt = dict, **kwargs):
+		"""
+		return random parameters in dict or list format
+		"""
+
+		params = cls._make_rvs(**kwargs)
+
+		if fmt not in [dict, list]:
+			raise Exception('fmt must be dict or list.')
+		
+		if fmt == list: return params
+		else: return dict(zip(cls.parameter_names, params))
+
+	@classmethod
+	def clipper(cls, params):
+		"""
+		Clip a set of parameters according to model rules.
+		Return data in the same format it arrived.
+		"""
+
+		# format as list for now
+		if not isinstance(params, dict):
+			param_dict = cls._params_to_dict_(params)
+		else: param_dict = dict(params)
+
+		# clip dict
+		for k, rules in cls.parameter_rules.items():
+			if rules is None: continue
+			if 'min' in rules.keys():
+				if param_dict[k] < rules['min']:
+					param_dict[k] = rules['min']
+			if 'max' in rules.keys():
+				if param_dict[k] > rules['max']:
+					param_dict[k] = rules['max']
+
+		# return in original format
+		if not isinstance(params, dict):
+			return [param_dict[k] for k in cls.parameter_names]
+		else: 
+			return param_dict
+
+	@classmethod
+	def _params_to_dict_(cls, params):
+		"""
+		Convert list parameters to dict, assuming order set by
+		parameter_names. Raises exception if there are not 
+		enough params (or too many).
+		"""
+
+		if len(params) != len(cls.parameter_names):
+			S = 'Not enough (or too many) parameters!\nRequired:'
+			S += ''.join(['\n\t' + i  for i in cls.parameter_names])
+			raise Exception(S)
+		return dict(zip(cls.parameter_names, params))
+
 
 	@abc.abstractmethod
-	def _param_handler_(self):
-		""" 
-		Ensures all the right parameters are in place, and creates
-		class attributes based on values.
-
-		Models must add custom logic to ensure values lie within 
-		the allowed range.
-		"""
-		for k in self.parameter_names:
-			if k not in self.params.keys():
-				raise Exception("There is no '" + k + "' parameter!!!")
-			else:
-				setattr(self, k, self.params[k])
-
-	@abc.abstractmethod
-	def get_generation_ps(self, stimuli, category):
-		"""
-		Function to return probability of generating 'stimuli' into
-		'category', given the model's current state.
-		"""
-		pass
-
+	def get_generation_ps(self, stimuli, category): pass
 
 	def __init__(self, categories, params):
 		"""
@@ -63,15 +98,9 @@ class Model(object):
 		# force params to dict if it is not one
 		if not isinstance(params, dict):
 			params = self._params_to_dict_(params)
-		
-		# create dummy object if needed
-		if categories is None:
-			print 'Warning: creating a dummy Model.'
-			self.params = params
-			self.ncategories, self.nfeatures = 0, 0
-			self._param_handler_()
-			self._reset_param_dict_()
-			return
+
+		# clip parameters into allowed range
+		params = self.clipper(params)
 
 		# assign descriptives
 		self.categories = [np.atleast_2d(i) for i in categories]
@@ -81,7 +110,6 @@ class Model(object):
 		# setup functions
 		self._param_handler_()
 		self._wts_handler_()
-		self._reset_param_dict_()
 		self._update_()
 
 
@@ -94,6 +122,16 @@ class Model(object):
 				S += str(self.nexemplars[j]) + ' examples.'
 			return S + '\n'
 
+	def _param_handler_(self):
+		""" 
+		Ensures all the right parameters are in place, and creates
+		class attributes based on values.
+		"""
+		for k in self.parameter_names:
+			if k not in self.params.keys():
+				raise Exception("There is no '" + k + "' parameter!!!")
+			else: 
+				setattr(self, k, self.params[k])
 
 	def _wts_handler_(self):
 		"""
@@ -119,19 +157,6 @@ class Model(object):
 		"""
 		for k in self.params.keys():
 			self.params[k] = getattr(self, k)
-
-	def _params_to_dict_(self, params):
-		"""
-		Convert list parameters to dict, assuming order set by
-		self.parameter_names. Raises exception if there are not 
-		enough params.
-		"""
-
-		if len(params) != len(self.parameter_names):
-			S = 'Not enough (or too many) parameters!\nRequired:'
-			S += ''.join(['\n\t' + i  for i in self.parameter_names])
-			raise Exception(S)
-		return dict(zip(self.parameter_names, params))
 
 
 	def _update_(self):
