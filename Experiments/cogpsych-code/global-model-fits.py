@@ -21,6 +21,6 @@ options = dict(
 	tol = 0.01,
 ) 
 
-for model_obj in [Packer, CopyTweak, ConjugateJK13]:
+for model_obj in [CopyTweak, Packer, ConjugateJK13]:
 
 	res = Simulation.hillclimber(model_obj, trials, options)

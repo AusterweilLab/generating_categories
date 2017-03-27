@@ -13,13 +13,13 @@ class Model(object):
 	__metaclass__ = abc.ABCMeta
 
 	@abc.abstractproperty
-	def model(self): pass
+	def model(): pass
 
 	@abc.abstractproperty
-	def parameter_names(self): pass
+	def parameter_names(): pass
 
 	@abc.abstractproperty
-	def parameter_rules(self): pass
+	def parameter_rules(): pass
 
 	@abc.abstractmethod
 	def _make_rvs(): pass
@@ -35,8 +35,10 @@ class Model(object):
 		if fmt not in [dict, list]:
 			raise Exception('fmt must be dict or list.')
 		
-		if fmt == list: return params
-		else: return dict(zip(cls.parameter_names, params))
+		if fmt == list: 
+			return params
+		else: 
+			return dict(zip(cls.parameter_names, params))
 
 	@classmethod
 	def clipper(cls, params):
@@ -47,7 +49,7 @@ class Model(object):
 
 		# format as list for now
 		if not isinstance(params, dict):
-			param_dict = cls._params_to_dict_(params)
+			param_dict = cls.params2dict(params)
 		else: param_dict = dict(params)
 
 		# clip dict
@@ -67,7 +69,7 @@ class Model(object):
 			return param_dict
 
 	@classmethod
-	def _params_to_dict_(cls, params):
+	def params2dict(cls, params):
 		"""
 		Convert list parameters to dict, assuming order set by
 		parameter_names. Raises exception if there are not 
@@ -97,7 +99,7 @@ class Model(object):
 		
 		# force params to dict if it is not one
 		if not isinstance(params, dict):
-			params = self._params_to_dict_(params)
+			params = self.params2dict(params)
 
 		# clip parameters into allowed range
 		params = self.clipper(params)
