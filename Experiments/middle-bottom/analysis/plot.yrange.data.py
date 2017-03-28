@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 np.set_printoptions(precision = 2)
 pd.set_option('precision', 2)
 
+execfile('Imports.py')
+import Modules.Funcs as funcs
+
 # import data
 con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT * from participants", con)
@@ -22,7 +25,7 @@ df['x'] = stimuli.loc[df.stimulus, 'F1'].as_matrix()
 
 def plotlines(h, data, stats):
 	sort_df = stats.sort_values(by = ['yrange','condition'])
-	condition_colors = dict(Middle = 'r', Bottom = 'b')
+	condition_colors = dict(Middle = 'orange', Bottom = 'purple')
 	n = 0
 
 	for num, info in sort_df.iterrows():
@@ -53,7 +56,7 @@ def plotlines(h, data, stats):
 	h.set_yticks([])
 	h.set_xticks([])
 	h.set_ylabel('Y Axis Value', fontsize = 11)
-	h.set_xlabel('Y-Axis Range', fontsize = 11)
+	h.set_xlabel('Participant (sorted by overall range)', fontsize = 11)
 
 	for k, v in condition_colors.items():
 		plt.plot(np.NaN, np.NaN, '-', color = v, label = k)
@@ -67,5 +70,5 @@ plotlines(fh.gca(), df, stats)
 
 fh.savefig('yranges.pdf', bbox_inches = 'tight')
 
-# path = '../../../Manuscripts/cogsci-2017/figs/middle-bottom-yranges.pgf'
-# funcs.save_as_pgf(f, path)
+path = '../../../Manuscripts/cog-psych/figs/e2-yranges.pgf'
+funcs.save_as_pgf(fh, path)

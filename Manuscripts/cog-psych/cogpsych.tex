@@ -179,6 +179,8 @@ As noted above, PACKER proposes that new categories should be different from exi
 
 This constraint, however, only serves to signify one possible account of category generation: the nature of PACKER's account can be drastically altered through changes to the $\phi$ and $\gamma$ parameters. Furthermore, by fitting these parameters to a dataset, one can describe the relative roles of between-class contrast and within-class similarity in generation. For example, as will be discussed in more detail below, PACKER is formally equivalent to the copy-and-tweak model proposed by \cite{jern2013probabilistic} when $\phi = 0$ and $\gamma = 1$. Likewise, when $\phi < 0$ and $\gamma = 0$, PACKER represents a contrast-only generation mode, relying exclusively on contrast when generating new categories. Finally, when $\phi = \gamma < 0$, PACKER represents a ``pure-packing'' approach, placing exemplars in any unoccupied area of the domain. Thus, beyond specifying PACKER's core proposal, the $\phi$ and $\gamma$ allow the us to address a wide variety of qualitatively distinct generation strategies.
 
+\nbcnote{That last paragraph was added since your last read, joe!}
+
 The probability that a given candidate $y$ will be generated is evaluated using an Exponentiated \citet{luce1977choice} choice rule. Candidates with greater values of $a$ are more likely to be generated than candidates with smaller values:
 % 
 \begin{equation}
@@ -285,7 +287,7 @@ With respect to ranges along each axis (X, Y), the generated categories from eac
     \begin{center}
     \inputpgf{figs/}{e1-statsboxes.pgf}
     \caption{Box-plots of the distributional statistics from the categories generated in Experiment 1. }
-    \nbcnote{Row has significantly \textit{less} X-range compared to XOR, which I do not know how to explain...}
+    \nbcnote{Weak spot: row has significantly \textit{less} X-range compared to XOR, which I do not know how to explain. For now I've ignored it.}
     \label{fig:e1-statsboxes}
     \end{center}
 \end{figure}
@@ -314,8 +316,10 @@ To test whether category contrast influences the distributional structure of gen
 \end{figure}
 
 
-Alternatively, participants seeking to make a perceptually distinct category would be more likely to distribute members of the generated category into areas that are distant from members of known categories. Thus, if category contrast influences the distributional structure of the categories people generate, then we should observe different types of categories according to the shape of the space that is unoccupied by members of previously learned categories. Specifically, participants assigned to learn the Bottom category would be less likely to generate exemplars into the lower regions of the stimulus space (as these areas possess greater similarity to members of the Bottom category), preferring instead to distribute exemplars across the upper region of the space. This constraint is not imposed in the Middle condition, as the Middle category exemplars are equidistant to the upper and lower regions of the space -- accordingly, participants should be more likely to utilize both of these areas.
+Alternatively, participants seeking to make a perceptually distinct category would be more likely to distribute members of the generated category into areas that are distant from members of known categories. Thus, if category contrast influences the distributional structure of the categories people generate, then we should observe different types of categories according to the shape of the space that is unoccupied by members of previously learned categories. The difference in the Y-axis position between the Bottom and Middle types produces a considerable change to the shape of the unoccupied space: participants assigned to learn the Bottom category would be less likely to generate exemplars into the lower regions of the stimulus space (as these areas possess greater similarity to members of the Bottom category), preferring instead to distribute exemplars across the upper region of the space. This constraint is lifted in the Middle condition, as the Middle category exemplars are equidistant to the upper and lower regions of the space. Accordingly, participants should be more likely to utilize both of these areas.
 
+
+\nbcnote{Weak point: this prediction is squishy-- why couldn't middle participants generate items above \textit{or} below? When we initially developed this, we were working with the pure-packing variant of PACKER, which is what predicted above-and-below for middle but not bottom. }
 
 \subsection{Participants, Materials, \& Procedure}
 
@@ -332,22 +336,24 @@ Alternatively, participants seeking to make a perceptually distinct category wou
     \end{center}
 \end{figure}
 
-As in Experiment 1, we observed broad differences in the generation approach taken by different participants.  To characterize the nature of these differences, Figure \ref{fig:e2-samples} depicts sample categories generated by participants. The data from each condition in Figure \ref{fig:e2-samples} is organized into four columns based on commonly observed patterns of generation: a `Cluster' type of tightly-clustered examples,   `Row' and `Column' types of exemplars widely distributed along the one axis but narrowly along the other, and a `Corners' type, wherein participants placed exemplars in disparate corners of the space. As before, in this section we focus no what can be concluded from analyzing the data in aggregate, but in a later section we will focus more specifically on explaining the individual differences.
-
-We began our analysis by again testing for the broad influence of category contrast on generation. As in Experiment 1, we computed the frequency each stimulus was generated as a function of its average distance from members of the experimenter defined category, as well as each participant's average within- and between- category distance. These data, shown in Figure \ref{fig:e2-distanceplots}, yield highly similar results. Stimuli that are more distant from members of the experimenter=-defined category were more frequently generated, and the categories in each condition tended to possess more between-class than within-class distance: Bottom, $t(60) = 5.5$, $p < 0.001$; Middle, $t(60) = 2.71$, $p = 0.009$. 
-
-We did, however, observe a notable subgroup of participants in each condition who generated categories with more within-class than between-class distance. Upon manual inspection, many of these individuals appear to have assumed a `Corners' strategy, placing exemplars in disparate corners of the space, thus producing much more within-class distance, see Figure \ref{fig:e2-samples} for examples.
+As in Experiment 1, we observed broad differences in the generation approach taken by different participants.  To characterize the nature of these differences, Figure \ref{fig:e2-samples} depicts sample categories generated by participants. The data from each condition in Figure \ref{fig:e2-samples} is organized into four columns based on commonly observed patterns of generation: a `Cluster' type of tightly-clustered examples,   `Row' and `Column' types of exemplars widely distributed along the one axis but narrowly along the other, and a `Corners' type, wherein participants placed exemplars in disparate corners of the space. As before, in this section we focus on what can be concluded from analyzing the data in aggregate, but in later sections we will focus more specifically on explaining the individual differences.
 
 \begin{figure}
     \begin{center}
     \inputpgf{figs/}{e2-distanceplots.pgf}
     \caption{Experiment 2 results. \textit{Left}: Frequency of generation as a function of distance from members of the experimenter-defined category. \textit{Right}: Scatter plot of within-class versus between-class distance in each of the participant-generated categories.}
+    \nbcnote{May want to change condition colors if purple-orange is used as the colormap for the range heat-maps in the simulations section.}
     \label{fig:e2-distanceplots}
     \end{center}
 \end{figure}
 
+We began our analysis by again testing for the broad influence of category contrast on generation. As in Experiment 1, we computed the frequency each stimulus was generated as a function of its average distance from members of the experimenter defined category, as well as each participant's average within- and between- category distance. These data, shown in Figure \ref{fig:e2-distanceplots}, yield highly similar results. Stimuli that are more distant from members of the experimenter=-defined category were more frequently generated, and the categories in each condition tended to possess more between-class than within-class distance: Bottom, $t(60) = 5.5$, $p < 0.001$; Middle, $t(60) = 2.71$, $p = 0.009$. 
 
-Because the conditions differ only in the Y-axis position of the experimenter-defined category, we then compared the conditions in terms of the frequency with which participants generated examples above and below the categories. Specifically, we counted the number of participants in each condition who placed at least one `Beta' exemplar on the top and bottom `rows' of the space (the maximum and minimum possible y-axis value, respectively). The resulting contingencies data are shown in Table \ref{table:e2-subset-table}. Fisher's Exact Tests reveal that more Middle participants generated an exemplar in the bottom row , $p < 0.001$, but the conditions did not differ in use of the top of the space, $p = 0.16$. More Middle participants placed exemplars in the top \textit{and} bottom rows, $p = 0.038$. 
+We did, however, observe a notable subgroup of participants in each condition who generated categories with more within-class than between-class distance. Upon manual inspection, many of these individuals appear to have assumed a `Corners' strategy, placing exemplars in disparate corners of the space, thus producing much more within-class distance, see Figure \ref{fig:e2-samples} for examples.
+
+\nbcnote{ Weak spot: the obvious next analysis here would involve the same box-and-whisker plot as in Experiment 1. We ran this analysis but the conditions did not differ in Y-range due to the data being weirdly distributed. But it feels odd to ignore this point, so I've included the box-and-whisker plot, as well as the graph-of-many-lines figure, on a separate page at the end.}
+
+Because the conditions differ only in the Y-axis position of the experimenter-defined category, we then compared the conditions in terms of the frequency with which participants generated examples above and below the categories. Specifically, we counted the number of participants in each condition who placed at least one `Beta' exemplar on the top and bottom `rows' of the space (the maximum and minimum possible y-axis value, respectively). The resulting contingencies data are shown in Table \ref{table:e2-subset-table}. 
 
 \begin{table}
 \begin{center} 
@@ -369,10 +375,13 @@ Because the conditions differ only in the Y-axis position of the experimenter-de
 \end{table}
 
 
-
+Firstly, it should be noted that nearly every participant utilized the top and/or bottom rows: only $10 / 122$ participants generated their category entirely within the interior region. Fisher's Exact Tests comparing the conditions reveal that more Middle participants generated an exemplar in the bottom row, $p < 0.001$, again demonstrating the role of contrast guiding where exemplars are generated. The conditions did not differ in use of the top of the space, $p = 0.16$, however, more Middle participants placed exemplars in the top \textit{and} bottom rows, $p = 0.038$. The latter effect is of interest here, as it indicates that the shape of the unoccupied space exerts some influence on the distributional structure of generated categories: participants in the Middle condition were more likely to generate a category spanning the entire Y-axis.
 
 \subsection{Discussion}
 
+In Experiment 2, we replicated the core findings from Experiment 1: stimuli are more likely to be generated if they are distant from exemplars in other categories, and most participants generate categories with more between-class than within-class distance. However, we additionally found that the \textit{position} of a previously learned category (rather than its distributional structure) influences the types of categories people generate: participants who learned the `Middle' type were more likely to generate categories spanning the entire Y-axis of the space. Participants who learned the `Bottom' type were less likely to do so, presumably because of the presence of opposite category exemplars in the lower regions of the space.
+
+This finding is cannot be explained under the theoretical perspective that the distributional structure of previously learned categories is the sole determinant of the distributional structure of generated categories. However, the observed performance is sensible under a category contrast perspective: participants seeking to generate a perceptually distinct category will be more likely to use areas of space that are unoccupied by exemplars belonging to previously learned categories. In the Middle condition, the upper and lower regions of space are equidistant from members of the experimenter-defined category, whereas in the Bottom condition, the lower region of the space is closer to members of the experimenter-defined category. Thus, while Middle participants may form categories around the use of the equally unoccupied areas, the same is not true for the Bottom condition.
 
 \section{Simulations}
 
@@ -384,15 +393,8 @@ Because the conditions differ only in the Y-axis position of the experimenter-de
 
 
 \clearpage
-
-
-
-
 \section{Acknowledgments}
-A previous version of this work appeared in the Proceedings of the Thirty-Ninth Annual Conference of the Cognitive Science Society. Support for this research was provided by the Office of the VCRGE at the UW - Madison with funding from the WARF. We thank Alan Jern and Charles Kemp for providing code and data.
-
-
-
+Previous versions of this work were presented at the Thirty-Ninth Annual Conference of the Cognitive Science Society and Forty-Ninth Annual Meeting of the Society for Mathematical Psychology. Support for this research was provided by the Office of the VCRGE at the UW - Madison with funding from the WARF. We thank Alan Jern and Charles Kemp for providing code and data.
 \end{flushleft}
 
 
@@ -402,6 +404,28 @@ A previous version of this work appeared in the Proceedings of the Thirty-Ninth 
 \bibliography{citations.bib}
 \clearpage
 
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{e2-statsboxes.pgf}
+    \caption{Box-plots of the distributional statistics from the categories generated in Experiment 2. }
+    \nbcnote{Note the huge amount of variance in the range data, as well as the big Y-range difference in the medians.}
+
+    \label{fig:e2-statsboxes}
+    \end{center}
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{e2-yranges.pgf}
+    \caption{Y-Axis range and position of the categories generated in Experiment 2. Each line corresponds to a single category, with notches corresponding to the Y-axis position of exemplars within the category. Data from each participant is sorted by overall range, and then by condition. }
+    \label{fig:e2-statsboxes}
+    \end{center}
+\end{figure}
+
+
+
+\clearpage
 
 \appendix
 
