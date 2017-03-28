@@ -52,7 +52,18 @@ plt.text(-1.0, -4735, 'PACKER', ha = 'right', va = 'bottom')
 
 
 plt.xlabel('$\phi$ Parameter Value')
-plt.xticks(np.arange(min(between_grid),max(between_grid)+0.2,0.2))
+
+xticks = np.arange(min(between_grid),max(between_grid)+0.2,0.2)
+xticklabels = [str(i) for i in xticks]
+xticklabels[-1] = '0'
+plt.xticks(xticks)
+fh.gca().set_xticklabels(xticklabels)
+
+yticks = np.arange(-4950,-4650,50)
+yticklabels = [str(i) for i in yticks]
+plt.yticks(yticks)
+fh.gca().set_yticklabels(yticklabels)
+
 plt.gca().yaxis.grid(True)
 plt.ylabel('Log-Likelihood ($L$)')
 

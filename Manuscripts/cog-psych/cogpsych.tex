@@ -409,9 +409,11 @@ To obtain a global measure of the quality of each model's account, we fitted the
 \end{table}
 
 
-Table \ref{table:global-model-fits} contains the results of this fitting procedure. Due to the uneven number of fitted parameters among the models, we compare the model fits using the Akaike Information Criterion \citep[AIC;][]{akaike1974new}. Table \ref{table:global-model-fits} contains the AIC values of each model's best fit, as well as the corresponding log-likelihood ($L$) and the best-fitting parameter values. These results reveal strong model differentiation: the PACKER model achieved far better fits compared to the copy-and-tweak and hierarchical sampling models, and copy-and-tweak performed somewhat better than the hierarchical sampling model. While PACKER's advantage may tentatively be attributed to the model's sensitivity to category contrast (this will be explored in detail below), the advantage shown by copy-and-tweak over the hierarchical sampling model may be attributed to the assumption of an exemplar-based representation, as opposed to a prototype-based representation (via representing categories as multivariate normal distributions).
+Table \ref{table:global-model-fits} contains the results of this fitting procedure. Due to the uneven number of fitted parameters among the models, we compare the model fits using the Akaike Information Criterion \citep[AIC;][]{akaike1974new}. Table \ref{table:global-model-fits} contains the AIC values of each model's best fit, as well as the corresponding log-likelihood ($L$) and the best-fitting parameter values. These results reveal strong model differentiation: the PACKER model achieved far better fits compared to the copy-and-tweak and hierarchical sampling models, and copy-and-tweak performed somewhat better than the hierarchical sampling model. While PACKER's advantage may tentatively be attributed to the model's sensitivity to category contrast (this will be explored in detail below), the advantage shown by copy-and-tweak over the hierarchical sampling model may be attributed to its exemplar-based representation, as opposed to the prototype-based representation assumed in the hierarchical sampling model. 
+\nbcnote{That last point is a little squishy. We don't have `proof' that we can point to for skeptical readers, but that's clearly the issue: many categories were not normally distributed, and the copying of structure really only works out in 2/5 conditions, and even then there's so much variability...}
+\nbcnote{Should include info on fits for only trials 2-4.}
 
-More specifically, PACKER's best fitting parameter-setting reveals the...
+Through comparison with the copy-and-tweak model, Figure \ref{fig:packer-loglike} more clearly demonstrates the explanatory gains yielded by PACKER's sensitivity to between-class contrast. Plotted is PACKER's log-likelihood as a function of the model's between-category parameter, $\phi$. The models other parameters ($c$, $\gamma$, $\theta$) were set according to copy-and-tweak's best fits from Table \ref{table:global-model-fits}, and thus when $\phi=0$, the models are equivalent. The figure clearly shows a ``sweet spot'':  a convex region in which PACKER achieves superior fits as a result of changes to the $\phi$ parameter. The best fitting values lie between -0.6 and -0.8, well beyond the 0 value assumed by the copy-and-tweak model (though note PACKER achieves even better fits when its other parameters are fitted, as in Table \ref{table:global-model-fits}).
 
 \begin{figure}
     \begin{center}
@@ -420,9 +422,6 @@ More specifically, PACKER's best fitting parameter-setting reveals the...
     \label{fig:packer-loglike}
     \end{center}
 \end{figure}
-
-
-\nbcnote{Should include info on fitting to post-first trial.}
 
 
 \subsection{Individual Differences}
