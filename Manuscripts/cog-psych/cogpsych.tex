@@ -9,7 +9,9 @@
 \usepackage{csquotes}
 \usepackage{todonotes}
 \usepackage{verbatim}
+\usepackage[toc]{appendix}
 \usepackage[natbibapa]{apacite}
+
 
 % set up PGF
 \pgfplotsset{compat=1.6}
@@ -37,16 +39,12 @@
 
 \begin{document}
 
-
-
 % ------- TITLE PAGE ------- %
 \begin{center}
 \hfill
 \\[1in]
 
 Creating Something Different: Similarity and Contrast in Concept Generation.
-% ---- other ideas:
-% - The Constraining Influences of Contrast and Similartity in Concept Generation.
 
 
 \vfill
@@ -73,7 +71,7 @@ E-mail: austerweil@wisc.edu
 
 % ------- ABSTRACT PAGE ------- %
 \doublespacing
-\section{Abstract}
+\section*{Abstract}
 
 \jlanote{Joe! Did you know i made a command for you to enter in comments like this?? }
 
@@ -145,6 +143,8 @@ The copy-and-tweak model tested by \cite{jern2013probabilistic} also claims litt
 
 \subsection{The PACKER Model}
 
+\label{section:PACKER-definition}
+
 As noted above, the constraint that new concepts should differ from what is already known has been largely been overlooked in previous work. This is no doubt in part due to the vague definition of what it means for a concept to be ``different'': a generated category may be different from what is already known in any number of respects. Towards formalizing the role of contrast in creative generation, we developed the PACKER  ({\em Producing Alike and Contrasting Knowledge using Exemplar Representations}) model which explains category generation as a balance between two fundamental constraints: generated categories should not be similar to known categories, and exemplars within each category should be similar to one another. These ideas are implemented within the well-studied exemplar framework: the PACKER model is an extension of the influential Generalized Context Model of category learning \citep[GCM;][]{nosofsky1984choice,nosofsky1986attention}. 
 
 \nbcnote{Maybe note something about how PACKER's basis in the exemplar view means that we're explaining category generation using well known ideas, and that exemplar models are viewed as highly principled.}
@@ -195,7 +195,7 @@ where $\theta$ ($\theta \geq 0$) is a free parameter controlling response determ
 It is worth noting that PACKER represents just one of many possible models that incorporate contrast in category generation. For example, although it may be possible to implement a contrast mechanism within \cite{jern2013probabilistic}'s hierarchical sampling model, as noted above this mechanism would be at odds with a strict interpretation of the hierarchical Bayesian framework. In contrast, these ideas emerge naturally from the exemplar view: we have not modified any of the core elements of the GCM in defining the PACKER model, we simply aggregated similarity slightly differently. \nbcnote{That line about importance sampling can go here.}
 
 \subsubsection{Relation Between PACKER and Copy-And-Tweak}
-
+\label{section:copytweak-packer}
 The PACKER model is in many senses similar to the copy-and-tweak model reported by \cite{jern2013probabilistic}: both models are exemplar-based, and both models generate new items according to their similarity to known members of the target class. PACKER diverges from from the copy-and-tweak model only in the inclusion of a contrast mechanism, enabling generation according to dissimilarity to members of opposing categories. By consequence, copy-and-tweak can be realized as a parameterization of the PACKER model that is insensitive to category contrast. Specifically, when $\phi = 0$ and $\gamma = 1$ (see Figure \ref{fig:packer-examples}, panel B), PACKER is not influenced by similarity to members of opposite categories, and is mathematically equivalent to a copy-and-tweak approach. 
 
 In this paper, we report simulations using this copy-and-tweak model. The model we test is identical to PACKER, under the constraints that $\phi = 0$ and $\gamma = 1$, and is a continuous-dimension adaptation of the model tested by \cite{jern2013probabilistic}. Due to their mathematical equivalence, the comparison between PACKER and copy-and-tweak provides a test of the explanatory value of the contrast mechanism: the account provided by copy-and-tweak will only equal that of PACKER if the contrast mechanism does not offer an advantage.
@@ -385,6 +385,48 @@ This finding is cannot be explained under the theoretical perspective that the d
 
 \section{Simulations}
 
+Experiments 1 and 2 revealed systematic and strong effects of category contrast on creative generation. In this section, we report the results of simulations with formal models aimed at explaining our observations. Specifically, we present simulations from the PACKER model, as well as a `copy-and-tweak' model (discussed in section \ref{section:copytweak-packer}), defined as a variant of PACKER with the $\phi$ and $\gamma$ parameters held constant. The comparison of these two models serves to highlight the explanatory role of contrast within PACKER's framework: if contrast affords little explanatory advantage, then the two accounts should produce an equally strong account. We also present simulations from an implementation of the hierarchical sampling model proposed by \cite{jern2013probabilistic}, described in-depth in Appendix \ref{ap:hsampling-definition}. The comparison between the hierarchical sampling model and PACKER is meant to emphasize the role of emulation of distributional structure: whereas PACKER is insensitive to the distributional structure of learned categories (relying only on within- and between-class similarity), the hierarchical sampling model generates categories exclusively on the basis of knowledge of how existing classes are distributed. Our approach in this section is to first broadly evaluate and compare the quality of each model's account to our entire dataset (Experiments 1 and 2 combined), then we more specifically describe the strengths and weakness of each model's account.
+
+\subsection{Parameter-Fitting}
+
+To obtain a global measure of the quality of each model's account, we fitted the parameters of each model to our entire dataset (Experiments 1 and 2 combined), using a hill-climbing algorithm which maximized the log-likelihood of the model's predictions of the observed responses (1220 responses from 305 total participants). We fitted four parameters in the PACKER model ($c$, $\phi$, $\gamma$, and $\theta$; see Section \ref{section:PACKER-definition}), as well as four in the hierarchical sampling model ($\kappa$, $\rho$, $\nu$, and $\theta$; see Appendix \ref{ap:hsampling-definition}). We fitted only two parameters for the copy-and-tweak model ($c$, and $\theta$), as $\phi$ and $\gamma$ are held constant. Note that each model possesses a $\theta$ parameter fulfilling the same role (response determinism). Attention ($w$, see Equation \ref{eq:similarity}) in PACKER and copy-and-tweak was set uniformly. Parameters were not allowed to vary between participants or conditions -- the goal was to obtain the best-fitting values to our entire dataset.
+
+\begin{table}
+\centering
+\caption{Results of model-fitting to the combined datasets from Experiments 1 and 2.}
+\label{table:global-model-fits}
+\begin{tabular}{ l l l}
+\\
+ \textbf{PACKER}    & \textbf{Copy \& Tweak} & \textbf{Hierarchical Sampling} \\ 
+ \hline
+ $AIC = 9097$       & $AIC = 9842$          & $AIC = 10080$  \\ 
+ $L = -4545$        & $L = -4919$           & $L = -5036$  \\ 
+ $c=0.481$          & $c=3.189$             & $\kappa<0.001$\\
+ $\phi=-0.945$      & $\phi=0$ (fixed)      & $\nu=1.001$ \\ 
+ $\gamma=1.044$     & $\gamma=1$ (fixed)    & $\rho=5.313$  \\ 
+ $\theta=3.354$     & $\theta=2.968$        & $\theta = 7.949$  \\ 
+\end{tabular}
+\end{table}
+
+
+Table \ref{table:global-model-fits} contains the results of this fitting procedure. Due to the uneven number of fitted parameters among the models, we compare the model fits using the Akaike Information Criterion \citep[AIC;][]{akaike1974new}. Table \ref{table:global-model-fits} contains the AIC values of each model's best fit, as well as the corresponding log-likelihood ($L$) and the best-fitting parameter values. These results reveal strong model differentiation: the PACKER model achieved far better fits compared to the copy-and-tweak and hierarchical sampling models, and copy-and-tweak performed somewhat better than the hierarchical sampling model. While PACKER's advantage may tentatively be attributed to the model's sensitivity to category contrast (this will be explored in detail below), the advantage shown by copy-and-tweak over the hierarchical sampling model may be attributed to the assumption of an exemplar-based representation, as opposed to a prototype-based representation (via representing categories as multivariate normal distributions).
+
+More specifically, PACKER's best fitting parameter-setting reveals the...
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{packer-loglike.pgf}
+    \caption{PACKER's fit as a function of the between-class contrast parameter ($\phi$). To facilitate comparison, PACKER's other parameters ($c$, $\gamma$, $\theta$) were set to the best fitting values obtained for copy-and-tweak in Table \ref{table:global-model-fits}. Thus, in this figure PACKER is equivalent to copy-and-tweak when $\phi = 0$.}
+    \label{fig:packer-loglike}
+    \end{center}
+\end{figure}
+
+
+\nbcnote{Should include info on fitting to post-first trial.}
+
+
+\subsection{Individual Differences}
+
 \section{General Discussion}
 
 
@@ -419,7 +461,7 @@ Previous versions of this work were presented at the Thirty-Ninth Annual Confere
     \begin{center}
     \inputpgf{figs/}{e2-yranges.pgf}
     \caption{Y-Axis range and position of the categories generated in Experiment 2. Each line corresponds to a single category, with notches corresponding to the Y-axis position of exemplars within the category. Data from each participant is sorted by overall range, and then by condition. }
-    \label{fig:e2-statsboxes}
+    \label{fig:e2-yranges}
     \end{center}
 \end{figure}
 
@@ -428,6 +470,7 @@ Previous versions of this work were presented at the Thirty-Ninth Annual Confere
 \clearpage
 
 \appendix
+\numberwithin{equation}{section}
 
 \section{The Hierarchical Sampling Model}
 \label{ap:hsampling-definition}
