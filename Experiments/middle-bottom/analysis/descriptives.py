@@ -27,7 +27,7 @@ print pd.pivot_table(
 
 
 stats = pd.merge(stats, participants, on = 'participant')
-from scipy.stats import ttest_ind, mannwhitneyu
+from scipy.stats import ttest_ind, mannwhitneyu, ttest_rel
 cols = ['area','between','within',
 				'correlation', 
 				'drange', 'xrange', 'yrange', 'xstd', 'ystd']
@@ -43,3 +43,10 @@ for i in cols:
 		S += '\t' + k + ' = ' + str(round(np.mean(v),3))
 	S += '\t' + 'p = ' + str(round(p,3))
 	print S
+
+
+for j, rows in stats.groupby('condition'):
+	g1 = rows['within'].as_matrix()
+	g2 = rows['between'].as_matrix()
+	print j, ttest_rel(g1, g2)
+
