@@ -1,4 +1,4 @@
-#Generating Categories Project
+# Generating Categories Project
 
 This is the main repository for the generating categories project. It contains the code for the web applications for each of the experiments, the analysis for each experiment, and the modeling. 
 
