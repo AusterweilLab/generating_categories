@@ -3,10 +3,13 @@
 # 
 # This script converts the matlab-formatted data 
 # into a more useful sql format.
+execfile('Imports.py')
 
 import pandas as pd
 import os
-from JK13Classes import JK13Participant
+from JK13 import JK13Participant
+
+
 
 # list all mat files
 matfile_dir = 'mat-files'
@@ -21,8 +24,11 @@ for pid, path in enumerate(matfiles):
 	participant = JK13Participant(path)
 	participant.training['participant'] = pid
 	participant.generation['participant'] = pid
-	print participant.training
+
+	print participant.stats()
 	lll
+
+
 	# init dataframes
 	if pid == 0:
 		training = pd.DataFrame(columns = participant.training.columns.values)

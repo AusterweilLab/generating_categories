@@ -1,1 +1,0 @@
-from Participant import JK13Participant

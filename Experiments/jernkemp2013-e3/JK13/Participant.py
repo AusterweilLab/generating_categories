@@ -1,19 +1,29 @@
 import numpy as np
 import pandas as pd
-from . import LoadMatlabFuncs as Funcs
+
+import LoadMatlabFuncs
+import Modules.Funcs as Funcs
 
 np.set_printoptions(precision = 2)
 pd.set_option('precision', 2)
+
+def scalefeatures(vals):
+	return vals * 2.0 - 0.05
 
 class JK13Participant(object):
 
 	possible_hues = np.arange(0, 0.9, 0.15)
 	conditions = ['Positive','Negative','Neutral']
+	features = ['hue','length','saturation']
+
+	@classmethod
+	def getfeatures(cls, df):
+		return df[cls.features].as_matrix()
 
 	def __init__(self, filepath):
 		self.filepath = filepath
 
-		matlab_data = Funcs.loadmat(filepath)
+		matlab_data = LoadMatlabFuncs.loadmat(filepath)
 		self.userps = matlab_data['userps']
 		self.guips = matlab_data['guips']
 
@@ -97,10 +107,11 @@ class JK13Participant(object):
 		hues = np.transpose(hues)
 
 		self.training = dict(
-			lengths = lengths,
-			saturations = saturations,
+			lengths = scalefeatures(lengths),
+			saturations = scalefeatures(saturations),
 			hues = hues,
 		)
+
 
 	def _pandify(self):
 		"""
@@ -143,6 +154,43 @@ class JK13Participant(object):
 				))
 				training = training.append(rows, ignore_index = True)
 		self.training = training
+
+	def stats(self):
+		"""
+		Compute relevant generation statistics
+		"""
+
+		distances = dict()
+		ranges = dict()
+		for c, trainitems in self.training.groupby('condition'):
+			A = self.getfeatures(trainitems)
+			B = self.getfeatures(self.generation.loc[self.generation.condition==c])
+
+			# compute ranges
+			for k, v in zip(self.features,np.ptp(B,axis=0)):
+				ranges[k] = v
+
+			# compute distances
+			# distances
+			within_mat = pdist(betas, betas)
+			res['within'] = np.mean(within_mat[np.triu(within_mat)>0])
+			if alphas is not None:
+				res['between'] = np.mean(pdist(alphas, betas))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 		

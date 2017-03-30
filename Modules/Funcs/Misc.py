@@ -20,7 +20,7 @@ def stats_battery(betas, alphas = None):
 	# total area of convex hull
 	res['area'] = ConvexHull(jitterize(betas, sd = 0.0001)).volume
 
-	# distances
+	# distances 
 	within_mat = pdist(betas, betas)
 	res['within'] = np.mean(within_mat[np.triu(within_mat)>0])
 	if alphas is not None:
