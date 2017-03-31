@@ -7,18 +7,26 @@ import Modules.Funcs as Funcs
 np.set_printoptions(precision = 2)
 pd.set_option('precision', 2)
 
+
 def scalefeatures(vals):
 	return vals * 2.0 - 0.05
 
-class JK13Participant(object):
-
+class JK13(object):
+	"""
+	General informational class, with a few 
+	useful methods.
+	"""
 	possible_hues = np.arange(0, 0.9, 0.15)
 	conditions = ['Positive','Negative','Neutral']
-	features = ['hue','length','saturation']
+	features = ['Hue','Length','Saturation']
 
 	@classmethod
 	def getfeatures(cls, df):
 		return df[cls.features].as_matrix()
+
+
+
+class JK13Participant(JK13):
 
 	def __init__(self, filepath):
 		self.filepath = filepath
@@ -120,23 +128,23 @@ class JK13Participant(object):
 
 		# start with generation
 		generation = pd.DataFrame(
-			columns = ['condition','stimulus','hue','saturation','length']
+			columns = ['condition','stimulus','Hue','Saturation','Length']
 		)
 		for condition in range(3):
 			exemplars = self.generation[:,:,condition]
 			rows = pd.DataFrame(dict(
 				condition = [self.conditions[condition]] * 6,
 				stimulus = range(6),
-				length = exemplars[:,0].tolist(),
-				saturation = exemplars[:,1].tolist(),
-				hue = exemplars[:,2].tolist()
+				Length = exemplars[:,0].tolist(),
+				Saturation = exemplars[:,1].tolist(),
+				Hue = exemplars[:,2].tolist()
 			))
 			generation = generation.append(rows, ignore_index = True)
 		self.generation = generation
 
 		# Now do training
 		training = pd.DataFrame(
-			columns = ['condition', 'category', 'stimulus', 'hue','saturation','length']
+			columns = ['condition', 'category', 'stimulus', 'Hue','Saturation','Length']
 		)
 		for condition in range(3):
 			for category in range(2):
@@ -148,9 +156,9 @@ class JK13Participant(object):
 					condition = [self.conditions[condition]] * 4,
 					category = [category] * 4,
 					stimulus = range(4),
-					length = lengths.tolist(),
-					saturation = saturations.tolist(),
-					hue = hue.tolist()
+					Length = lengths.tolist(),
+					Saturation = saturations.tolist(),
+					Hue = hue.tolist()
 				))
 				training = training.append(rows, ignore_index = True)
 		self.training = training
@@ -160,28 +168,29 @@ class JK13Participant(object):
 		Compute relevant generation statistics
 		"""
 
-		distances = dict()
-		ranges = dict()
+		ranges = pd.DataFrame(columns = ['condition'] + self.features)
+		distances = pd.DataFrame(columns = ['condition','Within','Between'])
+
 		for c, trainitems in self.training.groupby('condition'):
 			A = self.getfeatures(trainitems)
 			B = self.getfeatures(self.generation.loc[self.generation.condition==c])
 
 			# compute ranges
-			for k, v in zip(self.features,np.ptp(B,axis=0)):
-				ranges[k] = v
-
+			row = dict(zip(self.features,np.ptp(B,axis=0)))
+			row['condition'] = c
+			ranges = ranges.append(row, ignore_index = True)
+			
 			# compute distances
-			# distances
-			within_mat = pdist(betas, betas)
-			res['within'] = np.mean(within_mat[np.triu(within_mat)>0])
-			if alphas is not None:
-				res['between'] = np.mean(pdist(alphas, betas))
+			row = dict(condition = c)
+			within_mat = Funcs.pdist(B, B)
+			row['Within'] = np.mean(within_mat[np.triu(within_mat)>0])
+			row['Between'] = np.mean(Funcs.pdist(A, B))
+			distances = distances.append(row, ignore_index = True)
 
-
-
-
-
-
+		return dict(
+			distances = distances,
+			ranges = ranges
+			)
 
 
 
