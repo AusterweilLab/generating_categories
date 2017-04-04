@@ -28,5 +28,4 @@ categories = [
 	stimuli[[8,65],:],
 	]
 
-M = Packer(categories,Packer.rvs())
-print M.get_generation_ps(stimuli,1)
+M = CopyTweak(categories,CopyTweak.rvs())

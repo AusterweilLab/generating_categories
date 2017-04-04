@@ -60,7 +60,7 @@
 \pgftext[left,bottom]{\pgfimage[interpolate=true,width=1.490000in,height=1.490000in]{packer-examples-img0.png}}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgftext[x=0.789485in,y=0.148889in,,top]{\sffamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle \{ \phi = -1\), \(\displaystyle \gamma = 0\}\)}%
+\pgftext[x=0.789485in,y=0.148889in,,top]{\sffamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle \{c = 1,\gamma = 0,\theta = 3\}\)}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetrectcap%
@@ -145,7 +145,7 @@
 \pgftext[left,bottom]{\pgfimage[interpolate=true,width=1.490000in,height=1.490000in]{packer-examples-img1.png}}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgftext[x=2.576250in,y=0.148889in,,top]{\sffamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle \{ \phi = 0\), \(\displaystyle \gamma = 1\}\)}%
+\pgftext[x=2.576250in,y=0.148889in,,top]{\sffamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle \{c = 1,\gamma = 1,\theta = 3\}\)}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetrectcap%
@@ -230,7 +230,7 @@
 \pgftext[left,bottom]{\pgfimage[interpolate=true,width=1.490000in,height=1.490000in]{packer-examples-img2.png}}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgftext[x=4.363015in,y=0.148889in,,top]{\sffamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle \{ \phi = -1\), \(\displaystyle \gamma = 1\}\)}%
+\pgftext[x=4.363015in,y=0.148889in,,top]{\sffamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle \{c = 1,\gamma = 0.5,\theta = 3\}\)}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetrectcap%

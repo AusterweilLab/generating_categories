@@ -1,4 +1,3 @@
 import Simulation
-from CopyTweak import CopyTweak
-from Packer import Packer
+from Packer import Packer, CopyTweak
 from ConjugateJK13 import ConjugateJK13

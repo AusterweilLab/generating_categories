@@ -13,8 +13,7 @@ from Modules.Classes import ConjugateJK13
 with open("pickles/all_data_e1_e2.p", "rb" ) as f:
 	trials = pickle.load( f )
 
-print trials
-llll
+
 # options for the optimization routine
 options = dict(
 	method = 'Nelder-Mead',
@@ -22,6 +21,16 @@ options = dict(
 	tol = 0.01,
 ) 
 
+results = dict()
 for model_obj in [CopyTweak, Packer, ConjugateJK13]:
 
 	res = Simulation.hillclimber(model_obj, trials, options)
+	X = model_obj.params2dict(model_obj.clipper(res.x))
+	results[model_obj.model] = X
+
+# save final result in pickle
+with open('pickles/best_params_e1_e2.p','wb') as f:
+	pickle.dump(results, f)
+
+for k,v in results.items():
+	print k, v

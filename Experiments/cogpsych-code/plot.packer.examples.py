@@ -15,11 +15,11 @@ B = np.array([[ 0.25,  0.25]])
 cats = [A,B]
 
 # params for PACKER
-c, phi = 1.0, 3.0
+c, theta = 1.0, 3.
 
-pos =     [c,  0.0, 1.0, phi]
-neg =     [c, -1.0, 0.0, phi]
-pos_neg = [c, -1.0, 1.0, phi]
+pos =     [c, 1.0, theta]
+neg =     [c, 0.0, theta]
+pos_neg = [c, 0.5, theta]
 
 prob_spaces = {
     'Target Influence': Packer(cats,pos),
@@ -43,8 +43,14 @@ for i, k in enumerate(['Contrast Influence', 'Target Influence', 'Combination'])
     title = prefix[i] + ' ' + k
     h.set_title(title, fontsize = 11)
 
-    xlab  = '$\{ \phi = ' + str(int(m.between)) + '$, '
-    xlab += '$\gamma = ' + str(int(m.within)) + '\}$'
+    tradeoffstr = str(m.tradeoff)
+    if tradeoffstr in ['0.0', '1.0']:
+        tradeoffstr = tradeoffstr[0]
+    xlab  = '$\{'
+    xlab += 'c = ' + str(int(c)) + ','
+    xlab += '\gamma = ' + tradeoffstr  + ','
+    xlab += '\\theta = ' + str(int(theta))
+    xlab += '\}$'
     h.set_xlabel(xlab)
 
 
@@ -57,7 +63,7 @@ cbar.tick_params(length = 0)
 
 
 fname = 'packer-examples'
-# f.savefig('packer-examples.pdf', bbox_inches='tight', transparent=False)
+f.savefig('packer-examples.png', bbox_inches='tight', transparent=False)
 
 path = '../../Manuscripts/cog-psych/figs/packer-examples.pgf'
 funcs.save_as_pgf(f, path)
