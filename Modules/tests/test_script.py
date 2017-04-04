@@ -2,6 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 np.set_printoptions(precision = 2, linewidth = 120)
 
+
+
+
+
+
+
 execfile('Imports.py') 
 from Modules.Classes import CopyTweak, Packer, ConjugateJK13
 import Modules.Funcs as funcs
@@ -22,9 +28,4 @@ categories = [
 	stimuli[[8,65],:],
 	]
 
-M = ConjugateJK13(categories,ConjugateJK13.rvs())
-ps = M.get_generation_ps(stimuli,0)
-
-
-
-print ConjugateJK13.rvs()
+M = Packer(categories,Packer.rvs())

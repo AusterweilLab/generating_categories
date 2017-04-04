@@ -81,7 +81,7 @@ class Model(object):
 			S += ''.join(['\n\t' + i  for i in cls.parameter_names])
 			raise Exception(S)
 		return dict(zip(cls.parameter_names, params))
-
+		
 
 	@abc.abstractmethod
 	def get_generation_ps(self, stimuli, category): pass

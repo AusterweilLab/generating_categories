@@ -19,12 +19,19 @@ class Packer(Exemplar):
 	@staticmethod
 	def _make_rvs():
 		""" Return random parameters """
-		return [
-				np.random.uniform(0.1, 6.0), # specificity
-				np.random.uniform(-6.0, 0.0), # between. biased negative.
-				np.random.uniform(0.0, 6.0), # within. biased positive
-				np.random.uniform(0.1, 6.0) # determinism
-			]
+
+		# specificity
+		vals = [np.random.uniform(0.1, 6.0)] 
+		
+		# between. biased negative
+		vals.append(np.random.uniform(-1.0, 0.0))
+
+		# within is rest of 1.0 mass
+		vals.append(1.0 - abs(vals[-1]))
+
+		# determinism
+		vals.append(np.random.uniform(0.1, 6.0))
+		return vals
 
 	def get_generation_ps(self, stimuli, category):
 
