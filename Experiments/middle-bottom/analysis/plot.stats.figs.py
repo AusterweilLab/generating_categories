@@ -4,6 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("whitegrid")
+colors = ["#34495e", "#e74c3c"]
+sns.set_palette(colors)
+
 
 pd.set_option('display.width', 1000, 'precision', 2)
 
@@ -21,12 +24,11 @@ stats = pd.merge(stats, info, on = 'participant')
 
 
 fh, axes = plt.subplots(1,3,figsize = (7.5,2.5))
-colors = dict(Middle = 'orange', Bottom = 'purple')
 
 for i, col in enumerate(['xrange','yrange','correlation']):
 	ax = axes[i]
 	hs = sns.factorplot(x = 'condition', y = col, data= stats, ax = ax, kind = 'box', 
-		order = ['Middle', 'Bottom'], palette = 'PuOr')
+		order = ['Bottom', 'Middle'])
 
 	ax.set_title(col, fontsize = 12)
 	ax.set_ylabel('')
