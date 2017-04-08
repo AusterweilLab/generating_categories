@@ -64,6 +64,12 @@ def print2dspace(n, op = 'return'):
 		return vals
 
 
+def diffs1D(X, Y):
+	"""
+		Get pairwise differences in 1D
+	"""
+	return np.atleast_2d(X).transpose() - np.atleast_2d(np.array(Y)) 
+
 def histvec(X, bins, density = False):
 	"""
 	MATLAB-like histogram function, with items in vector X being placed
@@ -72,8 +78,7 @@ def histvec(X, bins, density = False):
 	if density = True, the histogram is normalized.
 	"""
 
-	D = np.atleast_2d(bins).transpose() - np.atleast_2d(np.array(X)) 
-	D = np.abs(D)
+	D = np.abs(diffs1D(bins, X))
 	assignment = np.argmin(D, axis=0)
 	counts = [np.sum(assignment==i) for i in range(len(bins))]
 	counts = np.array(counts)
