@@ -13,7 +13,7 @@ with open("pickles/all_data_e1_e2.p", "rb" ) as f:
 	trials = pickle.load( f )
 
 # get best params pickle
-with open("pickles/best_params_e1_e2.p", "rb" ) as f:
+with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
 	best_params = pickle.load( f )
 
 # compute copytweak loglike
@@ -48,12 +48,12 @@ plt.text(0.5, contrast_loglike, 'Contrast Only', ha = 'center', va = 'bottom')
 
 # PACKER annotation
 x = float(gamma_grid[loglikes == max(loglikes)])
-plt.text(x, max(loglikes) + 5, 'PACKER', ha = 'center', va = 'bottom')
+plt.text(x, max(loglikes) + 5, 'PACKER', ha = 'center', va = 'bottom', fontsize = 12)
 
 
 # plot main line
 plt.plot(gamma_grid, loglikes,'k-', linewidth = 1)
-plt.xlabel('$\gamma$ Parameter Value')
+plt.xlabel('$\gamma$ Parameter Value', fontsize = 12)
 
 xticks = np.arange(min(gamma_grid),max(gamma_grid)+0.2,0.2)
 xticklabels = [str(i) for i in xticks]
@@ -68,7 +68,7 @@ plt.yticks(yticks)
 fh.gca().set_yticklabels(yticklabels)
 
 plt.gca().yaxis.grid(True)
-plt.ylabel('Log-Likelihood ($L$)')
+plt.ylabel('Log-Likelihood ($L$)', fontsize = 12)
 
 plt.savefig('packer-loglike.png', bbox_inches='tight', transparent=False)
 path = '../../Manuscripts/cog-psych/figs/packer-loglike.pgf'

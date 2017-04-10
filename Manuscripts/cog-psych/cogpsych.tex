@@ -426,7 +426,11 @@ To obtain a global measure of the quality of each model's account, we fitted the
 
 Table \ref{table:global-model-fits} contains the results of this fitting procedure. Due to the uneven number of fitted parameters among the models, we compare the model fits using the Akaike Information Criterion \citep[AIC;][]{akaike1974new}. Table \ref{table:global-model-fits} contains the AIC values of each model's best fit, as well as the corresponding log-likelihood ($L$) and the best-fitting parameter values. These results reveal strong model differentiation: the PACKER model achieved far better fits compared to the copy-and-tweak and hierarchical sampling models, and copy-and-tweak performed somewhat better than the hierarchical sampling model. While PACKER's advantage may tentatively be attributed to the model's sensitivity to category contrast (this will be explored in detail below), the advantage shown by copy-and-tweak over the hierarchical sampling model may be attributed to its exemplar-based representation, as opposed to the prototype-based representation assumed in the hierarchical sampling model. As observed in Figures \ref{fig:e1-samples} and \ref{fig:e2-samples}, the generated categories we observed were often widely distributed, with no items near the category prototype. This aspect of the data is inconsistent with the multivariate normal distributions used to represent categories in the \cite{jern2013probabilistic} model, but can be handled easily using an exemplar-based approach. 
 
+A key distinction between PACKER and copy-and-tweak, as well as the the hierarchical sampling model, is that, of the three models, only PACKER is capable of making strong predictions about the location of new category members when the target class is entirely novel (i.e., no member of the category has been observed). Under these circumstances, there are no examples to copy, and thus the copy-and-tweak model predicts that items are generated at random. Likewise, with no observations on which to condition the mean of the category distribution, the hierarchical sampling model also picks an item at random. Thus, it is possible that the failure of these models is simply due to their inability to explain each participant's first trial (generating the first item in the `Beta' category). We conducted an identical set of simulations as above, excluding this trial
+
 \nbcnote{Should include info on fits for only trials 2-4.}
+
+
 
 Through comparison with the copy-and-tweak model, Figure \ref{fig:packer-loglike} more clearly demonstrates the explanatory gains yielded by PACKER's sensitivity to category contrast. Plotted is PACKER's log-likelihood as a function of $\gamma$ parameter. The model's other parameters ($c$, $\theta$) were set according to copy-and-tweak's best fits from Table \ref{table:global-model-fits}, and thus when $\gamma=1$, the models are equivalent. The figure clearly shows a ``sweet spot'':  a convex region in which PACKER achieves superior fits as a result of changes to $\gamma$. The best fitting values lie well below the value of 1 assumed by the copy-and-tweak model, which demonstrates the robustness of the contrast effect (though note PACKER achieves even better fits when its other parameters are fitted, as in Table \ref{table:global-model-fits}). Notably, however, the copy-and-tweak parameterization ($\gamma=1$) performs better than the `contrast-only' parameterization of the model ($\gamma = 0$). Thus, it is evident that the data is better explained when both within-class similarity and category contrast is considered.
 
@@ -439,17 +443,35 @@ Through comparison with the copy-and-tweak model, Figure \ref{fig:packer-loglike
 \end{figure}
 
 
-\subsection{Individual Differences}
+\subsection{Category Location vs. Distributional Structure}
 
+
+, in relation to what is already known. That is, when the target category is entirely novel (i.e., no member of the category has been observed), both copy-and-tweak and the hierarchical sampling model essentially generate items at random. 
+
+
+both the copy-and-tweak and hierarchical sampling models
+The copy-and-tweak and hierarchical sampling models predictions about where new categories should be generated in relation to existing category members
 
 \begin{figure}[p]
     \begin{center}
     \inputpgf{figs/}{range-diff-gradients.pgf}
     \caption{Behavioral and simulated relative range gradients. Each panel shows, for each stimulus, the dimensional orientation of the categories it was generated into: vertically aligned `columns' versus horizontally aligned `rows'.}
-    \nbcnote{Need to run this on lando with many more samples}
+    \nbcnote{Need to run this on lando with many more samples. current = 30}
     \label{fig:range-diff-gradients}
     \end{center}
 \end{figure}
+
+
+\subsection{Individual Differences}
+
+As noted in Experiments 1 and 2, we observed a great deal of individual differences in the types of categories generated. Within each condition, we observed tightly clustered and widely distributed categories, as well as row and column categories, and so forth. The simulations reported above serve to evaluate the models while considering the entire dataset, but a secondary goal of any formal account should be to provide some explanation of how different profiles of performance emerge. Many of the individual generation profiles we observed can be specifically targeted within the PACKER framework, simply by tuning the similarity trade-off parameter ($\gamma$) and the model's attention weights ($w$).
+
+\nbcnote{manual description of how to get rows, columns, 4 corners, etc}
+
+
+To systematically evaluate each model's ability to explain 
+
+
 
 
 \section{General Discussion}

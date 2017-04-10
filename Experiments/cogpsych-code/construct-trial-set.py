@@ -33,3 +33,10 @@ trials = trials.add_frame(generation)
 
 with open('pickles/all_data_e1_e2.p','wb') as f:
 	pickle.dump(trials, f)
+
+# weed out first trials
+trials.Set = [i for i in trials.Set if len(i['categories'][1])>0]
+trials._update()
+
+with open('pickles/trials_2-4_e1_e2.p','wb') as f:
+	pickle.dump(trials, f)

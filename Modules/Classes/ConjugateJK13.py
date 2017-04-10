@@ -19,7 +19,7 @@ class ConjugateJK13(Model):
 	parameter_rules = dict(
 			category_mean_bias = dict(min = 1e-10),
 			category_variance_bias = dict(min = num_features - 1 + 1e-10),
-			domain_variance_bias = dict(min = 1e-10),
+			domain_variance_bias = dict(min = 1e-03),
 			determinism = dict(min = 0),
 		)
 
@@ -66,6 +66,7 @@ class ConjugateJK13(Model):
 		self.prior_variance = np.eye(self.nfeatures) * self.nfeatures
 		inds = np.diag_indices(self.nfeatures)
 		self.prior_variance[inds] *= self.wts
+		self.prior_variance *= self.domain_variance_bias
 
 	def get_generation_ps(self, stimuli, category):
 

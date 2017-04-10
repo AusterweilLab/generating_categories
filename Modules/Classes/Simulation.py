@@ -22,11 +22,14 @@ class Trialset(object):
 		self.nresponses = 0
 
 	def __str__(self):
-		N = len(self.Set)
 		S  = 'Trialset containing: ' 
 		S += '\n\t ' + str(self.nunique) + ' unique trials '
 		S += '\n\t ' + str(self.nresponses) + ' total responses'
 		return S
+
+	def _update(self):
+		self.nunique = len(self.Set)
+		self.nresponses = sum([len(i['response']) for i in self.Set])
 
 	def add(self, response, categories = []):
 		"""
