@@ -25,7 +25,10 @@ df['x'] = stimuli.loc[df.stimulus, 'F1'].as_matrix()
 
 def plotlines(h, data, stats):
 	sort_df = stats.sort_values(by = ['yrange','condition'])
-	condition_colors = dict(Middle = 'orange', Bottom = 'purple')
+
+
+	colors = ["#34495e", "#e74c3c"]
+	condition_colors = dict(Middle = colors[1], Bottom = colors[0])
 	n = 0
 
 	for num, info in sort_df.iterrows():
@@ -68,7 +71,7 @@ plotlines(fh.gca(), df, stats)
 [i.set_linewidth(1.0) for i in fh.gca().spines.itervalues()]
 
 
-fh.savefig('yranges.pdf', bbox_inches = 'tight')
+fh.savefig('yranges.png', bbox_inches = 'tight')
 
 path = '../../../Manuscripts/cog-psych/figs/e2-yranges.pgf'
 funcs.save_as_pgf(fh, path)

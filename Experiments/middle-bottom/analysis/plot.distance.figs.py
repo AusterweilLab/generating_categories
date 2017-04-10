@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("whitegrid")
 
+colors = ["#34495e", "#e74c3c"]
+sns.set_palette(colors)
+
 execfile('Imports.py')
 import Modules.Funcs as funcs
 
@@ -36,7 +39,6 @@ for c in pd.unique(info.condition):
 fh, ax = plt.subplots(1,2,figsize = (6,2.7))
 
 styles = dict(Middle = '-o', Bottom = '-s')
-colors = dict(Middle = 'orange', Bottom = 'purple')
 
 h = ax[0]
 for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
@@ -55,7 +57,7 @@ for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
 
 	x = x - min(x)
 	x = x / max(x)
-	h.plot(x, y, styles[c], color = colors[c], alpha = 0.7, label = c)
+	h.plot(x, y, styles[c], alpha = 1, label = c)
 
 h.xaxis.grid(False)
 h.set_xticks([])
@@ -73,11 +75,10 @@ h.set_ylabel('Generations Per Stimulus', fontsize = 12)
 
 h = ax[1]
 styles = dict(Middle = 'o', Bottom = 's')
-colors = dict(Middle = 'orange', Bottom = 'purple')
 h.plot([0,2],[0,2], '--', color = 'gray', linewidth = 0.5, label = 'Within $=$ Between')
 
 for c, rows in stats.groupby('condition'):
-	h.plot(rows.within, rows.between, styles[c], color = colors[c],
+	h.plot(rows.within, rows.between, styles[c],
 		alpha = 0.5, label = '')
 
 h.grid(False)

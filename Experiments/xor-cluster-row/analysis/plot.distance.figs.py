@@ -53,7 +53,7 @@ for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
 
 	x = x - min(x)
 	x = x / max(x)
-	h.plot(x, y, styles[c], alpha = 0.7, label = c)
+	h.plot(x, y, styles[c], alpha = 1, label = c)
 
 h.xaxis.grid(False)
 h.set_xticks([])

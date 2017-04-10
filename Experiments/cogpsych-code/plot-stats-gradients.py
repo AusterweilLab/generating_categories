@@ -4,6 +4,7 @@ pd.set_option('precision', 3)
 np.set_printoptions(precision = 3)
 
 import sqlite3
+import pickle
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
 
@@ -18,11 +19,11 @@ STAT_LIMS =  (-2.0, 2.0)
 PRIOR_MU = 0.0
 
 # simulation params
-N_SAMPLES = 20
+N_SAMPLES = 30
 WT_THETA = 1.5
 
 # plotting settings
-fontsettings = dict(fontsize = 10.0)
+fontsettings = dict(fontsize = 12.0)
 col_order = ['Behavioral', 'PACKER', 'Copy and Tweak', 'Hierarchical Sampling']
 row_order = ['Cluster','Row', 'XOR', 'Bottom', 'Middle']
 SMOOTHING_PARAM = 0.8
@@ -55,29 +56,22 @@ import Modules.Funcs as funcs
 
 # these values copied from the Slack message sent to Joe
 # jk13 values were clipped into allowable range
-model_param_pairs = [ 
-    [CopyTweak, dict(
-    specificity = 3.18895961945,
-    determinism = 2.96847856016,
-        )],
-    [Packer, dict(
-    specificity = 0.481287831406,
-    between = -0.945026920024,
-    within = 1.0440682555,
-    determinism = 3.35432164741,
-        )],
-    [ConjugateJK13, dict(
-    category_mean_bias = 1e-10,
-    category_variance_bias = 1.0 + 1e-10,
-    domain_variance_bias = 5.3127886986,
-    determinism = 7.94942567558,
-        )],
-]
 
+# get best params pickle
+with open("pickles/best_params_e1_e2.p", "rb" ) as f:
+    best_params = pickle.load( f )
+
+name_2_object = {
+    'PACKER': Packer, 
+    'Copy and Tweak': CopyTweak, 
+    'Hierarchical Sampling': ConjugateJK13
+}
 
 # conduct simulations
-for model_obj, params in model_param_pairs:
+for model_name, model_obj in name_2_object.items():
     print 'Running: ' + model_obj.model
+    params  = best_params[model_name]
+
     model_data = pd.DataFrame(columns = ['condition','stimulus',STAT_OF_INTEREST])
 
     for i, row in stats.groupby('participant'):
@@ -86,7 +80,7 @@ for model_obj, params in model_param_pairs:
 
         # get weights
         if 'range' in STAT_OF_INTEREST:
-            params['wts'] = funcs.softmax(row[['xrange','yrange']], theta = WT_THETA)[0]
+            params['wts'] = funcs.softmax(-row[['xrange','yrange']], theta = WT_THETA)[0]
         else:
             params['wts'] = np.array([0.5, 0.5])
 
@@ -114,9 +108,8 @@ for model_obj, params in model_param_pairs:
     model_data['size'] /= float(N_SAMPLES)
     all_data[model_obj.model] = model_data
 
-
 # plotting
-f, ax = plt.subplots(5,4,figsize = (7.0, 8.5))
+f, ax = plt.subplots(5,4,figsize = (6.7, 7.5))
 for rownum, c in enumerate(row_order):
     A = stimuli[alphas[c],:]
     
@@ -156,19 +149,19 @@ for rownum, c in enumerate(row_order):
 
 
 # add colorbar
-# cbar = f.add_axes([0.915, 0.2, 0.03, 0.55])
-# f.colorbar(im, cax=cbar, ticks=[-2, 2], orientation='vertical')
-# cbar.set_yticklabels([
-#     'Vertically\nAligned\nCategory', 
-#     'Horizontally\nAligned\nCategory', 
-# ],**fontsettings)
-# cbar.tick_params(length = 0)
+cbar = f.add_axes([0.225, -0.03, 0.55, 0.03])
+f.colorbar(im, cax=cbar, ticks=[-2, 2], orientation='horizontal')
+cbar.set_xticklabels([
+    'Vertically Aligned\nCategory', 
+    'Horizontally Aligned\nCategory', 
+],**fontsettings)
+cbar.tick_params(length = 0)
 
-# plt.tight_layout(w_pad=-8.5, h_pad= 0.1)
+plt.tight_layout(w_pad=-4.0, h_pad= 0.1)
 
 fname = 'gradients-' + STAT_OF_INTEREST
 f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
 f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
 
-# path = '../../../Manuscripts/cogsci-2017/figs/range-diff-gradient.pgf'
-# funcs.save_as_pgf(f, path)
+path = '../../Manuscripts/cog-psych/figs/range-diff-gradients.pgf'
+funcs.save_as_pgf(f, path)
