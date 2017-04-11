@@ -14,12 +14,15 @@ src = "pickles/all_data_e1_e2.p"
 dst = "pickles/best_params_all_data_e1_e2.p"
 
 # trials 2-4
-# src = "pickles/trials_2-4_e1_e2.p"
-# dst = "pickles/best_params_trials_2-4_e1_e2.p"
+src = "pickles/trials_2-4_e1_e2.p"
+dst = "pickles/best_params_trials_2-4_e1_e2.p"
 
 # get data from pickle
 with open(src, "rb" ) as f:
 	trials = pickle.load( f )
+
+print trials
+lll
 
 # options for the optimization routine
 options = dict(

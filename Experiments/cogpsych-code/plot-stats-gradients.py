@@ -58,7 +58,7 @@ import Modules.Funcs as funcs
 # jk13 values were clipped into allowable range
 
 # get best params pickle
-with open("pickles/best_params_e1_e2.p", "rb" ) as f:
+with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
     best_params = pickle.load( f )
 
 name_2_object = {
@@ -134,7 +134,7 @@ for rownum, c in enumerate(row_order):
 
         # smoothing
         g = funcs.gradientroll(vals,'roll')[:,:,0]
-        g = gaussian_filter(g, SMOOTHING_PARAM)
+        g = (g, SMOOTHING_PARAM)
         vals = funcs.gradientroll(g,'unroll')
         
         im = funcs.plotgradient(h, g, A, [], clim = STAT_LIMS, cmap = 'PuOr')
@@ -149,7 +149,7 @@ for rownum, c in enumerate(row_order):
 
 
 # add colorbar
-cbar = f.add_axes([0.225, -0.03, 0.55, 0.03])
+cbar = f.add_axes([0.21, -0.02, 0.55, 0.03])
 f.colorbar(im, cax=cbar, ticks=[-2, 2], orientation='horizontal')
 cbar.set_xticklabels([
     'Vertically Aligned\nCategory', 

@@ -23,7 +23,7 @@ NNNI-1
 I-1
 I0
 tp10
-bS'$}\xc2\n\x05\xa6\x1a@'
+bS'\n\xc6\x02q\x1f\xa6\x1a@'
 p11
 tp12
 Rp13
@@ -31,7 +31,7 @@ sS'tradeoff'
 p14
 g4
 (g8
-S's\xc91\xc8S\xcd\xe0?'
+S'\xb6\xef\x81\xe8w\xcd\xe0?'
 p15
 tp16
 Rp17
@@ -39,7 +39,7 @@ sS'specificity'
 p18
 g4
 (g8
-S'\t\xe9M\xcfE\xe0\xde?'
+S'\xd8\xa7!r\xa7\xe0\xde?'
 p19
 tp20
 Rp21
@@ -49,14 +49,14 @@ p22
 g3
 g4
 (g8
-S'\xa2\x04\x83\x9e\x15\xc3\x07@'
+S'\x95\x1f3Nw\xc5\x07@'
 p24
 tp25
 Rp26
 sg18
 g4
 (g8
-S'\x18L\xd9\xfd7\x8f\t@'
+S'\xb1\xad\xff\xf9\x8d\x8b\t@'
 p27
 tp28
 Rp29
@@ -67,14 +67,14 @@ S'category_variance_bias'
 p32
 g4
 (g8
-S'\n\x1f\x8c\x19+f\x16@'
+S'\xf4@f\\ b\x16@'
 p33
 tp34
 Rp35
 sg3
 g4
 (g8
-S'X\xf3\x1c\x9dtg\t@'
+S".\xb4\xbd'\xe0c\t@"
 p36
 tp37
 Rp38
@@ -85,7 +85,7 @@ sS'domain_variance_bias'
 p40
 g4
 (g8
-S'D\xe2\x05G\xc3\xf2\xab?'
+S'\xafA\xd7\x92j\xeb\xab?'
 p41
 tp42
 Rp43
