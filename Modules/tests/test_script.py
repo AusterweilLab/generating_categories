@@ -28,4 +28,7 @@ categories = [
 	stimuli[[8,65],:],
 	]
 
-M = CopyTweak(categories,CopyTweak.rvs())
+P = ConjugateJK13.rvs()
+P['wts'] = 1.0 - np.array([0.7,0.3])
+M = ConjugateJK13(categories,P)
+print M

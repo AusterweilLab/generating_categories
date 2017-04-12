@@ -81,6 +81,8 @@ for model_name, model_obj in name_2_object.items():
         # get weights
         if 'range' in STAT_OF_INTEREST:
             params['wts'] = funcs.softmax(-row[['xrange','yrange']], theta = WT_THETA)[0]
+            if model_obj ==  ConjugateJK13:
+                params['wts'] = 1.0 - params['wts']
         else:
             params['wts'] = np.array([0.5, 0.5])
 
@@ -134,7 +136,7 @@ for rownum, c in enumerate(row_order):
 
         # smoothing
         g = funcs.gradientroll(vals,'roll')[:,:,0]
-        g = (g, SMOOTHING_PARAM)
+        g = gaussian_filter(g, SMOOTHING_PARAM)
         vals = funcs.gradientroll(g,'unroll')
         
         im = funcs.plotgradient(h, g, A, [], clim = STAT_LIMS, cmap = 'PuOr')

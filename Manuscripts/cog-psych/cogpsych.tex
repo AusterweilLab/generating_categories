@@ -439,6 +439,17 @@ Through comparison with the copy-and-tweak model, Figure \ref{fig:packer-loglike
 \end{figure}
 
 
+\subsection{Individual Differences}
+
+As noted in Experiments 1 and 2, we observed a great deal of individual differences in the types of categories generated. Within each condition, we observed tightly clustered and widely distributed categories, as well as row and column categories, and so forth. The simulations reported above serve to evaluate the models while considering the entire dataset, but a secondary goal of any formal account should be to provide some explanation of how different profiles of performance emerge. Many of the individual generation profiles we observed can be targeted within the PACKER framework, simply by tuning the model's parameters. In this section, we describe more specifically how the most frequently observed profile can be realized.
+
+
+
+\nbcnote{manual description of how to get rows, columns, 4 corners, etc}
+
+\nbcnote{If this is done correctly, we can motivate the use of attention weights below. }
+
+
 \subsection{Category Location vs. Distributional Structure}
 
 As noted above, while all three models make clear claims about the internal structure of generated categories, the copy-and-tweak and hierarchical sampling models do not make any claims about how generated categories should differ from what is already known. However, as we observed in Experiment 2, the distributional structure of a category is not always independent of its location within the domain. To demonstrate this point in a broader manner, we computed the X- and Y- axis ranges of every participant-generated category. Taking the difference between these values ($X-Y$) produces a measure of each category's orientation in the space: positive difference scores correspond to categories with more X-axis range (horizontally aligned, `Row' categories), whereas negative difference scores indicate the opposite (vertically aligned, `Column' categories). Neutral differences scores indicate there was an equal amount of X- and Y-axis range, which can be produced by a number of different category types (`Clusters', `Corners', etc; see Figures \ref{fig:e1-samples} and \ref{fig:e2-samples}). By plotting, for each possible stimulus, the difference scores of categories it was generated within, we can relate the distributional structure of generated categories to their location within the domain.
@@ -469,7 +480,9 @@ These data reveal strong and consistent patterns across all the conditions we te
 
 These patterns of performance clearly depict the interdependence between the distributional structure and location of generated concepts. Our results can, in some sense, be interpreted in terms of local minimization of between-class similarity: by distributing the generated category away from members of the experimenter-defined category, participants may increase the degree of between-class distance without drastically altering the degree of within-class similarity.
 
-To attempt to explain our findings within the PACKER, copy-and-tweak- and hierarchical sampling models, we conducted simulations using an individual-differences approach. Each model was used to simulate each participant's generation separately, with the importance of each dimension set according to the relative range of the participant's generated category along each dimension. The other free parameters were set as in Table \ref{table:global-model-fits}. In the PACKER and copy-and-tweak models, the attention weights, $w$, specify the importance of each dimension in the computation of similarity. Traditionally, the attention weights are thought to reflect the diagnostic value of each dimension towards classifying members of the categories \citep{nosofsky1984choice,nosofsky1986attention,kruschke1992alcove}. Thus, while there exist methods to find the optimal attention weighting scheme given a classification \citep[see][]{vanpaemel2012using}, for simplicity we may assume that the Alpha and Beta categories are distinct along dimensions that the Betas do not vary on. Thus, the weighting for a given participant can be computed as:
+To attempt to explain our findings within the PACKER, copy-and-tweak- and hierarchical sampling models, we conducted simulations using an individual-differences approach. Each model was used to simulate each participant's generation separately, with the importance of each dimension set according to the relative range of the participant's generated category along each dimension. In the PACKER and copy-and-tweak models, the attention weights, $w$, specify the importance of each dimension in the computation of similarity. Traditionally, the attention weights are thought to reflect the diagnostic value of each dimension towards classifying members of the categories \citep{nosofsky1984choice,nosofsky1986attention,kruschke1992alcove}. While there exist methods to find the optimal attention weighting scheme given a classification \citep[see][]{vanpaemel2012using}, for simplicity we may assume that the Alpha and Beta categories are distinct along dimensions that the Betas do not vary on. Thus, the weighting for a given participant can be computed as:
+
+\nbcnote{Weak spot: attention weighting feels unmotivated.}
 
 \begin{equation}
 w_k = \dfrac
@@ -478,34 +491,15 @@ w_k = \dfrac
 \label{eq:range-weight}
 \end{equation}
 % 
+where $\theta_w$ is a free parameter controlling how differences in range correspond to differences in weights (functioning similarity to the $\theta$ parameter in each of the models). In our simulations $\theta_w = 1.5$, though similar results can be obtained using a wide range of values. The resulting $w$ values are thus inversely proportional to the range of generated categories along each dimension, with less range corresponding to greater weighting.
 
+In the hierarchical sampling model, the covariance matrix specifying the prior domain distribution, $\Sigma_0$, can be used to similar effect. This covariance matrix specifies the amount of variance assumed along each dimension (as well as the dimensional correlations) across the domain of categories. The covariance matrix for a newly generated category, $\Sigma_B$, is based on the assumed $\Sigma_0$ as well as the distributions of previously learned categories (see Appendix \ref{ap:hsampling-definition}). Thus, the importance of each feature can be coded into $\Sigma_0$ to alter the dimensional variance of generated categories. We incorporated the weights computed in Equation \ref{eq:range-weight} by setting the variance of each dimension according to: $\rho (1-w_k)n$, where $\rho$ is a free parameter specifying the overall assumed variance of the domain, and $n$ is the number of dimensions. Under this approach, evenly distributed weights correspond to an assumed variance of $\rho$. Likewise, larger values of $w$, which are produced when the generated category is tightly distributed along one dimension, correspond to smaller assumed variances. 
 
+\nbcnote{This works for 2D, but not 3D and beyond (as $1-w_k$ would not produce a valid weighting).}
 
-In the hierarchical sampling model, the covariance matrix specifying the prior domain distribution can be used to manipulate the assumed category variance along each dimension, fulfilling a similar role. 
+Each model was used to simulate each participant's generation independently, with the importance of each dimension set according to the participant's generated category. The other free parameters within each model were set as in Table \ref{table:global-model-fits}. Every participant's generation was simulated \textbf{NUMBER} of times, resulting in \textbf{NUMBER * PARTICIPANTS} categories generated by each model. For comparison with our behavioral results, we then computed the range difference gradient identically as with the behavioral data. The results are shown in Figure \ref{fig:range-diff-gradients}.
 
-
-
- % the weights using the inverse of each feature's range: $w_k \propto range(k)^{-1}$.
-
-
-% , we set the attention weight parameters in PACKER and copy-and-tweak per participant. The other free parameters were set as in Table \ref{table:model-fits}. While there exist methods to find the optimal attention weights for a given classification \citep[see][]{vanpaemel2012using}, for simplicity we approximated the weights using the inverse of each feature's range: $w_k \propto range(k)^{-1}$. Thus, the Alpha and Beta categories are assumed to be distinct along dimensions that the Betas do not vary on. To simulate the hierarchical sampling model we set the domain covariance prior, $\Sigma_0$, proportional to the range of each feature. We then simulated 50 Beta categories with each participant's weighting scheme to obtain a sense of how the relative importance of each dimension affects what types of categories are generated and where they are generated. The results of these simulations are depicted in Figure \ref{fig:range-diff-gradient}.
-
-
-
-\nbcnote{Weak spot: attention weighting feels unmotivated.}
-
-
-
-\subsection{Individual Differences}
-
-As noted in Experiments 1 and 2, we observed a great deal of individual differences in the types of categories generated. Within each condition, we observed tightly clustered and widely distributed categories, as well as row and column categories, and so forth. The simulations reported above serve to evaluate the models while considering the entire dataset, but a secondary goal of any formal account should be to provide some explanation of how different profiles of performance emerge. Many of the individual generation profiles we observed can be specifically targeted within the PACKER framework, simply by tuning the similarity trade-off parameter ($\gamma$) and the model's attention weights ($w$).
-
-\nbcnote{manual description of how to get rows, columns, 4 corners, etc}
-
-
-To systematically evaluate each model's ability to explain 
-
-
+As in the more traditional model evaluation procedure described above, PACKER provided a much closer match to our behavioral results than the copy-and-tweak and hierarchical sampling models. In all conditions, PACKER distributes categories similarly to the behavioral data: horizontally-aligned categories tend to be placed above and below members of the experimenter-defined category, and vertically-aligned categories tend to be placed to the sides. Conversely, because the copy-and-tweak and hierarchical sampling models are insensitive to category contrast, these models do not produce any systematic patterns of association between category location and distributional structure. The sole exception is within the `Row' condition, in which the majority of participants generated a `Row'-like category, widely distributed along the X-axis but not the Y-axis. In these case, both models are initialized with weights that produce Row categories, but because category contrast is not considered, categories are uniformly generated across the entire domain, rather than concentrated within the upper-regions as observed behaviorally.
 
 
 \section{General Discussion}
