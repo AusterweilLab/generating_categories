@@ -25,15 +25,31 @@ textsettings = dict(fontsize = 6)
 # 11		12		13		14		15		16		17		18		19		20		 21
 # 22		23		24		25		26		27		28		29		30		31		 32
 
+assignments  = {
+
+	# CLUSTER
+	 '0': 0,  '1': 17,  '2': 41, # Clusters
+	'11': 10, '12': 15, # Column
+	'13': 6,  '22': 27, # Row
+	'23': 22, '24': 121, # Corner
+
+	# ROW
+	 '4':  4,  '5': 14,  '6': 24, # ROWS
+	'15': 29, '16': 60, '17': 86, # ROWS
+	'26': 37, '27': 50, '28': 233, # clusters
+
+	# XOR
+	 '8': 46,  '9': 75, '10': 84, # anti-xor
+	'19': 111, '20': 113, '21': 240, # with-xor
+	'30': 42, '31': 83, '32': 116, # clusters
+
+	# nothing
+	'empty':[3,14,25,7,18,29]
+
+}
 
 P, E = 2, 0.2
 gridspec_kw = {'width_ratios':[P,P,P, E, P,P,P, E, P,P,P]}
-assignments = dict(
-	empty = np.array([3, 14, 25, 7, 18, 29]),
-	Cluster = np.array([0, 1, 2, 11, 12, 13, 22, 23, 24]))
-assignments['Row'] = assignments['Cluster'] + 4
-assignments['XOR'] = assignments['Row'] + 4
-
 
 # plotting
 fig, ax= plt.subplots(3,11, figsize=np.array([7.,2.3]) , gridspec_kw = gridspec_kw)
@@ -44,21 +60,14 @@ for i, h in enumerate(ax_flat):
 		h.axis('off')
 		continue
 	
+
 	# get condition
-	for k, v in assignments.items():
-		if i in v: curr_cond = k
+	# get participant
+	pid = assignments[str(i)]
+	curr_cond = list(info.loc[info.participant == pid, 'condition'])[0]
 
 	As = alphas[curr_cond].as_matrix()
-
-	# pick a random participant, get the betas
-	while True: # AT least make sure the participant was *trying*
-		pid = np.random.choice(info.loc[info.condition==curr_cond, 'participant'])
-		Bs = generation.loc[generation.participant==pid, 'stimulus'].as_matrix()
-		if np.intersect1d(As,Bs).tolist() == []: break
-
-	# drop participant so they cannot be chosen again
-	idx = info.loc[info.participant ==  pid]
-	info.drop(idx.index, inplace=True)
+	Bs = generation.loc[generation.participant == pid, 'stimulus']
 
 	funcs.plotclasses(h, stimuli, As, Bs, textsettings = textsettings)
 
