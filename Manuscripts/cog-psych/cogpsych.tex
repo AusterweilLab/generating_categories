@@ -273,10 +273,8 @@ To begin, it is worth noting that we observed a substantial degree of individual
 \begin{figure}
     \begin{center}
     \inputpgf{figs/}{e1-samples.pgf}
-    \caption{Sample categories generated in Experiment 1. }
+    \caption{Sample categories generated in Experiment 1. Representative samples from common generation profiles are shown.}
     \label{fig:e1-samples}
-    \nbcnote{I selected these at random, we can pick more representative samples later.}
-    \jlanote{ok!}
     \end{center}
 \end{figure}
 
@@ -441,12 +439,21 @@ Through comparison with the copy-and-tweak model, Figure \ref{fig:packer-loglike
 
 \subsection{Individual Differences}
 
-As noted in Experiments 1 and 2, we observed a great deal of individual differences in the types of categories generated. Within each condition, we observed tightly clustered and widely distributed categories, as well as row and column categories, and so forth. The simulations reported above serve to evaluate the models while considering the entire dataset, but a secondary goal of any formal account should be to provide some explanation of how different profiles of performance emerge. Many of the individual generation profiles we observed can be targeted within the PACKER framework, simply by tuning the model's parameters. In this section, we describe more specifically how the most frequently observed profile can be realized.
+As noted in Experiments 1 and 2, we observed a great deal of individual differences in the types of categories generated. Within each condition, we observed tightly clustered and widely distributed categories, as well as row and column categories, and so forth (see Figures \ref{fig:e1-samples} and \ref{fig:e2-samples}). The simulations reported above serve to evaluate the models while considering the entire dataset, but a secondary goal of any formal account should be to provide some explanation of how different profiles of performance emerge. Many of the individual generation profiles we observed can be targeted within the PACKER framework, simply by tuning the model's parameters. In this section, we describe more specifically how the most frequently observed profile can be realized.
 
-In both Experiments 1 and 2, we commonly observed four 
+To begin, the common profiles among the `Cluster' category types (including the `Cluster' condition of Experiment 1 and both conditions from Experiment 2) corresponded to: (A) a tight cluster of examples, (B) `row'- and `column'-like categories (varying widely along one dimension but not the other), and (C) a `corners' arrangement with examples placed into disparate corners of the space. While the tight cluster configuration can be considered PACKER's default generation mode (as it maximizes within-class similarity), the `row' and `column' types can be produced by altering PACKER's attention weights, $w$ (see Equation \ref{eq:similarity}). Traditionally, these weights are thought to reflect the diagnostic value of each dimension towards classifying the known category members \citep{nosofsky1984choice,nosofsky1986attention,kruschke1992alcove}, but within a generation context the weights specify the importance of within- and between-class similarity along each dimension. For example, if 100\% of attention is allocated along the X-axis, similarity along the Y-axis no longer influences performance: Thus, PACKER will create categories that are more widely distributed along the \textit{Y}-axis, as within-class similarity is not counted along that dimension. Further, PACKER's generated categories will be more likely to overlap with known categories along the Y-axis, as, again, between-class similarity is not counted along that dimension. Thus, differentially weighting one dimension will result in the generation of row- or column-like categories that are more widely distributed along, and overlap with existing classes along, the ignored axis. See Figure \ref{fig:packer-attention} for a depiction of how attention influences PACKER's performance.
+
+\begin{figure}
+    \begin{center}
+    \inputpgf{figs/}{packer-attention-examples.pgf}
+    \caption{PACKER generation of a category `B' example, following exposure to one member of category `A' and one member of category `B'. Predictions are shown for different attention settings: \textit{(a)} Increased weighting of the X-axis. \textit{(b)} Increased weighting of the Y-axis. \textit{(c)} Uniform weighting (identical to Figure \ref{fig:packer-examples}).}
+    \label{fig:packer-attention}
+    \end{center}
+\end{figure}       
 
 
-\nbcnote{manual description of how to get rows, columns, 4 corners, etc}
+
+
 
 \nbcnote{If this is done correctly, we can motivate the use of attention weights below. }
 
@@ -481,7 +488,7 @@ These data reveal strong and consistent patterns across all the conditions we te
 
 These patterns of performance clearly depict the interdependence between the distributional structure and location of generated concepts. Our results can, in some sense, be interpreted in terms of local minimization of between-class similarity: by distributing the generated category away from members of the experimenter-defined category, participants may increase the degree of between-class distance without drastically altering the degree of within-class similarity.
 
-To attempt to explain our findings within the PACKER, copy-and-tweak- and hierarchical sampling models, we conducted simulations using an individual-differences approach. Each model was used to simulate each participant's generation separately, with the importance of each dimension set according to the relative range of the participant's generated category along each dimension. In the PACKER and copy-and-tweak models, the attention weights, $w$, specify the importance of each dimension in the computation of similarity. Traditionally, the attention weights are thought to reflect the diagnostic value of each dimension towards classifying members of the categories \citep{nosofsky1984choice,nosofsky1986attention,kruschke1992alcove}. While there exist methods to find the optimal attention weighting scheme given a classification \citep[see][]{vanpaemel2012using}, for simplicity we may assume that the Alpha and Beta categories are distinct along dimensions that the Betas do not vary on. Thus, the weighting for a given participant can be computed as:
+To attempt to explain our findings within the PACKER, copy-and-tweak- and hierarchical sampling models, we conducted simulations using an individual-differences approach. Each model was used to simulate each participant's generation separately, with the importance of each dimension set according to the relative range of the participant's generated category along each dimension. In the PACKER and copy-and-tweak models, the attention weights, $w$, specify the importance of each dimension in the computation of similarity. As noted above, attention is usually thought to reflect the diagnostic value of each dimension in classification. While there exist methods to find the optimal attention weighting scheme given a classification \citep[see][]{vanpaemel2012using}, for simplicity we may assume that the Alpha and Beta categories are distinct along dimensions that the Betas do not vary on. Thus, the weighting for a given participant can be computed as:
 
 \nbcnote{Weak spot: attention weighting feels unmotivated.}
 
