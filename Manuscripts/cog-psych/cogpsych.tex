@@ -12,7 +12,6 @@
 \usepackage[toc]{appendix}
 \usepackage[natbibapa]{apacite}
 
-
 % set up PGF
 \pgfplotsset{compat=1.6}
 \newcommand\inputpgf[2]{{
@@ -422,6 +421,9 @@ To obtain a global measure of the quality of each model's account, we fitted the
 
 \jlanote{should do a nested model comparison with respect to PACKER v. copy \& tweak. they're nested, so should be doable...}
 
+\nbcnote{I do not know exactly what you mean}
+
+
 Table \ref{table:global-model-fits} contains the results of this fitting procedure. Due to the uneven number of fitted parameters among the models, we compare the model fits using the Akaike Information Criterion \citep[AIC;][]{akaike1974new}. Table \ref{table:global-model-fits} contains the AIC values of each model's best fit, as well as the corresponding log-likelihood ($L$) and the best-fitting parameter values. These results reveal strong model differentiation: the PACKER model achieved far better fits compared to the copy-and-tweak and hierarchical sampling models, and copy-and-tweak performed somewhat better than the hierarchical sampling model. While PACKER's advantage may tentatively be attributed to the model's sensitivity to category contrast (this will be explored in detail below), the advantage shown by copy-and-tweak over the hierarchical sampling model may be attributed to its exemplar-based representation, as opposed to the prototype-based representation assumed in the hierarchical sampling model. As observed in Figures \ref{fig:e1-samples} and \ref{fig:e2-samples}, the generated categories we observed were often widely distributed, with no items near the category prototype. This aspect of the data is inconsistent with the multivariate normal distributions used to represent categories in the \cite{jern2013probabilistic} model, but can be handled easily using an exemplar-based approach. 
 
 A key distinction between PACKER and copy-and-tweak, as well as the the hierarchical sampling model, is that, of the three models, only PACKER is capable of making strong predictions about the location of new category members when the target class is entirely novel (i.e., no member of the category has been observed). Under these circumstances, there are no examples to copy, and thus the copy-and-tweak model predicts that items are generated at random. Likewise, with no observations on which to condition the mean of the category distribution, the hierarchical sampling model also picks an item at random. Thus, it is possible that the failure of these models is simply due to their inability to explain each participant's first trial (generating the first item in the `Beta' category). We conducted an identical set of simulations as above, excluding this trial (leaving 915 responses in the dataset): Again, PACKER ($L = -3390$, $AIC = 6786$) achieved better fits than the copy-and-tweak ($L = -3579$, $AIC = 7162$) and hierarchical sampling ($L=-3612$, $AIC = 7232$) models.
@@ -431,7 +433,7 @@ Through comparison with the copy-and-tweak model, Figure \ref{fig:packer-loglike
 \begin{figure}
     \begin{center}
     \inputpgf{figs/}{packer-loglike.pgf}
-    \caption{PACKER's fit as a function of sensitivity to between-class contrast (using the $\gamma$ parameter). To facilitate comparison, PACKER's other parameters ($c$, $\theta$) were set to the best fitting values obtained for copy-and-tweak in Table \ref{table:global-model-fits}. }
+    \caption{PACKER's fit as a function of its prioritization of within-class and between-class similarity (using the $\gamma$ parameter). To facilitate comparison, PACKER's other parameters ($c$, $\theta$) were set to the best fitting values obtained for copy-and-tweak in Table \ref{table:global-model-fits}. }
     \label{fig:packer-loglike}
     \end{center}
 \end{figure}
@@ -516,11 +518,28 @@ As in the more traditional model evaluation procedure described above, PACKER pr
 
 \section{General Discussion}
 
-\nbcnote{Make the point that we’re explaining category generation using well known ideas, and that exemplar models are viewed as highly principled.}
+The creative generation of novel concepts is an intriguing yet understudied topic in cognitive science. While the bulk of prior research on the topic has focused on the classic finding that generated concepts tend to be distributionally similar to known concepts, there has been little work addressing the role of contrast in creative generation: how is it that people are able to create something \textit{different} from what is already known? This issue is of fundamental importance: in order to successfully generate something new, it must be different from what is known. We developed a novel, exemplar-based model, PACKER, which formally specifies the role of contrast in generation. The model proposes that categories are represented as exemplars in a multidimensional psychological space, and generation is constrained both by within-class and between-class similarity: exemplars belonging to the same category should be similar to one another, and exemplars belonging to different categories should not be similar to one another. 
 
-\nbcnote{Discuss combining hierarchical sampling and contrast approaches.}
+In addition to an analysis of published data \citep[][Experiment 3]{jern2013probabilistic}, we reported two experiments demonstrating systematic effects of category contrast in creative generation: members of participant-generated categories tended to be highly dissimilar from members of previously-learned categories, and were usually more similar to one another than to members of other categories. Finally, we conducted simulations comparing PACKER's account of our results to that of a ``copy-and-tweak'' model (realized as a variant of PACKER with no sensitivity to category contrast), and a hierarchical sampling model designed to explain the classic distributional similarity effect. In all simulations, we found that PACKER's sensitivity to contrast considerably enhanced the models account of generation.
 
-\nbcnote{Joe says he'll put importance sampling in future directions.}
+The PACKER model bridges two gaps in the literature. First, it provides a quantitative theory of the role of contrast in creative generation, a topic more or less overlooked by previous work. The lack of attention to this issue is likely due to the underconstrained notion of what it means for two concepts to be ``different''. In the PACKER model, this notion is interpreted using the theory of similarity employed by the exemplar view of categorization \citep{medin1978context,brooks1978nonanalytic,nosofsky1984choice,nosofsky1986attention}. This theory of similarity, tracing its foundations to classic research in stimulus generalization \citep{attneave1950,shepard1957stimulus,shepard1987toward}, has had broad influence in many fields within cognitive science. Thus, beyond providing a formal specification of category contrast, the PACKER model also aligns the relatively understudied topic of creative generation more closely with the well-developed literature on human categorization. The success of the PACKER model indicates that core theories from the categorization literature may offer a strong account of how people generate new concepts. 
+
+The success of the PACKER model yields reveals keys insights about the nature of creative generation. First, by measuring PACKER's fit as a function of its prioritization of within- and between-class similarity, we observed that considering either constraint exclusively results in a relatively low-quality account. Instead, PACKER's best results were obtained when both constraints are considered, indicating that human learners do not generate novel concepts exclusively on the basis of within-class similarity or between class-contrast. This finding mirrors our behavioral results: it is clear that both constraints influence creative generation. 
+
+This finding is extended by our observation of the broad interdependence between the distributional structure (feature variance, correlation) and physical instantiation (location within the domain space) of generated categories. In Experiment 2, we found that the unoccupied regions of the domain influenced the distributional structure of categories, and in Experiments 1 and 2 we observed that generated categories assume different distributional structures depending on how they contrast with known categories. This interdependence is straightforwardly explained under PACKER's dual-constraint proposal: after first establishing a location for their generated category, participants distribute exemplars in order to minimize between-class similarity while not drastically decreasing within-class similarity. 
+
+However, PACKER does not provide a full account of what is known about category generation. Most notably, in this paper we have not evaluated the model's ability to explain the classic finding that generated categories tend to share distributional commonalities with previously learned categories \citep[see][]{jern2013probabilistic,ward1994structured,ward1995s,ward2002role,smith1993constraining,marsh1999inadvertent}. While we successfully replicated this effect in Experiment 1, we also found that its influence was limited in comparison to the fundamental constraints imposed by category contrast. Even within Experiment 1, we found systematic inconsistencies: by generating exemplars into unoccupied regions of the space, participants who learned an `XOR' category, composed of members that are widely distributed along both features and are positively correlated in space, tended to generate categories with an opposite (negative) correlation. More generally, PACKER's success over the hierarchical sampling model indicates that the emulation of distributional structure exerts only a limited influence in comparison to category contrast.
+
+Nonetheless, these classic effects are a core element of the phenomenology of creative generation, and it is worth noting that PACKER does not include any mechanisms explain them. Instead, through the development and evaluation of the PACKER model, we have sought to add new elements into such a phenomenology: specifically, the broad and strong influence of category contrast, and the interdependence between category location and distributional structure. It may be possible to combine the hierarchical sampling approach proposed by \cite{jern2013probabilistic} with PACKER's underlying claims to obtain a ``best of both worlds'' model, capable of explaining the role of contrast in creative generation, as well as the emulation of distributional structure. However, as noted in the introduction, the incorporation of category contrast is antithetical to the core principles of the hierarchical Bayesian approach. Thus, while such a model may provide an excellent fit to the data, its theoretical composition would be more or less of an amalgam, and thus it may not succeed in other areas of model evaluation (such as predicting and explaining novel phenomena).
+
+\nbcnote{I'm just spitballing there...}
+
+As it stands, however, PACKER's mathematical basis is subject to a wide variety of interpretations, leading to distinct views on the nature of creative generation. 
+\nbcnote{That sounds like a good spot to include importance sampling}
+
+
+\section{Conclusions}
+
 
 
 \clearpage
@@ -540,7 +559,7 @@ Previous versions of this work were presented at the Thirty-Ninth Annual Confere
     \begin{center}
     \inputpgf{figs/}{e2-statsboxes.pgf}
     \caption{Box-plots of the distributional statistics from the categories generated in Experiment 2. }
-    \nbcnote{Note the huge amount of variance in the range data, as well as the big Y-range difference in the medians.}
+    \nbcnote{Note the huge amount of variance in the range data, as well as the big median difference in Y-range.}
 
     \label{fig:e2-statsboxes}
     \end{center}
