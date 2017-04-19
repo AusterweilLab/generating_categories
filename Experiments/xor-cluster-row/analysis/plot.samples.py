@@ -75,7 +75,7 @@ for i, h in enumerate(ax_flat):
 		h.set_title(curr_cond)
 
 fig.subplots_adjust(wspace = 0.09, hspace = 0.01)
-fig.savefig('samples.png', bbox_inches='tight', transparent=False)
+fig.savefig('samples.pdf', bbox_inches='tight', transparent=False)
 
 
 path = '../../../Manuscripts/cog-psych/figs/e1-samples.pgf'

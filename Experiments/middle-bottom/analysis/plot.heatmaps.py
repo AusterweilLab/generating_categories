@@ -48,7 +48,7 @@ f.colorbar(im, cax=cbar, ticks = clim)
 cbar.set_yticklabels(['Lowest\nProbability', 'Greatest\nProbability'])
 cbar.tick_params(length = 0)
 
-f.savefig('heatmaps.png', bbox_inches='tight', transparent=False)
+f.savefig('heatmaps.pdf', bbox_inches='tight', transparent=False)
 
 path = '../../../Manuscripts/cogsci-2017/figs/behavioral-heatmaps.pgf'
 # funcs.save_as_pgf(f, path)

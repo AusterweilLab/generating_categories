@@ -21,7 +21,7 @@ from scipy.ndimage.filters import gaussian_filter
 
 clim = (0.0, 0.10)
 
-f, ax = plt.subplots(1,3, figsize = (6,2 ))
+f, ax = plt.subplots(3,1, figsize = (2,6 ))
 for i, (K, rows) in enumerate(infodf.groupby('condition')):
 
 	pids = rows.participant
