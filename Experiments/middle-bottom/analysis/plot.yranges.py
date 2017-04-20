@@ -23,6 +23,12 @@ df = pd.merge(df, info[['participant', 'condition']], on = 'participant')
 df['y'] = stimuli.loc[df.stimulus, 'F2'].as_matrix()
 df['x'] = stimuli.loc[df.stimulus, 'F1'].as_matrix()
 
+
+print stats[['condition','yrange']]
+print np.sum(stats[['condition','yrange']] <0.3)
+print np.sum(stats[['condition','yrange']] >1.9)
+
+
 def plotlines(h, data, stats):
 	sort_df = stats.sort_values(by = ['yrange','condition'])
 

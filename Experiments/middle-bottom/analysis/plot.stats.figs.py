@@ -96,7 +96,7 @@ for j in ['xrange','yrange','correlation']:
 		g1 = stats.loc[stats.condition == a, j]
 		g2 = stats.loc[stats.condition == b, j]
 		print '\n---- ' + ' ' + j + ': ' + a + ', ' + b
-		print_ttest(g1,g2, ranksums)
+		print_ttest(g1,g2, ttest_ind)
 
 cols = ['condition', 'between', 'correlation', 'within', 'xrange', 'yrange']
 print stats[cols].groupby('condition').describe()
