@@ -674,13 +674,13 @@
 \definecolor{textcolor}{rgb}{0.150000,0.150000,0.150000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=4.088945in,y=0.158147in,,top]{\color{textcolor}\sffamily\fontsize{12.000000}{14.400000}\selectfont Within-Class Distance}%
+\pgftext[x=4.088945in,y=0.158147in,,top]{\color{textcolor}\sffamily\fontsize{12.000000}{14.400000}\selectfont Within-Category Distance}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \definecolor{textcolor}{rgb}{0.150000,0.150000,0.150000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=3.022520in,y=1.253203in,,bottom,rotate=90.000000]{\color{textcolor}\sffamily\fontsize{12.000000}{14.400000}\selectfont Between-Class Distance}%
+\pgftext[x=3.022520in,y=1.253203in,,bottom,rotate=90.000000]{\color{textcolor}\sffamily\fontsize{12.000000}{14.400000}\selectfont Between-Category Distance}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfpathrectangle{\pgfqpoint{3.078075in}{0.213703in}}{\pgfqpoint{2.021739in}{2.079000in}} %

@@ -90,8 +90,8 @@ h.set_yticks([])
 h.axis([0, 1.5, 0, 1.5])
 # h.legend(loc = 'upper right', frameon = True, framealpha = 1, 
 # 	ncol = 2, columnspacing = 0.1, labelspacing = 0.1, fontsize = 12)
-h.set_xlabel('Within-Class Distance',fontsize = 12)
-h.set_ylabel('Between-Class Distance',fontsize = 12)
+h.set_xlabel('Within-Category Distance',fontsize = 12)
+h.set_ylabel('Between-Category Distance',fontsize = 12)
 
 
 fh.subplots_adjust(wspace=0.3)

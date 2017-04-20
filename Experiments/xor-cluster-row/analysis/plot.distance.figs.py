@@ -84,8 +84,8 @@ h.set_xticks([])
 h.set_yticks([])
 
 h.axis([0, 1.5, 0, 1.5])
-h.set_xlabel('Within-Class Distance',fontsize = 12)
-h.set_ylabel('Between-Class Distance',fontsize = 12)
+h.set_xlabel('Within-Category Distance',fontsize = 12)
+h.set_ylabel('Between-Category Distance',fontsize = 12)
 
 fh.subplots_adjust(wspace=0.3)
 # plt.tight_layout(pad = 0.5)
