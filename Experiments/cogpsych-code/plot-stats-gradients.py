@@ -19,7 +19,7 @@ STAT_LIMS =  (-2.0, 2.0)
 PRIOR_MU = 0.0
 
 # simulation params
-N_SAMPLES = 30
+N_SAMPLES = 1
 WT_THETA = 1.5
 
 # plotting settings

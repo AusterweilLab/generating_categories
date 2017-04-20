@@ -405,7 +405,7 @@ Experiments 1 and 2 revealed systematic and strong effects of category contrast 
 
 \subsection{Parameter-Fitting}
 
-To obtain a global measure of the quality of each model's account, we fitted the parameters of each model to our entire dataset (Experiments 1 and 2 combined), using a hill-climbing algorithm which maximized the log-likelihood of the model's predictions of the observed responses (1220 responses from 305 total participants). We fitted three parameters in the PACKER model ($c$, $\gamma$, and $\theta$; see Section \ref{section:PACKER-definition}), as well as four in the hierarchical sampling model ($\kappa$, $\rho$, $\nu$, and $\theta$; see Appendix \ref{ap:hsampling-definition}). We fitted only two parameters for the copy-and-tweak model ($c$, and $\theta$), as $\gamma$ is held constant ($\gamma = 1$). Note that each model possesses a $\theta$ parameter fulfilling the same role (response determinism). Attention ($w$, see Equation \ref{eq:similarity}) in PACKER and copy-and-tweak was set uniformly. Parameters were not allowed to vary between participants or conditions -- the goal was to obtain the best-fitting values to our entire dataset.
+To obtain a global measure of the quality of each model's account, we fitted the parameters of each model to our entire dataset (Experiments 1 and 2 combined), using a hill-climbing algorithm which maximized the log-likelihood of the model's predictions of the observed responses (1220 responses from 305 total participants). We fitted three parameters in the PACKER model ($c$, $\gamma$, and $\theta$; see Section \ref{section:PACKER-definition}), as well as four in the hierarchical sampling model ($\kappa$, $\lambda$, $\nu$, and $\theta$; see Appendix \ref{ap:hsampling-definition}). We fitted only two parameters for the copy-and-tweak model ($c$, and $\theta$), as $\gamma$ is held constant ($\gamma = 1$). Note that each model possesses a $\theta$ parameter fulfilling the same role (response determinism). Attention ($w$, see Equation \ref{eq:similarity}) in PACKER and copy-and-tweak was set uniformly. Parameters were not allowed to vary between participants or conditions -- the goal was to obtain the best-fitting values to our entire dataset.
 
 \begin{table}
 \centering
@@ -419,21 +419,17 @@ To obtain a global measure of the quality of each model's account, we fitted the
  $L = -4545$        & $L = -4919$           & $L = -4952$       \\ 
  $c = 0.482$        & $c = 3.187$           & $\kappa < 0.001$  \\
  $\gamma = 0.525$   & $\gamma = 1$ (fixed)  & $\nu = 5.596$     \\ 
- $\theta = 6.664$   & $\theta = 2.969$      & $\rho = 0.055$    \\ 
+ $\theta = 6.664$   & $\theta = 2.969$      & $\lambda = 0.055$    \\ 
                     &                       & $\theta = 3.174$  \\ 
 \end{tabular}
 \end{table}
 
-\jlanote{should do a nested model comparison with respect to PACKER v. copy \& tweak. they're nested, so should be doable...}
-
-\nbcnote{I do not know exactly what you mean}
-
-\jlanote{I did them. (it's just 2 * diff in log likelihood is $\chi^2$ distributed with df equal to difference in the number of parameters) You should check BIC and $AIC_c$ (easy to find formula for them on Wikipedia). I don't think we should list them all, but it'd be good to mention our results are robust}
-
 
 Table \ref{table:global-model-fits} contains the results of this fitting procedure. Due to the uneven number of fitted parameters among the models, we compare the model fits using the Akaike Information Criterion \citep[AIC;][]{akaike1974new}, where smaller values correspond to better fits (discounted by the number of parameters). Table \ref{table:global-model-fits} contains the AIC values of each model's best fit, as well as the corresponding log-likelihood ($L$) and the best-fitting parameter values. These results reveal strong model differentiation: the PACKER model achieved far better fits compared to the copy-and-tweak and hierarchical sampling models, and copy-and-tweak performed somewhat better than the hierarchical sampling model. While PACKER's advantage may tentatively be attributed to the model's sensitivity to category contrast (this will be explored in detail below), the advantage shown by copy-and-tweak over the hierarchical sampling model may be attributed to its exemplar-based representation, as opposed to the prototype-based representation assumed in the hierarchical sampling model. As observed in Figures \ref{fig:e1-samples} and \ref{fig:e2-samples}, the generated categories we observed were often widely distributed, with no items near the category prototype. This aspect of the data is inconsistent with the multivariate normal distributions used to represent categories in the \cite{jern2013probabilistic} model, but can be handled easily using an exemplar-based approach. 
 
-A key distinction between PACKER and copy-and-tweak, as well as the hierarchical sampling model, is that, of the three models, only PACKER is capable of making strong predictions about the location of new category members when the target class is entirely novel (i.e., no member of the category has been observed). Under these circumstances, there are no examples to copy, and thus the copy-and-tweak model predicts that items are generated at random. Likewise, with no observations on which to condition the mean of the category distribution, the hierarchical sampling model also picks an item at random. Thus, it is possible that the failure of these models is simply due to their inability to explain each participant's first trial (generating the first item in the `Beta' category). We conducted an identical set of simulations as above, excluding this trial (leaving 915 responses in the dataset): Again, PACKER ($L = -3390$, $AIC = 6786$) achieved better fits than the copy-and-tweak ($L = -3579$, $AIC = 7162$) and hierarchical sampling ($L=-3612$, $AIC = 7232$) models. Because copy-and-tweak is nested within PACKER, we can use a likelihood ratio test to compare the two models. PACKER explains the aggregate data significantly better than copy-and-tweak ($\chi^2(1) = 748, p < 0.001$ for all data and $\chi^2(1) = 378, p < 0.001$ excluding the first example). Thus, participant results support that category generation includes a contrast mechanism.
+A key distinction between PACKER and copy-and-tweak, as well as the hierarchical sampling model, is that, of the three models, only PACKER is capable of making strong predictions about the location of new category members when the target class is entirely novel (i.e., no member of the category has been observed). Under these circumstances, there are no examples to copy, and thus the copy-and-tweak model predicts that items are generated at random. Likewise, with no observations on which to condition the mean of the category distribution, the hierarchical sampling model also picks an item at random. Thus, it is possible that the failure of these models is simply due to their inability to explain each participant's first trial (generating the first item in the `Beta' category). We conducted an identical set of simulations as above, excluding this trial (leaving 915 responses in the dataset): Again, PACKER ($L = -3390$, $AIC = 6786$) achieved better fits than the copy-and-tweak ($L = -3579$, $AIC = 7162$) and hierarchical sampling ($L=-3612$, $AIC = 7232$) models. Finally, because copy-and-tweak is nested within PACKER, we can use a likelihood ratio test to compare the two models. PACKER explains the aggregate data significantly better than copy-and-tweak ($\chi^2(1) = 748, p < 0.001$ for all data and $\chi^2(1) = 378, p < 0.001$ excluding the first example), providing more targeted evidence that category generation is better explained when contrast is considered.
+
+\nbcnote{report something about robustness to model comparison metric (BIC and $AIC_c$).}
 
 Through comparison with the copy-and-tweak model, Figure \ref{fig:packer-loglike} more clearly demonstrates the robustness of the explanatory gains yielded by PACKER's category contrast mechanism. Plotted is PACKER's log-likelihood as a function of $\gamma$ parameter. The model's other parameters ($c$, $\theta$) were set according to copy-and-tweak's best fits from Table \ref{table:global-model-fits}, and thus when $\gamma=1$, the models are equivalent. The figure clearly shows a ``sweet spot'':  a convex region in which PACKER achieves superior fits as a result of changes to $\gamma$. The best fitting values lie well below the value of 1 assumed by the copy-and-tweak model, which demonstrates the robustness of the contrast effect (though note PACKER achieves even better fits when its other parameters are fitted, as in Table \ref{table:global-model-fits}). Notably, however, the copy-and-tweak parameterization ($\gamma=1$) performs better than the `contrast-only' parameterization of the model ($\gamma = 0$). Thus, it is evident that the data is better explained when both within-category similarity and category contrast is considered.
 
@@ -468,24 +464,40 @@ Likewise, in the row and column profiles, there is a high degree of within-categ
 Like in PACKER, changes to the weighting of the dimensions can also be used to produce row- and column-like categories in the copy-and-tweak and hierarchical sampling models. Indeed, as copy-and-tweak is simply a special case of the PACKER model, the attention weights operate exactly as described above. Within the hierarchical sampling model, the covariance matrix specifying the prior domain distribution, $\Sigma_0$, can be used to similar effect. This covariance matrix specifies the amount of variance assumed along each dimension (as well as the dimensional correlations) across the domain of categories. The covariance matrix for a newly generated category, $\Sigma_B$, is based on the assumed $\Sigma_0$ as well as the distributions of previously learned categories (see Appendix \ref{ap:hsampling-definition}). Thus, the importance of each feature can be coded into $\Sigma_0$ to alter the dimensional variance of generated categories.
 
 However, a key limitation within both in both of these models is the lack of interaction between the distributional structure of a category (in this case, a row-versus-column orientation) and the location of that category within the domain. While these models are {\em capable} of generating row and column categories, there is no mechanism in place to ensure generated categories will be distinct from what is already known. In the section below, we explore the interdependence between distributional structure and location in creative generation.
-\jlanote{It's a combination of previous category location and where the target category is being generated, right?}
+
 \subsection{Category Location vs. Distributional Structure}
 
 As noted above, while all three models make clear claims about the internal structure of generated categories, the copy-and-tweak and hierarchical sampling models do not make any claims about how generated categories should differ from what is already known. However, as we observed in Experiment 2, the distributional structure of a category is not always independent of its location within the domain. To demonstrate this point in a broader manner, we computed the X- and Y- axis ranges of every participant-generated category. Taking the difference between these values ($X-Y$) produces a measure of each category's orientation in the space: positive difference scores correspond to categories with more X-axis range (horizontally aligned, `Row' categories), whereas negative difference scores indicate the opposite (vertically aligned, `Column' categories). Neutral differences scores indicate there was an equal amount of X- and Y-axis range, which can be produced by a number of different category types (`Clusters', `Corners', etc; see Figures \ref{fig:e1-samples} and \ref{fig:e2-samples}). By plotting, for each possible stimulus, the difference scores of categories it was generated within, we can relate the distributional structure of generated categories to their location within the domain.
 
 For each possible stimulus, we compiled the range differences across all the categories it was generated into. However, because many stimuli were infrequently generated (such items near members of the `Alpha' category), we cannot simply compute the empirical average, as infrequently generated stimuli would be likely to show artificially strong differences. Instead, we aggregated the scores in an empirical Bayesian manner \citep{robbins1964empirical}: the aggregated score for each stimulus was viewed as a normal distribution with a $\mu_0 = 0$ and $\sigma$ set based on the observed scores $x$ for that stimulus. The aggregated difference $\mu_x$ was then computed as a Bayesian update: 
 
+
+% ORIGINAL
+% \begin{equation}
+% \mu_x = \dfrac
+% { \mu_0/\sigma + \sigma^{-1}\sum{x}} 
+% { 1/\sigma + n_x/\sigma }
+% \label{eq:rangediff-bayes}
+% \end{equation}
+
+% CLEANER
+% \begin{equation}
+% \mu_x = \dfrac
+% { (\mu_0 + \sum{x}) / \sigma } 
+% { (1 + n_x) / \sigma }
+% \label{eq:rangediff-bayes}
+% \end{equation}
+
+% WHATTTT
 \begin{equation}
 \mu_x = \dfrac
-{ \mu_0/\sigma + \sigma^{-1}\sum{x}} 
-{ 1/\sigma + n_x/\sigma }
+{ \mu_0 + \sum{x} } 
+{ 1 + n_x }
 \label{eq:rangediff-bayes}
 \end{equation}
-\nbcnote{I'm pretty sure some distributive-property trickery can be used to clean that up. In either case, Joe should take a look at that language.}
 % 
-Within this approach, the resulting aggregation is a trade-off between the number of generations and the strength of the range difference within each generated category. Infrequently generated stimuli, as well as those with both strongly positive and negative scores, are given neutral difference scores. The results of our analysis are shown in Figure \ref{fig:range-diff-gradients}.
-\nbcnote{Do you think we need to report the Gaussian smoothing?}
-\jlanote{should mention it in the caption or a footnote}
+Within this approach, the resulting aggregation is a trade-off between the number of generations and the strength of the range difference within each generated category. Infrequently generated stimuli, as well as those with both strongly positive and negative scores, are given neutral difference scores. The results of our analysis\footnote{Prior to plotting, data was processed using a Gaussian filter with $\sigma = 0.8$} are shown in Figure \ref{fig:range-diff-gradients}.
+
 \begin{figure}[p]
     \begin{center}
     \inputpgf{figs/}{range-diff-gradients.pgf}
@@ -518,7 +530,7 @@ In the hierarchical sampling model, the covariance matrix specifying the prior d
 Unlike the PACKER and copy-and-tweak models, the hierarchical sampling model's dimensional variances correspond to the assumed variance of generated categories along each dimension (rather than the inverse of the variance). Thus, a different transformation is appropriate for incorporating the weights computed in Equation \ref{eq:range-weight}. For the hierarchical sampling model, we computed the dimensional variances according to: $\lambda (1-w_k)d$, where $\lambda$ is a free parameter specifying the overall assumed variance of the domain, and $d$ is the number of dimensions. Under this approach, evenly distributed weights correspond to an assumed variance of $\lambda$. Likewise, larger values of $w$, which are produced when the generated category is tightly distributed along one dimension, correspond to smaller assumed variances. 
 
 \nbcnote{This works for 2D, but not 3D and beyond (as $1-w_k$ would not produce a valid weighting).}
-\jlanote{I renamed $\rho$ because $\rho$ is reserved for the correlation parameter of a covariance matrix (especially a $2 \times 2$).}
+\jlanote{I renamed $\lambda$ because $\lambda$ is reserved for the correlation parameter of a covariance matrix (especially a $2 \times 2$).}
 
 Each model was used to simulate each participant's generation independently, with the importance of each dimension set according to the participant's generated category. The other free parameters within each model were set as in Table \ref{table:global-model-fits}. Every participant's generation was simulated \textbf{NUMBER} of times, resulting in \textbf{NUMBER * PARTICIPANTS} categories generated by each model. For comparison with our behavioral results, we then computed the range difference gradient identically as with the behavioral data. The results are shown in Figure \ref{fig:range-diff-gradients}.
 
@@ -570,28 +582,6 @@ Previous versions of this work were presented at the Thirty-Ninth Annual Confere
 \clearpage
 
 
-\begin{figure}
-    \begin{center}
-    \inputpgf{figs/}{e2-statsboxes.pgf}
-    \caption{Box-plots of the distributional statistics from the categories generated in Experiment 2. }
-    \nbcnote{Note the huge amount of variance in the range data, as well as the big median difference in Y-range.}
-
-    \label{fig:e2-statsboxes}
-    \end{center}
-\end{figure}
-
-\begin{figure}
-    \begin{center}
-    \inputpgf{figs/}{e2-yranges.pgf}
-    \caption{Y-Axis range and position of the categories generated in Experiment 2. Each line corresponds to a single category, with notches corresponding to the Y-axis position of exemplars within the category. Data from each participant is sorted by overall range, and then by condition. }
-    \label{fig:e2-yranges}
-    \end{center}
-\end{figure}
-
-
-
-\clearpage
-
 \appendix
 \numberwithin{equation}{section}
 
@@ -600,7 +590,7 @@ Previous versions of this work were presented at the Thirty-Ninth Annual Confere
 
 \cite{jern2013probabilistic} demonstrated how a hierarchical Bayesian model could explain the distributional correspondences between observed and generated categories. In their model, exemplars of generated category were viewed as samples from a multivariate Normal distribution over the dimensions of stimulus space. The mean of the generated category was independent of the observed categories, but the covariance matrix (encoding feature variances and correlations) was based on a common prior distribution. Generating a new category was thus completed by sampling a new category mean (uniform over stimulus space) and covariance matrix from the common prior distribution. Because the shared prior distribution's parameters were unobserved, the hierarchical Bayesian approach was used to infer its parameters from the previous categories (their feature variances and correlations), and then to generate the covariance matrix of the new category.
 
-In our implementation of their model, each category's exemplars are assumed to be sampled from a multivariate Normal distribution with parameters ($\mu, \Sigma$). Each category's covariance matrix is assumed to be inverse-Wishart distributed with parameters ($v$, $\kappa,$ and $\Sigma_D$).\footnote{Note that \citet{jern2013probabilistic}'s model is slightly different, as they used a non-conjugate model. Their model acts very similar to our version of it and receives comparable fits.} $\Sigma_D$ is the covariance matrix shared between categories. We assume the shared covariance matrix $\Sigma_D$ is generated from a Wishart distribution (for conjugacy) with parameters $v_0$, $\kappa_0$, and $\Sigma_0$. We set $\nu_0 = 4$, and $\Sigma_0 = \rho {\bf I}$, where $\rho$ is a free parameter controlling the expected variance of dimensions (dimensions of the shared covariance matrix are expected to be uncorrelated) and ${\bf I}$ is the identity matrix.
+In our implementation of their model, each category's exemplars are assumed to be sampled from a multivariate Normal distribution with parameters ($\mu, \Sigma$). Each category's covariance matrix is assumed to be inverse-Wishart distributed with parameters ($v$, $\kappa,$ and $\Sigma_D$).\footnote{Note that \citet{jern2013probabilistic}'s model is slightly different, as they used a non-conjugate model. Their model acts very similar to our version of it and receives comparable fits.} $\Sigma_D$ is the covariance matrix shared between categories. We assume the shared covariance matrix $\Sigma_D$ is generated from a Wishart distribution (for conjugacy) with parameters $v_0$, $\kappa_0$, and $\Sigma_0$. We set $\nu_0 = 4$, and $\Sigma_0 = \lambda {\bf I}$, where $\lambda$ is a free parameter controlling the expected variance of dimensions (dimensions of the shared covariance matrix are expected to be uncorrelated) and ${\bf I}$ is the identity matrix.
 
 \nbcnote{check on that $\nu_0 = 4$ business}
 
