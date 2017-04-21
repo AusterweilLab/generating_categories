@@ -15,11 +15,12 @@ STAT_LIMS =  (-2.0, 2.0)
 # STAT_OF_INTEREST = 'correlation'
 # STAT_LIMS =  (-1.0, 1.0)
 
-# prior mu for empirical bayes
+# prior mu for normal inverse gamma
 PRIOR_MU = 0.0
+PRIOR_NU = 1.0
 
 # simulation params
-N_SAMPLES = 1
+N_SAMPLES = 30
 WT_THETA = 1.5
 
 # plotting settings
@@ -39,12 +40,11 @@ stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
 con.close()
 
 # get 'observed' dataframe with columns:
-# condition, stimulus, mean, var, size
+# condition, stimulus, mean, size
 observed = pd.merge(generation, stats[['participant', STAT_OF_INTEREST]], on='participant')
 observed = pd.merge(observed, info[['participant', 'condition']], on='participant')
-observed = observed.groupby(['condition','stimulus'])[STAT_OF_INTEREST].agg(['mean', 'var', 'size'])
+observed = observed.groupby(['condition','stimulus'])[STAT_OF_INTEREST].agg(['mean', 'size'])
 observed = observed.reset_index()
-observed.loc[pd.isnull(observed['var']),'var'] = 1.0
 
 # store all data (models and behavioral alike) here
 all_data = dict(Behavioral = observed)
@@ -104,9 +104,8 @@ for model_name, model_obj in name_2_object.items():
 
     # aggregate over simulations, add to all data
     model_data = model_data.groupby(['condition','stimulus'])[STAT_OF_INTEREST]
-    model_data = model_data.agg(['mean', 'var', 'size'])
+    model_data = model_data.agg(['mean', 'size'])
     model_data = model_data.reset_index()
-    model_data.loc[pd.isnull(model_data['var']),'var'] = 1.0
     model_data['size'] /= float(N_SAMPLES)
     all_data[model_obj.model] = model_data
 
@@ -128,9 +127,7 @@ for rownum, c in enumerate(row_order):
         for i, row in df.groupby('stimulus'):
             n = row['size'].as_matrix()
             sumx = row['mean'].as_matrix() * n
-            sig = row['var'].as_matrix()
-            if sig == 0: sig = 0.001
-            vals[int(i)] = (PRIOR_MU/sig +  sumx / sig) / (1.0/sig + n/sig)
+            vals[int(i)] = (PRIOR_NU * PRIOR_MU +  sumx) / (PRIOR_NU + n)
 
         print c, colnum, min(vals), max(vals)
 
@@ -141,13 +138,23 @@ for rownum, c in enumerate(row_order):
         
         im = funcs.plotgradient(h, g, A, [], clim = STAT_LIMS, cmap = 'PuOr')
 
-        # axis labelling
+        # axis labeling
         if rownum == 0:
             h.set_title(lab, **fontsettings)
 
         if colnum == 0:
             h.set_ylabel(c, **fontsettings)
 
+        # experiment 1 and 2 markers
+        if rownum == 1 and colnum == 0:
+            h.text(-3.5, np.mean(h.get_ylim()), 'Experiment 1', 
+                ha = 'center', va = 'center', rotation = 90, fontsize = fontsettings['fontsize'] + 1)
+            h.plot([-2.7,-2.7],[-9,17],'-', color='gray', linewidth = 1, clip_on=False)
+
+        if rownum == 3 and colnum == 0:
+            h.text(-3.5, -0.5, 'Experiment 2', 
+                ha = 'center', va = 'center', rotation = 90, fontsize = fontsettings['fontsize'] + 1)
+            h.plot([-2.7,-2.7],[-9,8],'-', color='gray', linewidth = 1, clip_on=False)
 
 
 # add colorbar
