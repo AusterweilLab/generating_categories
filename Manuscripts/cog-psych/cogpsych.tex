@@ -469,34 +469,20 @@ However, a key limitation within both in both of these models is the lack of int
 
 As noted above, while all three models make clear claims about the internal structure of generated categories, the copy-and-tweak and hierarchical sampling models do not make any claims about how generated categories should differ from what is already known. However, as we observed in Experiment 2, the distributional structure of a category is not always independent of its location within the domain. To demonstrate this point in a broader manner, we computed the X- and Y- axis ranges of every participant-generated category. Taking the difference between these values ($X-Y$) produces a measure of each category's orientation in the space: positive difference scores correspond to categories with more X-axis range (horizontally aligned, `Row' categories), whereas negative difference scores indicate the opposite (vertically aligned, `Column' categories). Neutral differences scores indicate there was an equal amount of X- and Y-axis range, which can be produced by a number of different category types (`Clusters', `Corners', etc; see Figures \ref{fig:e1-samples} and \ref{fig:e2-samples}). By plotting, for each possible stimulus, the difference scores of categories it was generated within, we can relate the distributional structure of generated categories to their location within the domain.
 
-For each possible stimulus, we compiled the range differences across all the categories it was generated into. However, because many stimuli were infrequently generated (such items near members of the `Alpha' category), we cannot simply compute the empirical average, as infrequently generated stimuli would be likely to show artificially strong differences. Instead, we aggregated the scores in an empirical Bayesian manner \citep{robbins1964empirical}: the aggregated score for each stimulus was viewed as a normal distribution with a $\mu_0 = 0$ and $\sigma$ set based on the observed scores $x$ for that stimulus. The aggregated difference $\mu_x$ was then computed as a Bayesian update: 
+For each possible stimulus, we compiled the range differences across all the categories it was generated into. However, because many stimuli were infrequently generated (such items near members of the `Alpha' category), we cannot simply compute the empirical average, as infrequently generated stimuli would be likely to show artificially strong differences. Instead, we used a Bayesian analysis to estimate the mean $\mu_x$ on the assumption that the scores $x$ for each stimulus are normally distributed with an unknown mean and unknown standard deviation. The conjugate normal-inverse-gamma distribution provides a straightforward method for this estimation:
 
 
-% ORIGINAL
-% \begin{equation}
-% \mu_x = \dfrac
-% { \mu_0/\sigma + \sigma^{-1}\sum{x}} 
-% { 1/\sigma + n_x/\sigma }
-% \label{eq:rangediff-bayes}
-% \end{equation}
-
-% CLEANER
-% \begin{equation}
-% \mu_x = \dfrac
-% { (\mu_0 + \sum{x}) / \sigma } 
-% { (1 + n_x) / \sigma }
-% \label{eq:rangediff-bayes}
-% \end{equation}
-
-% WHATTTT
 \begin{equation}
 \mu_x = \dfrac
-{ \mu_0 + \sum{x} } 
-{ 1 + n_x }
+    { \nu_0 \mu_0 + \sum{x} } 
+    { \nu_0 + n }
 \label{eq:rangediff-bayes}
 \end{equation}
-% 
-Within this approach, the resulting aggregation is a trade-off between the number of generations and the strength of the range difference within each generated category. Infrequently generated stimuli, as well as those with both strongly positive and negative scores, are given neutral difference scores. The results of our analysis\footnote{Prior to plotting, data was processed using a Gaussian filter with $\sigma = 0.8$} are shown in Figure \ref{fig:range-diff-gradients}.
+\
+where $\mu_0$ is the prior mean, $\nu_0$ is a prior scale parameter (controlling the weighting of the $\mu_0$), and $n$ is the number of categories in which the stimulus was a member (i.e., the number of scores in $x$). The default assumption is that there is an equal amount of range along the X- and Y-axes, and so we set $\mu_0 = 0$. Likewise, to give a moderate amount of weighting to the prior mean we set $\nu_0 = 1$, though our results are robust to a range of values. Within this approach, the resulting aggregation is a trade-off between the number of generations and the strength of the range difference within each generated category. Infrequently generated stimuli, as well as those with both strongly positive and negative scores, are given neutral difference scores. The results of our analysis\footnote{Prior to plotting, data was processed using a Gaussian filter with $\sigma = 0.8$} are shown in Figure \ref{fig:range-diff-gradients}.
+
+\nbcnote{Those two paragraphs are, i think, either: (A) too specific and could be in an appendix, or (B) totally straightforward to anyone who knows about Bayesian stats, and so we just need a normal inverse gamma cite.}
+
 
 \begin{figure}[p]
     \begin{center}
