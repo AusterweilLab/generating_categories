@@ -114,7 +114,7 @@ Formalizing a model family where PACKER and copy-and-tweak are different paramet
 
 Based on several results inconsistent with the copy-and-tweak account, \citet{jern2013probabilistic} advocated a hierarchical Bayesian model. Exemplars of each category were generated from a multivariate Normal distribution over the dimensions of stimulus space. The mean of each category was independently generated, but the covariance matrix (encoding feature variances and correlations) was generated from a common prior distribution. New categories are produced by generating a new mean (uniform over stimulus space) and covariance matrix from the common prior distribution. Because the shared prior distribution's parameters were unobserved, a hierarchical Bayesian model uses information from the previous categories (their feature variances and correlations) to generate the covariance matrix of the new category.
 
-Each category's exemplars are assumed to be a multivariate Normal distribution with parameters ($\mu, \Sigma$). Each category's covariance matrix is assumed to be inverse-Wishart distributed with parameters ($v$, $\kappa,$ and $\Sigma_D$).\footnote{Note that \citet{jern2013probabilistic}'s model is slightly different, as they used a non-conjugate model. Their model acts very similar to our version of it and receives comparable fits.} $\Sigma_D$ is the covariance matrix shared between categories. We assume the shared covariance matrix $\Sigma_D$ is generated from a Wishart distribution (for conjugacy) with parameters $v_0$, $\kappa_0$, and $\Sigma_0$. We set $\nu_0 = 4$, and $\Sigma_0 = \rho {\bf I}$, where $\rho$ is a free parameter controlling the expected variance of dimensions (dimensions of the shared covariance matrix are expected to be uncorrelated) and ${\bf I}$ is the identity matrix.
+Each category's exemplars are assumed to be a multivariate Normal distribution with parameters ($\mu, \Sigma$). Each category's covariance matrix is assumed to be inverse-Wishart distributed with parameters ($v$, $\kappa,$ and $\Sigma_D$).\footnote{Note that \citet{jern2013probabilistic}'s model is slightly different, as they used a non-conjugate model. Their model acts very similar to our version of it and receives comparable fits.} $\Sigma_D$ is the covariance matrix shared between categories. We assume the shared covariance matrix $\Sigma_D$ is generated from a Wishart distribution (for conjugacy) with parameters $v_0$, $\kappa_0$, and $\Sigma_0$. We set $\nu_0 = 4$, and $\Sigma_0 = \lambda {\bf I}$, where $\lambda$ is a free parameter controlling the expected variance of dimensions (dimensions of the shared covariance matrix are expected to be uncorrelated) and ${\bf I}$ is the identity matrix.
 
 To simplify the model predictions, we used {\em maximum a posteriori} (MAP) estimates for the hidden parameters and then generated new categories based on those estimates. Due to conjugacy, the MAP estimate for the shared covariance matrix $\Sigma_D = \Sigma_0 + \sum_c{C_c}$, where $C_c$ is the empirical covariance matrix of category $c$. The MAP estimate of the covariance matrix for the target category $B$ is 
 \begin{equation}
@@ -151,13 +151,6 @@ where $\theta$ is a response determinism parameter and ${\rm Normal}(y; \mu, \Si
 The copy-and-tweak and hierarchical sampling models were designed to explain effects of prior knowledge on the structure of categories, and so these models assume little about where in stimulus space categories are likely to be generated. Indeed, when there are no known examples of the target category, both models assume that generation is random. PACKER is thus unique in its prediction that contrast categories should influence both the structure and location of generated categories. The behavioral experiment described below was designed to test this key prediction. 
 
 The experiment follows the paradigm developed by \citet{jern2013probabilistic}: first, participants learn members of a known category (`Alpha', or `A'), and are then asked to generate exemplars belonging to a new category (`Beta', or `B'). We developed two Alpha categories (see Figure \ref{fig:middle-bottom-conditions}): the `Bottom' Alpha category is a tight cluster in the bottom-center of the space, and the `Middle' Alpha category is identical except that it lies in the center of stimulus space.
-
-
-
-%Whereas the copy-and-tweak and hierarchical sampling models both assume explicit mechanisms to re-purpose knowledge about known categories, the PACKER model forgoes these mechanisms entirely. Thus, whereas the distributional structure of observed categories will be the primary determinant of generation in the copy-and-tweak and hierarchical sampling models, these properties should only affect PACKER's generation insofar as they constrain inter-exemplar similarities. Instead, the \textit{location} of known categories in the domain is crucial because it constrains remaining possible locations for new categories.
-
-
-%, instantiating the two conditions of the experiment. In both conditions, members of the Alpha category are tightly clustered, with equal feature variance and no feature correlations. Our manipulation is fairly `weak': the conditions have only a slight difference in the y-axis position of the Alpha category. In the `Middle' condition the Alpha category is placed in the center of the space, in the `Bottom' condition the Alpha category is placed in the bottom-center of the space. 
 
 Although our manipulation is minimal, the PACKER model predicts strong between-condition differences. According to PACKER, the nature of the space not occupied by the Alpha category should determine where members of the Beta category are likely to be generated. Thus, the lower areas of the stimulus space should be less frequently used for generation in the Bottom condition compared to the Middle (as these areas possess greater similarity to the Bottom Alpha category). Conversely, the upper areas of the stimulus space should be used for generation more frequently in the Bottom condition compared to Middle.
 
@@ -228,16 +221,16 @@ Some aspects of the results described above are somewhat commonsense: They demon
 
 
 \section{Model Evaluation}
-To obtain an overall sense of each model's ability to explain our results, we fit each model by maximizing the log-likelihood of the model's predictions of the human results. The $c$, $\phi$, $\gamma$, and $\theta$ parameters were fitted for PACKER; $c$, $\tau$, and $\theta$ were fitted for the copy-and-tweak model, and $\kappa$, $\rho$, $\nu$, and $\theta$ were fitted for the hierarchical sampling model. Note that each model possess a $\theta$ parameter fulfilling the same role (response determinism), and PACKER shares with copy-and-tweak a specificity parameter, $c$. Attention in PACKER and copy-and-tweak was set uniformly. Parameters were not allowed to vary between participants or conditions -- the goal was to obtain the best-fitting values to our entire dataset.
+To obtain an overall sense of each model's ability to explain our results, we fit each model by maximizing the log-likelihood of the model's predictions of the human results. The $c$, $\gamma$, and $\theta$ parameters were fitted for PACKER; $c$, and $\theta$ were fitted for the copy-and-tweak model ($\gamma$ was fixed at 1), and $\kappa$, $\lambda$, $\nu$, and $\theta$ were fitted for the hierarchical sampling model. Note that each model possess a $\theta$ parameter fulfilling the same role (response determinism). Attention in PACKER and copy-and-tweak was set uniformly. Parameters were not allowed to vary between participants or conditions -- the goal was to obtain the best-fitting values to our entire dataset.
 
-Each model's best-fitting parameterization is shown in Table \ref{table:model-fits}. Overall, PACKER outperformed copy-and-tweak and the hierarchical sampling model by a considerable margin ($\sim12\%$ improvement in log-likelihood). The parameter settings associated with PACKER's best fit are exactly as expected: a strong preference for items that are similar to members of the target category but are dissimilar to members of the contrast category. A similar pattern of results was obtained when we only considered the second to fourth exemplars generated by each participant.
+Each model's best-fitting parameterization is shown in Table \ref{table:model-fits}. Overall, PACKER outperformed copy-and-tweak and the hierarchical sampling model by a considerable margin ($\sim11\%$ improvement in log-likelihood). The parameter settings associated with PACKER's best fit are exactly as expected: a strong preference for items that are similar to members of the target category but are dissimilar to members of the contrast category. A similar pattern of results was obtained when we only considered the second to fourth exemplars generated by each participant.
 
 Our model-fitting results make sense given the assumptions made by each model. As the copy-and-tweak and hierarchical sampling models are not influenced by the location of contrast categories within the space, they do not capture the broad tendency for generated items to be dissimilar to existing classes. 
 
 
-\subsection{Individual Differences}
+\subsection{Relation Between Category Structure \& Location}
 
-Generally, our behavioral results showed that members of generated categories are dissimilar to opposite categories, and similar to members of their own category. However, we also observed a great deal of individual differences in generation style. Manually inspecting the data reveals four typical patterns (see Figure \ref{fig:beta.samples}): `corners' categories with one Beta example in each corner of the space, tight clusters, `column'-like categories, and `row'-like categories. Here, we explore the role of PACKER's attention weights ($w_1$ and $w_2$) in producing row-like or column-like categories.
+Generally, our behavioral results showed that members of generated categories are dissimilar to opposite categories, and similar to members of their own category. However, we also observed a great deal of individual differences in generation style. Manually inspecting the data reveals four typical patterns (see Figure \ref{fig:beta.samples}): `corners' categories with one Beta example in each corner of the space, tight clusters, `column'-like categories, and `row'-like categories. Additionally, a manual inspection reveals that each of these category types tended to be generated into distinct regions of the domain, suggesting a link between the distributional structure of a category and its location.
 
 \begin{table}
 \centering
@@ -247,17 +240,17 @@ Generally, our behavioral results showed that members of generated categories ar
 \\
  \textbf{PACKER} & \textbf{Copy \& Tweak} & \textbf{Hierarchical} \\
  & & \textbf{Sampling} \\ \hline
- $AIC = 3476$ & $AIC = 3937$ & $AIC = 4061$  \\ 
- $c=0.565$ & $c=4.675$  & $\kappa<0.001$\\
-$\phi=-4.814$ & $\tau=0.895$ & $\nu=1.001$ \\ 
-$\gamma=4.250$ & $\theta=5.601$ &  $\rho=1.220$  \\ 
- $\theta=0.731$ &  & $\theta = 7.147$  \\ 
+ $AIC = 3474$ & $AIC = 3914$ & $AIC = 3972$  \\ 
+ $c=0.565$      & $c=4.894$  & $\kappa<0.001$\\
+ $\gamma=0.469$ & $\gamma=1$ (fixed) & $\nu=4.660$ \\ 
+ $\theta=6.632$ & $\theta=3.712$ &  $\lambda=0.423$  \\ 
+  &  & $\theta = 2.771$  \\ 
 \end{tabular}
 \end{table}
 
 \begin{figure*}
     \begin{center}
-    \inputpgf{figs/}{range-diff-gradient.pgf}
+    \inputpgf{figs/}{range-diff-gradients.pgf}
     \caption{Generated category structure as a function of location. Orange areas in each gradient correspond to stimuli that were commonly generated into category possessing greater y-axis range (columns). Purple areas correspond to categories possessing greater x-axis range. White areas correspond to equal range along both features (or infrequent generation).}
     \label{fig:range-diff-gradient}
     \end{center}

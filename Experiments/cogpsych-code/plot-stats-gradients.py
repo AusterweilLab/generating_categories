@@ -54,9 +54,6 @@ execfile('Imports.py')
 from Modules.Classes import CopyTweak, Packer, ConjugateJK13
 import Modules.Funcs as funcs
 
-# these values copied from the Slack message sent to Joe
-# jk13 values were clipped into allowable range
-
 # get best params pickle
 with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
     best_params = pickle.load( f )
