@@ -8,7 +8,7 @@ colors = ["#34495e", "#e74c3c"]
 sns.set_palette(colors)
 
 
-pd.set_option('display.width', 1000, 'precision', 2)
+pd.set_option('display.width', 1000, 'precision', 2, 'display.max_rows', 999)
 
 
 execfile('Imports.py')
@@ -22,6 +22,8 @@ con.close()
 
 stats = pd.merge(stats, info, on = 'participant')
 
+print stats[['condition','yrange']]
+lll
 
 fh, axes = plt.subplots(1,3,figsize = (7.5,2.5))
 
