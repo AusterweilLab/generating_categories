@@ -12,6 +12,9 @@ execfile('Imports.py')
 from Modules.Classes import CopyTweak, Packer, ConjugateJK13
 import Modules.Funcs as funcs
 
+print dir(funcs)
+lll
+
 # [[72 73 74 75 76 77 78 79 80]
 #  [63 64 65 66 67 68 69 70 71]
 #  [54 55 56 57 58 59 60 61 62]
