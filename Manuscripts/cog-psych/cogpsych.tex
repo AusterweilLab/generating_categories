@@ -157,7 +157,6 @@ As noted above, the constraint that new concepts should differ from what is alre
 
 Although, as an exemplar model, one of PACKER's proposals is people represent categories in terms of a collection of stored exemplars, it is worth emphasizing that the underlying nature of human category representations is not the primary concern of our work. The choice to develop PACKER within an exemplar framework reflects the facts that exemplar models are well-studied, strongly theoretically motivated, and dominate much of the theoretical and empirical work in categorization. The focus of our work with PACKER concerns the dual constraints of within- and between-class similarity; it is not difficult to imagine how such constraints may be instantiated using alternative frameworks (e.g., \citealp{kurtz2007divergent,love2004sustain,smith2000thirty}; for a review, see \citealp{pothoswills2011}).
 
-
 Both PACKER and the GCM simulate categorization under the assumption that learners represent categories as a collection of exemplars, corresponding to the labeled stimuli they have observed. The exemplars are encoded within a $k$-dimensional psychological space, and model performance is based on the amount of similarity between the item to be categorized and the stored exemplars. Similarity between two examples, $s\left(x_i, x_j\right)$, is computed as an inverse exponential function of distance \citep[following][]{attneave1950,shepard1957stimulus,shepard1987toward}:
 
 \begin{equation}
@@ -166,7 +165,6 @@ s\left(x_i,x_j\right) = \exp \left\{ -c \left[\sum_{k}{ w_k \left| x_{ik} - x_{j
 \end{equation}
 % 
 where $w_k$ is the attention weighting of dimension $k$ ($w_k \geq 0$ and $\sum_k{w_k} = 1$), accounting for the relative importance of each dimension in similarity calculations, and $c$ ($c>0$) is a specificity parameter controlling the spread of exemplar generalization. For simplicity, attention will be distributed uniformly in our simulations (unless otherwise noted). The value of $r$ depends on the nature of the experimental conditions being simulated: $r=1$ is appropriate for separable dimensions, whereas $r=2$ is appropriate for integral dimensions \citep[e.g.,][]{shepard1964attention,garner1974processing}. In our simulations, we set $r=1$ due to the separable nature of the stimulus dimensions used in our experiments (see Figure \ref{fig:e1-conditions}).
-
 
 PACKER (as well as its name) was in part inspired by earlier work from the categorization literature \citep{hidaka2011packing}. They argued that natural categories ``pack'' the values of features such that different categories fill the space with distance between one another, while maintaining items within the same category close together. Inspired by this idea, PACKER proposes that generation is constrained by both similarity to members of the target category (the category in which a stimulus is being generated) as well as similarity to members of other categories: the most desirable generation candidates are similar to members of the target category and not similar to members of contrast categories. This is achieved by aggregating similarity across known exemplars differently according to class membership. The aggregated similarity $a(y,x)$ between generation candidate $y$ and stored exemplars $x$ is given by:
 
@@ -588,38 +586,47 @@ Previous versions of this work were presented at the Thirty-Ninth Annual Confere
 
 \cite{jern2013probabilistic} demonstrated how a hierarchical Bayesian model could explain the distributional correspondences between observed and generated categories. In their model, exemplars of generated category were viewed as samples from a multivariate Normal distribution over the dimensions of stimulus space. The mean of the generated category was independent of the observed categories, but the covariance matrix (encoding feature variances and correlations) was based on a common prior distribution. Generating a new category was thus completed by sampling a new category mean (uniform over stimulus space) and covariance matrix from the common prior distribution. Because the shared prior distribution's parameters were unobserved, the hierarchical Bayesian approach was used to infer its parameters from the previous categories (their feature variances and correlations), and then to generate the covariance matrix of the new category.
 
-In our implementation of their model, each category's exemplars are assumed to be sampled from a multivariate Normal distribution with parameters ($\mu, \Sigma$). Each category's covariance matrix is assumed to be inverse-Wishart distributed with parameters: $v$, $\kappa,$ and $\Sigma_D$
-\footnote{Note that \citet{jern2013probabilistic}'s model is slightly different, as they used a non-conjugate model. Their model acts very similar to our version of it and receives comparable fits.}. 
-$\Sigma_D$ is the covariance matrix shared between categories. We assume the shared covariance matrix $\Sigma_D$ is generated from a Wishart distribution (for conjugacy) with parameters $v_0$, $\kappa_0$, and $\Sigma_0$. We set $\nu_0 = 4$, and $\Sigma_0 = \lambda {\bf I}$, where $\lambda$ is a free parameter controlling the expected variance of dimensions (dimensions of the shared covariance matrix are expected to be uncorrelated) and ${\bf I}$ is the identity matrix.
+In our implementation of their model\footnote{Note that \citet{jern2013probabilistic}'s model is slightly different, as they used a non-conjugate model. Their model acts very similar to our version of it and receives comparable fits.}, each category's exemplars are viewed as samples from a multivariate Normal distribution with parameters ($\mu, \Sigma$). Category covariance matrices (specifying variance and covariance along $k$-dimensions, are assumed to be Normal-Inverse-Wishart distributed with parameters: $\nu$ ($>k-1$), $\kappa$ ($>0$), and $\Sigma_D$. $\nu$ and $\kappa$ are treated as free parameters in our simulations, and $\Sigma_D$ is the domain-wide covariance matrix from which all categories are viewed as samples. Assuming a given $\Sigma_D$, a category covariance matrix $\Sigma$ can be computed on the basis of its examples:
 
-\nbcnote{check on that $\nu_0 = 4$ business}
-
-To simplify the model predictions, we used {\em maximum a posteriori} (MAP) estimates for the hidden parameters and then generated new categories based on those estimates. Due to conjugacy, the MAP estimate for the shared covariance matrix $\Sigma_D = \Sigma_0 + \sum_c{C_c}$, where $C_c$ is the empirical covariance matrix of category $c$. The MAP estimate of the covariance matrix for the target category $B$ is 
 \begin{equation}
-\Sigma_B = \left[ \Sigma_D \nu + C_B +
+\Sigma = \left[ \Sigma_D \nu + C +
 \dfrac
-{\kappa n_B}
-{\kappa + n_B}
-(\bar{x}_B-\mu_B)(\bar{x}_B-\mu_B)^T
-\right] (\nu + n_B)^{-1}
+{\kappa n}
+{\kappa + n}
+(\bar{x}-\mu)(\bar{x}-\mu)^T
+\right] (\nu + n)^{-1}
 \label{eq:Sigma_B}
 \end{equation}
-%
-where $\nu$ ($\nu>k-1$) is an additional free parameter (from the Inverse-Wishart prior on $\Sigma_B$) weighting the importance of $\Sigma_{D}$. When the target category has no members (i.e., $n_B = 0$), items are generated at random.
+% 
+where $\bar{x}$ and $C$ are the empirical mean and covariance of the category's known members, and $n$ is the number of observed members of the category. When there are fewer than two known members of the category (and thus no covariance to speak of), $\Sigma = \Sigma_D\nu$.
 
-\nbcnote{should explain Equation \ref{eq:Sigma_B} more fully now that we are not limited for space.}
+The category mean, $\mu$, can be computed as:
 
-\jlanote{K, though if I remember, it's just conjugacy, in which case we can just cite a paper that has IW-W conjugacy.}
+\begin{equation}
+  \mu = \dfrac
+    {\kappa\mu_{0} + n \bar{x}}
+    {\kappa + n}
+    \label{eq:category_mus}
+\end{equation}
+% 
+where $\mu_{0}$ is the prior mean. In our simulations, $\mu_{0}$ is set to the center of the domain. However, when no examples of the target category have been observed, generation is assumed to be random. In practice, the model's best fits are achieved when the  $\kappa$ parameter, which controls the influence of $\mu_0$ on $\mu$, is set very close to zero (hence, the influence of $\mu_0$ is minimal).
 
-\nbcnote{It \textbf{is} just conjugacy, so we can just cite a paper (do you know of a paper or should I start digging?). We'll probably want to detail the what we did for priors and which free parameters we fitted though.}
+Importantly, the domain-wide covariance matrix $\Sigma_D$ is unobserved and needs to be inferred from the observed categories. For conjugacy, if $\Sigma_D$ is viewed as a sample from an Inverse-Wishart distribution with scale $\Sigma_0$, $\Sigma_D$ can be computed as:
 
+ \begin{equation}
+    \Sigma_D = \Sigma_0 + \sum_y{C_y}
+    \label{eq:category_mus}
+\end{equation}
+% 
+where $\Sigma_0$ is the prior covariance in the domain. In our simulations, $\Sigma_0 = \lambda {\bf I}$, where $\lambda$ is a free parameter controlling the expected variance of dimensions (dimensions of the domain covariance matrix are expected to be uncorrelated) and ${\bf I}$ is a $k$-by-$k$ identity matrix. 
 
-Generated exemplars are drawn from a multivariate Normal distribution specified by $(\mu_{B}, \Sigma_{B})$. Thus, $p(y)$ is
+Generated exemplars are drawn from a multivariate Normal distribution specified by $(\mu, \Sigma)$. Thus, $p(y)$ is
 \begin{equation}
 p(y) = \dfrac
-{\exp \left \{ \theta \cdot {\rm Normal}(y; \mu_{B}, \Sigma_{B}) \right \} }
-{\sum_i \exp \left \{ \theta \cdot {\rm Normal}(y_i; \mu_{B}, \Sigma_{B}) \right \} } 
+{\exp \left \{ \theta \cdot {\rm Normal}(y; \mu, \Sigma) \right \} }
+{\sum_i \exp \left \{ \theta \cdot {\rm Normal}(y_i; \mu, \Sigma) \right \} } 
 \end{equation}
+% 
 where $\theta$ is a response determinism parameter and ${\rm Normal}(y; \mu, \Sigma)$ denotes a multivariate Normal density evaluated at $y$. 
 
 
