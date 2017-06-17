@@ -409,7 +409,7 @@
 \pgftext[x=5.904182in,y=6.819801in,,]{\color{textcolor}\sffamily\fontsize{10.000000}{12.000000}\selectfont A}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgftext[x=5.445590in,y=7.729999in,,base]{\sffamily\fontsize{12.000000}{14.400000}\selectfont Hierarchical Sampling}%
+\pgftext[x=5.445590in,y=7.729999in,,base]{\sffamily\fontsize{12.000000}{14.400000}\selectfont Hierarchical Bayesian}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
