@@ -39,6 +39,8 @@ for c in pd.unique(info.condition):
 fh, ax = plt.subplots(1,2,figsize = (6,2.7))
 
 styles = dict(Middle = '-o', Bottom = '-s')
+main_font = 13
+sub_font = 11
 
 h = ax[0]
 for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
@@ -61,17 +63,16 @@ for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
 
 h.xaxis.grid(False)
 h.set_xticks([])
-h.legend(loc = 'upper left', frameon = True, framealpha = 1, fontsize = 10)
+h.legend(loc = 'upper left', frameon = True, framealpha = 1, fontsize = sub_font)
 
 
 xax = h.axis()
-h.text(xax[0],xax[2] -1, 'Min', fontsize = 10, va = 'top')
-h.text(xax[1],xax[2] -1, 'Max', fontsize = 10, va = 'top', ha = 'right')
-h.set_xlabel('Distance',fontsize = 12)
+h.text(xax[0],xax[2] -1, 'Min', fontsize = sub_font, va = 'top')
+h.text(xax[1],xax[2] -1, 'Max', fontsize = sub_font, va = 'top', ha = 'right')
+h.set_xlabel('Distance',fontsize = main_font)
 h.set_yticks(np.arange(0,35, 5))
-h.set_yticklabels(np.arange(0,35, 5),fontsize = 10)
-h.set_ylabel('Generations Per Stimulus', fontsize = 12)
-
+h.set_yticklabels(np.arange(0,35, 5),fontsize = sub_font)
+h.set_ylabel('Generations Per Stimulus', fontsize = main_font)
 
 h = ax[1]
 styles = dict(Middle = 'o', Bottom = 's')
@@ -89,18 +90,19 @@ h.set_yticks([])
 
 h.axis([0, 1.5, 0, 1.5])
 # h.legend(loc = 'upper right', frameon = True, framealpha = 1, 
-# 	ncol = 2, columnspacing = 0.1, labelspacing = 0.1, fontsize = 12)
-h.set_xlabel('Within-Category Distance',fontsize = 12)
-h.set_ylabel('Between-Category Distance',fontsize = 12)
+# 	ncol = 2, columnspacing = 0.1, labelspacing = 0.1, fontsize = main_font)
+h.set_xlabel('Within-Category Distance',fontsize = main_font)
+h.set_ylabel('Between-Category Distance',fontsize = main_font)
 
 
 fh.subplots_adjust(wspace=0.3)
 
 
 fname = 'distance.figs'
-fh.savefig(fname + '.pdf', bbox_inches = 'tight', pad_inches=0.0)
+fh.savefig(fname + '.pdf', bbox_inches = 'tight', pad_inches=0.0, transparent = True)
+fh.savefig(fname + '.png', bbox_inches = 'tight', pad_inches=0.0, transparent = True)
 
 path = '../../../Manuscripts/cog-psych/figs/e2-distanceplots.pgf'
-funcs.save_as_pgf(fh, path)
+# funcs.save_as_pgf(fh, path)
 
 		

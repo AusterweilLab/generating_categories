@@ -62,8 +62,7 @@ cbar.set_yticklabels(['Lowest\nProbability', 'Greatest\nProbability'])
 cbar.tick_params(length = 0)
 
 
-fname = 'packer-examples'
-f.savefig('packer-examples.png', bbox_inches='tight', transparent=False)
+f.savefig('packer-examples.pdf', bbox_inches='tight', transparent=True)
 
-path = '../../../Manuscripts/cogsci-2017/figs/packer-examples.pgf'
-funcs.save_as_pgf(f, path)
+# path = '../../../Manuscripts/cogsci-2017/figs/packer-examples.pgf'
+# funcs.save_as_pgf(f, path)

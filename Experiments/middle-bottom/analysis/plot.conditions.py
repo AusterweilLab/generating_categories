@@ -26,7 +26,7 @@ for i, k  in enumerate(list(alphas)):
 	h.set_title(k)
 	[i.set_linewidth(0.5) for i in h.spines.itervalues()]
 
-f.savefig('conditions.pdf', bbox_inches='tight', transparent=False)
+f.savefig('conditions.pdf', bbox_inches='tight', transparent=True)
 
 path = '../../../Manuscripts/cog-psych/figs/e2-conditions.pgf'
-funcs.save_as_pgf(f, path)
+# funcs.save_as_pgf(f, path)

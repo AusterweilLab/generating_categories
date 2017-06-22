@@ -19,7 +19,7 @@ N_SAMPLES = 50
 WT_THETA = 1.5
 
 # plotting settings
-fontsettings = dict(fontsize = 12.0)
+fontsettings = dict(fontsize = 11.0)
 col_order = ['Behavioral', 'PACKER', 'Copy and Tweak', 'Hierarchical Sampling']
 row_order = ['Middle', 'Bottom']
 SMOOTHING_PARAM = 0.8
@@ -130,6 +130,8 @@ for rownum, c in enumerate(row_order):
 
         # axis labeling
         if rownum == 0:
+            if lab == 'Hierarchical Sampling':
+                lab = 'Hierarchical\nSampling'
             h.set_title(lab, **fontsettings)
 
         if colnum == 0:
@@ -151,5 +153,5 @@ fname = 'gradients-' + STAT_OF_INTEREST
 f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
 f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
 
-path = '../../../Manuscripts/cogsci-2017/figs/range-diff-gradients.pgf'
-funcs.save_as_pgf(f, path)
+# path = '../../../Manuscripts/cogsci-2017/figs/range-diff-gradients.pgf'
+# funcs.save_as_pgf(f, path)
