@@ -36,7 +36,8 @@ for c in pd.unique(info.condition):
 		ngenerations = ngenerations.append(row, ignore_index = True)
 
 
-fh, ax = plt.subplots(1,2,figsize = (6,2.7))
+# fh, ax = plt.subplots(1,2,figsize = (6,2.7))
+fh, ax = plt.subplots(2,1,figsize = (2.7,6))
 
 styles = dict(Middle = '-o', Bottom = '-s')
 main_font = 13

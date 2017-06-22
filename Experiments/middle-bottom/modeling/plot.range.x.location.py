@@ -131,7 +131,9 @@ for rownum, c in enumerate(row_order):
         # axis labeling
         if rownum == 0:
             if lab == 'Hierarchical Sampling':
-                lab = 'Hierarchical\nSampling'
+                lab = 'Hierarchical\nBayesian'
+            if lab == 'Copy and Tweak':
+                lab = 'Copy &  Tweak'
             h.set_title(lab, **fontsettings)
 
         if colnum == 0:
@@ -150,8 +152,8 @@ cbar.tick_params(length = 0)
 plt.tight_layout(w_pad=-4.0, h_pad= 0.1)
 
 fname = 'gradients-' + STAT_OF_INTEREST
-f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
-f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
+f.savefig(fname + '.pdf', bbox_inches='tight', transparent=True)
+f.savefig(fname + '.png', bbox_inches='tight', transparent=True)
 
 # path = '../../../Manuscripts/cogsci-2017/figs/range-diff-gradients.pgf'
 # funcs.save_as_pgf(f, path)
