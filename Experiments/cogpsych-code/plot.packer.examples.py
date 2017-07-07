@@ -41,7 +41,7 @@ for i, k in enumerate(['Contrast Influence', 'Target Influence', 'Combination'])
     im = funcs.plotgradient(h, g, A, B, cmap = 'Blues', beta_col = 'w')
 
     title = prefix[i] + ' ' + k
-    h.set_title(title, fontsize = 11)
+    # h.set_title(title, fontsize = 11)
 
     tradeoffstr = str(m.tradeoff)
     if tradeoffstr in ['0.0', '1.0']:
@@ -63,7 +63,7 @@ cbar.tick_params(length = 0)
 
 
 fname = 'packer-examples'
-f.savefig('packer-examples.png', bbox_inches='tight', transparent=False)
+f.savefig('packer-examples.pdf', bbox_inches='tight', transparent=True)
 
 path = '../../Manuscripts/cog-psych/figs/packer-examples.pgf'
-funcs.save_as_pgf(f, path)
+# funcs.save_as_pgf(f, path)
