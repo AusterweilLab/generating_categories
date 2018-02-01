@@ -6,3 +6,12 @@ This is the main repository for the generating categories project. It contains t
 - The `Modules` directory contains python modules implementing generation models (and other useful functions).
 - The `Manuscripts` directory contains our LaTeX manuscripts.
 - The `Presentations` directory contains powerpoint slides for the talks given on the project.
+
+# XIAN TO DO
+------
+- Get myself familiarised with how the models work.
+- Get myself familiarized with American spelling.
+- Fit models to A)current data, B)Nosofsky 1986, C)Nosofsky 1989
+- Code up GCM
+- Fit GCM to current, Nosofsky 1986, Nosofsky 1989
+- Compare models
