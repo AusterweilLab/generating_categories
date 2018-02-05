@@ -23,3 +23,5 @@ latex_out/
 *.toc
 *.fdb_latexmk
 *.synctex.gz
+
+Modules/tests/

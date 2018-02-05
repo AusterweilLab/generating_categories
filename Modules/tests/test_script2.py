@@ -26,12 +26,30 @@ print dir(funcs)
 #  [ 0  1  2  3  4  5  6  7  8]]
 stimuli = np.fliplr(funcs.ndspace(9,2))
 
+# categories = [
+# 	stimuli[[10, 19, 28, 37],:], #Category 0
+# 	stimuli[[8,65],:],           #Category 1
+# 	]
+
 categories = [
-	stimuli[[10, 19, 28, 37],:],
-	stimuli[[8,65],:],
-	]
+    stimuli[[10, 19, 28, 37],:]
+    ]
 
 P = ConjugateJK13.rvs()#ConjugateJK13.rvs()
 P['wts'] = 1.0 - np.array([0.7,0.3])
+
 M = ConjugateJK13(categories,P)#ConjugateJK13(categories,P)
 print M
+
+#Get trials object
+from Modules.Classes import Simulation
+#from Simulation import Trialset
+
+trialobj = Simulation.Trialset(categories);
+# trialobj.add(1)
+# print trialobj
+# trialobj.add(2)
+# print trialobj
+
+Simulation.hillclimber(M,trialobj,{'method':'Nelder-Mead'})
+print trialobj

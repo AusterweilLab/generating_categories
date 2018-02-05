@@ -22,7 +22,7 @@ with open(src, "rb" ) as f:
 	trials = pickle.load( f )
 
 print trials
-lll
+# lll
 
 # options for the optimization routine
 options = dict(

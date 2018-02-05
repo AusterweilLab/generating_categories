@@ -9,6 +9,7 @@ class Trialset(object):
 
 	"""
 	A class representing a collection of trials
+        Data (i.e., responses) is saved in a list Set
 	"""
 
 	def __init__(self, stimuli):
@@ -70,7 +71,7 @@ class Trialset(object):
 
 			# check equality of all pairs of categories
 			equals =[	np.array_equal(*arrs) 
-								for arrs in zip(categories, trial['categories'])]
+					for arrs in zip(categories, trial['categories'])]
 
 			# return index if all pairs are equal
 			if all(equals): return idx
@@ -112,6 +113,7 @@ class Trialset(object):
 
 			# compute probabilities
 			ps = model(categories, params).get_generation_ps(self.stimuli, 1)
+
 			ps = ps[trial['response']]
 
 			# check for nans and zeros
@@ -143,16 +145,16 @@ def hillclimber(model_obj, trials_obj, options, inits = None):
 
 	# set initial params
 	if inits is None:	
-		inits = model_obj.rvs(fmt = list)
+		inits = model_obj.rvs(fmt = list) #returns random parameters as list
 
 	# run search
 	print '\nFitting: ' + model_obj.model
 	res = op.minimize(	trials_obj.loglike, 
-											inits, 
-											args = (model_obj),
-											callback = _callback_fun_, 
-											**options
-									)
+				inits, 
+				args = (model_obj),
+				callback = _callback_fun_, 
+				**options
+        )
 
 	# print results
 	print '\n' + model_obj.model + ' Results:'
