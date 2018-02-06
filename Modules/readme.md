@@ -19,10 +19,14 @@ from Modules.Classes import ...
 ...
 ```
 
-## How Simulation works
+## How simulation works here
 
+To run the model fits, try this (in the cogpsych-code folder)
 
-One of the key elements of understanding how the models are simulated is to understand the structure of the Trialset object. 
+```
+python global-model-fits.py 
+```
+One of the key elements of understanding how the models are simulated is understanding the structure of the Trialset object. 
 
 Contained in the Simulation module, `Trialset(stimuli)` creates an object that contains a bunch of information on the set of trials shown to all participants, as well as all responses provided on each trial (given some full set of stimuli). It needs to be fed the raw data in terms of a data frame (see Experiments/cogpsych-code/construct-trial-set.py, lines 30-31 (correct as of Feb 5 2018)). I’ll leave a description of an appropriate data frame for a future writeup.
 
@@ -32,7 +36,7 @@ Let’s say we have a Trialset object `ts`. One of the key bits of `ts` is the S
 >>> ts.Set[3] #just starting from some arbitrary index here, since the indices appear arbitrary
 ```
 
-I may be returned:
+I may be returned something like:
 
 ```python
 {'response': [76, 79, 80, 77], 'categories': [array([10, 12, 14, 16]), array([75])]}
