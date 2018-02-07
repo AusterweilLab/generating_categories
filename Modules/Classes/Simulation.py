@@ -33,10 +33,30 @@ class Trialset(object):
 		self.nresponses = sum([len(i['response']) for i in self.Set])
 
 	def add(self, response, categories = []):
-		"""
-			Add a single trial to the trial lists
-		"""
+		"""Add a single trial to the trial lists
+                
+                If response variable is a scalar, then add response to only one
+                category. If response variable is a 2-element list, then add the
+                value of the first element to the category specified by the
+                second element.
 
+                """
+
+                if type(response) is not list:
+                        add2cat = None
+                        responseType = 1
+                        response = response
+                elif type(response) is list:
+                        if len(response) == 2:
+                                add2cat = response[1]
+                                responseType = 2
+                                response = response[0]
+                        else:
+                                raise ValueError('The "response" variable needs',\
+                                                 'to be either a single number,',\
+                                                 'or a a list containing',\
+                                                 'only 2 elements.')
+                
 		# sort category lists, do a lookup
 		categories = [np.sort(i) for i in categories]
 		idx = self._lookup(categories)
@@ -44,15 +64,31 @@ class Trialset(object):
 		# if there is no existing configuration, add a new one
 		if idx is None:
 			self.nunique += 1
-			self.Set.append(dict(
-				response = [response], 
-				categories = categories)
-			)
+                        if responseType == 1:
+			        self.Set.append(dict(
+				        response = [response], 
+				        categories = categories)
+			        )
+                        elif responseType == 2:
+                                ncat = len(categories)                             
+                                respList =  [[] for _ in xrange(len(categories))]
+                                respList[add2cat].append(response);
+			        self.Set.append(dict(
+				        response = respList,
+				        categories = categories)
+			        )
 
 		# if there is an index, just add the response
 		else:
-			self.Set[idx]['response'] = np.append(
-				self.Set[idx]['response'], response)
+                        if responseType == 1:
+			        self.Set[idx]['response'] = np.append(
+				        self.Set[idx]['response'], response)
+                        elif responseType == 2:
+                                self.Set[idx]['response'][add2cat] = np.append(
+                                        self.Set[idx]['response'][add2cat],response)
+                                #Hmm, why can't I just use self.Set[idx]['response']...
+                                #...[add2cat].append(response)?
+                                
 
 		# increment response counter
 		self.nresponses += 1
@@ -80,25 +116,47 @@ class Trialset(object):
 		return None
 
 
-	def add_frame(self, generation):
+	def add_frame(self, generation, task = 'generate'):
 		"""
-			Add trials from a generation dataframe with columns:
-					participant, trial, stimulus, categories
+		Add trials from a dataframe
 
-			Where categories is a embedded list of known categories
-			PRIOR to trial = 0.
+		If task=='generate', then the dataframe must have columns:
+                participant, trial, stimulus, categories
+
+                If task=='assign', then the dataframe must have columns:
+                participant, trial, stimulus, assignment, categories
+
+		Where categories is a embedded list of known categories
+		PRIOR to trial = 0.               
 		""" 
+                if task == 'generate':
+		        for pid, rows in generation.groupby('participant'):
+			        for num, row in rows.groupby('trial'):
+				        Bs = rows.loc[rows.trial<num, 'stimulus'].as_matrix()
+				        categories = row.categories.item() + [Bs]
+				        stimulus = row.stimulus.item()
+                                        self.add(stimulus, categories = categories)
 
-		for pid, rows in generation.groupby('participant'):
-			for num, row in rows.groupby('trial'):
+                elif task == 'assign':
+                        # So the response trials added here can be from any
+                        # category, not just the generated one
+                        for pid, rows in generation.groupby('participant'):
+                                for num, row in rows.groupby('trial'):
+                                        #categories don't grow in size here, so
+                                        #no + Bs
+                                        #print row.categories
+                                        categories = row.categories.item()
+                                        target = row.stimulus.item()
+                                        add2cat = row.assignment.item()
+                                        stimulus = [target,add2cat]
+                                        self.add(stimulus, categories = categories)
+                else:
+                        raise ValueError('Oh no, it looks like you have specified an',\
+                                         'illegal value for the task argument!')
+                return self
+                
 
-				Bs = rows.loc[rows.trial<num, 'stimulus'].as_matrix()
-				categories = row.categories.item() + [Bs]
-				stimulus = row.stimulus.item()
-				self.add(stimulus, categories = categories)
-		return self
-
-	def loglike(self, params, model):
+	def loglike(self, params, model, task = 'assign'):
 		"""
 			Evaluate a model object's log-likelihood on the
 			trial set based on the provided parameters.
@@ -112,7 +170,7 @@ class Trialset(object):
 			categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
 
 			# compute probabilities
-			ps = model(categories, params).get_generation_ps(self.stimuli, 1)
+			ps = model(categories, params, task).get_generation_ps(self.stimuli, 1)
 
 			ps = ps[trial['response']]
 

@@ -27,7 +27,8 @@ for num, dbpath in enumerate(databases):
 
     with sqlite3.connect(dbpath) as con:
         data = dict((T, pd.read_sql('SELECT * FROM ' + T, con)) for T in keep_tables)
-
+        lll
+        
     # get the stimuli df, init the alphas
     if num == 0: 
         stimuli = data['stimuli']

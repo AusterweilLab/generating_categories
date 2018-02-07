@@ -12,10 +12,17 @@ from Modules.Classes import ConjugateJK13
 # all data
 src = "pickles/all_data_e1_e2.p"
 dst = "pickles/best_params_all_data_e1_e2.p"
+task = "generate"
 
 # trials 2-4
 src = "pickles/trials_2-4_e1_e2.p"
 dst = "pickles/best_params_trials_2-4_e1_e2.p"
+task = "generate"
+
+# nosofsky data
+#src = "pickles/nosofsky1986.p"
+#dst = "pickles/best_params_nosofsky1986.p"
+#task = "assign"
 
 # get data from pickle
 with open(src, "rb" ) as f:
