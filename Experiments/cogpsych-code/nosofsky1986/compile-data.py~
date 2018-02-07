@@ -1,0 +1,6 @@
+# Construct the data from nosofsky 1986 as a sql db
+
+import pandas as pd
+import numpy as np
+#from scipy.spatial import ConvexHull
+
