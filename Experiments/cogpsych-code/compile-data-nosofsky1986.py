@@ -26,6 +26,7 @@ keep_tables = [
 stimuli = np.fliplr(funcs.ndspace(4, 2)) #.ndspace(nlevels-of-feature,nfeatures)
 stimuli = pd.DataFrame(stimuli, columns = ['F1', 'F2'])
 stimuli.index.rename('stimulus')
+stimuli = stimuli.as_matrix()
 
 # generate ALL OF THE OBSERVED DATA!!
 assignCat0 = np.array([[213, 253, 192, 218, 185, 193, 187, 162, #p1dimensional

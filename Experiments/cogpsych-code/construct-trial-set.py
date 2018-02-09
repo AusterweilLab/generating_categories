@@ -41,7 +41,3 @@ trials._update()
 with open('pickles/trials_2-4_e1_e2.p','wb') as f:
 	pickle.dump(trials, f)
 
-# Include nosofsky1986 data somewhere here
-nscon = sqlite3.connect('nosofsky1986.db')
-ns_stim = pd.read_sql_query('SELECT * from stimuli', nscon).as_matrix()
-nstrials = Simulation.Trialset(ns_stim)
