@@ -9,7 +9,7 @@ from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 
 # Specify default dataname
-dataname_def = 'pooled-no1st'
+dataname_def = 'nosofsky1986'
 
 #Allow for input arguments at the shell
 if __name__ == "__main__":
@@ -21,8 +21,11 @@ if __name__ == "__main__":
                 dataname = sys.argv[1]        
 else:
         dataname = dataname_def
+        
+s = 'Invalid data name supplied. Please select one of these options:'
+choices = ['pooled','pooled-no1st','nosofsky1986','nosofsky1986p0','nosofsky1986p1']        
 
-
+dataname = funcs.valData(dataname,s,choices)
 
 # Data
 if dataname == 'pooled':
@@ -40,8 +43,19 @@ elif dataname == 'nosofsky1986':
         src = "pickles/nosofsky1986.p"
         dst = "pickles/best_params_nosofsky1986.p"
         task = "assign"
-else:
+elif dataname == 'nosofsky1986p0':
+        # nosofsky data
+        src = "pickles/nosofsky1986_p0.p"
+        dst = "pickles/best_params_nosofsky1986_p0.p"
+        task = "assign"
+elif dataname == 'nosofsky1986p1':
+        # nosofsky data
+        src = "pickles/nosofsky1986_p1.p"
+        dst = "pickles/best_params_nosofsky1986_p1.p"
+        task = "assign"
+else:        
         raise Exception('Invalid data name specified.')
+
 
 print 'Fitting Data: ' + dataname
 
@@ -61,17 +75,23 @@ options = dict(
 ) 
 
 results = dict()
-for model_obj in [ConjugateJK13, CopyTweak, Packer]:
+for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, Packer]:
 	res = Simulation.hillclimber(model_obj, trials, options)
 	X = model_obj.params2dict(model_obj.clipper(res.x))
 	results[model_obj.model] = X
-
-# save final result in pickle
-with open(dst,'wb') as f:
-	pickle.dump(results, f)
+        if task is 'assign':
+                pass
+                #Simulation.show_final_p(model_obj,trials,res.x, show_data = True)
+                
 
 for k,v in results.items():
 	print k, v
+
+        
+lll
+# save final result in pickle
+with open(dst,'wb') as f:
+	pickle.dump(results, f)
 
 
 

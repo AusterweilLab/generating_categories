@@ -94,9 +94,9 @@ for i in range(2): #2 because sample size is 2
 # Convert global trial list into an array range for concatenation
 trialG = np.atleast_2d(trialG).transpose()
 
-# to get category assignments, any trial number more than the first cat0 trials is considered
+# to get category assignments, any trial number more than or equal to the first cat0 trials is considered
 # to be assigned cat1
-assignmentA = trialCond > generationA[:,2:3]
+assignmentA = trialCond >= generationA[:,2:3]
 #assignmentA = np.atleast_2d(assignmentA).transpose()
 
 generationA = np.concatenate([generationA[:,0:1],
@@ -125,17 +125,29 @@ for i,con in enumerate(conditionsBase[0]):
     )
 
 generation = pd.DataFrame(data = generationA,columns = ['participant','trial','stimulus','assignment','condition'])
-    
 generation = pd.merge(generation, mapping, on='condition')
 del generation['condition']
 
+#extract p0 and p1 data
+generation_p0 = generation.loc[generation['participant']==0]
+generation_p1 = generation.loc[generation['participant']==1]
 
 trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(generation,task = 'assign')
 
+trials_p0 = Simulation.Trialset(stimuli)
+trials_p0 = trials_p0.add_frame(generation_p0,task = 'assign')
+
+trials_p1 = Simulation.Trialset(stimuli)
+trials_p1 = trials.add_frame(generation_p1,task = 'assign')
+
 
 with open('pickles/nosofsky1986.p','wb') as f:
 	pickle.dump(trials, f)
+with open('pickles/nosofsky1986_p0.p','wb') as f:
+	pickle.dump(trials_p0, f)
+with open('pickles/nosofsky1986_p1.p','wb') as f:
+	pickle.dump(trials_p1, f)
 
 ##DONE! I think. Now to save the data as pickles, and then get the fitting to work.
 

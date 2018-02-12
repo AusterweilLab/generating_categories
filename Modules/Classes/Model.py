@@ -86,7 +86,7 @@ class Model(object):
 	@abc.abstractmethod
 	def get_generation_ps(self, stimuli, category): pass
 
-	def __init__(self, categories, params, task='generate'):
+	def __init__(self, categories, params):
 		"""
 		Initialize the model. "categories" should be a list of numpy
 		arrays with the same number of columns (features). Items in 
@@ -96,10 +96,6 @@ class Model(object):
 		should contain an entry for each of the items defined by the 
 		'parameter_names' attribute of the concrete class
                 
-                'task' is a string and can be either 'generate' by default 
-                or 'assign'. 'generate' configures the model to the generation
-                of  exemplars in a new category. 'assign' configures the model
-                to the assignment of exemplars in any category.
 		"""
 		
 		# force params to dict if it is not one

@@ -253,3 +253,54 @@ def softmax(X, theta = 1.0, axis = None):
 	if len(X.shape) == 1:
 		p = p.flatten()
 	return p
+
+# Validate input
+def valInput(s,options):
+        """
+        valInput prompts the user for some input with message
+        's', giving some list of possible options 'options'.
+
+        If valid input is supplied by the user, the selected
+        index is returned. If invalid, empty string and
+        negative index is returned.
+
+        's' must be a string
+        'options' must be a list of strings
+
+        User must supply an integer as input
+        090218 : SX start
+
+        """
+        prints = s + '\n'
+        ct = 0
+        for i in options:
+                prints += '[' + str(ct) + '] ' + i + '\n'
+                ct += 1
+        try:
+                outi = int(raw_input(prints))                
+                outs = options[outi]
+        except KeyboardInterrupt:
+                import sys
+                sys.exit()
+        except:
+                outi = -1
+                outs = ''
+
+        return outi
+
+        
+def valData(ins,s,options,tries = 5):
+        if ins in options:
+                outi = options.index(ins)
+        else:        
+                outi = valInput(s,options)
+
+        outs = options[outi]
+        tries -= 1
+        if tries <=0:
+                raise Exception('Please try again and then select an appropriate option.'+\
+                                '\nIt\'s really not that hard.\n')        
+        if outi<0:
+                outs = valData(ins,s,options,tries)                
+                
+        return outs
