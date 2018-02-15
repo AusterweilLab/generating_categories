@@ -11,7 +11,7 @@ This is the main repository for the generating categories project. It contains t
 ------
 - ~~Get myself familiarised with how the models work.~~ _more or less familiarised now_
 - Get myself familiarized with American spelling.
-- Fit models to A)current data (for practice), B)Nosofsky 1986, C)Nosofsky 1989
+- Fit models to ~~A)current data (for practice), B)Nosofsky 1986,~~ C)Nosofsky 1989
 - Code up GCM (independent of CopyTweak)
 - Fit GCM to current, Nosofsky 1986, Nosofsky 1989
 - Compare models

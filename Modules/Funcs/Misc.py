@@ -175,6 +175,10 @@ def pdist(X, Y, w = np.array([])):
 	weighted_distance = np.multiply(difference, w)
 	return np.sum( np.abs(weighted_distance), axis = 1 )
 
+def aic(loglike,nparms):
+        aic = 2.0*nparms - 2.0* (-1.0 * loglike)
+        return aic
+
 
 def jitterize(points, sd = 0.0001):
 	"""
@@ -203,7 +207,7 @@ def intersect2d(X, Y):
 	return np.nonzero(eq)[0]
 
 
-def softmax(X, theta = 1.0, axis = None):
+def softmax(X, theta = 1.0, axis = None, toggle = True):
 	"""
 	Compute the softmax of each element along an axis of X.
 
@@ -217,6 +221,9 @@ def softmax(X, theta = 1.0, axis = None):
 
 	Returns an array the same size as X. The result will sum to 1
 	along the specified axis.
+
+        toggle: If True, calculates soft max (exponentiated Luce)
+                If False, calculates regular Luce choice model
 
 	Examples
 	--------
@@ -239,21 +246,69 @@ def softmax(X, theta = 1.0, axis = None):
 	# multiply y against the theta parameter, 
 	# then subtract the max for numerical stability
 	y = y * float(theta)
-	y = y - np.expand_dims(np.nanmax(y, axis = axis), axis)
+
+        
 	
 	# exponentiate y, then convert nans into 0
-	y = np.exp(y)
+        if toggle:
+                y = y - np.expand_dims(np.nanmax(y, axis = axis), axis)
+                y = np.exp(y)
+	
+
+        
+        
 	y[np.isnan(y)] = 0.0
 
 	# take sum along axis, divide elementwise
 	ax_sum = np.expand_dims(np.sum(y, axis = axis), axis)
-	p = y / ax_sum
-
+        if ax_sum==0:
+                p = np.array([0])
+        else:
+	        p = y / ax_sum
+        
+        
 	# flatten if X was 1D
 	if len(X.shape) == 1:
 		p = p.flatten()
-	return p
 
+
+        return p
+
+#Logit function
+def logit_scale(x, min=0, max=1, direction=1):
+        """
+        Logit function. Useful for squeezing real number line between 0 and 1.
+        
+        Set direction to 1 for regular, or -1 for inverse.
+        """
+        range = max-min
+        if direction == 1:
+                #Scale range of x to 0 and 1
+                x = (np.array(x) - min)/float(range)
+                xed = np.log(x/(1-x)) #xed meaning transformed
+                return xed
+        elif direction == -1:
+                x = 1/(1+np.exp(-x))
+                xed = x * range + min
+                return xed
+
+#Log transformation function
+def log_scale(x, bound = 0, direction = 1):
+        """
+        Log transformation function. Adjusts for the bound (i.e.,
+        the min or max doesn't need to be 0). 
+        Direction with 1 is regular, and -1 is reverse.
+        """
+        if direction == 1:
+                x = np.array(x)-bound
+                xed = np.log(x)
+                return xed
+        elif direction == -1:
+                x = np.exp(x)
+                xed = bound+x
+                return xed
+
+        
 # Validate input
 def valInput(s,options):
         """

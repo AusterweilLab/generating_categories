@@ -117,7 +117,8 @@ class CopyTweak(Exemplar):
                                                                similarity_flip[i]])
                                 ps_element = Funcs.softmax(similarity_element, theta = self.determinism)
                                 ps = np.append(ps,ps_element[0])
-        
+
+
                 #self.determinism = max(1e-308,self.determinism)
 		return ps
 

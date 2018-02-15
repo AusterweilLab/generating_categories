@@ -127,10 +127,20 @@ for i,con in enumerate(conditionsBase[0]):
 generation = pd.DataFrame(data = generationA,columns = ['participant','trial','stimulus','assignment','condition'])
 generation = pd.merge(generation, mapping, on='condition')
 
+#extract p0 and p1 data
+generation_p0 = generation.loc[generation['participant']==0]
+generation_p1 = generation.loc[generation['participant']==1]
+
 #del generation['condition']
 
 trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(generation,task = 'assign')
+
+trials_p0 = Simulation.Trialset(stimuli)
+trials_p0 = trials_p0.add_frame(generation_p0,task = 'assign')
+
+trials_p1 = Simulation.Trialset(stimuli)
+trials_p1 = trials.add_frame(generation_p1,task = 'assign')
 
 
 with open('pickles/nosofsky1986.p','wb') as f:

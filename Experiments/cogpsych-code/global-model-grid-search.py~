@@ -65,7 +65,7 @@ else:
         raise Exception('Invalid data name specified.')
 
 
-print 'Fitting Data: ' + dataname
+print 'Grid Searching Data: ' + dataname
 
 # get data from pickle
 with open(src, "rb" ) as f:
@@ -84,6 +84,7 @@ options = dict(
 	tol = 0.01,
 ) 
 
+#Run grid search
 results = dict()
 for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, Packer]:
 	res = Simulation.hillclimber(model_obj, trials, options)
