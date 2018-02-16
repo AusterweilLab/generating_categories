@@ -45,22 +45,22 @@ dataname = funcs.valData(dataname,s,choices)
 if dataname == 'pooled':
         # all data
         src = "pickles/all_data_e1_e2.p"
-        dst = "pickles/best_params_all_data_e1_e2.p"
+        dst = "pickles/gs_best_params_all_data_e1_e2.p"
         task = "generate"
 elif dataname == 'pooled-no1st':
         # trials 2-4
         src = "pickles/trials_2-4_e1_e2.p"
-        dst = "pickles/best_params_trials_2-4_e1_e2.p"
+        dst = "pickles/gs_best_params_trials_2-4_e1_e2.p"
         task = "generate"
 elif dataname == 'nosofsky1986':
         # nosofsky data
         src = "pickles/nosofsky1986.p"
-        dst = "pickles/best_params_nosofsky1986.p"
+        dst = "pickles/gs_best_params_nosofsky1986.p"
         task = "assign"
 elif dataname == 'nosofsky1989':
         # nosofsky data
         src = "pickles/nosofsky1989.p"
-        dst = "pickles/best_params_nosofsky1989.p"
+        dst = "pickles/gs_best_params_nosofsky1989.p"
         task = "assign"
 else:        
         raise Exception('Invalid data name specified.')
@@ -155,7 +155,7 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
         #X = model_obj.params2dict(model_obj.clipper(res.x))
         #results[model_obj.model] = X
         #startp_dict = model_obj.params2dict(model_obj.clipper(inits))
-    print 'Done fitting ' + model_obj.model + '.\n'
+    print '\nDone fitting ' + model_obj.model + '.\n'
     print 'Final results: '
     X = model_obj.params2dict(model_obj.clipper(results_best[0:-2]))
     for k, v in X.items():

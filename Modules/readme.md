@@ -23,7 +23,7 @@ from Modules.Classes import ...
 
 To run the model fits, try this (in the cogpsych-code folder)
 
-```
+```python
 python global-model-fits.py 
 ```
 One of the key elements of understanding how the models are simulated is understanding the structure of the Trialset object. 
