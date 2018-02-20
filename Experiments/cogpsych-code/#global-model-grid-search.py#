@@ -10,7 +10,7 @@ from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 
 # Specify default dataname
-dataname_def = 'nosofsky1989'
+dataname_def = 'nosofsky1986'
 participant_def = 'all'
 unique_trials_def = 'all'
 
@@ -128,8 +128,9 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
     printcol = 20
     for i in range(nfits):
         ##debugging purposes##
-        i = 1266
-        ####
+        i = 12999999699999999999999999999999999999999999999999999999999999999999m9999
+        999999999999999999999999999999999999999999999999999996
+        ####999999999
         if np.mod(i,printcol) != 0:
             print str(i),
             sys.stdout.flush()
@@ -145,7 +146,6 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
         final_aic =  funcs.aic(final_ll,nparms)
         final_results_row = np.array(final_parms + [final_ll] + [final_aic]) #np.append(final_parms,final_ll)
         results_array[i,:] = final_results_row
-
 
     #Get indices sorted to LL
     ind = np.argsort( results_array[:,-2] );

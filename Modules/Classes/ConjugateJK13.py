@@ -96,10 +96,13 @@ class ConjugateJK13(Model):
 		Sigma /= self.category_variance_bias + n
 
 		# get relative densities
-		target_dist = multivariate_normal(mean = mu, cov = Sigma)
-		density = target_dist.pdf(stimuli)
-
-
+                if np.isnan(Sigma).any() or np.isinf(Sigma).any():
+                        #target_dist = np.ones(mu.shape) * np.nan
+                        density = np.ones(len(stimuli)) * np.nan
+                else:
+                        target_dist = multivariate_normal(mean = mu, cov = Sigma)
+                        density = target_dist.pdf(stimuli)
+                        
                 if task is 'generate': 
 		        # NaN out known members - only for task=generate
 		        known_members = Funcs.intersect2d(stimuli, self.categories[category])
@@ -127,14 +130,19 @@ class ConjugateJK13(Model):
 		        Sigma_flip /= self.category_variance_bias + n_flip
                         
 		        # get relative densities
-		        target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)
-		        density_flip = target_dist_flip.pdf(stimuli)
+                        if np.isnan(Sigma_flip).any() or np.isinf(Sigma_flip).any():
+                                #target_dist_flip = np.ones(mu_flip.shape) * np.nan
+                                density_flip = np.ones(len(stimuli)) * np.nan
+                        else:
+		                target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)                                
+		                density_flip = target_dist_flip.pdf(stimuli)
+
 
                         ps = []
                         for i in range(len(density)):
                                 density_element = np.array([density[i],
                                                             density_flip[i]])
-		                ps_element = Funcs.softmax(density_element, theta = self.determinism)
+                                ps_element = Funcs.softmax(density_element, theta = self.determinism)
                                 ps = np.append(ps,ps_element[0])                        
 
 		return ps
