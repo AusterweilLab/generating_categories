@@ -47,7 +47,7 @@ class Packer(Exemplar):
 
                         ps = Funcs.softmax(aggregate, theta = self.determinism)
 
-                elif task is 'assign':
+                elif task is 'assign' or task is 'error':
                         #compute contrast and target ss if stimuli is assigned
                         #to other cateogry
                         contrast_examples_flip = target_examples
@@ -108,7 +108,7 @@ class CopyTweak(Exemplar):
 
                         # get generation probabilities given each source
 		        ps = Funcs.softmax(similarity, theta = self.determinism)
-                elif task is 'assign':
+                elif task is 'assign' or task is 'error':
                 	# get pairwise similarities with contrast category
 		        similarity_flip = self._sum_similarity(stimuli, self.categories[1-category])
                         ps = []

@@ -108,7 +108,7 @@ class ConjugateJK13(Model):
 		        known_members = Funcs.intersect2d(stimuli, self.categories[category])
 		        density[known_members] = np.nan
 		        ps = Funcs.softmax(density, theta = self.determinism)
-                elif task is 'assign':
+                elif task is 'assign' or task is 'error':
                         ## Do the same for the contrast categor
                         # get target category stats
 		        xbar_flip = np.mean(self.categories[1-category], axis = 0)

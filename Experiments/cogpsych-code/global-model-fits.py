@@ -7,6 +7,10 @@ from Modules.Classes import Simulation
 from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
+import numpy as np
+
+# seed rng
+#np.random.seed(9001)
 
 # Specify default dataname
 dataname_def = 'nosofsky1986'
@@ -34,41 +38,12 @@ else:
         participant = participant_def
         unique_trials = unique_trials_def
 
-
-s = 'Invalid data name supplied. Please select one of these options:'
-choices = ['pooled','pooled-no1st','nosofsky1986','nosofsky1989']
-
-dataname = funcs.valData(dataname,s,choices)
-
-# Data
-if dataname == 'pooled':
-        # all data
-        src = "pickles/all_data_e1_e2.p"
-        dst = "pickles/best_params_all_data_e1_e2.p"
-        task = "generate"
-elif dataname == 'pooled-no1st':
-        # trials 2-4
-        src = "pickles/trials_2-4_e1_e2.p"
-        dst = "pickles/best_params_trials_2-4_e1_e2.p"
-        task = "generate"
-elif dataname == 'nosofsky1986':
-        # nosofsky data
-        src = "pickles/nosofsky1986.p"
-        dst = "pickles/best_params_nosofsky1986.p"
-        task = "assign"
-elif dataname == 'nosofsky1989':
-        # nosofsky data
-        src = "pickles/nosofsky1989.p"
-        dst = "pickles/best_params_nosofsky1989.p"
-        task = "assign"
-else:        
-        raise Exception('Invalid data name specified.')
-
+execfile('validate_data.py')
 
 print 'Fitting Data: ' + dataname
 
 # get data from pickle
-with open(src, "rb" ) as f:
+with open(pickledir+src, "rb" ) as f:
 	trials = pickle.load( f )
 
 trials.task = task
@@ -86,12 +61,11 @@ options = dict(
 
 results = dict()
 for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, Packer]:
-	res = Simulation.hillclimber(model_obj, trials, options)
+	res = Simulation.hillclimber(model_obj, trials, options,results=True,callbackstyle='.')
 	X = model_obj.params2dict(model_obj.clipper(res.x))
 	results[model_obj.model] = X
-        if task is 'assign':
-               # pass
-                Simulation.show_final_p(model_obj,trials,res.x, show_data = True)
+
+        Simulation.show_final_p(model_obj,trials,res.x, show_data = True)
                 
 
 for k,v in results.items():
@@ -100,7 +74,7 @@ for k,v in results.items():
         
 
 # save final result in pickle
-with open(dst,'wb') as f:
+with open(pickledir+dst,'wb') as f:
         pass 
 	#pickle.dump(results, f)
 

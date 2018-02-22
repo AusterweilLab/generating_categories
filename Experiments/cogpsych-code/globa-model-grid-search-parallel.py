@@ -10,7 +10,7 @@ from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 
 # Specify default dataname
-dataname_def = 'NGPMG1994'
+dataname_def = 'nosofsky1989'
 participant_def = 'all'
 unique_trials_def = 'all'
 
@@ -35,14 +35,42 @@ else:
         participant = participant_def
         unique_trials = unique_trials_def
 
-execfile('validate_data.py')
+
+s = 'Invalid data name supplied. Please select one of these options:'
+choices = ['pooled','pooled-no1st','nosofsky1986','nosofsky1989']
+
+dataname = funcs.valData(dataname,s,choices)
+
+# Data
+if dataname == 'pooled':
+        # all data
+        src = "pickles/all_data_e1_e2.p"
+        dst = "pickles/gs_best_params_all_data_e1_e2.p"
+        task = "generate"
+elif dataname == 'pooled-no1st':
+        # trials 2-4
+        src = "pickles/trials_2-4_e1_e2.p"
+        dst = "pickles/gs_best_params_trials_2-4_e1_e2.p"
+        task = "generate"
+elif dataname == 'nosofsky1986':
+        # nosofsky data
+        src = "pickles/nosofsky1986.p"
+        dst = "pickles/gs_best_params_nosofsky1986.p"
+        task = "assign"
+elif dataname == 'nosofsky1989':
+        # nosofsky data
+        src = "pickles/nosofsky1989.p"
+        dst = "pickles/gs_best_params_nosofsky1989.p"
+        task = "assign"
+else:        
+        raise Exception('Invalid data name specified.')
 
 dst_error = dst[0:-2] + '_error.p'
 
 print 'Grid Searching Data: ' + dataname
 
 # get data from pickle
-with open(pickledir+src, "rb" ) as f:
+with open(src, "rb" ) as f:
 	trials = pickle.load( f )
 
 trials.task = task
@@ -143,7 +171,7 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
         
 
 # save final result in pickle
-with open(pickledir+'gs_'+dst,'wb') as f:
+with open(dst,'wb') as f:
     #pass 
     pickle.dump(results, f)
 

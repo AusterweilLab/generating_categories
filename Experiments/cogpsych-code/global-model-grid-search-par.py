@@ -10,7 +10,7 @@ from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 
 # Specify default dataname
-dataname_def = 'nosofsky1986'
+dataname_def = 'nosofsky1989'
 participant_def = 'all'
 unique_trials_def = 'all'
 
@@ -86,6 +86,25 @@ options = dict(
 	tol = 0.01,
 ) 
 
+#define the function to parallelise over
+def parthis(i,startp,model_obj,trials,options,nparms,):
+        if np.mod(i,printcol) != 0:
+            print str(i),
+            sys.stdout.flush()
+        elif i>0:
+            print str(i)
+            
+        inits = startp[i,:]
+        res = Simulation.hillclimber(model_obj, trials, options,
+                                     inits=inits, results = False,
+                                     callbackstyle='none')
+        final_parms = res.x
+        final_ll = res.fun
+        final_aic =  funcs.aic(final_ll,nparms)
+        final_results_row = np.array(final_parms + [final_ll] + [final_aic]) #np.append(final_parms,final_ll)
+        results_array[i,:] = final_results_row
+        return results_array
+
 
 #Run grid search
 results = dict()
@@ -127,10 +146,6 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
     print 'Total starting points: ' + str(nfits)
     printcol = 20
     for i in range(nfits):
-        ##debugging purposes##
-        i = 12999999699999999999999999999999999999999999999999999999999999999999m9999
-        999999999999999999999999999999999999999999999999999996
-        ####999999999
         if np.mod(i,printcol) != 0:
             print str(i),
             sys.stdout.flush()
@@ -146,6 +161,7 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
         final_aic =  funcs.aic(final_ll,nparms)
         final_results_row = np.array(final_parms + [final_ll] + [final_aic]) #np.append(final_parms,final_ll)
         results_array[i,:] = final_results_row
+
 
     #Get indices sorted to LL
     ind = np.argsort( results_array[:,-2] );

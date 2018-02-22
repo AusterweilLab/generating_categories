@@ -157,10 +157,11 @@ class Trialset(object):
 				        stimulus = row.stimulus.item()
                                         self.add(stimulus, categories = categories,participant = pid)
 
-                elif task == 'assign':
+                elif task == 'assign' or task == 'error':
                         # So the response trials added here can be from any
                         # category, not just the generated one
                         for pid, rows in generation.groupby('participant'):
+                                #print pid
                                 for num, row in rows.groupby('trial'):
                                         #categories don't grow in size here, so
                                         #no + Bs
@@ -171,8 +172,7 @@ class Trialset(object):
                                         stimulus = [target,add2cat]
                                         self.add(stimulus, categories = categories,participant = pid)
                 else:
-                        raise ValueError('Oh no, it looks like you have specified an',\
-                                         'illegal value for the task argument!')
+                        raise ValueError('Oh no, it looks like you have specified an illegal value for the task argument!')
 
                 
                 return self
@@ -208,8 +208,10 @@ class Trialset(object):
                                 ps1 = model(categories, params).get_generation_ps(self.stimuli, 1,self.task)
                                 idc0 = trial['response'][0]
                                 idc1 = trial['response'][1]
+                                #ps_add = ps0[idc0]
                                 ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
                                 #How about using binomial likelihoods instead?
+                                #200218 SX: aahh, it gives the same values. Cool
                                 # ps = []
                                 # for i,ps_el in enumerate(ps0):
                                 #         #find total assignments to category 0
@@ -221,6 +223,16 @@ class Trialset(object):
                                         
                                 #         ps += [ss.binom.pmf(ct0, ctmax,ps_el)]
 
+                        elif task=='error':
+                                #For prediction of error probabilities, simply
+                                #find the probability of classifying a
+                                #stimulus as the wrong category
+                                ps = model(categories, params).get_generation_ps(self.stimuli, 0,self.task)
+                                idc_err = trial['response'][0]
+                                #idc1 = trial['response'][1]
+                                ps_add = ps[idc_err]
+
+                                
 			# check for nans and zeros
 			if np.any(np.isnan(ps_add)):
                                 if task is 'generate':
@@ -308,8 +320,8 @@ def _callback_fun_(xk):
         #Set how many columns to print
         printcol = 20 
         if display is 'iter':
-                xk = model_obj.parmxform(xk, direction = -1)
                 ll = trials_obj.loglike(xk,model_obj)                
+                xk = model_obj.parmxform(xk, direction = -1)
                 print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + '] f(x) = ' + str(round(ll,4))
         elif display is '.':                
                 if (np.mod(itcount,printcol)!=0) & (itcount>0):
@@ -341,7 +353,9 @@ def _fetch_global_():
 
 
 def show_final_p(model_obj, trial_obj, params, show_data = False):
-        #One final presentation of the set of probabilities for each stimulus        
+        #One final presentation of the set of probabilities for each stimulus
+        task = trial_obj.task
+        nstim = len(trial_obj.stimuli)
         for idx, trial in enumerate(trial_obj.Set):
                 # format categories
 	        categories = [trial_obj.stimuli[i,:] for i in trial['categories'] if any(i)]
@@ -350,6 +364,7 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
                 ps0 = model_obj(categories, params).get_generation_ps(trial_obj.stimuli, 0,trial_obj.task)
 
                 if show_data is False:
+                        print 'Model Predictions:'
                         dsize = int(np.sqrt(len(ps0)))
                         print np.atleast_2d(ps0).reshape(dsize,-1)
                         print np.atleast_2d(ps1).reshape(dsize,-1)
@@ -361,7 +376,7 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
                         cat1pt = []
                         
                         responses = trial['response']                        
-                        for j in range(16):#max(responses[0])+1):
+                        for j in range(nstim):#max(responses[0])+1):
                                 cat0 = sum(np.array(responses[0])==j)
                                 cat1 = sum(np.array(responses[1])==j)
                                 catmaxct = cat0+cat1
@@ -382,9 +397,13 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
                         ps1 = [round(i,4) for i in ps1]
 
                         print '\tSSE = ' + str(sse)
+                        print 'Model Predictions (Cat0):'
                         print np.flipud(np.atleast_2d(ps0).reshape(dsize,-1))
+                        print 'Observed Data (Cat0):'
                         print np.flipud(np.atleast_2d(cat0pt).reshape(dsize,-1))
+                        print 'Model Predictions (Cat1):'
                         print np.flipud(np.atleast_2d(ps1).reshape(dsize,-1))
+                        print 'Observed Data (Cat1):'
                         print np.flipud(np.atleast_2d(cat1pt).reshape(dsize,-1))
 
                 #lll
@@ -453,7 +472,7 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                                         respList = responsecats[extractIdx]
                                         pptList = pptcats[extractIdx]
                         
-                elif trial_obj.task is 'assign':
+                elif trial_obj.task is 'assign' or trial_obj.task is 'error':
                         #iterate over categories of responses        
                         respList = [np.array([], dtype = int) for _ in xrange(ncategories)]
                         pptList = [np.array([], dtype = int) for _ in xrange(ncategories)]        
