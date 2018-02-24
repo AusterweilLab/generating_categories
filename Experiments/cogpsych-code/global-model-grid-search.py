@@ -9,6 +9,9 @@ from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 
+Simulation.print_gs_nicenice()
+lll
+
 # Specify default dataname
 dataname_def = 'NGPMG1994'
 participant_def = 'all'
@@ -124,8 +127,9 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
     results_model['startparms'] = startp_sorted
     results_model['finalparmsll'] = results_array_sorted
     results_model['bestparmsll'] = results_best
+    results_model['parmnames'] = model_obj.parameter_names
     results[model_obj.model] = results_model
-        #X = model_obj.params2dict(model_obj.clipper(res.x))
+    #X = model_obj.params2dict(model_obj.clipper(res.x))
         #results[model_obj.model] = X
         #startp_dict = model_obj.params2dict(model_obj.clipper(inits))
     print '\nDone fitting ' + model_obj.model + '.\n'
@@ -147,5 +151,5 @@ with open(pickledir+'gs_'+dst,'wb') as f:
     #pass 
     pickle.dump(results, f)
 
-
+#Simulation.print_gs_nicenice()
 

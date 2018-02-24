@@ -494,3 +494,65 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                 
         return output_obj
                                 
+# def add_model_data():
+#         #Temporary code to add model parm names to gs results
+#         import re
+#         import os
+#         import pickle
+
+#         pickledir = 'pickles/'
+#         prefix = 'gs_'
+#         #Compile regexp obj
+#         allfiles =  os.listdir(pickledir)
+#         r = re.compile(prefix)
+#         gsfiles = filter(r.match,allfiles)
+
+#         for i,file in enumerate(gsfiles):
+#                 with open(pickledir+file,'rb') as f:
+#                         fulldata = pickle.load(f)
+#                 modelnames = fulldata.keys()
+#                 for j in modelnames:
+#                         #Add data on their model type
+#                         if j == 'Hierarchical Sampling':
+#                                 fulldata[j]['parmnames'] = ['category_mean_bias',
+#                                                             'category_variance_bias',
+#                                                             'domain_variance_bias',
+#                                                             'determinism']
+#                         elif j == 'Copy and Tweak':
+#                                 fulldata[j]['parmnames'] = ['specificity',
+#                                                             'determinism']
+#                         elif j == 'PACKER':
+#                                 fulldata[j]['parmnames'] =  ['specificity',
+#                                                              'tradeoff',
+#                                                              'determinism']
+#                 with open(pickledir+file,'wb') as f:
+#                         pickle.dump(fulldata,f)
+                                
+
+# def print_gs_nicenice():
+#         #Find all gs fits and print them. Nice nice.        
+#         import re
+#         import os
+#         import pickle
+        
+#         pickledir = 'pickles/'
+#         prefix = 'gs_'
+#         #Compile regexp obj
+#         allfiles =  os.listdir(pickledir)
+#         r = re.compile(prefix)
+#         gsfiles = filter(r.match,allfiles)
+
+#         for i,file in enumerate(gsfiles):
+#                 #Extract key data from each file
+#                 print '\n' + file
+#                 print '------'
+#                 with open(pickledir+file,'rb') as f:
+#                         fulldata = pickle.load(f)
+#                 modelnames = fulldata.keys()
+#                 for j in modelnames:
+#                         print 'Model:' + j
+#                         for pi,pname in enumerate(fulldata[j]['parmnames']):
+#                                 print '\t' + pname + ': ' + str(fulldata[j]['bestparmsll'][pi])
+#                         print '\tLogLike' + ' = ' + '-' + str(fulldata[j]['bestparmsll'][pi+1])
+#                         print '\tAIC'  + ' = ' + str(fulldata[j]['bestparmsll'][pi+2])
+
