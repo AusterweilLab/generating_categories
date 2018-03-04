@@ -275,14 +275,14 @@ def hillclimber(model_obj, trials_obj, options, inits = None, results = True,cal
 	# set initial params
 	if inits is None:	
 		inits = model_obj.rvs(fmt = list) #returns random parameters as list
-                print 'Starting parms (randomly selected):'
+                print '\nStarting parms (randomly selected):'
                 print inits
         #transform inits to be bounded within rules
         inits = model_obj.parmxform(inits, direction = 1)
 	# run search
         itcount = 0
 	if results:
-                print '\nFitting: ' + model_obj.model
+                print 'Fitting: ' + model_obj.model
                 
 	res = op.minimize(	trials_obj.loglike, 
 				inits, 
@@ -360,8 +360,9 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
                 # format categories
 	        categories = [trial_obj.stimuli[i,:] for i in trial['categories'] if any(i)]
                 
-                ps1 = model_obj(categories, params).get_generation_ps(trial_obj.stimuli, 1,trial_obj.task)
                 ps0 = model_obj(categories, params).get_generation_ps(trial_obj.stimuli, 0,trial_obj.task)
+                ps1 = model_obj(categories, params).get_generation_ps(trial_obj.stimuli, 1,trial_obj.task)
+
 
                 if show_data is False:
                         print 'Model Predictions:'
@@ -396,15 +397,16 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
                         ps0 = [round(i,4) for i in ps0]
                         ps1 = [round(i,4) for i in ps1]
 
-                        print '\tSSE = ' + str(sse)
+                        print 'Condition ' + str(idx)
+                        print 'SSE = ' + str(sse)
                         print 'Model Predictions (Cat0):'
                         print np.flipud(np.atleast_2d(ps0).reshape(dsize,-1))
                         print 'Observed Data (Cat0):'
                         print np.flipud(np.atleast_2d(cat0pt).reshape(dsize,-1))
-                        print 'Model Predictions (Cat1):'
-                        print np.flipud(np.atleast_2d(ps1).reshape(dsize,-1))
-                        print 'Observed Data (Cat1):'
-                        print np.flipud(np.atleast_2d(cat1pt).reshape(dsize,-1))
+                        # print 'Model Predictions (Cat1):'
+                        # print np.flipud(np.atleast_2d(ps1).reshape(dsize,-1))
+                        # print 'Observed Data (Cat1):'
+                        # print np.flipud(np.atleast_2d(cat1pt).reshape(dsize,-1))
 
                 #lll
                 #print ps0

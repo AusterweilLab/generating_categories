@@ -13,6 +13,9 @@ allfiles =  os.listdir(pickledir)
 r = re.compile(prefix)
 gsfiles = filter(r.match,allfiles)
 
+#Compute total SSE
+
+
 for i,file in enumerate(gsfiles):
     #Extract key data from each file
     print '\n' + file

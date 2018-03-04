@@ -1,0 +1,106 @@
+<div id='instructions'>
+
+<center>
+<div class = "consent_header" >
+	<b>UNIVERSITY OF WISCONSIN-MADISON <br>
+	Research Participant Information and Consent Form</b>
+</div>
+
+<div class = "consent_section">
+<b>Title of the Study</b>: Testing Category Representations<br>
+<b>Principal Investigator</b>: Joseph Austerweil<br>
+Phone: 608-262-9932. Email: austerweil@wisc.edu
+</div>
+
+
+<div class = "consent_section">
+<p class = "consent_title">DESCRIPTION OF THE RESEARCH</p>
+<p>You are invited to participate in a research study about how people learn and/or create new concepts by providing experience with the concepts. You have been asked to participate because we are creating a computational model of how people learn and construct new concepts.</p>
+<p>The purpose of the research is to validate the computational model to understand how people learn and create concepts better, as well as create new machine learning methods that learn and behave in a more human-like manner.</p>
+<p>This study will include native-English speakers who are 18 years old or older. The experiment will be conducted through Amazon Mechanical Turk.</p>
+</div>
+
+<div class = "consent_section">
+<p class = "consent_title">WHAT WILL MY PARTICIPATION INVOLVE?</p>
+If you decide to participate in this research you will be asked to learn about novel categories and then use your knowledge to answer questions. For example, you might be asked to indicate the category membership of objects you have never seen before, or fill-in properties for category members that have missing features. Your participation will require 1 session lasting between 10 and 60 minutes total.
+</div>
+
+<div class = "consent_section">
+<p class = "consent_title">ARE THERE ANY RISKS TO ME?</p>
+The only potential risk of the study is a breach of confidentiality in the event of a data breach. We have safeguards in place to prevent this from happening and we don't anticipate any other risks to you from participation in this study. 
+</div>
+
+<div class = "consent_section">
+<p class = "consent_title">ARE THERE ANY BENEFITS TO ME?</p>
+We don't expect any direct benefits to you from participation in this study.
+</div>
+
+<div class = "consent_section">
+<p class = "consent_title">WILL I BE COMPENSATED FOR MY PARTICIPATION?</p>
+<p>You will receive approximately $6 per hour (prorated by every 10 minutes) for participating in this study.</p>
+<p>If you do withdraw prior to the end of the study, you will receive $1 for every 10 minutes that you have participated (rounding up). For example, if you do not complete the study after participating for 15 minutes, you would receive $2.</p>
+</div>
+
+<div class = "consent_section">
+<p class = "consent_title">HOW WILL MY CONFIDENTIALITY BE PROTECTED?</p>
+Your study data may be used for future studies. While there will probably be publications as a result of this study, your name will not be used. Only group characteristics will be published.
+</div>
+
+<div class = "consent_section">
+<p class = "consent_title">WHOM SHOULD I CONTACT IF I HAVE QUESTIONS?</p>
+<p>You may ask any questions about the research at any time. If you have questions about the research after you leave today you should contact the Principal Investigator Joseph Austerweil at 608-262-9932. </p>
+<p>If you are not satisfied with response of research team, have more questions, or want to talk with someone about your rights as a research participant, you should contact the Education and Social/Behavioral Science IRB Office at 608-263-2320. Your participation is completely voluntary. </p>
+<p>If you decide not to participate or to withdraw from the study you may do so at any time. You may print or save a copy of this form for your records.</p>
+<p>By clicking the "<b><u>Accept HIT</u></b>" button you consent to participating in this experiment.</p>
+</div>
+</div>
+</center>
+
+<style type="text/css">
+	body {
+		margin: 20px;
+	}
+
+	.consent_header {
+		margin-bottom: 18px;
+		font-size: 18px;
+		text-align:  center;
+		width: 26cm;
+	}
+
+	.consent_section {
+		margin-bottom: 15px;
+		width: 26cm;
+		text-align: left;
+	}
+	.consent_title {
+		font-weight: 900;
+		text-decoration: underline;
+		margin-bottom: 5px;
+	}
+
+	
+</style>
+
+
+<!-- check if we can move on -->
+<script type="text/javascript">
+
+	// first, check for mobile
+  if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+  	S = "You are using a mobile device and are not eligible for this HIT.<br>Do not accept the HIT.";
+		document.getElementById('instructions').innerHTML = S;
+  } 
+  
+	// continue if workerId is present in query
+	// i.e., worker has accepted the HIT
+	if ("workerId" in parsequery()) {
+
+		// store worker info
+		var worker = parsequery();
+
+		// then move on
+		checkworker()
+	}
+
+</script>
