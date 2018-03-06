@@ -25,3 +25,7 @@ latex_out/
 *.synctex.gz
 
 Modules/tests/
+
+*~
+
+

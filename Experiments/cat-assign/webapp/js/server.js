@@ -11,7 +11,7 @@ function checkworker() {
 		Experiment: data.experiment.Experiment,
 		Paradigm: data.experiment.Paradigm
 	}
-	console.log('test')
+
 	$.ajax({
 		type: "POST",
 		url: "cgi-bin/check-worker.cgi",
@@ -41,11 +41,15 @@ function getassignments() {
 		type: "POST",
 		url: "cgi-bin/get-assignments.cgi",
 	}).done( function(o) {
-		console.log(o)
+		if (data.info.lab){console.log(o)} //for debugging
 		var res = JSON.parse(o);
 		data.info.participant = res.data.participant;
+		data.info.pptmatch = res.data.participant_match
 		data.info.condition = res.data.condition;
 		data.info.counterbalance = res.data.counterbalance
+		data.info.catflip = res.data.catflip
+		eval('data.info.stimuli = ' + res.data.stimuli)
+		eval('data.info.categories = ' + res.data.categories)		
 	  	startup()
 	});
 }
@@ -70,7 +74,7 @@ function markexposed() {
 			var res = JSON.parse(o)
 
 			if (res.status == 'lab') {
-				console.log('Hi Nolan!')
+				console.log('Hi Xian (or whoever you are!)')
 				data.info.lab = true;
 			} else {
 				data.info.lab = false;

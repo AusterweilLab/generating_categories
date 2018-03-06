@@ -8,8 +8,8 @@ pd.set_option('display.width', 200, 'precision', 2)
 execfile('Imports.py')
 import Modules.Funcs as funcs
 
-db_dst = '../data/experiment.db'
-assignmentdb = '../data/assignments.db'
+db_dst = '../datatemp/experiment.db'
+assignmentdb = '../datatemp/assignments.db'
 exclude = [
 	]
 
@@ -28,7 +28,7 @@ for i, row in assignments.iterrows():
 
 	# skip if data file does not exist or is manually excluded
 	pid = int(row.Participant)
-	path = '../data/' + str(pid) + '.json'
+	path = '../datatemp/' + str(pid) + '.json'
 	if pid in exclude: continue
 	if not os.path.exists(path): continue
 
@@ -57,19 +57,20 @@ del participants['exposed']
 
 
 # create generated categories table
-rows = []
-for i in data:
-	for j in i['generation']:
-		row = i['generation'][j]
-		row['participant'] = i['info']['participant']
-		rows.append(row)
-generation = pd.DataFrame(rows, dtype = int)
+# rows = []
+# for i in data:
+# 	for j in i['generation']:
+# 		row = i['generation'][j]
+# 		row['participant'] = i['info']['participant']
+# 		rows.append(row)
 
-# create generalization table
+# generation = pd.DataFrame(rows, dtype = int)
+
+# create assignment table
 rows = []
 for i in data:
-	for j in i['generalization']:
-		row = i['generalization'][j]
+	for j in i['assignment']:
+		row = i['assignment'][j]
 		row['participant'] = i['info']['participant']
 		row['response'] = row['response'] == 'Beta'
 		rows.append(row)

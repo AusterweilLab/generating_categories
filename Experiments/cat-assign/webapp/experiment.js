@@ -10,8 +10,8 @@ function startup() {
 	
 	// load templates
 	load_template("html/templates/observe.html", observation);
-	load_template("html/templates/generate.html", generation);
-	load_template("html/templates/generalize.html", generalization);
+	//load_template("html/templates/generate.html", generation);
+	load_template("html/templates/assignment.html", assignment);
 
 	// get start time
 	data.info.start = Date.now();

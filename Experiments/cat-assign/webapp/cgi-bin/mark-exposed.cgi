@@ -10,7 +10,8 @@ print 													# blank line, end of headers
 # these worker IDs will not be added to the table
 debug_workers = [
 						'NOLANDEBUG123', # Debug
-						'ATROS9SFZ8929' # Nolan's Account
+	'ATROS9SFZ8929' # Nolan's Account
+        'XIANDEBUG1234' # More debug
 					]
 
 # set up worker database info

@@ -4,12 +4,13 @@
 var data = {
 	experiment: {
 		Stimuli: 'Size-Color Squares',
-		Experiment: 'Generating-Categories',
-		Paradigm: 'TACL'
+		Experiment: 'Assigning-Generated-Categories',
+		Paradigm: 'TACL' //hmm what's this? SX 040318
 	},
 	observation: {},
-	generation: {},
-	generalization: {},
+	//generation: {},
+	//generalization: {},
+	assignment: {},
 	info: {
 		exposed: false,
 		lab: null,
@@ -30,18 +31,25 @@ var data = {
  //  9 10 11 12 13 14 15 16 17
  //  0  1  2  3  4  5  6  7  8
 var exemplars = {
-	Middle: [30, 32, 48, 50 ],
-	Bottom: [12, 14, 30, 32],
+	XOR:     [ 0, 10, 70, 80],
+	Cluster: [14, 16, 32, 34],
+	Row:     [10, 12, 14, 16],
+	Middle:  [30, 32, 48, 50],
+	Bottom:  [12, 14, 30, 32],
 }
+
+
 
 // ------------------------------------------------------ //
 // phase-specific settings
 var observation = {
-	nblocks: 3,
+	nblocks: 3, //3
 	counter: 0,
 	isi: 500,
 	ui: null,
-	instructions: 'html/instructions/observe.html'
+	instructions: 'html/instructions/observe.html',
+	trialDesc: ['This is a member of the Alpha category','This is a member of the Beta category'],
+	breakDesc: "<p>Excellent.</p><p> You have finished viewing examples of the Alpha category.</p><p> The next set of examples are members of the Beta category.</p><a href='#' id='continuebuttonbreak'>Continue.</a>"//'html/instructions/observebreak.html'
 };
 
 var generation = {
@@ -65,11 +73,22 @@ var generalization = {
 	instructions: 'html/instructions/generalize.html'
 }
 
+var assignment = {
+	nblocks: 3,
+	counter: 0,
+	isi: observation.isi,
+	stimulus: null,
+	correctcat: null,
+	rt: null,
+	ui: null,
+	instructions: 'html/instructions/assignment.html'
+}
+
 // this information is not saved to the same file as "data"
 var worker = {}
 
 // quick HTML for a fixcross
-var fixcross = "<div id='fixcross'>+</div>"
+var fixcross = "<div id='fixcross'>+</div>" // 040318 should try to fix its centering though
 
 // global timer
 var timer =  null;

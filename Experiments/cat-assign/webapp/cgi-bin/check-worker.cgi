@@ -14,7 +14,7 @@ print 													# blank line, end of headers
 # set up worker database
 workerdb = dict(
 	host='localhost', 
-	port=3306, 
+	port=3306, #mariadb 5
 	user='http',
 	db='Workers'
 	)

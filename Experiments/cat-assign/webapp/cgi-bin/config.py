@@ -9,8 +9,12 @@ print 															# blank line, end of headers
 # USER SHOULD SET THESE PARAMETERS
 # This is where all the data is stored (X.json and workers.db) 
 #destination = "/var/services/homes/xian/CloudStation/data/generate-categories"
-destination = "../datatemp"
+destination = "../../datatemp"
 assignmentdb = destination + "/assignments.db"
+
+# Prepare to load stimuli db (from the earlier experiments
+stimuliset = 'midbot'
+stimulidb = destination + "/cmp_" + stimuliset + '.db'
 
 # what are the conditions?
 conditions = ['Middle', 'Bottom']
@@ -37,10 +41,14 @@ if not os.path.isfile(assignmentdb):
 	conn = sqlite3.connect(assignmentdb)
 	c = conn.cursor()
 	cmd = '''CREATE TABLE Assignments
-		(Participant INTEGER, 
-		Condition TEXT, 
-		Counterbalance INTEGER, 
-		Complete INTEGER)'''
+	(Participant INTEGER, 
+        MatchedPpt INTEGER,
+        Stimuli VARCHAR,
+        Categories VARCHAR,
+	Condition TEXT, 
+	Counterbalance INTEGER, 
+        Catflip INTEGER,
+	Complete INTEGER)'''
 	c.execute(cmd)
 	conn.commit()
 	conn.close()
@@ -56,7 +64,7 @@ def weightedchoice(counts):
 
 # convert condition-wise counts into relative counts 
 # suitable for the for choice function
-def invertcounts(counts):
+def invertcounts(counts):        
 	result = dict(counts)
 
 	# inverted count is the sum of the counts for all OTHER groups

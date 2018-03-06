@@ -17,11 +17,11 @@
 	form.action = worker.turkSubmitTo + "/mturk/externalSubmit";
 
 	// add assignment ID
-	assignment = document.createElement('input');
-	assignment.type = 'hidden';
-	assignment.name = "assignmentId";
-	assignment.value = worker.assignmentId;
-	form.appendChild(assignment);
+	assignmentInput = document.createElement('input');
+	assignmentInput.type = 'hidden';
+	assignmentInput.name = "assignmentId";
+	assignmentInput.value = worker.assignmentId;
+	form.appendChild(assignmentInput);
 
 	// add message
 	message = document.createElement('input');
