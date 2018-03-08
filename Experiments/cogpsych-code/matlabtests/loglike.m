@@ -1,4 +1,4 @@
-function ll = loglike(parms,model,data_kSet, data_totalSet, stim)
+function [ll,preds] = loglike(parms,model,data_kSet, data_totalSet, stim, parmRules)
 %Take in the model+parms and data generate predictions. 
 %Then spit out the binomial likelihood for
 %each element in prediction array. DATA_K should be a vector of the
@@ -10,6 +10,11 @@ function ll = loglike(parms,model,data_kSet, data_totalSet, stim)
 % STIM{3} is an array indicating the categories of stimulis specified in STIM{2} 
 % STIM{4} is the coordinates of all stimuli in the stimuli space
 % STIM{5} is the task required (i.e., 'assign','generate', or 'error')
+
+%Un-transform parms
+if nargin==6
+    parms = parmsxform(parms,parmRules(1,:),parmRules(2,:),-1);
+end
 
 %Unpack stim 
 stimTestIdx = stim{1};

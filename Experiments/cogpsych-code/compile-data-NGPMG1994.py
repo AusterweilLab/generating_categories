@@ -33,7 +33,7 @@ trainedExemplarsL = [[[ 0, 1, 2, 3],[ 4, 5, 6, 7]], #Type I
                      [[ 0, 2, 3, 7],[ 1, 4, 5, 6]], #Type III
                      [[ 0, 2, 3, 6],[ 1, 4, 5, 7]], #Type IV
                      [[ 0, 2, 3, 5],[ 1, 4, 6, 7]], #Type V
-                     [[ 1, 2, 4, 7],[ 0, 2, 5, 6]]] #Type VI
+                     [[ 1, 2, 4, 7],[ 0, 3, 5, 6]]] #Type VI
 
 
 stimuli = np.fliplr(funcs.ndspace(2, 3)) #.ndspace(nlevels-of-feature,nfeatures)

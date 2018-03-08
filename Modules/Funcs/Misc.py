@@ -169,7 +169,6 @@ def pdist(X, Y, w = np.array([])):
 	X = np.tile(X[:,:,None], (1,1,nY) )
 	Y = np.tile(np.swapaxes(Y[:,:,None],0,2),(nX,1,1))
 	w = w[None,:,None]
-
 	# compute distance
 	difference = X - Y
 	weighted_distance = np.multiply(difference, w)

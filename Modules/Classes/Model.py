@@ -283,7 +283,6 @@ class Exemplar(Model):
 		# set weights and c
 		if wts is None: wts = self.wts
 		if c is None: c = self.specificity
-
 		distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts)
 		similarity = np.exp(-float(c) * distance)
 		similarity = similarity * float(param)
