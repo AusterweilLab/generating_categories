@@ -1,22 +1,74 @@
 
 <div id='instructions' style="text-align:center">
-	<p>Thank you for participating in our experiment!</p>
-	<p>Please click the button below to submit your work.</p>
+	<p>You are almost done!<br>
+	Kindly fill in these details below, then click the submit button to submit your responses.  Thank you for participating in our experiment!</p>
+
 </div>
 
 <center>
 	<form id = 'submitHIT' method = 'POST'>
-	  <input type="submit" class = 'classifybutton' style="width:150px" value="Submit">
+	<!--<input type="submit" class = 'classifybutton' style="width:150px" value="Submit">-->
 	</form> 
 </center>
 
 
 <script type="text/javascript">
-	// set form action
-	form = document.getElementById("submitHIT");
-	form.action = worker.turkSubmitTo + "/mturk/externalSubmit";
+	//var demdiv = document.getElementById('demographics');
 
-	// add assignment ID
+// set form action
+form = document.getElementById("submitHIT");
+form.action = worker.turkSubmitTo + "/mturk/externalSubmit";
+  
+// Ask for demographic info on page
+form.insertAdjacentHTML('beforeEnd','Age:<br>') //insert form questions
+ageInput = document.createElement('input');
+ageInput.type = 'text';
+ageInput.name = 'age';
+ageInput.maxLength = '3';
+ageInput.style = 'width:50px';
+ageInput.onkeypress = function(){return isNumber(event)};//Prevent entry of non-numerical characters
+form.appendChild(ageInput);//append element
+form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+
+form.insertAdjacentHTML('beforeEnd','Gender:<br>') //insert form questions
+sexInput = document.createElement('input');
+sexInput.type = 'text';
+sexInput.style = 'width:100px';
+sexInput.maxLength = '20';
+sexInput.name = 'gender';
+form.appendChild(sexInput);
+form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+
+// form.insertAdjacentHTML('beforeEnd','Country:<br>') //insert form questions
+// countrySelect = document.createElement('select');
+// countrySelect.className = 'drop-menu';
+// countrySelect.name = 'country';
+// countrySelect.id = 'country';
+
+// //demdiv.appendChild(countrySelect);
+
+// //Create and append the options
+// for (var i = 0; i < countries.length; i++) {
+// 	var option = document.createElement("option");
+// 	option.value = countries[i];
+// 	option.text = countries[i];
+// 	countrySelect.appendChild(option);
+// }
+// form.appendChild(countrySelect);
+// form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+
+form.insertAdjacentHTML('beforeEnd','Comments:<br>') //insert form questions
+commentArea = document.createElement('textarea');
+commentArea.id = 'commentArea';
+commentArea.name = 'comment';
+commentArea.placeholder = 'Let us know what you think about the experiment here!';
+commentArea.maxlength = 1000;
+commentArea.style = 'width:500px; height:150px; padding:10px;';
+form.appendChild(commentArea);
+form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+
+//Invisible inputs for assignmentID and completion info
+// add assignment ID
 	assignmentInput = document.createElement('input');
 	assignmentInput.type = 'hidden';
 	assignmentInput.name = "assignmentId";
@@ -29,4 +81,14 @@
 	message.name = "code";
 	message.value = 'Finished';
 	form.appendChild(message);
+
+//Add submission button
+submitButton = document.createElement('input');
+submitButton.type = 'submit';
+submitButton.style = 'width:150px';
+submitButton.value = 'Submit';
+submitButton.className = 'classifybutton';
+form.appendChild(submitButton);
+form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+
 </script>

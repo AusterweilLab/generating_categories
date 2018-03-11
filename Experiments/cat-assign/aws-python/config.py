@@ -1,10 +1,11 @@
 # Set the HOST on AWS
-# HOST = 'mechanicalturk.sandbox.amazonaws.com'
-HOST = 'mechanicalturk.amazonaws.com'
+HOST = 'mechanicalturk.sandbox.amazonaws.com'
+#HOST = 'mechanicalturk.amazonaws.com'
 
 # configuration for the external HIT
 externalconfig = dict(
-		url = "https://alab.psych.wisc.edu/experiments/generate-categories/",
+		#url = "https://alab.psych.wisc.edu/experiments/generate-categories/",
+                url = "https://alab.psych.wisc.edu/experiments/catgen/",
 		frame_height = 600, 
 )
 

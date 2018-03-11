@@ -9,7 +9,7 @@ function startup() {
 	stimuli.make_stimuli()
 	
 	// load templates
-	load_template("html/templates/observe.html", observation);
+	//load_template("html/templates/observe.html", observation);
 	//load_template("html/templates/generate.html", generation);
 	load_template("html/templates/assignment.html", assignment);
 
@@ -20,7 +20,8 @@ function startup() {
 	savedata(data)
 
 	// BEGIN EXPERIMENT
-	inserthtml(observation.instructions);
+	inserthtml('html/submit.html')
+	//inserthtml(assignment.instructions);
 };
 
 // ------------------------------------------------------ //

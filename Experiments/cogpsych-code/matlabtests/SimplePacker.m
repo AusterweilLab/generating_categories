@@ -2,10 +2,10 @@
 
 specificity = 1;
 determinism = 1;
-tradeoff = .887;
-tradeoff2 = .2;
+tradeoff = [.887,.4,.6,.1];
+% tradeoff2 = .1;
 
-task = 'generate';
+task = 'assign';
 % stimTest = [0,1;1,0;0,0;1,1];
 % stimTrain = [0,1;1,0;];
 
@@ -40,11 +40,11 @@ stimTrain = cartesian([1:2],4);
 % stimTest = [0,1;1,0;0,0;1,1];
 % stimTrain = [0,1;1,0;0,0;1,1];
 
-stimTest = [.5,1;2,0;];
+stimTest = [1,0;0,1];
 stimTrain = [0,1;1,0];
 
 nStimTrain = size(stimTrain,1);
-
+nStimTest = size(stimTest,1);
 %Generate category indices that equally split the stim, if it can
 categories = repmat(1:2,floor(nStimTrain/2),1);%[1,1,1,1,2,2,2,2,2];
 if mod(nStimTrain,2)==0
@@ -55,10 +55,10 @@ end
 
 categories
 
-parms = [specificity,tradeoff,determinism];
-parms2 = parms;
-parms2(2) = tradeoff2;
-[p,distance] = PACKER(parms,stimTest,stimTrain,categories,task);
-[p2,distance2] = PACKER(parms2,stimTest,stimTrain,categories,task);
-
-[p,p2]
+pset = nan(nStimTest,numel(tradeoff));
+distanceset = cell(1,numel(tradeoff));
+for i = 1:numel(tradeoff)
+    parms = [specificity,tradeoff(i),determinism];
+    [pset(:,i),distanceset{i}] = PACKER(parms,stimTest,stimTrain,categories,task);
+end
+pset

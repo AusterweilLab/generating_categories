@@ -50,9 +50,11 @@ for i = 1:nparms
             range = currmax-currmin;
             if direction==1
                 parmsadj = (currparm-currmin)./range;
-                parmsx(i) = log(parmsadj./(1 - parmsadj));
+                parmsx(i) = logit(parmsadj,1);
+                %                 parmsx(i) = log(parmsadj./(1 - parmsadj));
             elseif direction==-1
-                parmsadj = 1./(1 + exp(-currparm));
+                parmsadj = logit(currparm,-1);
+                %                 parmsadj = 1./(1 + exp(-currparm));
                 parmsx(i) = parmsadj.*range + currmin;
             end
     end

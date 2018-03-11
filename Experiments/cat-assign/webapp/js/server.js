@@ -17,8 +17,8 @@ function checkworker() {
 		url: "cgi-bin/check-worker.cgi",
 		data: JSON.stringify(args),
 		
-		success: function(){console.log("Hooray - data sent!")},
-		error: function(){console.log("Uh oh spaghettios - something went wrong with the posting somewhere.")}
+		success: function(){console.log("Hooray - checkworker is working!")},
+		error: function(){console.log("Uh oh spaghettios - something went wrong with checkworker somewhere.")}
 	}).done( function(o) {
 		var res = JSON.parse(o);
 

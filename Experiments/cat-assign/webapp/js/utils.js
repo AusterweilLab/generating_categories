@@ -133,3 +133,15 @@ function inserthtml(f) {
 	// just use jquery this time
 	$(stage).load(f);
 }
+
+//Allow only entry of numbers in text box
+function isNumber(evt) {
+	evt = (evt) ? evt : window.event;
+	var charCode = (evt.which) ? evt.which : evt.keyCode;
+	if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+		//console.log('not num')
+		return false;
+	}
+	//console.log('yes ish num');
+	return true;
+}

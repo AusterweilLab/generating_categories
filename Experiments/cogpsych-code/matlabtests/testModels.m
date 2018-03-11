@@ -42,12 +42,14 @@ stimTestIdx = 1:nstim; %test entire stimulus space
 %Prepare startparms for each model    
 parmsInitAll = {[.2, .622, 2.2],... %[specificity,tradeoff,determinism] - PACKER
                 [.2,     2.2]}; %[specificity,determinism] - CopyTweak  
-parmsInitAll = {[rand, .8, rand],... %[specificity,tradeoff,determinism] - PACKER
+parmsInitAll = {[rand, rand, rand],... %[specificity,tradeoff,determinism] - PACKER
                 [rand,       rand]}; %[specificity,determinism] - CopyTweak
+            %force CopyTweak parms to be same as PACKER
+            parmsInitAll{2} = [parmsInitAll{1}(1),parmsInitAll{1}(3)];
 parmRulesAll = {[1e-10, 0, 0; NaN, 1, NaN],...
                 [1e-10,    0; NaN,    NaN]};
-parmNamesAll = {{'Specificity', 'Tradeoff', 'Determinism'};
-                 {'Specificity', 'Determinism'}};
+parmNamesAll = {{'Specifty', 'Tradeoff', 'Detrmnsm'};
+                 {'Specifty', 'Detrmnsm'}};
 %Transform parms according to rules
 stim{1} = stimTestIdx;
 stim{2} = stimTrainIdxAll;
@@ -65,6 +67,23 @@ llFinal = zeros(nmodels,1);
 predsFinal = zeros(nmodels,ndata);
 SSE = zeros(nmodels,1);
 opt = optimset('Display','none');
+
+%Print data
+datatt = [];
+for j = 1:nConditions
+    datatt = [datatt, reshape(data_p(j,:),nstim_axes)'];
+end
+dataf = flipud(datatt); % only take first layer of stim
+fprintf('\tObserved Data : \n')
+dataStr = repmat([repmat('%5.2f ',1, nstim_axes(1)), '|'],1,nConditions);
+for j = 1:nstim_axes(1)
+    fprintf(['\t    ',dataStr,'\n'],dataf(j,:));
+end
+if numel(nstim_axes)>2
+    fprintf('\t           Note: only first layer of data printed.\n')
+end
+fprintf('\n')
+
 for i = 1:nmodels
     model = models{i};
     parmsMin = parmRulesAll{i}(1,:);
@@ -73,21 +92,35 @@ for i = 1:nmodels
     parmsFinalt = fminsearch(@(x) loglike(x,model,data_k,data_total,stim,parmRulesAll{i}),parmsInit,opt);
     %Get final predictions
     [llFinal(i),predsFinalt] = loglike(parmsFinalt,model,data_k,data_total,stim,parmRulesAll{i});
-    predsFinal(i,:) = reshape(predsFinalt',ndata,1)';
+    predsFinal(i,:) = predsFinalt(:)';%reshape(predsFinalt',ndata,1)';
     %Transform final parms
     parmsFinal{i} = parmsxform(parmsFinalt,parmsMin,parmsMax,-1);
     SSE(i) = sum((predsFinal(i,:) - data_p(:)').^2);
     
-    %Print them out nicely
-    nparms = numel(parmNamesAll{i});
-    fprintf('%s:\n',func2str(model))
-    fprintf('\tLL = %7.3f\n',llFinal(i))
-    fprintf('\tSSE = %7.3f\n',SSE(i))
-    fprintf('\t')
+    %Print them out nicely    
+    nparms = numel(parmNamesAll{i});    
+    fprintf('%s:\n',func2str(model)) %Model name
+    
+    fprintf('\tParm names:  [');
     for j = 1:nparms
-        fprintf('%s =%7.3f, ',parmNamesAll{i}{j},parmsFinal{i}(j))
+        fprintf('%s, ',parmNamesAll{i}{j})
     end
-    fprintf('\n')    
+    fprintf(']\n') 
+    fprintf('\tStart parms: [');
+    for j = 1:nparms
+        fprintf('%8.4f, ',parmsInitAll{i}(j))
+    end
+    fprintf(']\n') 
+    
+    fprintf('\tLL = %8.4f\n',llFinal(i))
+    fprintf('\tSSE = %8.4f\n',SSE(i))
+    
+    fprintf('\tFinal parms: [')
+    for j = 1:nparms
+        fprintf('%8.4f, ',parmsFinal{i}(j))
+    end
+    fprintf(']\n')    
+    
     %Format preds
     predsFinaltt = [];
     for j = 1:nConditions
@@ -104,6 +137,9 @@ for i = 1:nmodels
     end
     fprintf('\n')
 end
+
+%Present plots
+
 
 
 

@@ -49,6 +49,12 @@ body {
   background-color:  white;
 }
 
+/* style for feedback */
+.feedback_area {
+	text-align: center;
+	padding: 20px;
+}
+
 .classifybutton:hover {
     background-color: #555555; /* Green */
     color: white;

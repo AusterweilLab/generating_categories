@@ -18,6 +18,7 @@ tradeoff = parms(2);
 determinism = parms(3);
 
 softmax = false;
+normsim = true;
 
 if nCat~=2
     error('Fix generation of fx vector in the code before proceeding')
@@ -49,8 +50,25 @@ for i = 1:nStimTest
     end
     for k = 1:nCat
         similarity_tradeoff(i,k) = sum(fx(:,k) .* similarity(:,i));
-    end
+    end    
 end
+
+
+%normalise similarities?
+if normsim
+    %Try logit - hmm... seems difficult to generate probabilities close to
+    %1 and 0.
+    %     similarity_tradeoff = logit(similarity_tradeoff,-1);
+    
+    %How about hyperbolic tangent? One that is scaled to between 0-1?
+    similarity_tradeoff = (tanh(similarity_tradeoff)+1)/2;    
+    %             maxsim = max(similarity_tradeoff,[],1);
+    %             minsim = min(similarity_tradeoff,[],1);
+    %             sizeadj = size(similarity_tradeoff,1);
+    %             simrange = repmat(maxsim-minsim,sizeadj,1);
+    %             similarity_tradeoff = (similarity_tradeoff-repmat(minsim,sizeadj,1))./simrange;
+end
+   
 
 % similarity
 % exp_sim
@@ -76,16 +94,19 @@ switch task
         sum_sim = repmat(sum_sim,1,nCat);
         p = 1-(exp_sim ./ sum_sim); %error
 end
-fx
-similarity
-similarity_tradeoff
-exp_sim
-sum_sim
-exp_sim(1)/sum_sim(1)
 
-sum_sim2 = sum(exp_sim,1);
-sum_sim2 = repmat(sum_sim2,nStimTest,1)
-p2 = exp_sim./sum_sim2
+% Some good variables to print when debugging
+% fx
+% similarity
+% similarity_tradeoff
+% exp_sim
+% sum_sim
+% exp_sim(1)/sum_sim(1)
+
+% sum_sim2 = sum(exp_sim,1);
+% sum_sim2 = repmat(sum_sim2,nStimTest,1)
+% p2 = exp_sim./sum_sim2
+
 p = p(:,1); %only take out category 1 (for now?) 010318
 
 

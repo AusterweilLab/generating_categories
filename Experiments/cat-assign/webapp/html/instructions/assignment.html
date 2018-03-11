@@ -1,13 +1,66 @@
 <div id='instructions'>
 
+<p>In this experiment, you will observe geometric figures like the ones below:</p>
+
+<div class = 'samples'>
+	<div class = "stimsample" id = "sample1"></div>
+	<div class = "stimsample" id = "sample2"></div>
+	<div class = "stimsample" id = "sample3"></div>
+	<div class = "stimsample" id = "sample4"></div>
+</div>
+
 <p>
-  Fantastic.
+Some figures belong to a category called "Alpha", while others belong to a category called "Beta".
+The figures that you will see will appear one at a time. Each time it appears, you will be asked
+which category it belongs to.
 </p>
-<p>In the next part of this experiment, you will be presented with a similar set of figures.</p>
-<p>This time, instead of
-  simply observing them, your task is to decide whether the presented figure belongs to the Alpha or Beta category.
+<p>
+Your job is to categorize the figures as best as you can. After
+you provide a response, the correct answer will be also be given as feedback. Therefore, although
+you will start the experiment by guessing the categories, try your best to use the feedback after
+each trial to learn as much as you can about the categories.
+</p>
+<p>
+Some categories may be difficult to learn. However, there will be many repetitions of each
+figure, so don't be disheartened if you initially get many of the categorizations incorrect.
+</p>
+
+<p>
+<i>Note: do not refresh the page or press the 'back' button during the experiment. You will be unable to resume your place.</i>
 </p>
 
 <a href='#' onclick='assign()'>Continue.</a>
-
 </div>
+
+
+<!-- show some samples -->
+<script type="text/javascript">
+	(function () {
+		var nums = [	
+						0, stimuli.side - 1, 
+						stimuli.nstimuli - (stimuli.side), 
+						stimuli.nstimuli - 1
+					]
+		var stim = stimuli.ilookup(nums);
+		var divs = ['sample1', 'sample2', 'sample3', 'sample4'];
+
+		for (var i = 0; i < 4; i++) {
+			stim[i].draw(document.getElementById(divs[i]))
+		}
+
+		}
+	) ();
+</script>
+
+<!-- stlying for samples -->
+<style type="text/css">
+	.stimsample {
+		display: inline-block;
+	}
+
+	.samples {
+		width: 115%;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+</style>
