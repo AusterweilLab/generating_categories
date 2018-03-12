@@ -145,3 +145,50 @@ function isNumber(evt) {
 	//console.log('yes ish num');
 	return true;
 }
+
+//Wait for inserthtml to be fully loaded before doing anything
+// see https://stackoverflow.com/questions/7001376/event-to-determine-when-innerhtml-has-loaded#11943401
+var waitUntil = function (fn, condition, interval) {
+	interval = interval || 100;
+
+	var shell = function () {
+		var timer = setInterval(
+			function () {
+				var check;
+
+				try { check = !!(condition()); } catch (e) { check = false; }
+
+				if (check) {
+					clearInterval(timer);
+					delete timer;
+					fn();
+				}
+			},
+			interval
+		);
+	};
+
+	return shell;
+};
+// To use the code above, add this into the script somewhere
+// waitUntil(
+// 		function () {
+// 			// the code you want to run here...
+// 			}
+// 		},
+// 		function() {
+// 			// the code that tests here... (return true if test passes; false otherwise)
+// 			return !!(stage.innerHTML !== '');
+// 		},
+// 		50 // amout to wait between checks
+// 	)();
+	
+
+
+//Convert pixels to cm
+function px2cm(px) {
+	var d = $("<div/>").css({ position: 'absolute', top : '-1000cm', left : '-1000cm', height : '1000cm', width : '1000cm' }).appendTo('body');
+	var px_per_cm = d.height() / 1000;
+	d.remove();
+	return px / px_per_cm;
+}

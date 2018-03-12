@@ -38,6 +38,11 @@ body {
   text-align: center;
 }
 
+/* style for goodness rating phase */
+#goodnessui{
+	text-align: center;
+}
+
 /* style for classification buttons */
 .classifybutton {
   width: 100px;
@@ -49,18 +54,25 @@ body {
   background-color:  white;
 }
 
-/* style for feedback */
-.feedback_area {
-	text-align: center;
-	padding: 20px;
-}
-
 .classifybutton:hover {
     background-color: #555555; /* Green */
     color: white;
 }
 
+.classifybutton:disabled,
+.classifybutton[disabled]{
+	background-color: #D3D3D3;
+	color: white;
+	border: 2px solid #939393;
+}
+
 .classifybutton:focus {outline:0;}
+
+/* style for feedback */
+.feedback_area {
+	text-align: center;
+	padding: 20px;
+}
 
 /* style for generate phase */
 #cycleui {
@@ -95,13 +107,15 @@ body {
 }
 
 #generatetxt {
-  text-align: left;
-  margin-top: 10px;
-  margin-bottom: 20px;
+	text-align: left;
+	margin-top: 10px;
+	margin-bottom: 20px;
 }
 
 #generate_controls {
-  width: 80%;
+	width: 50%;
+	text-align: center;
+	margin: 0 auto;
 }
 
 

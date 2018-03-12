@@ -66,12 +66,20 @@ Before publishing, remember to change these variables:
 2. in `config.py` Restore the right path to data on server
 (around line 11)
 
-Check that conditions names match in `config.py` (line 16)
+Check that conditions names match in `config.py` (probably near line 20)
 and that the counterbalance number in the next line is
 appropriate
 
 Also, remember to check where the Workers db is saved in
 Luke. I'm guessing this is a list of workers we want to
-block - check with Nolan.)
+block - check with Nolan.) - ok got it. It's can be accessed
+through the phpmyadmin mariadb5 server
 
+3. Add the `assignments.db` and `cmp_midbot.db` (if using
+   middle-bottom conditions, otherwise is `cmp_xcr.db`) to
+   the server data folder. This is NOT the one on mariadb,
+   but rather somewhere like here: 
+   /var/services/homes/xian/CloudStation/data/generate-categories
+   
+   Permissions have to be set appropriately in that folder
 

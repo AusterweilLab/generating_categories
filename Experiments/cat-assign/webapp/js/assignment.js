@@ -5,26 +5,25 @@ function assign() {
 	//Make raw unordered presentation list
 	var presentationorderT = [];
 	var categoryorderT = []	
-	for (i=0; i<assignment.nblocks; i++){
-		presentationorderT = presentationorderT.concat(data.info.stimuli)
-		categoryorderT = categoryorderT.concat(data.info.categories)		
-	}
-
-	shuffleidx = [];
 	var presentationorder = [];
 	var categoryorder = [];
-	for (i=0; i<presentationorderT.length; i++){
+
+	var shuffleidx = [];
+	for (i=0; i<data.info.stimuli.length; i++){
 		shuffleidx.push(i)
 	}
-	shuffle(shuffleidx)
 
-	// Shuffle presentation and category order according to the fixed shuffleindex
-	for (i=0; i<shuffleidx.length; i++){
-		curridx = shuffleidx[i];
-		presentationorder.push(presentationorderT[curridx]);
-		categoryorder.push(categoryorderT[curridx]);
+	for (i=0; i<assignment.nblocks; i++){		
+		presentationorderT = data.info.stimuli
+		categoryorderT = data.info.categories
+		//Shuffle the order within each block
+		shuffle(shuffleidx)
+		for (j=0; j<presentationorderT.length; j++){
+			presentationorder.push(presentationorderT[shuffleidx[j]]);
+			categoryorder.push(categoryorderT[shuffleidx[j]]);
+		}
 	}
-	//var presentationorder = randperm(stimuli.nstimuli);
+	//console.log(presentationorder);
 
 	// put elements in div, hide it
 	stage.innerHTML = assignment.ui;
@@ -65,16 +64,22 @@ function assign() {
 
 		// wait 1 isi, then draw new items
 		setTimeout( function() {
-				stimulusdiv.innerHTML = '';		
-				assignment.stimulus.draw(stimulusdiv);
-				stage.style.visibility = 'visible';
-				timer = Date.now(); // start timer
+			stimulusdiv.innerHTML = '';		
+			assignment.stimulus.draw(stimulusdiv);
+			stage.style.visibility = 'visible';
+			timer = Date.now(); // start timer
+			//Enable buttons
+			alphabutton.disabled = false;
+			betabutton.disabled = false;
 			}, assignment.isi
 		);
 
 	};
 
 	function classifyhandler(selection) {
+		//disable buttons
+		alphabutton.disabled = true;
+		betabutton.disabled = true;
 		assignment.rt = Date.now() - timer;
 		if (data.info.lab){ //for debugging
 			console.log('Prev: Stim ID, Response, Correct Cat: ' +
@@ -112,13 +117,15 @@ function assign() {
 	
 		if (assignment.counter == presentationorder.length) {
 			savedata(data);
-			finishup();
+			setTimeout(function(){			
+				inserthtml(goodness.instructions);
+			},assignment.isi * 2)
 
 		
-		} else {	// start next trial after 5 isi
+		} else {	// start next trial after 2 isi
 			setTimeout(function(){			
 				init();
-			},assignment.isi * 5)
+			},assignment.isi * 2)
 		}
 
 	}

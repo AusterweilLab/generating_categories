@@ -12,7 +12,7 @@ function startup() {
 	//load_template("html/templates/observe.html", observation);
 	//load_template("html/templates/generate.html", generation);
 	load_template("html/templates/assignment.html", assignment);
-
+	load_template("html/templates/goodness.html",goodness);
 	// get start time
 	data.info.start = Date.now();
 
@@ -20,8 +20,8 @@ function startup() {
 	savedata(data)
 
 	// BEGIN EXPERIMENT
-	inserthtml('html/submit.html')
-	//inserthtml(assignment.instructions);
+	//inserthtml('html/submit.html');
+	inserthtml(assignment.instructions);
 };
 
 // ------------------------------------------------------ //

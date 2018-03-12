@@ -91,4 +91,13 @@ submitButton.className = 'classifybutton';
 form.appendChild(submitButton);
 form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
 
+//Upon form submission, save the data in the server data folder
+$(form).submit(function(){
+	data.submit.age = ageInput.value;
+	data.submit.sex = sexInput.value;
+	data.submit.comments = commentArea.value;
+	savedata(data)
+}
+			  )
+
 </script>

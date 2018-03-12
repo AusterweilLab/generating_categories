@@ -7,10 +7,12 @@ var data = {
 		Experiment: 'Assigning-Generated-Categories',
 		Paradigm: 'TACL' //hmm what's this? SX 040318
 	},
-	observation: {},
+	submit:{}, //data on the final final page, incl demographics
+	//observation: {},
 	//generation: {},
 	//generalization: {},
 	assignment: {},
+	goodness:{},
 	info: {
 		exposed: false,
 		lab: null,
@@ -42,41 +44,11 @@ var exemplars = {
 
 // ------------------------------------------------------ //
 // phase-specific settings
-var observation = {
-	nblocks: 3, //3
-	counter: 0,
-	isi: 500,
-	ui: null,
-	instructions: 'html/instructions/observe.html',
-	trialDesc: ['This is a member of the Alpha category','This is a member of the Beta category'],
-	breakDesc: "<p>Excellent.</p><p> You have finished viewing examples of the Alpha category.</p><p> The next set of examples are members of the Beta category.</p><a href='#' id='continuebuttonbreak'>Continue.</a>"//'html/instructions/observebreak.html'
-};
-
-var generation = {
-	ntrials: 4,
-	counter: 0,
-	isi: observation.isi,
-	generated: [],
-	direction: {color: 1, size: 1},
-	stimulus: null,
-	rt: null,
-	ui: null,
-	instructions: 'html/instructions/generate.html'
-}
-
-var generalization = {
-	counter: 0,
-	isi: observation.isi,
-	stimulus: null,
-	rt: null,
-	ui: null,
-	instructions: 'html/instructions/generalize.html'
-}
 
 var assignment = {
-	nblocks: 1,
+	nblocks: 4,
 	counter: 0,
-	isi: observation.isi,
+	isi: 500,//500,
 	stimulus: null,
 	correctcat: null,
 	rt: null,
@@ -86,11 +58,24 @@ var assignment = {
 	feedback: 'Your answer is <font id=\'rightwrong\'>correct</font>. <br> This figure belongs to the <font id=\'feedcat\'></font> category.'
 }
 
+var goodness = {
+	nblocks: 1,
+	counter: 0,
+	postcounter:-1,
+	isi: assignment.isi,
+	sliderRange: 10,
+	stimulus: null,
+	correctcat: null,
+	rt: null,
+	ui: null,	
+	instructions: 'html/instructions/goodness.html',
+}
+
 // this information is not saved to the same file as "data"
 var worker = {}
 
 // quick HTML for a fixcross
-var fixcross = "<div id='fixcross'>+</div>" // 040318 should try to fix its centering though
+var fixcross = "<div id='fixcross'>&nbsp+</div>" // 040318 should try to fix its centering though
 
 // global timer
 var timer =  null;
