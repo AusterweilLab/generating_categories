@@ -192,3 +192,8 @@ function px2cm(px) {
 	d.remove();
 	return px / px_per_cm;
 }
+//Convert cm to pixels
+function cm2px(cm) {
+	var ratio = 1/px2cm(1); //pixels to cm
+	return ratio*cm
+}

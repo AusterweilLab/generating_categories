@@ -36,32 +36,46 @@ Table:
  - Column4: Experiment
  - Column5: Stimuli
  
- The author (Xian) is following in Nolan's footsteps and placing this
- experiment on Mechanical Turk through the python boto
- package. I suppose you could go and manually work through
- the swamp that is the AMT website (right now as of 090318
- at least), but I've found working through boto to be much
- easier. Anyway, to get this working, you'll need:
- 1. An AMT requester account, which you should link to
- 2. An AMT AWS account (I think it stands for amazon web services).
- 3. I also strongly recommmend testing on a sandbox account
+The author (Xian) is following in Nolan's footsteps and placing this
+experiment on Mechanical Turk through the python boto
+package. I suppose you could go and manually work through
+the swamp that is the AMT website (right now as of 090318
+at least), but I've found working through boto to be much
+easier. Anyway, to get this working, you'll need: 
+
+1. An AMT requester account, which you should link to 
+2. An AMT AWS account (I think it stands for amazon web
+ services).	
+3. I also strongly recommmend testing on a sandbox account
  first, so get that too.
- 
- With an AWS account, get the access keys and place them
- into a .boto file in your home directory. There should be
- clearer tutorials on this out there, I'd recommend googling
- if none of this makes sense. You can then test the
- connection by running the aws-python/check_connection.py
- script. If the url in the script is set to the sandbox
- account, you should see $10,000 printed in the console.
- Otherwise, it should be your actual account balance.
+
+
+With an AWS account, get the access keys and place them
+into a .boto file in your home directory. There should be
+clearer tutorials on this out there, I'd recommend googling
+if none of this makes sense. You can then test the
+connection by running the aws-python/check_connection.py
+script. If the url in the script is set to the sandbox
+account, you should see $10,000 printed in the console.
+Otherwise, it should be your actual account balance.
 
 # Notes
 
 Before publishing, remember to change these variables:
 
 1. For each cgi file restore the first line to be `#!
-/bin/python`
+/bin/python` -- the nifty `prepare4server.py` file handles
+this now. From a shell, run something like:
+```bash
+$ python prepare4server.py server
+```
+to change the header to `#! /bin/python`. Using `local`
+instead of `server` as the first argument will set the
+header to something appropriate for your local machine (for
+Xian's it's
+`#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python`.
+(There's probably some easy way to fix that on my local
+system, but I haven't had the time to try that yet.)
 
 2. in `config.py` Restore the right path to data on server
 (around line 11)
@@ -81,5 +95,5 @@ through the phpmyadmin mariadb5 server
    but rather somewhere like here: 
    /var/services/homes/xian/CloudStation/data/generate-categories
    
-   Permissions have to be set appropriately in that folder
+   Permissions have to be set appropriately in that folder.
 

@@ -1,8 +1,8 @@
 import boto.mturk.connection
 
 #HOST = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
-HOST = 'mechanicalturk.sandbox.amazonaws.com'
-#HOST = 'mechanicalturk.amazonaws.com'
+#HOST = 'mechanicalturk.sandbox.amazonaws.com'
+HOST = 'mechanicalturk.amazonaws.com'
 
 # get mturk connection
 mtc = boto.mturk.connection.MTurkConnection(host=HOST)

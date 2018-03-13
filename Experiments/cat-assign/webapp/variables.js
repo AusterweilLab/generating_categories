@@ -49,6 +49,7 @@ var assignment = {
 	nblocks: 4,
 	counter: 0,
 	isi: 500,//500,
+	isi_multiplier: 5,
 	stimulus: null,
 	correctcat: null,
 	rt: null,

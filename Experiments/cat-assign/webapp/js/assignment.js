@@ -1,7 +1,6 @@
 // based on the generalize function
 function assign() {
 	stage.innerHTML = '';	
-
 	//Make raw unordered presentation list
 	var presentationorderT = [];
 	var categoryorderT = []	
@@ -119,13 +118,13 @@ function assign() {
 			savedata(data);
 			setTimeout(function(){			
 				inserthtml(goodness.instructions);
-			},assignment.isi * 2)
+			},assignment.isi * assignment.isi_multiplier)
 
 		
 		} else {	// start next trial after 2 isi
 			setTimeout(function(){			
 				init();
-			},assignment.isi * 2)
+			},assignment.isi * assignment.isi_multiplier)
 		}
 
 	}

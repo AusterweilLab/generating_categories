@@ -32,6 +32,7 @@ function goodnessrating() {
 	// some function globals
 	var continuebutton;
 	var stimulusdiv;
+	var stimulus_surround;
 	var goodness_control;
 	var sliderfeedback;
 	var okgo;
@@ -39,12 +40,12 @@ function goodnessrating() {
 	var slidertxt;
 	
 	//randomise whether beta or alpha is being queried on the alst two trials
-	var shuffleABt = ['Alpha','Beta']
+	var shuffleABbase = ['Alpha','Beta']
 	var shuffleABidx = [0,1];
 	var shuffleAB = [];
 	shuffle(shuffleABidx)
 	for (i=0;i<2;i++){
-		shuffleAB.push(shuffleABt[shuffleABidx[i]]);
+		shuffleAB.push(shuffleABbase[shuffleABidx[i]]);
 	}
 	// function to start a new trial
 	function init() {
@@ -94,7 +95,7 @@ function goodnessrating() {
 
 		// define UI elements
 		continuebutton = document.getElementById('continuebutton');
-		stimulusdiv = document.getElementById('stimulus_surround');
+		stimulus_surround = document.getElementById('stimulus');
 		goodness_control = document.getElementById('goodness_control');
 		sliderfeedback = document.getElementById('sliderfeedback');
 		goodnesstxt = document.getElementById('goodnesstxt');
@@ -102,9 +103,30 @@ function goodnessrating() {
 		// configure controls
 		goodness_control.setAttribute('max', 10);
 		//Rewrite instructions
-		goodnesstxt.innerHTML = '<br>As a whole, how well do you think the <u><font id=\'alphabeta\'>Alpha</font></u> category was represented by all its members? Please provide your rating with the slider below, where 0 indicates that the category was very poorly represented and 10 indicates that the category was very well represented.<br><br>'
-		slidertxt.innerHTML = 'Goodness Rating for Category <font id=\'alphabeta2\'>Alpha</font>';
+		goodnesstxt.innerHTML = '<br>This was category <u><font class=\'alphabeta\'>Alpha</font></u>:';		
+		slidertxt.innerHTML = '<br>As a whole, how well do you think the <font class=\'alphabeta\'>Alpha</font> category was represented by all of its members? Please provide your rating with the slider below, where 0 indicates that the category was very poorly represented and 10 indicates that the category was very well represented.<br><br>'
+		//Clear stimulus surround and build 4 inner divs
+		stimulus_surround.innerHTML = '';
+		//stage.style = 'width:1000px';
+		//Enlarge body so that all four divs can fit
+		document.getElementsByTagName("body")[0].style = ' width:30cm'
+		stimulusdiv = [];
+		for (var i = 0; i < 4; i++){
+			stimulusdiv[i] = document.createElement('div')
+			stimulusdiv[i].id = 'stimDiv' + i
+			//Get stim size so its vert position can be adjusted
+			stimulusdiv[i].style = 'float:left;' + 
+				'margin-left:5px;' + 
+				'margin-right:5px;' + 
+				//'margin-top:auto;' + 
+				//'margin-bottom:auto;' + 
+				//'line-height:6.5cm' +
+				'position:relative;';			
+			stimulus_surround.appendChild(stimulusdiv[i]);
+		}
 
+		//'Goodness Rating for Category <font id=\'alphabeta2\'>Alpha</font>';
+		
 		//Don't allow progress without clicking on slider at least once
 		okgo = false;
 
@@ -119,12 +141,29 @@ function goodnessrating() {
 				//stimulusdiv.innerHTML = ('Heya')
 				//goodness.stimulus.draw(stimulusdiv)
 				//Erase stimulus space
-				stimulusdiv.outerHTML = '';
-				// Insert alpha or beta query
-				var alphabeta = document.getElementById('alphabeta');
-				var alphabeta2 = document.getElementById('alphabeta2');
-				alphabeta.innerHTML = shuffleAB[goodness.postcounter];
-				alphabeta2.innerHTML = shuffleAB[goodness.postcounter];
+				//stimulusdiv.outerHTML = '';
+				//Draw all category stimuli into 4 stimdivs within stim surround
+				var drawcount = 0
+				for (var i = 0; i < presentationorder.length; i++){
+					var currCat = shuffleAB[goodness.postcounter];
+					var currCatMatch =  shuffleABbase.indexOf(currCat);
+					if (categoryorder[i]==currCatMatch){
+						var stimId = presentationorder[i]; 
+						var currStim = stimuli.ilookup([stimId])[0];
+						currStim.draw(stimulusdiv[drawcount])
+						//Adjust vertical positions of stim
+						var height = currStim.size//stimulusdiv[drawcount].clientHeight;
+
+						var vertAdj = (6.5-height)/2; //6.5 is the original height of stimulus surround
+						stimulusdiv[drawcount].style.top = vertAdj + 'cm';
+						drawcount++;
+					}
+				}
+				var alphabetac = document.getElementsByClassName('alphabeta');
+				for (var i = 0;i<alphabetac.length; i++){
+					var element = alphabetac[i];
+					element.innerHTML = shuffleAB[goodness.postcounter];
+				}
 				stage.style.visibility = 'visible' // show ui
 				timer = Date.now(); // start timer		
 			},
@@ -181,6 +220,8 @@ function goodnessrating() {
 			if (goodness.counter > goodness.ntrials+1) {
 				savedata(data);
 				//inserthtml(generalization.instructions);
+				//Reset body width so that final page isn't weird
+				document.getElementsByTagName("body")[0].style = ' width:16cm'
 				finishup();
 			} else if (goodness.postcounter>=0){			
 				//go to final trial

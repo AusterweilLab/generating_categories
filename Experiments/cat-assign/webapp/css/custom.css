@@ -27,7 +27,14 @@ body {
   margin-top: auto;
   padding: 3px;
 }
-
+/* style for feedback on submit page*/
+.feedback{
+	color: red;
+	font-size: 12px;
+	width: 300px;
+	position:absolute;
+	text-align:left;
+}
 /* style for the fixcross */
 #fixcross {
   font-size: 25px;

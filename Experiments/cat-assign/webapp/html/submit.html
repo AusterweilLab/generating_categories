@@ -9,6 +9,8 @@
 	<form id = 'submitHIT' method = 'POST'>
 	<!--<input type="submit" class = 'classifybutton' style="width:150px" value="Submit">-->
 	</form> 
+	<div class='feedback' id = 'feedbackAge'></div>
+	<div class='feedback' id = 'feedbackSex'></div>
 </center>
 
 
@@ -88,11 +90,91 @@ submitButton.type = 'submit';
 submitButton.style = 'width:150px';
 submitButton.value = 'Submit';
 submitButton.className = 'classifybutton';
+submitButton.disabled = true; //enable only if go = true
 form.appendChild(submitButton);
 form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
 
-//Upon form submission, save the data in the server data folder
+
+//Validate inputs
+ageInput.onblur = function(){checkAll(0)}
+sexInput.onblur = function(){checkAll(1)}
+var checkInputs = [ageInput,sexInput];
+//Get all feedback divs
+var feedbackdivs = document.getElementsByClassName('feedback');
+for (var i=0; i<feedbackdivs.length; i++){
+	//i = 1:Age; 1 = 2:Sex
+	var feedbackdiv = feedbackdivs[i];// = document.getElementById('feedbackAge')
+	//Get dim of input so feedback can be aligned
+	var inputDim = checkInputs[i].getBoundingClientRect();
+	feedbackdiv.style.top = inputDim.y + 'px';
+	feedbackdiv.style.left = inputDim.x + inputDim.width + 10 + 'px'
+};
+var feedbackSex = document.getElementById('feedbackSex')
+var go = false;
+
+var visits = [false,false]; //check to see if participant has visited the age and sex inputs
+
+function checkAge(){
+	var checkVal = ageInput.value;
+	var ageGo = false
+	var generic = 'Please enter an appropriate age. ';
+	var elaborations = ['If you are truly over 110 years old, leave your age as 110.','If you are under 18 years old, you are not eligible for participation in this task.']
+	var feedbackAge = feedbackdivs[0];
+	visits[0] = true;
+	if (checkVal.length<1){
+		feedbackAge.innerHTML = generic;
+	} else if (checkVal>110){
+		feedbackAge.innerHTML = generic+elaborations[0]
+	} else if (checkVal<18){
+		feedbackAge.innerHTML = generic+elaborations[1]
+	} else {
+		feedbackAge.innerHTML = '';
+		ageGo = true;
+	}
+	return ageGo
+}
+function checkSex(){
+	var checkVal = sexInput.value;
+	var sexGo = false;
+	var generic = 'Please enter something for your gender. If you would rather not provide this information, simply enter \'Undisclosed\' in the box.';
+	visits[1] = true;
+	var feedbackSex = feedbackdivs[1];
+	if (checkVal.length<1){
+		feedbackSex.innerHTML = generic;
+	} else {
+		feedbackSex.innerHTML = '';
+		sexGo = true;
+	}
+	return sexGo
+}
+
+function checkAll(input){	
+	var ageGo = false
+	var sexGo = false
+
+	if (input==1){
+		sexGo = checkSex();
+		if (visits[0]){ // also check the other one if it's been visited
+			ageGo = checkAge();
+		}
+	}
+	if (input==0){
+		ageGo = checkAge();	
+		if (visits[1]){ // also check the other one if it's been visited
+			sexGo = checkSex();
+		}
+	}
+	
+	if (sexGo && ageGo){
+		submitButton.disabled = false;
+	} else {
+		submitButton.disabled = true;
+	}
+}
+
+//Upon form submission, stop timer and save the data in the server data folder
 $(form).submit(function(){
+	data.submit.timeTotal = Date.now() - data.info.start;
 	data.submit.age = ageInput.value;
 	data.submit.sex = sexInput.value;
 	data.submit.comments = commentArea.value;

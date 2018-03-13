@@ -8,6 +8,8 @@ import re
 # from os import listdir
 from os.path import isfile, join
 
+debug = False; #If true, no file writing occurs
+
 cgidir = 'webapp/cgi-bin'
 headerchangedef = 'local'
 
@@ -23,17 +25,27 @@ if __name__ == "__main__":
 else:
     headerchange = headerchangedef; #default
 
-#Serverheader
+#Define possible headers
 headerserver = '#! /bin/python';
 headerlocal  = '#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python'; 
 
-#Match line breaks
-pattern = r'#!.*\n';#'(\r\n?|\n)+'
+#Define possible data locations
+datadirserver = 'destination = "/var/services/homes/xian/CloudStation/data/generate-categories"';
+datadirlocal = 'destination = "../../datatemp"';
 
 if headerchange == 'server':
     header = headerserver
+    datadir = datadirserver
 elif headerchange == 'local':
     header = headerlocal
+    datadir = datadirlocal
+else:
+    header = ''
+    datadir = ''
+
+#Work on changing the header first
+#Match line breaks
+pattern = r'#!.*\n';#'(\r\n?|\n)+'
     
 for file in os.listdir(cgidir):
     if file.endswith(".cgi"):
@@ -45,14 +57,44 @@ for file in os.listdir(cgidir):
             #startMatch = findMatch[0][0]
             endMatch = findMatch[-1][-1]
             strLength = len(fileStr)
-            if fileStr[0:endMatch] == header+'\n':
-                print('Header of ' + join(cgidir,file) + ' same as request, so not changed.')
+            if len(header)>0:
+                if fileStr[0:endMatch] == header+'\n':
+                    print('Header of ' + join(cgidir,file) + ' same as request, so not changed.')
+                else:
+                    newfileStr = header + '\n' + fileStr[endMatch:strLength]
+                    if debug:
+                        print(newfileStr)
+                    else:
+                        with open(join(cgidir,file),'w') as writefile:
+                            writefile.write(newfileStr)
+                    print('Changed header of ' + join(cgidir,file) + ' to ' + header)
+            else: #checking mode - only print headers found
+                print('Header of ' + join(cgidir,file) + ': ' + fileStr[0:endMatch-1])
+
+                
+#Then, check that the data directory is appropriately specified
+pattern = r'\n\s*destination = .*"'
+file = 'config.py';
+with open(join(cgidir,file),'r') as readfile:
+    fileStr = readfile.read()
+findMatch = [(m.start(0), m.end(0)) for m in re.finditer(pattern, fileStr)]
+if len(findMatch)>0:
+    startMatch = findMatch[0][0]
+    endMatch = findMatch[-1][-1]
+    strLength = len(fileStr)
+    if len(header)>0:
+        if fileStr[startMatch:endMatch] == '\n' + datadir:
+            print('Data location specified in ' + join(cgidir,file) + ' same as request, so not changed.')
+        else:
+            newfileStr = fileStr[0:startMatch] + '\n' + datadir + fileStr[endMatch:strLength]
+            if debug:
+                print(newfileStr)
             else:
-                newfileStr = header + '\n' + fileStr[endMatch:strLength]
                 with open(join(cgidir,file),'w') as writefile:
                     writefile.write(newfileStr)
-                print('Changed header of ' + join(cgidir,file) + ' to ' + header)
-                
+            print('Changed data location of ' + join(cgidir,file) + ' to ' + datadir)
+    else: #checking mode - only print headers found
+        print('Data location of ' + join(cgidir,file) + ': ' + fileStr[startMatch+1:endMatch])
 
             
                     

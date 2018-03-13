@@ -20,8 +20,8 @@ function startup() {
 	savedata(data)
 
 	// BEGIN EXPERIMENT
-	//inserthtml('html/submit.html');
 	inserthtml(assignment.instructions);
+	//inserthtml(goodness.instructions);
 };
 
 // ------------------------------------------------------ //

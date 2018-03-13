@@ -71,8 +71,8 @@ response = mtc.create_hit(question=boto.mturk.question.ExternalQuestion(
                           title="Answer a simple question",
                           description="Help research a topic",
                           keywords="question, answer, research",
-                          duration=120,
-                          reward=0.50,
+                          duration=3600, #3600 s in 1 hour
+                          reward=1.00,
                           qualifications = qualifications)
 # The response included several fields that will be helpful later
 hit_type_id = response[0].HITTypeId
