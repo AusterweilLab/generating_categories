@@ -22,6 +22,7 @@ function startup() {
 	// BEGIN EXPERIMENT
 	inserthtml(assignment.instructions);
 	//inserthtml(goodness.instructions);
+	//inserthtml('html/submit.html')
 };
 
 // ------------------------------------------------------ //

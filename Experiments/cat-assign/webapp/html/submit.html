@@ -84,6 +84,21 @@ form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
 	message.value = 'Finished';
 	form.appendChild(message);
 
+// add matchedppt
+matchppt = document.createElement('input');
+matchppt.type = 'hidden';
+matchppt.name = "matchppt";
+matchppt.value = data.info.pptmatch;
+form.appendChild(matchppt);
+
+// add time take
+var timeTaken = Date.now() - data.info.start
+timet = document.createElement('input');
+timet.type = 'hidden';
+timet.name = "timetaken";
+timet.value = timeTaken;
+form.appendChild(timet);
+
 //Add submission button
 submitButton = document.createElement('input');
 submitButton.type = 'submit';
@@ -174,7 +189,7 @@ function checkAll(input){
 
 //Upon form submission, stop timer and save the data in the server data folder
 $(form).submit(function(){
-	data.submit.timeTotal = Date.now() - data.info.start;
+	data.submit.timeTotal = timeTaken;
 	data.submit.age = ageInput.value;
 	data.submit.sex = sexInput.value;
 	data.submit.comments = commentArea.value;

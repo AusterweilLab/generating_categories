@@ -4,8 +4,8 @@ from boto.mturk.connection import MTurkConnection
 from boto.mturk.question import HTMLQuestion
 import boto.mturk.qualification
 # Create your connection to MTurk
-#mtc = MTurkConnection(aws_access_key_id='your_access_key_here',
-#aws_secret_access_key='your_secret_key_here',
+
+#HOST = 'mechanicalturk.amazonaws.com'
 HOST = 'mechanicalturk.sandbox.amazonaws.com'
 mtc = boto.mturk.connection.MTurkConnection(host=HOST)
 
@@ -82,3 +82,6 @@ hit_id = response[0].HITId
 print "Your HIT has been created. You can see it at this link:"
 print "https://workersandbox.mturk.com/mturk/preview?groupId={}".format(hit_type_id)
 print "Your HIT ID is: {}".format(hit_id)
+# Get balance and print
+balance = mtc.get_account_balance()
+#mtc.close()
