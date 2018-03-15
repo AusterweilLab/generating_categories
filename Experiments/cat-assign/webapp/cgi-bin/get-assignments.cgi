@@ -50,18 +50,42 @@ if participant_num >= max_new_pid:
         query = """
         SELECT MatchedPpt 
         FROM Assignments
-        WHERE Complete = 0        
+        WHERE Complete = 1        
         """
         c.execute(query)
-        matchlist_tup = c.fetchall()
+        donelist_tup = c.fetchall()
         #convert from list of tuples to list of ints
-        matchlist_int = [i[0] for i in matchlist_tup]
+        donelist_int = [i[0] for i in donelist_tup]
+        donelist = np.unique(donelist_int)
 
-        if len(matchlist_int) > 0:        
-                participant_match = random.choice(matchlist_int)
+        matchlist = []
+        for i in range(max_new_pid):
+                if all(donelist!=i):
+                        matchlist.append(i)
+
+        matchlistBase = matchlist #for random allocation in case matchlist is completely removed
+
+        #If element in matchlist has been recently assigned, whether it's complete or not, remove from matchlist
+        query_recent = """
+        SELECT MatchedPpt
+        FROM Assignments
+        """
+        c.execute(query_recent)
+        listall = c.fetchall()
+        lastmatch = listall[-1][0]
+        #Remove from matchlist
+        if lastmatch in matchlist:
+                #Remove up to index of lastmatch
+                index = matchlist.index(lastmatch)+1
+                matchlist = matchlist[index:len(matchlist)]
+                if len(matchlist) == 0:
+                        matchlist = matchlistBase
+
+        if len(matchlist) > 0:        
+                participant_match = matchlist[0] #random.choice(matchlist)
         else:
                 #Randomly assign a match if everything is complete (to avoid angry workers)
-                participant_match = random.choice(range(max_new_pid))
+                participant_match = random.choice(matchlist) #random.choice(range(max_new_pid))
 
 else:
         participant_match = participant_num

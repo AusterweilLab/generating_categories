@@ -3,35 +3,48 @@ import boto.mturk.connection
 #HOST = 'mechanicalturk.sandbox.amazonaws.com'
 HOST = 'mechanicalturk.amazonaws.com'
 
-hit_id = '3B623HUYJ5QM7WRV82A0Z454ZZ8S8X';
+#hit_id = '3B623HUYJ5QM7WRV82A0Z454ZZ8S8X';
 mtc = boto.mturk.connection.MTurkConnection(host=HOST)
 
 
 
 feedback2worker = 'Thanks for completing the task!'
+allHITs = mtc.get_all_hits()
 
-assignments = mtc.get_assignments(hit_id)
-for assignment in assignments:
-    assignmentID = assignment.AssignmentId
-    worker_id = assignment.WorkerId
-    submit_time = assignment.SubmitTime
-    timetakenMins = '?'
-    bonusDue = 0;
-    print worker_id
-    print submit_time    
-    for answer in assignment.answers[0]:
-        print answer.fields
-        if answer.qid == 'timetaken':
-            timetaken = answer.fields[0]
-            timetakenMins = timetaken/60000
-            bonusDue = np.ceil(float(timetakenMins)/10)-1
-    print 'Time taken: ' + str(timetakenMins)
-    print 'BonusDue: ' + str(bonusDue)
-    print '-----------'
+assignments_topay = [];
+assignments_tobonus = [];
+for hit in allHITs:
+    hit_id = hit.HITId
+    assignments = mtc.get_assignments(hit_id)
+    for assignment in assignments:
+        assignmentID = assignment.AssignmentId
+        worker_id = assignment.WorkerId
+        submit_time = assignment.SubmitTime
+        timetakenMins = '?'
+        bonusDue = 0;
+        print 'Assignment: ' + assignmentID
+        print 'Worker:     ' + worker_id
+        print 'HitID:      ' + hit_id        
+        #print submit_time    
+        for answer in assignment.answers[0]:
+            print answer.qid + ': ' + str(answer.fields[0])
+            if answer.qid == 'timetaken':
+                timetaken = answer.fields[0]
+                timetakenMins = round(float(timetaken)/60000,2)
+                bonusDue = np.ceil(float(timetakenMins)/10)-1
+        print 'Time taken: ' + str(timetakenMins) + ' mins'
+        print 'BonusDue: $' + str(bonusDue)
+        print '-----------'
+        #save only assignments submitted for approval
+        if assignment.AssignmentStatus == 'Submitted':
+            assignments_topay.append(assignmentID)
+        if bonusDue>0:
+            assignment_tobonus.append(assignmentID)
+        
 
 hitObj = mtc.get_hit(hit_id)
 reward = hitObj[0].FormattedPrice
-testpass = raw_input('You are about to pay all ' + str(len(assignments)) + ' of these participants ' + reward + ' each (base amount).\nTo continue, type \'yes\': ')
+testpass = raw_input('You are about to pay all ' + str(len(assignments_topay)) + ' of these participants ' + reward + ' each (base amount).\nTo continue, type \'yes\': ')
 if testpass=='yes':
     paypass = True
 else:
@@ -42,7 +55,17 @@ if paypass:
     for assignment in assignments:
         assignmentID = assignment.AssignmentId
         worker_id = assignment.WorkerId
-        print 'Approving worker {} for assignment {}.'.format(worker_id,assignmentID)
+        hit_id = assignment.HITId
+        print 'Approving worker {} for assignment {} (HIT {}).'.format(worker_id,assignmentID,hit_id)
+
+
+
+# Get balance and print
+balance = mtc.get_account_balance()
+print 'Balance remaining: ' + str(balance)
+
+# Look at bonuses
+
         #mtc.approve_assignment(assignmentID,feedback2worker)
 
 

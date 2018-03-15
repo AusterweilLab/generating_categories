@@ -1,6 +1,7 @@
 import cgitb
 cgitb.enable()
 import json, sys, os, sqlite3, random
+import numpy as np
 
 print "Content-Type: text/html"			# HTML is following
 print 															# blank line, end of headers

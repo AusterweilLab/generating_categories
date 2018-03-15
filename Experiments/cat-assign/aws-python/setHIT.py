@@ -9,6 +9,12 @@ import boto.mturk.qualification
 HOST = 'mechanicalturk.sandbox.amazonaws.com'
 mtc = boto.mturk.connection.MTurkConnection(host=HOST)
 
+#See if assignments_per_batch already exists outside this script.
+#If it doesn't use default of 9.
+if not ( 'assignments_per_batch' in locals()):
+    assignments_per_batch = 9
+
+
 #host='mechanicalturk.sandbox.amazonaws.com'
 # question_html_value = """
 # <html>
@@ -68,7 +74,7 @@ qualifications.add(
 # Check out the documentation on CreateHIT for more details
 response = mtc.create_hit(question=boto.mturk.question.ExternalQuestion( 
     externalconfig['url'], externalconfig['frame_height'] ),
-                          max_assignments=9,
+                          max_assignments=assignments_per_batch,
                           title="Category learning experiment (5-10 mins)",
                           description="Learn a new category in a quick HIT",
                           keywords= "category, learning, psychology, experiment",
@@ -79,9 +85,15 @@ response = mtc.create_hit(question=boto.mturk.question.ExternalQuestion(
 # The response included several fields that will be helpful later
 hit_type_id = response[0].HITTypeId
 hit_id = response[0].HITId
-print "Your HIT has been created. You can see it at this link:"
-print "https://workersandbox.mturk.com/mturk/preview?groupId={}".format(hit_type_id)
+
+if HOST = 'mechanicalturk.sandbox.amazonaws.com':
+    print "Your HIT has been created. You can see it at this link:"
+    print "https://workersandbox.mturk.com/mturk/preview?groupId={}".format(hit_type_id)
+else:
+    print "Your HIT has been officially created"
+    
 print "Your HIT ID is: {}".format(hit_id)
 # Get balance and print
 balance = mtc.get_account_balance()
+print 'Balance remaining: ' + str(balance)
 #mtc.close()

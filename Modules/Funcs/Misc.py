@@ -1,4 +1,5 @@
 import numpy as np
+import sqlite3
 from scipy.spatial import ConvexHull
 
 def stats_battery(betas, alphas = None):
@@ -358,3 +359,42 @@ def valData(ins,s,options,tries = 5):
                 outs = valData(ins,s,options,tries)                
                 
         return outs
+
+def getMatch(match,db='../data_utilities/cmp_midbot.db',fetch='Old'):
+        """
+        Fetch the Old and Matched participant number given some database. 
+        Matches to the matched ppt number by default (i.e., fetches the old ppt number).
+        """
+        conn  = sqlite3.connect(db)
+        
+        #Use cursor method to get data, since it doesn't seem to like sqlite3 for some reason
+        c = conn.cursor()
+        c.execute('SELECT * FROM stimuli')
+        data = c.fetchall();
+        dataA = np.array(data);
+        uniquePpt = np.unique(dataA[:,0]);        
+        ar = [[int(ppt),int(dataA[dataA[:,0]==ppt,1][0])] for ppt in uniquePpt]
+        #uniquePpt = [[row[0],row[1]] for i,row in enumerate(data) if row[0] != data[max(i-1,0)][0]] #whoo. Ugly, but works! Actually no it doesn't. It leaves out index 0:(
+        ar = np.array(ar)
+        #sort this
+        ar = ar[ar[:,0].argsort()]
+        if fetch == 'Old':
+                matchCol = 0 #Match
+                fetchCol = 1
+        else: #if fetch == 'New':
+                matchCol = 1
+                fetchCol = 0
+
+        if match=='all':
+                out = ar
+        else:
+                row = ar[ar[:,matchCol]==match,:]
+                row = row.squeeze()
+                if len(row)>0:
+                        out = row[fetchCol]
+                else:
+                        out = [];
+
+        return out
+
+

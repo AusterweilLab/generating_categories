@@ -41,7 +41,7 @@ function getassignments() {
 		type: "POST",
 		url: "cgi-bin/get-assignments.cgi",
 	}).done( function(o) {
-		if (data.info.lab){console.log(o)} //for debugging
+		console.log(o) //for debugging		
 		var res = JSON.parse(o);
 		data.info.participant = res.data.participant;
 		data.info.pptmatch = res.data.participant_match
