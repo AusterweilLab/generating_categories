@@ -13,7 +13,7 @@ import numpy as np
 #np.random.seed(9001)
 
 # Specify default dataname
-dataname_def = 'nosofsky1986'#'NGPMG1994'
+dataname_def = 'pooled-no1st'#'nosofsky1986'#'NGPMG1994'
 participant_def = 'all'
 unique_trials_def = 'all'
 
@@ -65,7 +65,7 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
 	X = model_obj.params2dict(model_obj.clipper(res.x))
 	results[model_obj.model] = X
 
-        Simulation.show_final_p(model_obj,trials,res.x, show_data = True)
+        #Simulation.show_final_p(model_obj,trials,res.x, show_data = False)
                 
 
 for k,v in results.items():

@@ -5,6 +5,8 @@ import numpy as np
 import time
 execfile('../analysis/Imports.py')
 import Modules.Funcs as funcs
+import boto
+from boto.mturk.connection import MTurkConnection
 
 #Get list
 matchdb='../data_utilities/cmp_midbot.db'
@@ -13,13 +15,36 @@ list = funcs.getMatch('all',matchdb)[:,0]
 
 listcheck = np.zeros(len(list),dtype=bool)
 listdone = [0,5,6,7,9,10,11,12,13] #the first 9 from hit 3B623HUYJ5QM7WRV82A0Z454ZZ8S8X
-#Difficult to check server for which mathed ppt is done, so I'll skip that for
-#now. It will suffice to simply repaet batches of 9 until I reach 122 or so.
-batch_duration = 2*60*60 #in seconds #small amount for testing
+
+#Difficult to check server for which matched ppt is done, so I'll skip that for
+#now. It will suffice to simply repeat batches of 9 until I reach 122 or so.
+#batch_duration = 1*60*60 #in seconds #small amount for testing
 check_interval_time = 10*60 #check every ten mins if number of assignments pending is zero. If so, run next hit.
 force_expiry_interval = 12 #for expiry on current batch after this many intervals
 time_between_hits = 1*10
-n_undone = len(list)
+
+#Make first pass at what's not yet done
+HOST = 'mechanicalturk.amazonaws.com'
+#HOST = 'mechanicalturk.sandbox.amazonaws.com'
+mtc = boto.mturk.connection.MTurkConnection(host=HOST)
+    
+allHITs = mtc.get_all_hits();
+for hit in allHITs:
+    hit_id = hit.HITId
+    assignments = mtc.get_assignments(hit_id)
+    for assignment in assignments:
+        for answer in assignment.answers[0]:
+            if answer.qid == 'matchppt':
+                listdone.append(int(answer.fields[0]))
+
+#However, maybe due to submission issues on the client end (there really shouldn't be too many...), there can be completed data sets that are not registered on the AMT end. If so, manually include them in this list here to be treated as done.
+manual_donelist = [47,88]
+listdone += manual_donelist
+
+for j in listdone:
+    listcheck = listcheck | (list==j)
+listundone = list[~listcheck]
+n_undone = len(listundone)
 
 for i in range(15):
     assignments_per_batch = min(n_undone,9) #Note that this overwrites the default in setHIT.py
@@ -30,6 +55,7 @@ for i in range(15):
     #Let timer run
     check_interval_count = 0
     while check_interval_count < force_expiry_interval:
+        check_interval_count += 1
         time.sleep(check_interval_time)        
         #Run check after timeout - if number
         #of assignments in hit is satisfied, break from loop

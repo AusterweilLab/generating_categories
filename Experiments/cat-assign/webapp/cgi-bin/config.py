@@ -11,7 +11,7 @@ print 															# blank line, end of headers
 # This is where all the data is stored (X.json and workers.db) 
 #destination = "/var/services/homes/xian/CloudStation/data/generate-categories"
 #destination = "../../datatemp"
-destination = "/var/services/homes/xian/CloudStation/data/generate-categories"
+destination = "../../datatemp"
 assignmentdb = destination + "/assignments.db"
 
 # Prepare to load stimuli db (from the earlier experiments

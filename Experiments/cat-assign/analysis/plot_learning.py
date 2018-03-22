@@ -14,7 +14,7 @@ execfile('Imports.py')
 import Modules.Funcs as funcs
 
 #Import data
-con = sqlite3.connect('../data_utilities/experiment.db')
+con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT * from participants", con)
 assignment = pd.read_sql_query("SELECT * from assignment", con)
 goodnessE = pd.read_sql_query("SELECT * from goodnessExemplars", con)
@@ -54,11 +54,11 @@ for i, row in info.iterrows():
         blockAssign = pptAssign.iloc[blockIdx==j]
         accuracyEl = float(sum(blockAssign.correctcat == blockAssign.response))/nBaseStim
         error.append(1-accuracyEl)
-        
+    pptmatch = row.pptmatch
     #Prepare to plot configuration
     #get matched data
     matchdb='../data_utilities/cmp_midbot.db'
-    matched = funcs.getMatch(ppt,matchdb)
+    matched = funcs.getMatch(pptmatch,matchdb)
 
     condition = row.condition
     palphas = alphas_m[condition]
@@ -77,11 +77,11 @@ for i, row in info.iterrows():
     ax[0].set_ylabel('p(error)')
     ax[0].xaxis.set_ticks(range(nBlocks))
     ax[0].set_title('Learning curve')
-    #Plot condigurations
+    #Plot configurations
     funcs.plotclasses(ax[1], stimuli_m, palphas, pbetas)
     ax[1].set_title('Stimulus Configuration\n ID Old: {} ID Current:{}'.format(matched,ppt))
     
-    fname = os.path.join(savedir,str(ppt) + '.png')
+    fname = os.path.join(savedir,str(matched) + '.png')
     fh.savefig(fname, bbox_inches='tight', transparent=False)
     plt.cla()
     

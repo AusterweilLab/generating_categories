@@ -1,4 +1,4 @@
-#! /bin/python
+#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python
 
 #  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # This script assigns a participant number, experiment condition
@@ -62,9 +62,8 @@ if participant_num >= max_new_pid:
         for i in range(max_new_pid):
                 if all(donelist!=i):
                         matchlist.append(i)
-
+        
         matchlistBase = matchlist #for random allocation in case matchlist is completely removed
-
         #If element in matchlist has been recently assigned, whether it's complete or not, remove from matchlist
         query_recent = """
         SELECT MatchedPpt

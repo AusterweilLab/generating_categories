@@ -5,15 +5,23 @@ from boto.mturk.question import HTMLQuestion
 import boto.mturk.qualification
 # Create your connection to MTurk
 
-#HOST = 'mechanicalturk.amazonaws.com'
-HOST = 'mechanicalturk.sandbox.amazonaws.com'
+#debug, if on, doesn't create hit
+debug = False;
+
+if not ('HOST' in locals()):
+    #HOST = 'mechanicalturk.amazonaws.com'
+    HOST = 'mechanicalturk.sandbox.amazonaws.com'
+
+if debug:
+    #No matter what, if debug is on, use the sandbox as host
+    HOST = 'mechanicalturk.sandbox.amazonaws.com'
+    
 mtc = boto.mturk.connection.MTurkConnection(host=HOST)
 
 #See if assignments_per_batch already exists outside this script.
 #If it doesn't use default of 9.
 if not ( 'assignments_per_batch' in locals()):
     assignments_per_batch = 9
-
 
 #host='mechanicalturk.sandbox.amazonaws.com'
 # question_html_value = """
@@ -72,21 +80,28 @@ qualifications.add(
 # duration is the # of seconds Workers have to complete your HIT
 # reward is what Workers will be paid when you approve their work
 # Check out the documentation on CreateHIT for more details
-response = mtc.create_hit(question=boto.mturk.question.ExternalQuestion( 
-    externalconfig['url'], externalconfig['frame_height'] ),
-                          max_assignments=assignments_per_batch,
-                          title="Category learning experiment (5-10 mins)",
-                          description="Learn a new category in a quick HIT",
-                          keywords= "category, learning, psychology, experiment",
-                          duration=3600, #3600 s in 1 hour
-                          lifetime = datetime.timedelta(days = 5),
-                          reward=1.00,
-                          qualifications = qualifications)
-# The response included several fields that will be helpful later
-hit_type_id = response[0].HITTypeId
-hit_id = response[0].HITId
 
-if HOST = 'mechanicalturk.sandbox.amazonaws.com':
+if debug:
+    print 'Pretend to setHIT here'
+    hit_type_id = 'debug'
+    hit_id = 'debug'
+else:
+    response = mtc.create_hit(question=boto.mturk.question.ExternalQuestion( 
+        externalconfig['url'], externalconfig['frame_height'] ),
+                              max_assignments=assignments_per_batch,
+                              title="Category learning experiment (5-10 mins)",
+                              description="Learn a new category in a quick HIT",
+                              keywords= "category, learning, psychology, experiment",
+                              duration=3600, #3600 s in 1 hour
+                              lifetime = datetime.timedelta(days = 5),
+                              reward=1.00,
+                              qualifications = qualifications)
+
+    # The response included several fields that will be helpful later
+    hit_type_id = response[0].HITTypeId
+    hit_id = response[0].HITId
+
+if HOST == 'mechanicalturk.sandbox.amazonaws.com':
     print "Your HIT has been created. You can see it at this link:"
     print "https://workersandbox.mturk.com/mturk/preview?groupId={}".format(hit_type_id)
 else:

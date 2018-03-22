@@ -99,7 +99,8 @@ assignment = pd.DataFrame(rows, dtype = int)
 #execfile('printMatchList.py') # load getMatch function to plot stim space
 matchdb='../data_utilities/cmp_midbot.db'
 #funcs.getMatch(1,matchdb) #an example of getting a participant match
-for i in range(14):
+nPpt = max(assignment['participant'])
+for i in range(nPpt):
         assdata = assignment.loc[assignment['participant']==i]
         pptdata = participants.loc[participants['participant']==i]
         accuracy = float(sum(assdata['correctcat']==assdata['response']))/32;

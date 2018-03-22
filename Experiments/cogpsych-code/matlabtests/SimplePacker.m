@@ -2,7 +2,7 @@
 
 specificity = 1;
 determinism = 1;
-tradeoff = [.887,.4,.6,.1];
+tradeoff = [.887,.5,.4,.1];
 % tradeoff2 = .1;
 
 task = 'assign';

@@ -1,18 +1,22 @@
 #Approve all assignments in a given hit id
 import boto.mturk.connection
+import numpy as np
 #HOST = 'mechanicalturk.sandbox.amazonaws.com'
 HOST = 'mechanicalturk.amazonaws.com'
 
 #hit_id = '3B623HUYJ5QM7WRV82A0Z454ZZ8S8X';
 mtc = boto.mturk.connection.MTurkConnection(host=HOST)
 
+block_payments = False #Set to True to prevent payments from being made (e.g. for debugging)
 
 
 feedback2worker = 'Thanks for completing the task!'
+feedback2bonus = 'You get this bonus as compensation for the time spent on the task!'
 allHITs = mtc.get_all_hits()
 
 assignments_topay = [];
 assignments_tobonus = [];
+bonusList = [];
 for hit in allHITs:
     hit_id = hit.HITId
     assignments = mtc.get_assignments(hit_id)
@@ -39,7 +43,8 @@ for hit in allHITs:
         if assignment.AssignmentStatus == 'Submitted':
             assignments_topay.append(assignmentID)
         if bonusDue>0:
-            assignment_tobonus.append(assignmentID)
+            assignments_tobonus.append(assignmentID)
+            bonusList.append(bonusDue)
         
 
 hitObj = mtc.get_hit(hit_id)
@@ -52,21 +57,49 @@ else:
 
 #Just approve all assignments since if they submitted it probably means they did the task (unless they had some hacky way of doing it, but I'm not going to worry about that right now). Give some nice feedback.
 if paypass:
-    for assignment in assignments:
-        assignmentID = assignment.AssignmentId
+    for assignmentID in assignments_topay:        
+        #assignmentID = assignment.AssignmentId
+        assignment = mtc.get_assignment(assignmentID)[0]
         worker_id = assignment.WorkerId
         hit_id = assignment.HITId
         print 'Approving worker {} for assignment {} (HIT {}).'.format(worker_id,assignmentID,hit_id)
+        if not block_payments:
+            mtc.approve_assignment(assignmentID,feedback2worker)
 
+# Look at bonuses
+print 'These assignments will also get the following bonuses:'
+for i,assignmentID in enumerate(assignments_tobonus):
+    #assignmentID = assignment.AssignmentId
+    bonus = str(int(bonusList[i]))
+    print '{}: ${}'.format(assignmentID,bonus) 
 
+print 'Total of $' + str(sum(bonusList)) + ' and Mturk Fees of $' + str(.2*sum(bonusList))
+testpassBonus = raw_input('Would you like to continue?: ')
+if testpassBonus=='yes':
+    paypassBonus = True
+else:
+    paypassBonus = False
+
+if paypassBonus:
+    for i,assignmentID in enumerate(assignments_tobonus):        
+        #assignmentID = assignment.AssignmentId
+        assignment = mtc.get_assignment(assignmentID)[0]
+        worker_id = assignment.WorkerId
+        hit_id = assignment.HITId
+        bonus = bonusList[i];
+        bonusPriceObject = mtc.get_price_as_price(bonus)
+        print 'Approving worker {} for assignment {} (HIT {}) a bonus of ${}.'.format(worker_id,assignmentID,hit_id,bonus)
+        if not block_payments:
+            print 'Approval disabled. Check script to enable.'
+            #mtc.grant_bonus(worker_id,assignmentID,bonusPriceObject,feedback2bonus)
 
 # Get balance and print
 balance = mtc.get_account_balance()
 print 'Balance remaining: ' + str(balance)
 
-# Look at bonuses
 
-        #mtc.approve_assignment(assignmentID,feedback2worker)
+
+
 
 
 #sample grant bonus

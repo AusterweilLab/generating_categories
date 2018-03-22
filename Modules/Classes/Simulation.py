@@ -70,7 +70,6 @@ class Trialset(object):
 		# sort category lists, do a lookup
 		categories = [np.sort(i) for i in categories]
 		idx = self._lookup(categories)
-
 		# if there is no existing configuration, add a new one
 		if idx is None:
 			self.nunique += 1
@@ -178,7 +177,7 @@ class Trialset(object):
                 return self
                 
 
-	def loglike(self, params, model):
+	def loglike(self, params, model, whole_array=False):
 		"""
 			Evaluate a model object's log-likelihood on the
 			trial set based on the provided parameters.
@@ -188,11 +187,12 @@ class Trialset(object):
                 
 		# iterate over trials
 		loglike = 0
+                ps_list = np.array([])
                 task = self.task
 		for idx, trial in enumerate(self.Set):
 
 			# format categories
-			categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
+                        categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
                         
 
                         # if it's an assignment task, also compute probabilities for other category (cat0)
@@ -243,11 +243,15 @@ class Trialset(object):
 				raise Exception(S)
 			ps_add[ps_add<1e-308] = 1e-308
 
-                        
-			loglike += np.sum(np.log(ps_add))
-                        
-                        
-		return -1.0 * loglike
+                        if whole_array:
+                                ps_list = np.append(ps_list,ps_add)
+                        else:
+			        loglike += np.sum(np.log(ps_add))                        
+
+                if whole_array:
+                        return ps_list
+                else:
+                        return -1.0 * loglike
 
 
 def hillclimber(model_obj, trials_obj, options, inits = None, results = True,callbackstyle='none'):
@@ -275,8 +279,9 @@ def hillclimber(model_obj, trials_obj, options, inits = None, results = True,cal
 	# set initial params
 	if inits is None:	
 		inits = model_obj.rvs(fmt = list) #returns random parameters as list
-                print '\nStarting parms (randomly selected):'
-                print inits
+                if results:
+                        print '\nStarting parms (randomly selected):'
+                        print inits
         #transform inits to be bounded within rules
         inits = model_obj.parmxform(inits, direction = 1)
 	# run search
@@ -458,7 +463,7 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                         trial_obj.Set.append(temp_obj)
                 
                 
-        output_obj = cp.deepcopy(trial_obj)        
+        output_obj = cp.deepcopy(trial_obj)
         ncategories = len(trial_obj.Set[0]['categories'])
         for ti,trialchunk in enumerate(trial_obj.Set):
                 responsecats = trialchunk['response']
@@ -470,7 +475,9 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                                 pptList = pptcats
                         else:
                                 for i in ppt:
-                                        extractIdx = pptcats==round(i)
+                                        extractIdx = np.array(pptcats==round(i))
+                                        responsecats = np.array(responsecats)
+                                        pptcats = np.array(pptcats)
                                         respList = responsecats[extractIdx]
                                         pptList = pptcats[extractIdx]
                         
@@ -493,7 +500,14 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                                 
                 output_obj.Set[ti]['response'] = respList
                 output_obj.Set[ti]['participant'] = pptList
-                
+        #Clean up
+        #cleanIdx = np.ones(len(output_obj.Set),dtype=bool)
+        output_objTemp = cp.deepcopy(output_obj.Set)
+        output_obj.Set = []
+        for ti,trialchunk in enumerate(output_objTemp):
+                if len(trialchunk['participant'])>0:
+                        #cleanIdx[ti] = False
+                        output_obj.Set.append(trialchunk)                
         return output_obj
                                 
 # def add_model_data():

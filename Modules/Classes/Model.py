@@ -244,6 +244,7 @@ class Model(object):
 
 			# compute probabilities, then pick an item
 			ps = self.get_generation_ps(stimuli, category)
+                        #print sum(ps)-1
 			num = Funcs.wpick(ps)
 			values = np.atleast_2d(stimuli[num,:])
 			generated_examples.append(num)

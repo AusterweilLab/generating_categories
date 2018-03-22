@@ -86,6 +86,20 @@ def histvec(X, bins, density = False):
 	if density: counts = counts / float(np.sum(counts))
 	return counts
 
+def permute(xs, low=0):
+        """
+        Generator that yields a different permutation of elements in a given array
+        """
+        if low + 1 >= len(xs):
+                yield xs
+        else:
+                for p in permute(xs, low + 1):
+                        yield p
+                for i in range(low + 1, len(xs)):
+                        xs[low], xs[i] = xs[i], xs[low]
+                        for p in permute(xs, low + 1):
+                                yield p
+                        xs[low], xs[i] = xs[i], xs[low]
 
 def cartesian(arrays):
 	"""
@@ -191,6 +205,7 @@ def jitterize(points, sd = 0.0001):
 def wpick(ps):
 	"""
 	Function to pick from a set a probabilities.
+        Also normalise ps 200318
 	"""
 	return np.random.choice(range(len(ps)), p = ps)
 

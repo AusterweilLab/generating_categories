@@ -1,5 +1,5 @@
 s = 'Invalid data name supplied. Please select one of these options:'
-choices = ['pooled','pooled-no1st','nosofsky1986','nosofsky1989','NGPMG1994']
+choices = ['pooled','pooled-no1st','midbot','nosofsky1986','nosofsky1989','NGPMG1994']
 
 dataname = funcs.valData(dataname,s,choices)
 pickledir = 'pickles/'
@@ -13,6 +13,11 @@ elif dataname == 'pooled-no1st':
         # trials 2-4
         src = "trials_2-4_e1_e2.p"
         dst = "best_params_trials_2-4_e1_e2.p"
+        task = "generate"
+elif dataname == 'midbot':
+        # experiment 2 only mid bottom conditions
+        src = "midbot.p"
+        dst = "best_params_midbot.p"
         task = "generate"
 elif dataname == 'nosofsky1986':
         # nosofsky data

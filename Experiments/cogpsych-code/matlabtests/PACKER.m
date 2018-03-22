@@ -6,6 +6,8 @@ function [p,distance] = PACKER(parms,stimTest,stimTrain,categories,task)
 % the probability that a stimulus is generated as category 1
 % given the training stim, and 'assign' will yield predictions of the 
 % probability that a stimulus is assigned as category 1.
+% Remember, when tradeoff==1, only target category is considered. When
+% tradeoff==0, only contrast is considered.
 % 270218 Start
 
 nStimTest = size(stimTest,1);
@@ -17,8 +19,8 @@ specificity = parms(1);
 tradeoff = parms(2);
 determinism = parms(3);
 
-softmax = false;
-normsim = true;
+softmax = true;
+normsim = false;
 
 if nCat~=2
     error('Fix generation of fx vector in the code before proceeding')
@@ -58,10 +60,13 @@ end
 if normsim
     %Try logit - hmm... seems difficult to generate probabilities close to
     %1 and 0.
-    %     similarity_tradeoff = logit(similarity_tradeoff,-1);
+        similarity_tradeoff = logit(similarity_tradeoff,-1,1);
+        %Ok but there's the problem that this prevents GCM from making any
+        %good predictions, since tradeoff==1 forces ps to .5. Maybe try
+        %making a lower bound on logit
     
     %How about hyperbolic tangent? One that is scaled to between 0-1?
-    similarity_tradeoff = (tanh(similarity_tradeoff)+1)/2;    
+%     similarity_tradeoff = (tanh(similarity_tradeoff)+1)/2;    
     %             maxsim = max(similarity_tradeoff,[],1);
     %             minsim = min(similarity_tradeoff,[],1);
     %             sizeadj = size(similarity_tradeoff,1);
@@ -75,7 +80,7 @@ end
 
 if softmax
     exp_sim = exp(determinism*similarity_tradeoff);
-else %use Luce's regular rule
+else %use Luce's regular rule   
     exp_sim = determinism*similarity_tradeoff; %for consistency I'm leaving the exp in, but note there's no exp actually happening
 end
 % similarity_tradeoff
@@ -99,7 +104,7 @@ end
 % fx
 % similarity
 % similarity_tradeoff
-% exp_sim
+%  exp_sim
 % sum_sim
 % exp_sim(1)/sum_sim(1)
 

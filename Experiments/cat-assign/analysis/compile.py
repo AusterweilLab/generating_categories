@@ -1,3 +1,5 @@
+# Run this to compile data in the data directory into a single useful
+# experiment.db database
 import json, sqlite3, os, sys
 import pandas as pd
 import numpy as np
@@ -8,7 +10,7 @@ pd.set_option('display.width', 200, 'precision', 2)
 execfile('Imports.py')
 import Modules.Funcs as funcs
 
-db_dst = '../data_utilities/experiment.db'
+db_dst = '../data/experiment.db'
 assignmentdb = '../data/assignments.db'
 exclude = [
 	]
@@ -19,9 +21,12 @@ c = sqlite3.connect(assignmentdb)
 workerInfo = pd.read_sql('SELECT * from assignments', c)
 c.close()
 
-# first, find json files from ID belonging to people who
-# are marked as complete and without a previous exposure
+# first, find json files from ID belonging to people who are marked as complete
+# and without a previous exposure
+# NOTE: Only save the first participant that has
+# been matched - ignore subsequent matches.
 data = []
+matchList = [];
 for i, row in workerInfo.iterrows():
 	
 	if not row.Complete: continue
@@ -41,8 +46,11 @@ for i, row in workerInfo.iterrows():
 			print pid, json.loads(S)['info']['browser']
 
 	pdata = json.loads(S)
+        # If it's a lab member debugging, don't add data
 	if pdata['info']['lab']: continue
-        #print pdata['assignment']['0']['response']
+        # If pptmatch has already occurred, don't add data
+        if pdata['info']['pptmatch'] in matchList: continue
+        matchList.append(pdata['info']['pptmatch'])
 	data.append(json.loads(S))
 
 # create participant table
