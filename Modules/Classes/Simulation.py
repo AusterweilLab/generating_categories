@@ -235,12 +235,12 @@ class Trialset(object):
                                 
 			# check for nans and zeros
 			if np.any(np.isnan(ps_add)):
-                                if task is 'generate':
-                                        print categories
-                                        print params
-                                        print ps
-				S = model.model  + ' returned NAN probabilities.'
-				raise Exception(S)
+                                ps_add = np.zeros(ps_add.shape)
+                                # print categories
+                                # print params
+                                # print ps_add
+				# S = model.model  + ' returned NAN probabilities.'
+				# raise Exception(S)
 			ps_add[ps_add<1e-308] = 1e-308
 
                         if whole_array:
@@ -468,6 +468,8 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
         for ti,trialchunk in enumerate(trial_obj.Set):
                 responsecats = trialchunk['response']
                 pptcats = trialchunk['participant']
+                respList = np.array([])
+                pptList = np.array([])
                 if trial_obj.task is 'generate':
                         #convert pptcat and responsecat to array for easier indexing
                         if ppt == 'all':

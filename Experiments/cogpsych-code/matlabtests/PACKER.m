@@ -19,8 +19,16 @@ specificity = parms(1);
 tradeoff = parms(2);
 determinism = parms(3);
 
-softmax = true;
-normsim = false;
+softmax = false;
+normsim = true;
+
+if numel(parms)<4
+    normsim = false;
+else
+    normsteep = parms(4);
+end
+
+
 
 if nCat~=2
     error('Fix generation of fx vector in the code before proceeding')
@@ -55,12 +63,14 @@ for i = 1:nStimTest
     end    
 end
 
-
 %normalise similarities?
 if normsim
     %Try logit - hmm... seems difficult to generate probabilities close to
     %1 and 0.
-        similarity_tradeoff = logit(similarity_tradeoff,-1,1);
+%         similarity_tradeoff = logit(similarity_tradeoff,-1,normsteep);
+
+    %Or how about simply adding a constant to prevent negatives?
+        similarity_tradeoff = similarity_tradeoff+normsteep;
         %Ok but there's the problem that this prevents GCM from making any
         %good predictions, since tradeoff==1 forces ps to .5. Maybe try
         %making a lower bound on logit
@@ -74,9 +84,6 @@ if normsim
     %             similarity_tradeoff = (similarity_tradeoff-repmat(minsim,sizeadj,1))./simrange;
 end
    
-
-% similarity
-% exp_sim
 
 if softmax
     exp_sim = exp(determinism*similarity_tradeoff);
@@ -97,7 +104,7 @@ switch task
     case 'error'
         sum_sim = sum(exp_sim,2); %across all dim
         sum_sim = repmat(sum_sim,1,nCat);
-        p = 1-(exp_sim ./ sum_sim); %error
+        p = exp_sim ./ sum_sim; %error
 end
 
 % Some good variables to print when debugging

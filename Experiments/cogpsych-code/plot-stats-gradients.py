@@ -83,6 +83,8 @@ for model_name, model_obj in name_2_object.items():
         else:
             params['wts'] = np.array([0.5, 0.5])
 
+        # assume no baselinesim
+        params['baselinesim'] = 0
         # simulate
         model = model_obj([As], params)
         for j in range(N_SAMPLES):   
@@ -93,8 +95,11 @@ for model_name, model_obj in name_2_object.items():
             all_stats = funcs.stats_battery(stimuli[nums,:], As)
 
             # convert to row for df
-            rows = dict(condition = [pcond] *4, stimulus = nums)
-            rows[STAT_OF_INTEREST] = [all_stats[STAT_OF_INTEREST]]*4
+            # handle variable number of generated exemplars
+            numgen = len(nums)
+            rows = dict(condition = [pcond] *numgen, stimulus = nums)
+            rows[STAT_OF_INTEREST] = [all_stats[STAT_OF_INTEREST]]*numgen
+            
             model_data = model_data.append(pd.DataFrame(rows), ignore_index = True)
 
         print '\t' + str(i)

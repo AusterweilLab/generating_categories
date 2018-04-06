@@ -59,6 +59,35 @@ script. If the url in the script is set to the sandbox
 account, you should see $10,000 printed in the console.
 Otherwise, it should be your actual account balance.
 
+# Data Structure
+
+Raw individual data is stored in the data/ folder. This
+is compiled by `compile.py` in the analysis folder into a
+database named `experiment.db`. 
+
+Data to be used in this experiment, but that is not actually
+generated from this experiment, is placed in the
+data_utilities/ folder. There's another readme in there that
+should provide more information.
+
+The allocation of participant numbers can also be confusing.
+There are three layers here:
+1. The original ppt number assigned in the original
+   experiment (midbot). This should be typically labeled as
+   "Old ID" or something.
+2. Some new number that is the result of matching of the
+   original/old ppt number to this new number. The mapping
+   can be obtained by using at the `getMatched.py` in
+   Modules/Funcs. For instance, if you have some new ppt
+   number 20 and you want to see whose data it is in the old
+   scheme, run `getMatched(20,db)` where db is the location
+   of the `cmp_midbot.db` file, probably somewhere in
+   data_utilities\ folder.
+3. The raw ppt number that is displayed on the individual js
+   files in the data\ folder. This is arbitrarily assigned
+   in the order that participants arrive on the website to
+   work on the task. 
+
 # Notes
 
 Before publishing, remember to change these variables:
@@ -77,16 +106,16 @@ Xian's it's
 (There's probably some easy way to fix that on my local
 system, but I haven't had the time to try that yet.)
 
-2. in `config.py` Restore the right path to data on server
-(around line 11)
+This script should also restore the right path to data on server
+(around line 11) in `config.py` .
 
-Check that conditions names match in `config.py` (probably near line 20)
-and that the counterbalance number in the next line is
-appropriate
+2. Check that condition names match in `config.py` (probably
+near line 20) and that the counterbalance number in the next
+line is appropriate
 
 Also, remember to check where the Workers db is saved in
 Luke. I'm guessing this is a list of workers we want to
-block - check with Nolan.) - ok got it. It's can be accessed
+block - check with Nolan. - ok got it. It can be accessed
 through the phpmyadmin mariadb5 server
 
 3. Add the `assignments.db` and `cmp_midbot.db` (if using

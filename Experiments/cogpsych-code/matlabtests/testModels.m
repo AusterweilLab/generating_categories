@@ -1,56 +1,36 @@
 %Load data
+dataSet = {'nosofsky1986','NGPMG1994'};
+data = 1;
+[data_k,data_total,data_p,nstim_axes,stimTrainIdxAll,stimTestIdx,task,p2El] = getData(dataSet{data});
 
-%Nosofsky1986
-assignCat1raw = load('n86cat1.txt'); %ordered as stimuli, then conditions, then participants
-assignCat2raw = load('n86cat2.txt');
-task = 'assign';
-%p_observed = assignCat1/(assignCat1 + assignCat2);
-
-%pool data across participants
-assignCat1pPpt = reshape(assignCat1raw,64,2);%cat 1 assignments per participant
-assignCat1Pool = sum(assignCat1pPpt,2); 
-assignCat1 = reshape(assignCat1Pool,16,4)'; %note the transposition
-
-assignCat2pPpt = reshape(assignCat2raw,64,2);%cat 2 assignments per participant
-assignCat2Pool = sum(assignCat2pPpt,2); 
-assignCat2 = reshape(assignCat2Pool,16,4)'; %note the transposition
-
-%Define stimulus space
-nstim_axes = [4,4]; %This tells us that the stimulis are organised as a 4 by 4 array
-nstim = prod(nstim_axes);
-
-
-nconditions = 4;
-stimIdx = 1:nstim;
+nconditions = size(stimTrainIdxAll,1);
 categoriesSet = repmat([ones(1,4),ones(1,4)*2],nconditions,1);
-
-stimTrainIdxAll = [     
-   %|-------cat 1-------|   |-------cat 2-------|
-     0     3     5     6     9    10    12    15 %dimensional
-     3     6     9    12     0     5    10    15 %crisscross
-     5     6     9    10     2     4    11    13 %intext
-     2     5     8    12     3     7    10    13] ; %diagonal
-stimTrainIdxAll = stimTrainIdxAll + 1; %Adjust indexing from 1 (instead of 0)
-
-
-data_k = assignCat1;
-data_total = assignCat1+assignCat2;
-data_p = data_k./data_total;
-stimCoords = ndspace(4,2);%entire stimulus space
-stimTestIdx = 1:nstim; %test entire stimulus space
+nstim = prod(nstim_axes);
+stimCoords = ndspace(nstim_axes(1),numel(nstim_axes));%entire stimulus space
+% task = 'assign';
+normsteep_toggle = true;
 
 %Prepare startparms for each model    
-parmsInitAll = {[.2, .622, 2.2],... %[specificity,tradeoff,determinism] - PACKER
-                [.2,     2.2]}; %[specificity,determinism] - CopyTweak  
-parmsInitAll = {[rand, rand, rand],... %[specificity,tradeoff,determinism] - PACKER
-                [rand,       rand]}; %[specificity,determinism] - CopyTweak
+parmsInitAll = {[2, .5, 2.2, 1],... %[specificity,tradeoff,determinism] - PACKER
+                [2,     2.2, .3]}; %[specificity,determinism] - CopyTweak  
+% parmsInitAll = {[rand, rand, rand, 1],... %[specificity,tradeoff,determinism] - PACKER
+%                 [rand,       rand, 1]}; %[specificity,determinism] - CopyTweak
             %force CopyTweak parms to be same as PACKER
-            parmsInitAll{2} = [parmsInitAll{1}(1),parmsInitAll{1}(3)];
-parmRulesAll = {[1e-10, 0, 0; NaN, 1, NaN],...
-                [1e-10,    0; NaN,    NaN]};
-parmNamesAll = {{'Specifty', 'Tradeoff', 'Detrmnsm'};
-                 {'Specifty', 'Detrmnsm'}};
-%Transform parms according to rules
+% parmsInitAll{2} = [parmsInitAll{1}(1),parmsInitAll{1}(3),parmsInitAll{1}(4)];
+parmRulesAll = {[1e-10, 0, 0, 0; NaN, 1, NaN, NaN],...
+                [1e-10,    0, 0; NaN,    NaN, NaN]};
+parmNamesAll = {{'Specifty', 'Tradeoff', 'Detrmnsm','NrmSteep'};
+                {'Specifty', 'Detrmnsm', 'NrmSteep'}};
+             
+if ~normsteep_toggle
+    for i = 1:numel(parmsInitAll)
+        parmsInitAll{i}(:,end) = [];
+        parmRulesAll{i}(:,end) = [];
+%         parmNamesAll{i}{:,end} = [];
+    end
+end
+
+%Pack stim-related vars
 stim{1} = stimTestIdx;
 stim{2} = stimTrainIdxAll;
 stim{3} = categoriesSet;
@@ -71,7 +51,7 @@ opt = optimset('Display','none');
 %Print data
 datatt = [];
 for j = 1:nConditions
-    datatt = [datatt, reshape(data_p(j,:),nstim_axes)'];
+    datatt = [datatt, permute(reshape(data_p(j,:),nstim_axes),[2,1,3])];
 end
 dataf = flipud(datatt); % only take first layer of stim
 fprintf('\tObserved Data : \n')
@@ -98,7 +78,7 @@ for i = 1:nmodels
     SSE(i) = sum((predsFinal(i,:) - data_p(:)').^2);
     
     %Print them out nicely    
-    nparms = numel(parmNamesAll{i});    
+    nparms = numel(parmsInitAll{i});    
     fprintf('%s:\n',func2str(model)) %Model name
     
     fprintf('\tParm names:  [');
@@ -112,7 +92,7 @@ for i = 1:nmodels
     end
     fprintf(']\n') 
     
-    fprintf('\tLL = %8.4f\n',llFinal(i))
+    fprintf('\tnLL = %8.4f\n',llFinal(i))
     fprintf('\tSSE = %8.4f\n',SSE(i))
     
     fprintf('\tFinal parms: [')
@@ -124,7 +104,7 @@ for i = 1:nmodels
     %Format preds
     predsFinaltt = [];
     for j = 1:nConditions
-        predsFinaltt = [predsFinaltt, reshape(predsFinalt(j,:),nstim_axes)'];
+        predsFinaltt = [predsFinaltt, permute(reshape(predsFinalt(j,:),nstim_axes),[2, 1, 3])];
     end
     predsFinalf = flipud(predsFinaltt); % only take first layer of stim
     fprintf('\tPreds : \n')    

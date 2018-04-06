@@ -25,6 +25,9 @@ latex_out/
 *.synctex.gz
 
 Modules/tests/
+Manuscripts/cog-psych/review_materials/
+
+private/
 
 *~
 

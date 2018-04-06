@@ -34,7 +34,12 @@ for i = 1:nparms
     currmin = min(i);
     currmax = max(i);
     if isnan(currmax)
-        type = 'log';
+        if isnan(currmin)
+            %Do nothing
+            type = 'none';
+        else
+            type = 'log';
+        end
     else
         type = 'logit';
     end
@@ -57,6 +62,8 @@ for i = 1:nparms
                 %                 parmsadj = 1./(1 + exp(-currparm));
                 parmsx(i) = parmsadj.*range + currmin;
             end
+        case 'none'
+            parmsx(i) = currparm;
     end
     
 end

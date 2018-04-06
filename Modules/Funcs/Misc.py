@@ -19,7 +19,11 @@ def stats_battery(betas, alphas = None):
 		res['correlation'] = 0.0
 
 	# total area of convex hull
-	res['area'] = ConvexHull(jitterize(betas, sd = 0.0001)).volume
+        # Only do this if enough data for simplex
+        if betas.shape[0]>betas.shape[1]:
+	        res['area'] = ConvexHull(jitterize(betas, sd = 0.0001)).volume
+        else:
+                res['area'] = np.nan
 
 	# distances 
 	within_mat = pdist(betas, betas)
@@ -205,9 +209,16 @@ def jitterize(points, sd = 0.0001):
 def wpick(ps):
 	"""
 	Function to pick from a set a probabilities.
-        Also normalise ps 200318
+        
 	"""
-	return np.random.choice(range(len(ps)), p = ps)
+        #Deal with negative ps - return None?
+        ps = np.array(ps)
+        if any(ps<0):
+                #pslin = ps.reshape((-1,ps.size)).flatten
+                #ps = ps/sum(pslin)
+                return None
+        else:
+	        return np.random.choice(range(len(ps)), p = ps)
 
 def intersect2d(X, Y):
 	"""
@@ -277,7 +288,72 @@ def softmax(X, theta = 1.0, axis = None, toggle = True):
 	# take sum along axis, divide elementwise
 	ax_sum = np.expand_dims(np.sum(y, axis = axis), axis)
         if ax_sum==0:
-                p = np.array([0])
+                p = np.zeros(y.shape)#p = np.array([0])
+        else:
+	        p = y / ax_sum
+        
+        
+	# flatten if X was 1D
+	if len(X.shape) == 1:
+		p = p.flatten()
+
+
+        return p
+
+def luce(X, theta = 1.0, axis = None, toggle = True):
+	"""
+        Return result of Luce's choice rule given some list of X.
+        This is softmax without exponentiation.
+
+	Parameters
+	----------
+	X: ND-Array. NaN values will have probability 0.
+	theta (optional): float parameter, used as a multiplier
+		. Default = 1.0
+	axis (optional): axis to compute values along. Default is the 
+		first non-singleton axis.
+
+	Returns an array the same size as X. The result will sum to 1
+	along the specified axis.
+
+        toggle: If True, calculates soft max (exponentiated Luce)
+                If False, calculates regular Luce choice model
+
+	Examples
+	--------
+	>>> X = np.array([[1,2,3], [5,3,1]])
+	>>> luce(X, theta = 0.5, axis = 0)
+			[[ 0.12  0.38  0.73]
+		 	 [ 0.88  0.62  0.27]]
+	>>> luce(X, theta = 0.5, axis = 1)
+			[[ 0.19  0.31  0.51]
+			 [ 0.67  0.24  0.09]]
+	"""
+
+	# make X at least 2d
+	y = np.atleast_2d(X)
+
+	# find axis
+	if axis is None:
+		axis = next(j[0] for j in enumerate(y.shape) if j[1] > 1)
+
+	# multiply y against the theta parameter, 
+	# then subtract the max for numerical stability
+	y = y * float(theta)
+
+        
+	
+	# exponentiate y, then convert nans into 0
+        # if toggle:
+        #         y = y - np.expand_dims(np.nanmax(y, axis = axis), axis)
+        #         y = np.exp(y)	        
+        
+	y[np.isnan(y)] = 0.0
+
+	# take sum along axis, divide elementwise
+	ax_sum = np.expand_dims(np.sum(y, axis = axis), axis)
+        if ax_sum==0:
+                p = np.zeros(y.shape)
         else:
 	        p = y / ax_sum
         
@@ -360,6 +436,11 @@ def valInput(s,options):
 
         
 def valData(ins,s,options,tries = 5):
+        """
+        Checks if the supplied INS is a valid option among OPTIONS. Otherwise,
+        prompt user with S. 
+
+        """
         if ins in options:
                 outi = options.index(ins)
         else:        
@@ -412,4 +493,42 @@ def getMatch(match,db='../data_utilities/cmp_midbot.db',fetch='Old'):
 
         return out
 
+#Function to print iteration progress nicely
+def printProg(i,print_ct = 0, steps = 1, breakline = 40, breakby = 'char'):
+        """
+        Prints progress of some iterator at every STEP, with line breaks defined
+        by BREAKLINE. BREAKBY can be 'char', which breaks lines by the number of
+        character spaces or columns defined in BREAKLINE, or BREAKBY can be
+        'mult', which breaks lines every multiple of BREAKLINE
 
+        Note that if BREAKBY is 'char', a counter should be initialised outside this function
+        """
+        import sys
+        import numpy as np
+        if np.mod(i,steps)==0:
+                if breakby == 'char':
+                        if not 'print_ct' in locals():
+                                raise Exception('breakby is set to \'char\', so print_ct must be defined.')
+                        #Length of current char
+                        leni = len(str(i))
+                        if print_ct + leni > breakline:
+                                #Line break
+                                print i
+                                print_ct = 0
+                        else:
+                                #No line break
+                                print i,
+                                sys.stdout.flush()                                
+                                print_ct += leni+1
+                
+                elif breakby == 'mult':
+                        if np.mod(i,breakline) != 0:
+                                #No line break
+                                print i,
+                                sys.stdout.flush()
+                        elif i>0:
+                                #Line break
+                                print i
+                else:
+                        raise Exception('Please specify breakby as either \'char\' or \'mult\'.')
+        return print_ct

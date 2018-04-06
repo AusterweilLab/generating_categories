@@ -7,7 +7,7 @@ import pickle
 
 #Find all gs fits and print them. Nice nice.        
 pickledir = 'pickles/'
-prefix = 'gs_'
+prefix = 'chtc_gs_best_params'
 #Compile regexp obj
 allfiles =  os.listdir(pickledir)
 r = re.compile(prefix)

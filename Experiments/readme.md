@@ -6,10 +6,20 @@ The experiment is currently up at this link:
 
 https://alab.psych.wisc.edu/experiments/generate-categories/?assignmentId=12ALONGRANDOMCHARACTERSTRING34&hitId=56ALONGRANDOMCHARACTERSTRING78&workerId=NOLANDEBUG123&turkSubmitTo=https%3A%2F%2Fworkersandbox.mturk.com
 
+## Data structures
+
+The data is a little haphazardly thrown around, especially after the cat-assign experiment, but I'll try to point out
+the key bits. Raw experiment data will always be assigned to the data/ folder in the experiment's home directory. Some
+kind of `compile.py` script in the analysis/ folder (also in experiment's home directory) will take the individual data
+from Data/ and compile it into some usable database form, probably named `experiment.db`. 
+
+The data in the cat-assign folder is a little more complex. See readme there for more info.
+
 
 ## Things to Explore
 
-- I want to see a plot of PACKER's log-likelihood as a function of the between-category parameter.
+- ~~I want to see a plot of PACKER's log-likelihood as a function of the between-category parameter.~~ In progress as
+  of 8 March 2018. See developments in the cogpsych-code/matlabtests directory. 
 
 ## Issues to fix with future experiments
 

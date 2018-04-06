@@ -27,6 +27,7 @@ c.close()
 # been matched - ignore subsequent matches.
 data = []
 matchList = [];
+stimList = [];
 for i, row in workerInfo.iterrows():
 	
 	if not row.Complete: continue
@@ -51,6 +52,12 @@ for i, row in workerInfo.iterrows():
         # If pptmatch has already occurred, don't add data
         if pdata['info']['pptmatch'] in matchList: continue
         matchList.append(pdata['info']['pptmatch'])
+        # if the data configuration is already present, also don't add
+        stim = pdata['info']['stimuli']
+        stim.sort()
+        if stim in stimList: continue
+        stimList.append(stim)
+
 	data.append(json.loads(S))
 
 # create participant table

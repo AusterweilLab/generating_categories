@@ -31,3 +31,4 @@ python global-model-fits.py nosofsky1986 0 1
 You can run a grid search by running `global-model-grid-search.py` instead of
 `global-model-fits.py` in the examples above. Input arguments (i.e., the data,
 participant, and condition) should work in the same way for both scripts.
+

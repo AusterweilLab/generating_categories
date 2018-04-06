@@ -55,6 +55,7 @@ class Model(object):
 		# clip dict
 		for k, rules in cls.parameter_rules.items():
 			if rules is None: continue
+                        if not param_dict.has_key(k): continue
 			if 'min' in rules.keys():
 				if param_dict[k] < rules['min']:
 					param_dict[k] = rules['min']
@@ -247,12 +248,13 @@ class Model(object):
                         #print sum(ps)-1
 			num = Funcs.wpick(ps)
 			values = np.atleast_2d(stimuli[num,:])
-			generated_examples.append(num)
 
 			# add the item to the category
-			self.categories[category] = np.concatenate(
-				[self.categories[category], values], 
-				axis = 0)
+                        if num != None:
+                                generated_examples.append(num)
+			        self.categories[category] = np.concatenate(
+				        [self.categories[category], values], 
+                                        axis = 0)                                
 
 			# update knowledge
 			self._update_()

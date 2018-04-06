@@ -1,9 +1,10 @@
 %Plot a figure showing how changing gamma (tradeoff) affects the order of SHJ types
 
 %These are the best spec and determinism fits to NGPMG1994
-specificity = 2.1;%56.68699728478552;
+specificity = 2.08;%56.68699728478552;
 tradeoff_list = 0:.01:1; %0.25750159353896424
-determinism = .78 ;%2.751535314273929;
+determinism = .5 ;%2.751535314273929;
+normsteep = 0;
 dataSet = {'nosofsky1986','NGPMG1994'};
 data = 2;
 plot2 = false; 
@@ -50,7 +51,7 @@ p2 = p;
 dAll = zeros(size(stimTrainIdxAll,2),size(stimTestIdx,2),nConditions);
 for i = 1:numel(tradeoff_list)
     tradeoff = tradeoff_list(i);
-    parms = [specificity,tradeoff,determinism];
+    parms = [specificity,tradeoff,determinism,normsteep];
     for j = 1:nConditions
         stimTest = stimCoords(stimTestIdx(j,:),:);
         stimTrain = stimCoords(stimTrainIdxAll(j,:),:);

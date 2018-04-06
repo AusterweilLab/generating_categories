@@ -53,7 +53,7 @@ else
     categories = [reshape(categories,nStimTrain-1,1);1];
 end
 
-categories
+
 
 pset = nan(nStimTest,numel(tradeoff));
 distanceset = cell(1,numel(tradeoff));

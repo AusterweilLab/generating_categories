@@ -49,7 +49,7 @@ unique_trials = 'all'
 trials.task = task
 
 #Get learning data
-data_assign_file = '../cat-assign/data/experiment.db'
+data_assign_file = '../cat-assign/data/experiment260318.db'
 con = sqlite3.connect(data_assign_file)
 info = pd.read_sql_query("SELECT * from participants", con)
 assignment = pd.read_sql_query("SELECT * FROM assignment", con)
@@ -62,6 +62,9 @@ stats = pd.read_sql_query("SELECT * from betastats", con)
 con.close()
 
 #Get unique ppts
+# pptlist = []
+# for i,row in info.iterrows():
+#         pptlist += [row['pptmatch']]
 pptlist = np.array([]);
 for trial in trials.Set:    
     pptlist = np.concatenate((pptlist,trial['participant']))
@@ -73,7 +76,7 @@ modeleaseDB = "pickles/modelease_all_data_e1_e2.p"
 try:
     with open(modeleaseDB, "rb" ) as f:
         ll_global = pickle.load( f )
-        ll_loadSuccess = True
+        ll_loadSuccess = False #True
 except:
     ll_global = dict()
     ll_loadSuccess = False
@@ -207,9 +210,8 @@ for model_obj in modelList:
             ppt  = row.participant
             pptAssign = assignment.loc[assignment['participant']==ppt].sort_values('trial')
             nTrials = len(pptAssign)
-            error = [];
             accuracyEl = float(sum(pptAssign.correctcat == pptAssign.response))/nTrials
-            error.append(1-accuracyEl)
+
 
             pptmatch = row.pptmatch
             #Prepare to plot configuration
