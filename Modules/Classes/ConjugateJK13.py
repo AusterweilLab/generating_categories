@@ -68,7 +68,7 @@ class ConjugateJK13(Model):
 		self.prior_variance[inds] *= self.wts
 		self.prior_variance *= self.domain_variance_bias
 
-	def get_generation_ps(self, stimuli, category):
+	def get_generation_ps(self, stimuli, category,task='generate'):
 
 		# random response if there are no target members.
 		target_is_populated = any(self.assignments == category)
@@ -96,14 +96,55 @@ class ConjugateJK13(Model):
 		Sigma /= self.category_variance_bias + n
 
 		# get relative densities
-		target_dist = multivariate_normal(mean = mu, cov = Sigma)
-		density = target_dist.pdf(stimuli)
+                if np.isnan(Sigma).any() or np.isinf(Sigma).any():
+                        #target_dist = np.ones(mu.shape) * np.nan
+                        density = np.ones(len(stimuli)) * np.nan
+                else:
+                        target_dist = multivariate_normal(mean = mu, cov = Sigma)
+                        density = target_dist.pdf(stimuli)
+                        
+                if task is 'generate': 
+		        # NaN out known members - only for task=generate
+		        known_members = Funcs.intersect2d(stimuli, self.categories[category])
+		        density[known_members] = np.nan
+		        ps = Funcs.softmax(density, theta = self.determinism)
+                elif task is 'assign' or task is 'error':
+                        ## Do the same for the contrast categor
+                        # get target category stats
+		        xbar_flip = np.mean(self.categories[1-category], axis = 0)
+		        n_flip = self.nexemplars[1-category]
+		        if n_flip < 2:
+			        C_flip = np.zeros((self.nfeatures, self.nfeatures))
+		        else:
+			        C_flip = np.cov(self.categories[1-category], rowvar = False)
+                                
+		        # compute mu for target category
+		        mu_flip =  self.category_mean_bias * self.category_prior_mean
+		        mu_flip += n_flip * xbar_flip
+		        mu_flip /= self.category_mean_bias + n_flip
+                        
+		        # compute target category Sigma
+		        ratio_flip = (self.category_mean_bias * n_flip) / (self.category_mean_bias + n_flip)
+		        Sigma_flip = ratio_flip * np.outer(xbar_flip - mu_flip, xbar_flip - mu_flip)
+		        Sigma_flip += self.Domain * self.category_variance_bias + C_flip
+		        Sigma_flip /= self.category_variance_bias + n_flip
+                        
+		        # get relative densities
+                        if np.isnan(Sigma_flip).any() or np.isinf(Sigma_flip).any():
+                                #target_dist_flip = np.ones(mu_flip.shape) * np.nan
+                                density_flip = np.ones(len(stimuli)) * np.nan
+                        else:
+		                target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)                                
+		                density_flip = target_dist_flip.pdf(stimuli)
 
-		# nan out examples already in the target category
-		known_members = Funcs.intersect2d(stimuli, self.categories[category])
-		density[known_members] = np.nan
 
-		ps = Funcs.softmax(density, theta = self.determinism)
+                        ps = []
+                        for i in range(len(density)):
+                                density_element = np.array([density[i],
+                                                            density_flip[i]])
+                                ps_element = Funcs.softmax(density_element, theta = self.determinism)
+                                ps = np.append(ps,ps_element[0])                        
+
 		return ps
 
 

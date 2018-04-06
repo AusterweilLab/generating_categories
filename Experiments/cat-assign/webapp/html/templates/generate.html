@@ -1,0 +1,48 @@
+<div id='generateui'>
+			
+	<div id='generate_left'>
+		  <div id='generate_controls'>
+		  
+		  	<p>Change Size</p>
+		  	<input 	type = "range" 
+		  					class = "feature_range"
+		  					id = 'size_control'
+		  					min = "0"
+		  					max = "10" 
+		  					step = "1"
+		  				>
+		  	
+		  	<br>
+
+		  	<p>Change Color</p>
+		  	<input 	type = "range"
+		  					class = "feature_range"
+		  					id = "color_control" 
+		  					min = "0" 
+		  					max = "10" 
+		  					step = "1"
+		  				>
+		  </div>
+	</div>
+
+	<div id='generate_right' class='stimulus_surround'>
+		<div id='stimulus'></div>
+	</div>
+
+	<div id='generate_bottom'>
+
+		<div id='generatetxt'>
+			You can use the controls above to create a member of the Beta Category. Click the 'Continue' button 
+			when you are finished.
+		</div>
+
+		<div id='dupemessage' style='color:red; visibility: hidden'>
+			You have already created this example.
+		</div>
+
+		<a href='#' id='continuebutton' style = "visibility: hidden">
+			Continue.
+		</a>
+	</div>
+	
+</div>

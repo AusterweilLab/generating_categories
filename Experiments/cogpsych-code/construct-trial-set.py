@@ -13,7 +13,6 @@ alphas = pd.read_sql_query("SELECT * from alphas", con)
 stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
 con.close()
 
-
 # create categories mapping
 mapping = pd.DataFrame(columns = ['condition', 'categories'])
 for i in alphas.columns:
@@ -22,15 +21,16 @@ for i in alphas.columns:
 		dict(condition = i, categories =[As]), 
 		ignore_index = True
 	)
-
+        
 # merge categories into generation
 generation = pd.merge(generation, participants, on='participant')
 generation = pd.merge(generation, mapping, on='condition')
 
+
 # create trial set object
 trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(generation)
-
+lll
 with open('pickles/all_data_e1_e2.p','wb') as f:
 	pickle.dump(trials, f)
 
@@ -40,3 +40,4 @@ trials._update()
 
 with open('pickles/trials_2-4_e1_e2.p','wb') as f:
 	pickle.dump(trials, f)
+

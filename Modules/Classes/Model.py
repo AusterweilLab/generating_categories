@@ -68,6 +68,47 @@ class Model(object):
 		else: 
 			return param_dict
 
+
+        @classmethod
+        def parmxform(cls, params, direction = 1):
+                """
+                Transform a set of parameters according to model rules.                
+                """
+                toggle = True #make it a little easier to switch this on or off
+                if toggle:
+		        if not isinstance(params, dict):
+			        param_dict = cls.params2dict(params)
+		        else: param_dict = dict(params)
+                        
+                        for k, rules in cls.parameter_rules.items():
+                                gotmin = False
+                                gotmax = False
+                                min = 0
+                                max = 0
+                                if rules is None:
+                                        continue
+                                if 'min' in rules.keys():
+                                        gotmin = True
+                                        min = rules['min']
+                                if 'max' in rules.keys():
+                                        gotmax = True
+                                        max = rules['max']
+                                if gotmin and gotmax:
+                                        #Do logit transform scaled to min and max
+                                        param_dict[k] = Funcs.logit_scale(param_dict[k],min,max,direction = direction)
+                                elif gotmin:
+                                        #Do log transform
+                                        param_dict[k] = Funcs.log_scale(param_dict[k],min,direction = direction)
+
+		        # return in original format
+		        if not isinstance(params, dict):
+			        return [param_dict[k] for k in cls.parameter_names]
+		        else: 
+			        return param_dict
+                else:
+                        return params
+                                
+                                
 	@classmethod
 	def params2dict(cls, params):
 		"""
@@ -88,13 +129,14 @@ class Model(object):
 
 	def __init__(self, categories, params):
 		"""
-			Initialize the model. "categories" should be a list of numpy
-			arrays with the same number of columns (features). Items in 
-			"categories" can have unequal number of rows (examples).
-
-			'params' is a dict containing all model parameters. 'params'
-			should contain an entry for each of the items defined by the 
-			'parameter_names' attribute of the concrete class
+		Initialize the model. "categories" should be a list of numpy
+		arrays with the same number of columns (features). Items in 
+		"categories" can have unequal number of rows (examples).
+                
+		'params' is a dict containing all model parameters. 'params'
+		should contain an entry for each of the items defined by the 
+		'parameter_names' attribute of the concrete class
+                
 		"""
 		
 		# force params to dict if it is not one
@@ -202,6 +244,7 @@ class Model(object):
 
 			# compute probabilities, then pick an item
 			ps = self.get_generation_ps(stimuli, category)
+                        #print sum(ps)-1
 			num = Funcs.wpick(ps)
 			values = np.atleast_2d(stimuli[num,:])
 			generated_examples.append(num)
@@ -241,7 +284,6 @@ class Exemplar(Model):
 		# set weights and c
 		if wts is None: wts = self.wts
 		if c is None: c = self.specificity
-
 		distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts)
 		similarity = np.exp(-float(c) * distance)
 		similarity = similarity * float(param)

@@ -1,0 +1,58 @@
+<div id='instructions'>
+
+<p>In this experiment, you will observe geometric figures like the ones
+below:</p>
+
+<div class = 'samples'>
+	<div class = "stimsample" id = "sample1"></div>
+	<div class = "stimsample" id = "sample2"></div>
+	<div class = "stimsample" id = "sample3"></div>
+	<div class = "stimsample" id = "sample4"></div>
+</div>
+
+<p>
+  Some figures belong to a category called "Alpha", while others belong to a
+  category called "Beta".
+  <br><br>
+  Your task is to categorize the figures as best as you can. The figures that
+  you will see will appear one at a time. Each time it appears, you will be asked
+  which category it belongs to. After you provide a response, the correct answer
+  will be also be given as feedback.
+
+  <br><br>
+  At first, you will not know anything about the categories and will be
+  guessing. As you receive more and more feedback, you should be able to learn
+  the categories.
+  <br><br>
+  Some categories may be difficult to learn. You will have plenty of chances with
+  each item. Over time, categorizing correctly will get easier. 
+<br><br>
+<i>Note: do not refresh the page or press the 'back' button during the
+experiment. You will be unable to resume your place.</i>
+</p>
+
+<a href='#' onclick='assign()'>Continue.</a>
+</div>
+
+
+<!-- show some samples -->
+<script type="text/javascript">
+	(function () {
+		var nums = [ 0,
+					 stimuli.side - 1,
+					 stimuli.nstimuli - (stimuli.side),
+					 stimuli.nstimuli - 1 ]
+		var stim = stimuli.ilookup(nums);
+		var divs = ['sample1', 'sample2', 'sample3', 'sample4'];
+
+		for (var i = 0; i < 4; i++) {
+			stim[i].draw(document.getElementById(divs[i])) }
+		} ) ();
+</script>
+
+<!-- stlying for samples -->
+<style type="text/css">
+	.stimsample { display: inline-block; }
+
+	.samples { width: 115%; padding-top: 10px; padding-bottom: 10px; }
+</style>

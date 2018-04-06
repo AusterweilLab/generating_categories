@@ -1,4 +1,5 @@
 import numpy as np
+import sqlite3
 from scipy.spatial import ConvexHull
 
 def stats_battery(betas, alphas = None):
@@ -85,6 +86,20 @@ def histvec(X, bins, density = False):
 	if density: counts = counts / float(np.sum(counts))
 	return counts
 
+def permute(xs, low=0):
+        """
+        Generator that yields a different permutation of elements in a given array
+        """
+        if low + 1 >= len(xs):
+                yield xs
+        else:
+                for p in permute(xs, low + 1):
+                        yield p
+                for i in range(low + 1, len(xs)):
+                        xs[low], xs[i] = xs[i], xs[low]
+                        for p in permute(xs, low + 1):
+                                yield p
+                        xs[low], xs[i] = xs[i], xs[low]
 
 def cartesian(arrays):
 	"""
@@ -169,11 +184,14 @@ def pdist(X, Y, w = np.array([])):
 	X = np.tile(X[:,:,None], (1,1,nY) )
 	Y = np.tile(np.swapaxes(Y[:,:,None],0,2),(nX,1,1))
 	w = w[None,:,None]
-
 	# compute distance
 	difference = X - Y
 	weighted_distance = np.multiply(difference, w)
 	return np.sum( np.abs(weighted_distance), axis = 1 )
+
+def aic(loglike,nparms):
+        aic = 2.0*nparms - 2.0* (-1.0 * loglike)
+        return aic
 
 
 def jitterize(points, sd = 0.0001):
@@ -187,6 +205,7 @@ def jitterize(points, sd = 0.0001):
 def wpick(ps):
 	"""
 	Function to pick from a set a probabilities.
+        Also normalise ps 200318
 	"""
 	return np.random.choice(range(len(ps)), p = ps)
 
@@ -203,7 +222,7 @@ def intersect2d(X, Y):
 	return np.nonzero(eq)[0]
 
 
-def softmax(X, theta = 1.0, axis = None):
+def softmax(X, theta = 1.0, axis = None, toggle = True):
 	"""
 	Compute the softmax of each element along an axis of X.
 
@@ -217,6 +236,9 @@ def softmax(X, theta = 1.0, axis = None):
 
 	Returns an array the same size as X. The result will sum to 1
 	along the specified axis.
+
+        toggle: If True, calculates soft max (exponentiated Luce)
+                If False, calculates regular Luce choice model
 
 	Examples
 	--------
@@ -239,17 +261,155 @@ def softmax(X, theta = 1.0, axis = None):
 	# multiply y against the theta parameter, 
 	# then subtract the max for numerical stability
 	y = y * float(theta)
-	y = y - np.expand_dims(np.nanmax(y, axis = axis), axis)
+
+        
 	
 	# exponentiate y, then convert nans into 0
-	y = np.exp(y)
+        if toggle:
+                y = y - np.expand_dims(np.nanmax(y, axis = axis), axis)
+                y = np.exp(y)
+	
+
+        
+        
 	y[np.isnan(y)] = 0.0
 
 	# take sum along axis, divide elementwise
 	ax_sum = np.expand_dims(np.sum(y, axis = axis), axis)
-	p = y / ax_sum
-
+        if ax_sum==0:
+                p = np.array([0])
+        else:
+	        p = y / ax_sum
+        
+        
 	# flatten if X was 1D
 	if len(X.shape) == 1:
 		p = p.flatten()
-	return p
+
+
+        return p
+
+#Logit function
+def logit_scale(x, min=0, max=1, direction=1):
+        """
+        Logit function. Useful for squeezing real number line between 0 and 1.
+        
+        Set direction to 1 for regular, or -1 for inverse.
+        """
+        range = max-min
+        if direction == 1:
+                #Scale range of x to 0 and 1
+                x = (np.array(x) - min)/float(range)
+                xed = np.log(x/(1-x)) #xed meaning transformed
+                return xed
+        elif direction == -1:
+                x = 1/(1+np.exp(-x))
+                xed = x * range + min
+                return xed
+
+#Log transformation function
+def log_scale(x, bound = 0, direction = 1):
+        """
+        Log transformation function. Adjusts for the bound (i.e.,
+        the min or max doesn't need to be 0). 
+        Direction with 1 is regular, and -1 is reverse.
+        """
+        if direction == 1:
+                x = np.array(x)-bound
+                xed = np.log(x)
+                return xed
+        elif direction == -1:
+                x = np.exp(x)
+                xed = bound+x
+                return xed
+
+        
+# Validate input
+def valInput(s,options):
+        """
+        valInput prompts the user for some input with message
+        's', giving some list of possible options 'options'.
+
+        If valid input is supplied by the user, the selected
+        index is returned. If invalid, empty string and
+        negative index is returned.
+
+        's' must be a string
+        'options' must be a list of strings
+
+        User must supply an integer as input
+        090218 : SX start
+
+        """
+        prints = s + '\n'
+        ct = 0
+        for i in options:
+                prints += '[' + str(ct) + '] ' + i + '\n'
+                ct += 1
+        try:
+                outi = int(raw_input(prints))                
+                outs = options[outi]
+        except KeyboardInterrupt:
+                import sys
+                sys.exit()
+        except:
+                outi = -1
+                outs = ''
+
+        return outi
+
+        
+def valData(ins,s,options,tries = 5):
+        if ins in options:
+                outi = options.index(ins)
+        else:        
+                outi = valInput(s,options)
+
+        outs = options[outi]
+        tries -= 1
+        if tries <=0:
+                raise Exception('Please try again and then select an appropriate option.'+\
+                                '\nIt\'s really not that hard.\n')        
+        if outi<0:
+                outs = valData(ins,s,options,tries)                
+                
+        return outs
+
+def getMatch(match,db='../data_utilities/cmp_midbot.db',fetch='Old'):
+        """
+        Fetch the Old and Matched participant number given some database. 
+        Matches to the matched ppt number by default (i.e., fetches the old ppt number).
+        """
+        conn  = sqlite3.connect(db)
+        
+        #Use cursor method to get data, since it doesn't seem to like sqlite3 for some reason
+        c = conn.cursor()
+        c.execute('SELECT * FROM stimuli')
+        data = c.fetchall();
+        dataA = np.array(data);
+        uniquePpt = np.unique(dataA[:,0]);        
+        ar = [[int(ppt),int(dataA[dataA[:,0]==ppt,1][0])] for ppt in uniquePpt]
+        #uniquePpt = [[row[0],row[1]] for i,row in enumerate(data) if row[0] != data[max(i-1,0)][0]] #whoo. Ugly, but works! Actually no it doesn't. It leaves out index 0:(
+        ar = np.array(ar)
+        #sort this
+        ar = ar[ar[:,0].argsort()]
+        if fetch == 'Old':
+                matchCol = 0 #Match
+                fetchCol = 1
+        else: #if fetch == 'New':
+                matchCol = 1
+                fetchCol = 0
+
+        if match=='all':
+                out = ar
+        else:
+                row = ar[ar[:,matchCol]==match,:]
+                row = row.squeeze()
+                if len(row)>0:
+                        out = row[fetchCol]
+                else:
+                        out = [];
+
+        return out
+
+

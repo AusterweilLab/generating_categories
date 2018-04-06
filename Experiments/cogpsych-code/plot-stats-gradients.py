@@ -98,7 +98,7 @@ for model_name, model_obj in name_2_object.items():
             model_data = model_data.append(pd.DataFrame(rows), ignore_index = True)
 
         print '\t' + str(i)
-
+        
     # aggregate over simulations, add to all data
     model_data = model_data.groupby(['condition','stimulus'])[STAT_OF_INTEREST]
     model_data = model_data.agg(['mean', 'size'])
@@ -166,8 +166,8 @@ cbar.tick_params(length = 0)
 plt.tight_layout(w_pad=-4.0, h_pad= 0.1)
 
 fname = 'gradients-' + STAT_OF_INTEREST
-f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
-f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
+#f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
+#f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
 
-path = '../../Manuscripts/cog-psych/figs/range-diff-gradients.pgf'
-funcs.save_as_pgf(f, path)
+#path = '../../Manuscripts/cog-psych/figs/range-diff-gradients.pgf'
+#funcs.save_as_pgf(f, path)
