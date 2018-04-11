@@ -1,0 +1,104 @@
+gs_best_params_all_data_e1_e2.p
+------
+Model:PACKER
+	specificity: 0.4826606289685939
+	tradeoff: 0.5249580939063249
+	determinism: 6.6582915044634685
+	LogLike = -4544.614134826523
+	AIC = 9095.228269653046
+Model:Copy and Tweak
+	specificity: 3.19665832315356
+	determinism: 2.9717354516797703
+	LogLike = -4919.173067684648
+	AIC = 9842.346135369296
+Model:Hierarchical Sampling
+	category_mean_bias: 1.0001176653293599e-10
+	category_variance_bias: 5.596961323767352
+	domain_variance_bias: 0.054566021671540246
+	determinism: 3.1745580633138273
+	LogLike = -4952.053785358888
+	AIC = 9912.107570717775
+
+gs_best_params_NGPMG1994.p
+------
+Model:PACKER
+	specificity: 56.68699728478552
+	tradeoff: 0.25750159353896424
+	determinism: 2.751535314273929
+	LogLike = -1182.6800396147687
+	AIC = 2371.3600792295374
+Model:Copy and Tweak
+	specificity: 50.82178062469875
+	determinism: 2.751535314071443
+	LogLike = -1182.6800396147687
+	AIC = 2369.3600792295374
+Model:Hierarchical Sampling
+	category_mean_bias: 143711407977952.3
+	category_variance_bias: 2165692397867.161
+	domain_variance_bias: 18.85667327535384
+	determinism: 1.9280509731510956e+18
+	LogLike = -766.1993899596739
+	AIC = 1540.3987799193478
+
+gs_best_params_nosofsky1989.p
+------
+Model:PACKER
+	specificity: 1.350091344559597
+	tradeoff: 0.3633303274591396
+	determinism: 1.6932226135281787
+	LogLike = -5086.996086911077
+	AIC = 10179.992173822155
+Model:Copy and Tweak
+	specificity: 1.3478162713584751
+	determinism: 1.6943248768996473
+	LogLike = -5086.997293171027
+	AIC = 10177.994586342054
+Model:Hierarchical Sampling
+	category_mean_bias: 135058664224725.4
+	category_variance_bias: 378798496154860.44
+	domain_variance_bias: 2.3468258086752773
+	determinism: 5272289095590673.0
+	LogLike = -5101.389520789531
+	AIC = 10210.779041579062
+
+gs_best_params_trials_2-4_e1_e2.p
+------
+Model:PACKER
+	specificity: 0.9054051846002342
+	tradeoff: 0.557901400020362
+	determinism: 4.598619621940469
+	LogLike = -3390.185659872917
+	AIC = 6786.371319745834
+Model:Copy and Tweak
+	specificity: 3.19665832315356
+	determinism: 2.9717354516797703
+	LogLike = -3578.8660755095525
+	AIC = 7161.732151019105
+Model:Hierarchical Sampling
+	category_mean_bias: 1.0000417778635358e-10
+	category_variance_bias: 5.59696393273768
+	domain_variance_bias: 0.05456601479546015
+	determinism: 3.1745583623302327
+	LogLike = -3611.7467931837964
+	AIC = 7231.493586367593
+
+gs_best_params_nosofsky1986.p
+------
+Model:PACKER
+	specificity: 1.9362891386982275
+	tradeoff: 0.6225181738024305
+	determinism: 2.2421797581160434
+	LogLike = -19691.60366224741
+	AIC = 39389.20732449482
+Model:Copy and Tweak
+	specificity: 1.9343857739986972
+	determinism: 2.242269212222694
+	LogLike = -19691.604696092443
+	AIC = 39387.20939218489
+Model:Hierarchical Sampling
+	category_mean_bias: 11.607481336519132
+	category_variance_bias: 1.000000000100018
+	domain_variance_bias: 2.1016282165687574
+	determinism: 69.52527180581666
+	LogLike = -19893.043079580773
+	AIC = 39794.08615916155

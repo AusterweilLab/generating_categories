@@ -19,8 +19,8 @@ specificity = parms(1);
 tradeoff = parms(2);
 determinism = parms(3);
 
-softmax = false;
-normsim = true;
+softmax = true;
+normsim = false;
 
 if numel(parms)<4
     normsim = false;
@@ -33,11 +33,20 @@ end
 if nCat~=2
     error('Fix generation of fx vector in the code before proceeding')
 else
-    %This will need to be fixed if nCat>2
-    fx = repmat(tradeoff-1,nStimTrain,nCat); %gammas
-    for k = 1:nCat       
-        fx(categories==k,k) = tradeoff; %target category
+    %testing as of 110418
+    fx = ones(nStimTrain,nCat);
+    for k = 1:nCat
+        fx(categories ~= k,k) = -tradeoff; %contrast category
     end
+    %end test.
+    
+    %original code before 110418
+%     %This will need to be fixed if nCat>2
+%     fx = repmat(tradeoff-1,nStimTrain,nCat); %gammas
+%     for k = 1:nCat       
+%         fx(categories==k,k) = tradeoff; %target category
+%     end
+    %End original code 110418
 end
 if numel(categories)~=nStimTrain
     error('Size of categories vector doesn''nt match size of stimTrain.')
