@@ -22,7 +22,7 @@ with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
 start_params = best_params[CopyTweak.model]
 
 # set up grid of param values
-gamma_grid = np.linspace(0, 1.0, 100)
+gamma_grid = np.linspace(0, 1.50, 100)
 loglikes = np.empty(gamma_grid.shape)
 
 # add task type to trials object
@@ -32,6 +32,7 @@ trials.task = 'generate'
 for i, val in enumerate(gamma_grid):
 	curr = start_params.copy()
 	curr['tradeoff'] = val
+        curr = Packer.parmxform(curr, direction = 1)
 	loglikes[i] = -trials.loglike(curr, Packer)
 
 
@@ -42,14 +43,14 @@ for i in range(len(gamma_grid)):
 fh = plt.figure(figsize=(5,3))
 
 # copytweak annotation
-copytweak_loglike = loglikes[gamma_grid == 1]
+copytweak_loglike = loglikes[gamma_grid == 0]
 plt.plot([min(gamma_grid), max(gamma_grid)], [copytweak_loglike, copytweak_loglike], '--', linewidth = 1, color='gray')
 plt.text(0.5, copytweak_loglike, 'Target Only (Copy \& Tweak)', ha = 'center', va = 'bottom')
 
 # contrast only annotation
-contrast_loglike = loglikes[gamma_grid == 0]
-plt.plot([min(gamma_grid), max(gamma_grid)], [contrast_loglike, contrast_loglike], '--', linewidth = 1, color='gray')
-plt.text(0.5, contrast_loglike, 'Contrast Only', ha = 'center', va = 'bottom')
+contrast_loglike = loglikes[gamma_grid == 2]
+#plt.plot([min(gamma_grid), max(gamma_grid)], [contrast_loglike, contrast_loglike], '--', linewidth = 1, color='gray')
+#plt.text(0.5, contrast_loglike, 'Contrast Only', ha = 'center', va = 'bottom')
 
 # PACKER annotation
 x = float(gamma_grid[loglikes == max(loglikes)])
@@ -64,7 +65,7 @@ xticks = np.arange(min(gamma_grid),max(gamma_grid)+0.2,0.2)
 xticklabels = [str(i) for i in xticks]
 xticklabels[0] = '0'
 xticklabels[-1] = '1'
-plt.xticks(xticks)
+#plt.xticks(xticks)
 fh.gca().set_xticklabels(xticklabels)
 
 yticks = np.arange(-4950,-4650,50)
@@ -76,5 +77,5 @@ plt.gca().yaxis.grid(True)
 plt.ylabel('Log-Likelihood ($L$)', fontsize = 12)
 
 plt.savefig('packer-loglike-t.png', bbox_inches='tight', transparent=False)
-path = '../../Manuscripts/cog-psych/figs/packer-loglike-n1986.pgf'
+#path = '../../Manuscripts/cog-psych/figs/packer-loglike-t.pgf'
 #funcs.save_as_pgf(fh, path)

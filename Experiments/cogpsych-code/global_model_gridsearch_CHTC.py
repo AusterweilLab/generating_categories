@@ -1,4 +1,4 @@
-import pickle, sys
+import pickle, sys, os
 import pandas as pd
 import numpy as np
 import time
@@ -17,6 +17,7 @@ unique_trials_def = 'all'
 nchunks = 1000 #number of CHTC instances to run
 #Allow for input arguments at the shell
 narg = len(sys.argv)
+
 if __name__ == "__main__" and narg>1:
 
         # if len(sys.argv)<4:
@@ -40,10 +41,18 @@ else:
         participant = participant_def
         unique_trials = unique_trials_def
         runchunk = 93;
-datasets = ['pooled','pooled-no1st','nosofsky1986','nosofsky1989','NGPMG1994']
+datasets = ['pooled','pooled-no1st','nosofsky1986','nosofsky1989','NGPMG1994']        
+
+
+#Check that output directory exists, otherwise create it
+pickledir = 'pickles/'
+outputdir = pickledir + 'newpickles/'
+if not os.path.isdir(outputdir):
+        os.system('mkdir ' + outputdir)
 
 for dataname in datasets:
     execfile('validate_data.py')
+    
     #add chunk number to dst
     dst = dst[0:-2] + '_chunk' + str(runchunk) + '.p'
     dst_error = dst[0:-2] + '_error.p'
@@ -180,7 +189,7 @@ for dataname in datasets:
         
 
     # save final result in pickle
-    with open(pickledir+'chtc_gs_'+dst,'wb') as f:
+    with open(outputdir + 'chtc_gs_'+dst,'wb') as f:
         #pass 
         pickle.dump(results, f)
 

@@ -13,7 +13,7 @@ import numpy as np
 #np.random.seed(9001)
 
 # Specify default dataname
-dataname_def = 'pooled-no1st'#'nosofsky1986'#'NGPMG1994'
+dataname_def = 'nosofsky1986'#'pooled-no1st'#'nosofsky1986'#'NGPMG1994'
 participant_def = 'all'
 unique_trials_def = 'all'
 
@@ -74,9 +74,8 @@ for k,v in results.items():
         
 
 # save final result in pickle
-with open(pickledir+dst,'wb') as f:
-        pass 
-	#pickle.dump(results, f)
+# with open(pickledir+dst,'wb') as f:
+#  	pickle.dump(results, f)
 
 
 

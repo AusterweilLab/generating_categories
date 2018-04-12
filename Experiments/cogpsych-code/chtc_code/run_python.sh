@@ -9,9 +9,14 @@ tar -xzf working.tar.gz
 export PATH=$(pwd)/python/bin:$PATH
 mkdir home
 export HOME=$(pwd)/home
-# run your script
+
+#Copy working directory
 cp -r chtc/ generating-categories
+#Move to working directory
 cd generating-categories/Experiments/cogpsych-code/
+#Make new output directory
+mkdir pickles/newpickles/
+# run your script
 python global_model_gridsearch_CHTC.py $1
 
 

@@ -11,12 +11,14 @@ class Packer(Exemplar):
 	"""
 
 	model = 'PACKER'
-	parameter_names = ['specificity', 'tradeoff', 'determinism', 'baselinesim'] 
+	#parameter_names = ['specificity', 'tradeoff', 'determinism', 'baselinesim']
+        parameter_names = ['specificity', 'tradeoff', 'determinism'] 
 	parameter_rules = dict(
 		specificity = dict(min = 1e-10),
-		tradeoff = dict(min = 0.0, max = 1.0),
+		# tradeoff = dict(min = 0.0, max = 1.0),
+                tradeoff = dict(min = 0.0),
 		determinism = dict(min = 0.0),
-                baselinesim = dict(min = 0.0),
+                #baselinesim = dict(min = 0.0),
 		)
 
 	@staticmethod
@@ -24,50 +26,73 @@ class Packer(Exemplar):
 		""" Return random parameters """
 		return [
 			np.random.uniform(0.1, 6.0),  # specificity
-			np.random.uniform(0.0, 1.0),  # tradeoff
+			#np.random.uniform(0.0, 1.0),  # tradeoff
+                        np.random.uniform(0.01, 10.0),  # tradeoff
 			np.random.uniform(0.1, 6.0),  # determinism
-                        np.random.uniform(0.1, 6.0)   # baselinesim
+                        #np.random.uniform(0.1, 6.0)   # baselinesim
 		] 
 
 
 	def get_generation_ps(self, stimuli, category, task='generate'):
 
                 # compute contrast sum similarity
-		contrast_examples   = self.exemplars[self.assignments != category]
-		contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 + self.tradeoff)
-
+                #New attempt 110418
+                contrast_examples   = self.exemplars[self.assignments != category]
+                contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.tradeoff)
 		# compute target sum similarity
 		target_examples = self.exemplars[self.assignments == category]
-		target_ss   = self._sum_similarity(stimuli, target_examples, param = self.tradeoff)
+		target_ss   = self._sum_similarity(stimuli, target_examples, param = 1.0)
+                #End new attempt 110418
+                
+                # # compute contrast sum similarity
+		# contrast_examples   = self.exemplars[self.assignments != category]
+		# contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 + self.tradeoff)
+
+		# # compute target sum similarity
+		# target_examples = self.exemplars[self.assignments == category]
+		# target_ss   = self._sum_similarity(stimuli, target_examples, param = self.tradeoff)
 		# aggregate target and contrast similarity
 		aggregate = contrast_ss + target_ss
                 # add baseline similarity
-                aggregate = aggregate + self.baselinesim
+                #aggregate = aggregate + self.baselinesim
                 if task is 'generate': 
 		        # NaN out known members - only for task=generate
 		        known_members = Funcs.intersect2d(stimuli, target_examples)
 		        aggregate[known_members] = np.nan
-                        ps = Funcs.luce(aggregate, theta = self.determinism)                        
+                        ps = Funcs.softmax(aggregate, theta = self.determinism)                        
                 elif task is 'assign' or task is 'error':
+                        #New test 110418
                         #compute contrast and target ss if stimuli is assigned
                         #to other cateogry
                         contrast_examples_flip = target_examples
                         contrast_ss_flip = self._sum_similarity(stimuli,
                                                                 contrast_examples_flip,
-                                                                param = -1.0 + self.tradeoff)
+                                                                param = -1.0 * self.tradeoff)
                         target_examples_flip = contrast_examples
                         target_ss_flip   = self._sum_similarity(stimuli,
                                                                 target_examples_flip,
-                                                                param = self.tradeoff)
+                                                                param = 1.0)
+                        #End test 110418
+
+                        # #compute contrast and target ss if stimuli is assigned
+                        # #to other cateogry
+                        # contrast_examples_flip = target_examples
+                        # contrast_ss_flip = self._sum_similarity(stimuli,
+                        #                                         contrast_examples_flip,
+                        #                                         param = -1.0 + self.tradeoff)
+                        # target_examples_flip = contrast_examples
+                        # target_ss_flip   = self._sum_similarity(stimuli,
+                        #                                         target_examples_flip,
+                        #                                         param = self.tradeoff)
                         aggregate_flip = target_ss_flip + contrast_ss_flip
                         # add baseline similarity
-                        aggregate_flip = aggregate_flip + self.baselinesim
+                        #aggregate_flip = aggregate_flip + self.baselinesim
 
                         #Go through each stimulus and calculate their ps
                         ps = np.array([])
                         for i in range(len(aggregate)):
                                 agg_element = np.array([aggregate[i],aggregate_flip[i]])
-                                ps_element = Funcs.luce(agg_element, theta = self.determinism)
+                                ps_element = Funcs.softmax(agg_element, theta = self.determinism)
                                 ps = np.append(ps,ps_element[0])
                                 
                         
@@ -82,11 +107,12 @@ class CopyTweak(Exemplar):
 	"""
 
 	model = 'Copy and Tweak'
-	parameter_names = ['specificity', 'determinism', 'baselinesim']
+	# parameter_names = ['specificity', 'determinism', 'baselinesim']
+	parameter_names = ['specificity', 'determinism']        
 	parameter_rules = dict(
 		specificity = dict(min = 1e-10),
 		determinism = dict(min = 0.0),
-                baselinesim = dict(min = 0.0),
+                #baselinesim = dict(min = 0.0),
 		)
 
 	@staticmethod
@@ -94,7 +120,7 @@ class CopyTweak(Exemplar):
 		""" Return random parameters """
 		return [np.random.uniform(0.1, 6.0), # specificity
 			np.random.uniform(0.1, 6.0), # determinism
-                        np.random.uniform(0.1, 6.0)   # baselinesim
+                        #np.random.uniform(0.1, 6.0)   # baselinesim
                         ]
 	def get_generation_ps(self, stimuli, category, task='generate'):
                 
@@ -107,25 +133,25 @@ class CopyTweak(Exemplar):
 		# get pairwise similarities with target category
 		similarity = self._sum_similarity(stimuli, self.categories[category])
                 # add baseline similarity
-                similarity = similarity + self.baselinesim
+                #similarity = similarity + self.baselinesim
                 if task is 'generate': 
 		        # NaN out known members - only for task=generate
 		        known_members = Funcs.intersect2d(stimuli, self.categories[category])
 		        similarity[known_members] = np.nan
                         # get generation probabilities given each source
 		        # ps = Funcs.softmax(similarity, theta = self.determinism)
-                        ps = Funcs.luce(similarity, theta = self.determinism)
+                        ps = Funcs.softmax(similarity, theta = self.determinism)
                 elif task is 'assign' or task is 'error':
                 	# get pairwise similarities with contrast category
 		        similarity_flip = self._sum_similarity(stimuli, self.categories[1-category])
                         # add baseline similarity
-                        similarity_flip = similarity_flip + self.baselinesim
+                        #similarity_flip = similarity_flip + self.baselinesim
 
                         ps = []
                         for i in range(len(similarity)):
                                 similarity_element = np.array([similarity[i],
                                                                similarity_flip[i]])
-                                ps_element = Funcs.luce(similarity_element, theta = self.determinism)
+                                ps_element = Funcs.softmax(similarity_element, theta = self.determinism)
                                 ps = np.append(ps,ps_element[0])
 
 

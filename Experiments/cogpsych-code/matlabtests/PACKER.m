@@ -68,6 +68,11 @@ for i = 1:nStimTest
         similarity(j,i) = exp(-specificity*distance(j,i));
     end
     for k = 1:nCat
+%         target_sim = sum(similarity(categories == k,i));
+%         contrast_sim = sum(similarity(categories ~= k,i));
+%         %Express tradeoff as how much more contrast is compared to target
+%         tradeoff_sub = tradeoff * target_sim/contrast_sim;
+%         similarity_tradeoff(i,k) = target_sim - tradeoff_sub * contrast_sim;
         similarity_tradeoff(i,k) = sum(fx(:,k) .* similarity(:,i));
     end    
 end
@@ -95,7 +100,10 @@ end
    
 
 if softmax
-    exp_sim = exp(determinism*similarity_tradeoff);
+    %subtract max for numerical stability
+    similarity_tradeoff = determinism*similarity_tradeoff;
+    similarity_tradeoff = similarity_tradeoff - max(similarity_tradeoff(:));
+    exp_sim = exp(similarity_tradeoff);
 else %use Luce's regular rule   
     exp_sim = determinism*similarity_tradeoff; %for consistency I'm leaving the exp in, but note there's no exp actually happening
 end
