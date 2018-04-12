@@ -7,6 +7,11 @@
 \section{Description of the nonvariant effect of gamma on generation and assignment probabilities in
 PACKER}
 
+This document refers to the version of PACKER as described in the manuscript submitted to Cognitive
+Psychology (sometime in 2017). In this version, PACKER performs very well in predicting the
+generation of new category exemplars. In particular, the tradeoff parameter (henceforth \gamma)
+actually controls the predictions generated. However, when trying to produce predictions of category
+assignments
 
 This model assumes that people represent categories as exemplars in a multidimensional space, and
 that generation is constrained by both similarity to members of the category being generated

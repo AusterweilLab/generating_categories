@@ -14,11 +14,14 @@ from Modules.Classes import ConjugateJK13
 
 
 tardir = 'chtctar/'
-maintarname = 'allpickles050418.tar.gz'
+privdir = os.path.join(tardir,'private') #private working folder that git ignores
+if not os.path.isdir(privdir):
+    os.system('mkdir {}'.format(privdir))
+maintarname = 'allpickles110418.tar.gz'
 appendkey = ['finalparmsll','startparms','chunkstartparms']
 removekey = ['bestparmsll','chunkidx']
 #Go through each tarball and find the chtc file
-allfiles = os.listdir(tardir)
+#allfiles = os.listdir(tardir)
 data = dict()
 datasetsAll = []
 modelsAll = []
@@ -33,7 +36,9 @@ for maintarmember in maintar.getmembers(): #for checkfile in allfiles:
         #Print chunk currently processing
         print_ct = funcs.printProg(tarct,print_ct,steps = 20, breakline = 40)
         tarct += 1
-        tar = tarfile.open(tardir+filename, "r:gz")
+        #extract file
+        maintar.extract(maintarmember,privdir)
+        tar = tarfile.open(os.path.join(privdir,filename), "r:gz")
         for member in tar.getmembers():            
             checkmembername = re.search('chtc_gs_best_params_(.*)_chunk{}\.p'.format(chunk),member.name)            
             if checkmembername != None:
@@ -59,7 +64,9 @@ for maintarmember in maintar.getmembers(): #for checkfile in allfiles:
                         #Otherwise, just append the stuff as ndicated by appendkey
                         for key in appendkey:
                             data[dataset][model][key] = np.concatenate((data[dataset][model][key], datachunk[model][key]),0)
-
+        #Remove file from private folder after use
+        os.system('rm {}'.format(os.path.join(privdir,filename)))
+        
 #Find best parms for each model in each dataset
 pickledir = 'pickles/'
 for dataset in datasetsAll:
@@ -81,7 +88,7 @@ for dataset in datasetsAll:
     # save final result in pickle    
     dst = dataset
     results = data[dataset]
-    with open('{}chtc_gs_best_params_{}.p'.format(pickledir,dst),'wb') as f:
-        #pass 
-        pickle.dump(results, f)
+    # with open('{}chtc_gs_best_params_{}.p'.format(pickledir,dst),'wb') as f:
+    #     #pass 
+    #     pickle.dump(results, f)
 

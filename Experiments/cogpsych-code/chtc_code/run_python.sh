@@ -14,14 +14,12 @@ export HOME=$(pwd)/home
 cp -r chtc/ generating-categories
 #Move to working directory
 cd generating-categories/Experiments/cogpsych-code/
-#Make new output directory
-mkdir pickles/newpickles/
 # run your script
 python global_model_gridsearch_CHTC.py $1
 
 
 #tar the pickles
-tar -czvf pickles$1.tar.gz pickles/
+tar -czvf pickles$1.tar.gz pickles/newpickles
 
 #Move it to main directory
 cd ~
