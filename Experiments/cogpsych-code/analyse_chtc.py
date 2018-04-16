@@ -17,7 +17,7 @@ tardir = 'chtctar/'
 privdir = os.path.join(tardir,'private') #private working folder that git ignores
 if not os.path.isdir(privdir):
     os.system('mkdir {}'.format(privdir))
-maintarname = 'allpickles110418.tar.gz'
+maintarname = 'allpickles150418.tar.gz'
 appendkey = ['finalparmsll','startparms','chunkstartparms']
 removekey = ['bestparmsll','chunkidx']
 #Go through each tarball and find the chtc file
@@ -88,7 +88,7 @@ for dataset in datasetsAll:
     # save final result in pickle    
     dst = dataset
     results = data[dataset]
-    # with open('{}chtc_gs_best_params_{}.p'.format(pickledir,dst),'wb') as f:
-    #     #pass 
-    #     pickle.dump(results, f)
+    with open('{}chtc_gs_best_params_{}.p'.format(pickledir,dst),'wb') as f:
+        #pass 
+        pickle.dump(results, f)
 

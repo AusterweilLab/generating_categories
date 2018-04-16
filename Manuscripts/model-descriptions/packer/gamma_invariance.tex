@@ -4,9 +4,61 @@
 
 \begin{document}
 
-\section{Description of the nonvariant effect of gamma on generation and assignment probabilities in
-PACKER}
+\section{Description of the non-variant effect of gamma on generation and assignment probabilities
+in PACKER}
 
+This document refers to the version of PACKER as described in the manuscript submitted to Cognitive
+Psychology (sometime in 2017; henceforth referred to as the manuscript). In this version, PACKER
+performs very well in predicting the generation of new category exemplars. In particular, the
+tradeoff parameter (henceforth $\gamma$) actually affects the predictions generated in an expected
+way. However, when trying to produce predictions of category assignments, varying $\gamma$ does not
+affect the predictions in any way. The following section of this document describes why this is
+occurring.
+
+Equation 2 in the manuscript specifies that the aggregated similarity $a$ between generation
+candidate $y_i$ and a vector of stored exemplars $x$ can be expressed as:
+
+\begin{equation} a(y_i, x) = \sum_j{f(x_j) s(y_i, x_j)}
+\label{eq:aggsim}
+\end{equation} where $f(x_j) = \gamma$ when $x_j$ is a member of a target category and $f(x_j) =
+\gamma - 1$ when $x_j$ is a member of a contrast category.
+
+We can express Equation \ref{eq:aggsim} here a little differently:
+
+\begin{equation} a(y_i,x) = \gamma \sum_k{s(y_i,x_k)} + (\gamma-1) \sum_l{s(y_i,x_l)}
+\label{eq:aggsimsplit}
+\end{equation} where $k$ iterates over members of the target category and $l$ iterates over members
+of the contrast category. To make the algebra a little less tedious we can simplify some of the
+representations here. Let $t_i = \sum_k{s(y_i,x_k)}$ and $c_i = \sum_l{s(y_i,x_l)}$, which allows us to
+express Equation \ref{eq:aggsimsplit} as:
+
+\begin{equation} a(y_i,x) = \gamma t_i + (\gamma-1) c_i .
+\label{eq:aggsimsimp}
+\end{equation}
+
+According to the implementation of PACKER as seen in the manuscript, an exponentiated Luce's choice
+rule is used to find the probability $p$ of generating candidate $y_i$:
+
+\begin{equation} p(y_i) = \dfrac{\exp \{\theta \cdot a(y_i, x)\}} {\sum_i{\exp \{\theta \cdot
+a(y_i,x)\}}} .
+\end{equation} 
+Thus far, these equations only apply to predictions of category generation. However, predictions of
+category assignments require some reconceptualization of these equations, although most of the
+equations retain the same structure. Specifically, for Equations \ref{eq:aggsim} to
+\ref{eq:aggsimsimp}, $y_i$ now represents the assignment of candidate $y$ to target category $i$. 
+
+
+expanding $a(y_i,x)$ with Equation \ref{eq:aggsimsimp}:
+\begin{equation} p(y_i) = \dfrac{\exp \{\theta \cdot \gamma t_i + (\gamma-1) c_i\}} {\sum_i {\exp
+      \{\theta \cdot \gamma t_i + (\gamma-1) c_i\}}}
+\label{eq:expluceexp}
+\end{equation}
+
+
+Whereas the denominator in Equation \ref{eq:expluceexp} is the summation of aggregated similarities
+over all generation candidates in category generation, category assignment predictions require that
+the denominator specifies the summation over all category assignments. Specifically, $i$ in the
+summation term represents each category, as opposed to each generation candidate.
 
 This model assumes that people represent categories as exemplars in a multidimensional space, and
 that generation is constrained by both similarity to members of the category being generated
@@ -58,3 +110,4 @@ Where $\theta$ ($\geq 0$) is a free parameter controlling overall response deter
 
 
 
+ 
