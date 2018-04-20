@@ -1,5 +1,5 @@
 #Temporary file to generate ps plots
-#Gives a good idea of the distribution of generation probabilities at each step og exemplar generation
+#Gives a good idea of the distribution of generation probabilities at each step of exemplar generation
 #given some parameter and alpha stimuli values
 import pickle, math
 import pandas as pd

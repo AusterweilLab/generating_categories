@@ -100,6 +100,13 @@ class ConjugateJK13(Model):
                         #target_dist = np.ones(mu.shape) * np.nan
                         density = np.ones(len(stimuli)) * np.nan
                 else:
+                        # #170418 Implementing representational draws
+                        # # See equation 7 in Tenenbaum & Griffiths 2001 cogsci proceedings paper
+                        # S = categories[category]
+                        # mmu = m-mu
+                        # Vinv = np.linalg.inv(V)
+                        # rep = N * log(S) - N * np.dot(np.dot(mmu.transpose(),Vinv),mmu) - trace(np.dot(S,Vinv))
+                        
                         target_dist = multivariate_normal(mean = mu, cov = Sigma)
                         density = target_dist.pdf(stimuli)
                         

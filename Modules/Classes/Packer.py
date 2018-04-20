@@ -27,7 +27,7 @@ class Packer(Exemplar):
 		return [
 			np.random.uniform(0.1, 6.0),  # specificity
 			#np.random.uniform(0.0, 1.0),  # tradeoff
-                        np.random.uniform(0.01, 10.0),  # tradeoff
+                        np.random.uniform(0.1, 6.0),  # tradeoff
 			np.random.uniform(0.1, 6.0),  # determinism
                         #np.random.uniform(0.1, 6.0)   # baselinesim
 		] 
@@ -36,12 +36,12 @@ class Packer(Exemplar):
 	def get_generation_ps(self, stimuli, category, task='generate'):
 
                 # compute contrast sum similarity
-                #New attempt 110418
+                #New attempt 110418. Updated 170418 - tradeoff is for contrast, determinism is tradeoff for target
                 contrast_examples   = self.exemplars[self.assignments != category]
                 contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.tradeoff)
 		# compute target sum similarity
 		target_examples = self.exemplars[self.assignments == category]
-		target_ss   = self._sum_similarity(stimuli, target_examples, param = 1.0)
+		target_ss   = self._sum_similarity(stimuli, target_examples, param = self.determinism)
                 #End new attempt 110418
                 
                 # # compute contrast sum similarity
@@ -71,7 +71,7 @@ class Packer(Exemplar):
                         target_examples_flip = contrast_examples
                         target_ss_flip   = self._sum_similarity(stimuli,
                                                                 target_examples_flip,
-                                                                param = 1.0)
+                                                                param = self.determinism)
                         #End test 110418
 
                         # #compute contrast and target ss if stimuli is assigned

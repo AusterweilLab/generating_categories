@@ -9,11 +9,11 @@ from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 
-Simulation.print_gs_nicenice()
-lll
+# Simulation.print_gs_nicenice()
+# lll
 
 # Specify default dataname
-dataname_def = 'NGPMG1994'
+dataname_def = 'pooled'
 participant_def = 'all'
 unique_trials_def = 'all'
 
@@ -147,9 +147,9 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
         
 
 # save final result in pickle
-with open(pickledir+'gs_'+dst,'wb') as f:
-    #pass 
-    pickle.dump(results, f)
+# with open(pickledir+'gs_'+dst,'wb') as f:
+#     #pass 
+#     pickle.dump(results, f)
 
 #Simulation.print_gs_nicenice()
 
