@@ -59,7 +59,8 @@ class Packer(Exemplar):
 		        # NaN out known members - only for task=generate
 		        known_members = Funcs.intersect2d(stimuli, target_examples)
 		        aggregate[known_members] = np.nan
-                        ps = Funcs.softmax(aggregate, theta = self.determinism)                        
+                        ps = Funcs.softmax(aggregate, theta = 1.0)                       
+                        #ps = Funcs.softmax(aggregate, theta = self.determinism)                        
                 elif task is 'assign' or task is 'error':
                         #New test 110418
                         #compute contrast and target ss if stimuli is assigned
@@ -92,7 +93,8 @@ class Packer(Exemplar):
                         ps = np.array([])
                         for i in range(len(aggregate)):
                                 agg_element = np.array([aggregate[i],aggregate_flip[i]])
-                                ps_element = Funcs.softmax(agg_element, theta = self.determinism)
+                                #ps_element = Funcs.softmax(agg_element, theta = self.determinism)
+                                ps_element = Funcs.softmax(agg_element, theta = 1.0)
                                 ps = np.append(ps,ps_element[0])
                                 
                         
@@ -139,7 +141,6 @@ class CopyTweak(Exemplar):
 		        known_members = Funcs.intersect2d(stimuli, self.categories[category])
 		        similarity[known_members] = np.nan
                         # get generation probabilities given each source
-		        # ps = Funcs.softmax(similarity, theta = self.determinism)
                         ps = Funcs.softmax(similarity, theta = self.determinism)
                 elif task is 'assign' or task is 'error':
                 	# get pairwise similarities with contrast category
