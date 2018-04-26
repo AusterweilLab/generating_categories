@@ -2,6 +2,7 @@ s = 'Invalid data name supplied. Please select one of these options:'
 
 choices = ['pooled',
            'pooled-no1st',
+           'catassign',
            'midbot',
            'nosofsky1986',
            'nosofsky1989',
@@ -19,6 +20,10 @@ elif dataname == 'pooled-no1st':
         # trials 2-4
         filename = 'trials_2-4_e1_e2'
         task = "generate"
+elif dataname == 'catassign':
+        # trials 2-4
+        filename = 'catassign'
+        task = "assign"
 elif dataname == 'midbot':
         # experiment 2 only mid bottom conditions
         filename = dataname

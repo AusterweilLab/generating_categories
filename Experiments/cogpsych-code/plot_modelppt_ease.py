@@ -31,7 +31,7 @@ with open(pickledir+src, "rb" ) as f:
 	trials = pickle.load( f )
 
 # get best params pickle
-with open("pickles/gs_best_params_all_data_e1_e2.p", "rb" ) as f:
+with open("pickles/chtc_gs_best_params_all_data_e1_e2.p", "rb" ) as f:
     best_params_t = pickle.load( f )
 #Rebuild it into a smaller dict
 best_params = dict()
@@ -96,6 +96,7 @@ for model_obj in modelList:
         #Get log likelihoods
         ll_list = []
         scale_constant = 1e308;
+        print_ct = 0
         for ppt in pptlist:
             #since info contains the new mapping of ppts, and pptlist contains old,
             #convert ppt to new
@@ -127,6 +128,7 @@ for model_obj in modelList:
             likeli = 0 # np.zeros(len(pptbeta))#0
             likeli2 = 0 # np.zeros(len(pptbeta))#0
             raw_array = np.zeros((nstim,nbetapermute))
+
             for i,beta in enumerate(funcs.permute(pptbeta)):
                 categories = As_num
                 trials = range(nstim)
@@ -163,8 +165,8 @@ for model_obj in modelList:
                 # print np.log(likeli2)
             ll_list += [raw_array_ll]
 
-    
-            print ppt
+            print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
+            #print ppt
     
             # retiring this bottom bit for now
             # for j in range(N_SAMPLES):

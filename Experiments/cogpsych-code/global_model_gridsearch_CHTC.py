@@ -41,7 +41,7 @@ else:
         participant = participant_def
         unique_trials = unique_trials_def
         runchunk = 93;
-datasets = ['pooled','pooled-no1st','nosofsky1986','nosofsky1989','NGPMG1994']        
+datasets = ['pooled','pooled-no1st','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
 
 
 #Check that output directory exists, otherwise create it
