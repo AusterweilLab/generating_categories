@@ -68,14 +68,7 @@ class ConjugateJK13(Model):
 		self.prior_variance[inds] *= self.wts
 		self.prior_variance *= self.domain_variance_bias
 
-	def get_generation_ps(self, stimuli, category,task='generate'):
-
-		# random response if there are no target members.
-		target_is_populated = any(self.assignments == category)
-		if not target_is_populated:
-			ncandidates = stimuli.shape[0]
-			return np.ones(ncandidates) / float(ncandidates)
-
+        def get_musig(self, stimuli, category):
 		# get target category stats
 		xbar = np.mean(self.categories[category], axis = 0)
 		n = self.nexemplars[category]
@@ -95,20 +88,58 @@ class ConjugateJK13(Model):
 		Sigma += self.Domain * self.category_variance_bias + C
 		Sigma /= self.category_variance_bias + n
 
+                return (mu,Sigma)
+
+        def get_generation_ps(self, stimuli, category, task='generate'):
+
+		# random response if there are no target members.
+		target_is_populated = any(self.assignments == category)
+		if not target_is_populated:
+			ncandidates = stimuli.shape[0]
+			return np.ones(ncandidates) / float(ncandidates)
+
+		# # get target category stats
+		# xbar = np.mean(self.categories[category], axis = 0)
+		# n = self.nexemplars[category]
+		# if n < 2:
+		# 	C = np.zeros((self.nfeatures, self.nfeatures))
+		# else:
+		# 	C = np.cov(self.categories[category], rowvar = False)
+
+		# # compute mu for target category
+		# mu =  self.category_mean_bias * self.category_prior_mean
+		# mu += n * xbar
+		# mu /= self.category_mean_bias + n
+
+		# # compute target category Sigma
+		# ratio = (self.category_mean_bias * n) / (self.category_mean_bias + n)
+		# Sigma = ratio * np.outer(xbar - mu, xbar - mu)
+		# Sigma += self.Domain * self.category_variance_bias + C
+		# Sigma /= self.category_variance_bias + n
+
+                mu,Sigma = self.get_musig(stimuli, category)
+                
 		# get relative densities
                 if np.isnan(Sigma).any() or np.isinf(Sigma).any():
                         #target_dist = np.ones(mu.shape) * np.nan
                         density = np.ones(len(stimuli)) * np.nan
                 else:
-                        # #170418 Implementing representational draws
-                        # # See equation 7 in Tenenbaum & Griffiths 2001 cogsci proceedings paper
-                        # S = categories[category]
-                        # mmu = m-mu
-                        # Vinv = np.linalg.inv(V)
-                        # rep = N * log(S) - N * np.dot(np.dot(mmu.transpose(),Vinv),mmu) - trace(np.dot(S,Vinv))
-                        
-                        target_dist = multivariate_normal(mean = mu, cov = Sigma)
-                        density = target_dist.pdf(stimuli)
+                        # #270418 Implementing representational draws
+                        target_dist_beta = multivariate_normal(mean = mu, cov = Sigma)
+                        likelihood_beta = target_dist_beta.pdf(stimuli)
+
+                        #Get parameters for category beta (alternative hypothesis)
+                        mu_alpha, Sigma_alpha = self.get_musig(stimuli, 1-category)
+                        target_dist_alpha = multivariate_normal(mean = mu_alpha, cov = Sigma_alpha)
+                        likelihood_alpha = target_dist_alpha.pdf(stimuli)
+
+                        # since number of alternative hypotheses is always 1 if there are a total of 2 categories, p(h') will always be 1, right?
+                        #prior = 1
+
+                        density = likelihood_beta/likelihood_alpha
+                        #The general equation is density = likelihood_beta/sum(likelihood_alpha*prior), where the sum is over all non-beta categories, but I'm leaving out the prior since it's just 1
+                        #As a quick hack to revert ConjugateJK13 to how it was in the manuscript prior to April 2018, uncomment the line below
+                        #density = target_dist_beta.pdf(stimuli)
                         
                 if task is 'generate': 
 		        # NaN out known members - only for task=generate
@@ -117,32 +148,34 @@ class ConjugateJK13(Model):
 		        ps = Funcs.softmax(density, theta = self.determinism)
                 elif task is 'assign' or task is 'error':
                         ## Do the same for the contrast categor
-                        # get target category stats
-		        xbar_flip = np.mean(self.categories[1-category], axis = 0)
-		        n_flip = self.nexemplars[1-category]
-		        if n_flip < 2:
-			        C_flip = np.zeros((self.nfeatures, self.nfeatures))
-		        else:
-			        C_flip = np.cov(self.categories[1-category], rowvar = False)
+                        # # get target category stats
+		        # xbar_flip = np.mean(self.categories[1-category], axis = 0)
+		        # n_flip = self.nexemplars[1-category]
+		        # if n_flip < 2:
+			#         C_flip = np.zeros((self.nfeatures, self.nfeatures))
+		        # else:
+			#         C_flip = np.cov(self.categories[1-category], rowvar = False)
                                 
-		        # compute mu for target category
-		        mu_flip =  self.category_mean_bias * self.category_prior_mean
-		        mu_flip += n_flip * xbar_flip
-		        mu_flip /= self.category_mean_bias + n_flip
+		        # # compute mu for target category
+		        # mu_flip =  self.category_mean_bias * self.category_prior_mean
+		        # mu_flip += n_flip * xbar_flip
+		        # mu_flip /= self.category_mean_bias + n_flip
                         
-		        # compute target category Sigma
-		        ratio_flip = (self.category_mean_bias * n_flip) / (self.category_mean_bias + n_flip)
-		        Sigma_flip = ratio_flip * np.outer(xbar_flip - mu_flip, xbar_flip - mu_flip)
-		        Sigma_flip += self.Domain * self.category_variance_bias + C_flip
-		        Sigma_flip /= self.category_variance_bias + n_flip
-                        
+		        # # compute target category Sigma
+		        # ratio_flip = (self.category_mean_bias * n_flip) / (self.category_mean_bias + n_flip)
+		        # Sigma_flip = ratio_flip * np.outer(xbar_flip - mu_flip, xbar_flip - mu_flip)
+		        # Sigma_flip += self.Domain * self.category_variance_bias + C_flip
+		        # Sigma_flip /= self.category_variance_bias + n_flip
+
+                        #mu_flip, Sigma_flip = self.get_musig(stimuli,1-category)
 		        # get relative densities
-                        if np.isnan(Sigma_flip).any() or np.isinf(Sigma_flip).any():
+                        if np.isnan(Sigma).any() or np.isinf(Sigma).any():
                                 #target_dist_flip = np.ones(mu_flip.shape) * np.nan
                                 density_flip = np.ones(len(stimuli)) * np.nan
                         else:
-		                target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)                                
-		                density_flip = target_dist_flip.pdf(stimuli)
+		                #target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)
+                                #density_flip = target_dist_flip.pdf(stimuli)                                
+                                density_flip = likelihood_alpha/likelihood_beta
 
 
                         ps = []
@@ -151,7 +184,6 @@ class ConjugateJK13(Model):
                                                             density_flip[i]])
                                 ps_element = Funcs.softmax(density_element, theta = self.determinism)
                                 ps = np.append(ps,ps_element[0])                        
-
 		return ps
 
 

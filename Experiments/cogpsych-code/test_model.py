@@ -42,3 +42,9 @@ else:
         unique_trials = unique_trials_def
 
 execfile('validate_data.py')
+# get data from pickle
+with open(pickledir+src, "rb" ) as f:
+	trials = pickle.load( f )
+
+trials.task = task
+trials = Simulation.extractPptData(trials,participant,unique_trials)

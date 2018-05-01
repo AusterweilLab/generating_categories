@@ -20,7 +20,7 @@ plt.close()
 
 #load data
 dataname_def = 'pooled'#'nosofsky1986'#'NGPMG1994'
-participant_def = 204 #'all'
+participant_def = 208 #'all'
 unique_trials_def = 'all'
 dataname = dataname_def
 execfile('validate_data.py')
@@ -32,7 +32,7 @@ trials.task = task
 
 pptTrialObj = Simulation.extractPptData(trials,participant_def,unique_trials_def)
 #Get best parms
-with open(pickledir+'gs_'+dst, "rb" ) as f:
+with open(pickledir+'chtc_gs_'+dst, "rb" ) as f:
     best_params_t = pickle.load( f )
 #Rebuild it into a smaller dict
 best_params = dict()
@@ -106,7 +106,9 @@ for trial in range(ntrials):
     for i,ps_el in enumerate(ps):
         plotct += 1
         gps = funcs.gradientroll(ps_el,'roll')[:,:,0]
-        plotVals += [(gps-psMin)/psRange]
+        #plotVals += [(gps-psMin)/psRange] #uncomment to implement normalisation
+        ps_ElRange = gps.max()-gps.min();
+        plotVals += [(gps-gps.min())/ps_ElRange]
         #ax = f.add_subplot(trials,2,plotct)
         #print B
         im = funcs.plotgradient(ax[trial,i], plotVals[i], A, B, clim = STAT_LIMS, cmap = 'PuOr')
@@ -123,6 +125,7 @@ for trial in range(ntrials):
             categoriesT = [pptTrialObj.stimuli[i,:] for i in pptTrialObj.Set[t]['categories'] if any(i)]    
             psT = model(categoriesT,params).get_generation_ps(pptTrialObj.stimuli,1,'generate')
             psT_raw = psT[pptTrialObj.Set[t]['response']]
+            psT_raw[psT_raw<1e-308] = 1e-308
             nll[m] += -np.log(psT_raw)
     #print nll
 

@@ -13,7 +13,7 @@ import numpy as np
 #np.random.seed(9001)
 
 # Specify default dataname
-dataname_def = 'catassign'#'pooled-no1st'#'nosofsky1986'#'NGPMG1994'
+dataname_def = 'nosofsky1986'#'pooled-no1st'#'nosofsky1986'#'NGPMG1994'
 participant_def = 'all'
 unique_trials_def = 'all'
 
