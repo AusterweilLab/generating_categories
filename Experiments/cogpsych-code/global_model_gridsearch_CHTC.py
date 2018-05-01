@@ -8,6 +8,7 @@ from Modules.Classes import Simulation
 from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
+from Modules.Classes import RepresentJK13
 
 
 # Specify default dataname
@@ -79,7 +80,7 @@ for dataname in datasets:
 
     #Run grid search
     results = dict()
-    for model_obj in [ConjugateJK13, CopyTweak, Packer]:
+    for model_obj in [ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
         #Prepare list of grid search start points
         #Create base array
         nparms = len(model_obj.parameter_names)

@@ -7,6 +7,7 @@ from Modules.Classes import Simulation
 from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
+from Modules.Classes import RepresentJK13
 import numpy as np
 
 # seed rng
@@ -60,7 +61,7 @@ options = dict(
 ) 
 
 results = dict()
-for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, Packer]:
+for model_obj in [ConjugateJK13,RepresentJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, Packer]:
 	res = Simulation.hillclimber(model_obj, trials, options,results=True,callbackstyle='.')
 	X = model_obj.params2dict(model_obj.clipper(res.x))
 	results[model_obj.model] = X
@@ -74,8 +75,8 @@ for k,v in results.items():
         
 
 # save final result in pickle
-# with open(pickledir+dst,'wb') as f:
-#  	pickle.dump(results, f)
+with open(pickledir+dst,'wb') as f:
+ 	pickle.dump(results, f)
 
 
 

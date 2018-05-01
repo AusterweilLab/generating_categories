@@ -10,6 +10,7 @@ from Modules.Classes import Simulation
 from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
+from Modules.Classes import RepresentJK13
 from scipy.stats.stats import pearsonr
 import numpy as np
 import matplotlib.pyplot as plt
@@ -43,7 +44,7 @@ for modelname in best_params_t.keys():
         best_params[modelname][parmname] = parmval[i]
 
 #paramsT = dict(params)
-models = [Packer,CopyTweak,ConjugateJK13]
+models = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]
 #paramsP = dict(determinism = 2,specificity=.5,tradeoff=.5,wts=[.5,.5])
 #paramsCT = dict(paramsP)
 #paramsCT.pop('tradeoff')
@@ -55,7 +56,8 @@ paramsCT = best_params[CopyTweak.model]
 paramsCT['baselinesim'] = 0
 #paramsCT['wts'] = paramsT['wts']
 paramsJK = best_params[ConjugateJK13.model]
-paramSet = [paramsP,paramsCT,paramsJK]
+paramsJKR = best_params[RepresentJK13.model]
+paramSet = [paramsP,paramsCT,paramsJK,paramsJKR]
 STAT_LIMS =  (-1.0, 1.0)
 
 ntrials = len(pptTrialObj.Set)

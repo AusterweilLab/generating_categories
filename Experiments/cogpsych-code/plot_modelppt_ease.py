@@ -9,6 +9,7 @@ from Modules.Classes import Simulation
 from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
+from Modules.Classes import RepresentJK13
 from scipy.stats.stats import pearsonr
 import numpy as np
 import matplotlib.pyplot as plt
@@ -31,16 +32,17 @@ with open(pickledir+src, "rb" ) as f:
 	trials = pickle.load( f )
 
 # get best params pickle
-with open("pickles/chtc_gs_best_params_all_data_e1_e2.p", "rb" ) as f:
-    best_params_t = pickle.load( f )
+with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
+#    best_params_t = pickle.load( f )
+        best_params = pickle.load( f )
 #Rebuild it into a smaller dict
-best_params = dict()
-for modelname in best_params_t.keys():    
-    best_params[modelname] = dict()
-    for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
-        parmval = best_params_t[modelname]['bestparmsll']
-        best_params[modelname][parmname] = parmval[i]
-modelList = [ConjugateJK13,CopyTweak,Packer]                            
+#best_params = dict()
+# for modelname in best_params_t.keys():    
+#     best_params[modelname] = dict()
+#     for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
+#         parmval = best_params_t[modelname]['bestparmsll']
+#         best_params[modelname][parmname] = parmval[i]
+modelList = [ConjugateJK13,RepresentJK13,CopyTweak,Packer]                            
 
 #Prepare matched database    
 matchdb='../cat-assign/data_utilities/cmp_midbot.db'
@@ -113,7 +115,7 @@ for model_obj in modelList:
             #Get weights
             ranges = stats[['xrange','yrange']].loc[stats['participant']==pptOld]
             params['wts'] = funcs.softmax(-ranges, theta = WT_THETA)[0]
-            if model_obj ==  ConjugateJK13:
+            if model_obj ==  ConjugateJK13 or model_obj == RepresentJK13:
                 params['wts'] = 1.0 - params['wts']
 
             #simulate
@@ -252,5 +254,5 @@ for m,model_obj in enumerate(modelList):
     ax.set_xlabel('{} negLL'.format(model_name))
     ax.set_ylabel('Participant p(error)')
     
-plt.savefig('modelvsppt.png')
+#plt.savefig('modelvsppt.png')
     #plt.cla()

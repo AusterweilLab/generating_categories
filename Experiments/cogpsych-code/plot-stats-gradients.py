@@ -51,7 +51,7 @@ all_data = dict(Behavioral = observed)
 
 # custom modules
 execfile('Imports.py')
-from Modules.Classes import CopyTweak, Packer, ConjugateJK13
+from Modules.Classes import CopyTweak, Packer, ConjugateJK13, RepresentJK13
 import Modules.Funcs as funcs
 
 # get best params pickle
@@ -170,8 +170,8 @@ cbar.tick_params(length = 0)
 
 plt.tight_layout(w_pad=-4.0, h_pad= 0.1)
 
-fname = 'gradients-' + STAT_OF_INTEREST
-#f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
+fname = 'gradients-t-' + STAT_OF_INTEREST
+f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
 #f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
 
 #path = '../../Manuscripts/cog-psych/figs/range-diff-gradients.pgf'
