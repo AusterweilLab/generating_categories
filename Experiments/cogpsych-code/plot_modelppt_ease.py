@@ -32,17 +32,17 @@ with open(pickledir+src, "rb" ) as f:
 	trials = pickle.load( f )
 
 # get best params pickle
-with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
-#    best_params_t = pickle.load( f )
-        best_params = pickle.load( f )
+with open("pickles/chtc_gs_best_params_all_data_e1_e2.p", "rb" ) as f:
+    best_params_t = pickle.load( f )
+
 #Rebuild it into a smaller dict
-#best_params = dict()
-# for modelname in best_params_t.keys():    
-#     best_params[modelname] = dict()
-#     for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
-#         parmval = best_params_t[modelname]['bestparmsll']
-#         best_params[modelname][parmname] = parmval[i]
-modelList = [ConjugateJK13,RepresentJK13,CopyTweak,Packer]                            
+best_params = dict()
+for modelname in best_params_t.keys():    
+    best_params[modelname] = dict()
+    for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
+        parmval = best_params_t[modelname]['bestparmsll']
+        best_params[modelname][parmname] = parmval[i]
+modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]                            
 
 #Prepare matched database    
 matchdb='../cat-assign/data_utilities/cmp_midbot.db'
@@ -254,5 +254,5 @@ for m,model_obj in enumerate(modelList):
     ax.set_xlabel('{} negLL'.format(model_name))
     ax.set_ylabel('Participant p(error)')
     
-#plt.savefig('modelvsppt.png')
-    #plt.cla()
+plt.savefig('modelvsppt-t.pdf')
+plt.cla()

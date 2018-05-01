@@ -1,4 +1,5 @@
 import numpy as np
+import random
 from scipy.stats import multivariate_normal
 
 # imports from module
@@ -14,9 +15,9 @@ class ConjugateJK13(Model):
 
 	model = "Hierarchical Sampling"
         modelshort = "Conjugate"
-	num_features    = 2 # hard coded number of assumed features
+        num_features = 2 #hard code on first init, then update whenever trials come in
 	parameter_names = [	'category_mean_bias',   'category_variance_bias',
-											'domain_variance_bias', 'determinism' ]
+				'domain_variance_bias', 'determinism' ]
 	parameter_rules = dict(
 			category_mean_bias = dict(min = 1e-10),
 			category_variance_bias = dict(min = num_features - 1 + 1e-10),
@@ -56,6 +57,8 @@ class ConjugateJK13(Model):
 			C = np.cov(self.categories[y], rowvar = False)
 			self.Domain += C
 
+                #update number of features
+                self.num_features = self.nfeatures
 
 	def _wts_handler_(self):
 		"""
@@ -147,6 +150,7 @@ class RepresentJK13(Model):
 	model = "Hierarchical Sampling With Representativeness"
         modelshort = "Represent"
 	num_features    = 2 # hard coded number of assumed features
+        #num_features = self.nfeatures
 	parameter_names = [	'category_mean_bias',   'category_variance_bias',
 											'domain_variance_bias', 'determinism' ]
 	parameter_rules = dict(
@@ -188,6 +192,8 @@ class RepresentJK13(Model):
 			C = np.cov(self.categories[y], rowvar = False)
 			self.Domain += C
 
+                #Update num features for correct parm rules
+                self.num_features = self.nfeatures
 
 	def _wts_handler_(self):
 		"""
@@ -202,54 +208,44 @@ class RepresentJK13(Model):
 		self.prior_variance *= self.domain_variance_bias
 
         def get_musig(self, stimuli, category):
-		# get target category stats
-		xbar = np.mean(self.categories[category], axis = 0)
-		n = self.nexemplars[category]
-		if n < 2:
-			C = np.zeros((self.nfeatures, self.nfeatures))
-		else:
-			C = np.cov(self.categories[category], rowvar = False)
+                # random response if there are no target members.
+		target_is_populated = any(self.assignments == category)
 
-		# compute mu for target category
-		mu =  self.category_mean_bias * self.category_prior_mean
-		mu += n * xbar
-		mu /= self.category_mean_bias + n
+                if not target_is_populated:
+                        mu = []
+                        #randomly sample mu from uniform                        
+                        for nf in range(self.nfeatures):
+                                mu += [np.random.uniform(self.stimrange[nf]['min'],
+                                                           self.stimrange[nf]['max'])]
+                        mu = np.array(mu)
 
-		# compute target category Sigma
-		ratio = (self.category_mean_bias * n) / (self.category_mean_bias + n)
-		Sigma = ratio * np.outer(xbar - mu, xbar - mu)
-		Sigma += self.Domain * self.category_variance_bias + C
-		Sigma /= self.category_variance_bias + n
+                        Sigma = self.Domain * self.category_variance_bias
+                else:
+                
+		        # get target category stats
+		        xbar = np.mean(self.categories[category], axis = 0)
+		        n = self.nexemplars[category]
+
+                        # compute mu for target category
+		        mu =  self.category_mean_bias * self.category_prior_mean
+		        mu += n * xbar
+		        mu /= self.category_mean_bias + n
+
+		        if n < 2:
+			        C = np.zeros((self.nfeatures, self.nfeatures))
+		        else:
+			        C = np.cov(self.categories[category], rowvar = False)
+
+		        # compute target category Sigma
+		        ratio = (self.category_mean_bias * n) / (self.category_mean_bias + n)
+		        Sigma = ratio * np.outer(xbar - mu, xbar - mu)
+		        Sigma += self.Domain * self.category_variance_bias + C
+		        Sigma /= self.category_variance_bias + n
 
                 return (mu,Sigma)
 
         def get_generation_ps(self, stimuli, category, task='generate'):
-
-		# random response if there are no target members.
-		target_is_populated = any(self.assignments == category)
-		if not target_is_populated:
-			ncandidates = stimuli.shape[0]
-			return np.ones(ncandidates) / float(ncandidates)
-
-		# # get target category stats
-		# xbar = np.mean(self.categories[category], axis = 0)
-		# n = self.nexemplars[category]
-		# if n < 2:
-		# 	C = np.zeros((self.nfeatures, self.nfeatures))
-		# else:
-		# 	C = np.cov(self.categories[category], rowvar = False)
-
-		# # compute mu for target category
-		# mu =  self.category_mean_bias * self.category_prior_mean
-		# mu += n * xbar
-		# mu /= self.category_mean_bias + n
-
-		# # compute target category Sigma
-		# ratio = (self.category_mean_bias * n) / (self.category_mean_bias + n)
-		# Sigma = ratio * np.outer(xbar - mu, xbar - mu)
-		# Sigma += self.Domain * self.category_variance_bias + C
-		# Sigma /= self.category_variance_bias + n
-
+                target_is_populated = any(self.assignments == category)                
                 mu,Sigma = self.get_musig(stimuli, category)
                 
 		# get relative densities
@@ -273,12 +269,17 @@ class RepresentJK13(Model):
                         #The general equation is density = likelihood_beta/sum(likelihood_alpha*prior), where the sum is over all non-beta categories, but I'm leaving out the prior since it's just 1
                         #As a quick hack to revert ConjugateJK13 to how it was in the manuscript prior to April 2018, uncomment the line below
                         #density = target_dist_beta.pdf(stimuli)
+
+
                         
                 if task is 'generate': 
 		        # NaN out known members - only for task=generate
-		        known_members = Funcs.intersect2d(stimuli, self.categories[category])
-		        density[known_members] = np.nan
+                        if target_is_populated:
+		                known_members = Funcs.intersect2d(stimuli, self.categories[category])
+		                density[known_members] = np.nan
+                                
 		        ps = Funcs.softmax(density, theta = self.determinism)
+                                
                 elif task is 'assign' or task is 'error':
                         ## Do the same for the contrast categor
                         # # get target category stats

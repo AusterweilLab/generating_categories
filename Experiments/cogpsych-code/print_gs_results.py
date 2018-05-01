@@ -24,9 +24,9 @@ for i,file in enumerate(gsfiles):
         fulldata = pickle.load(f)
     modelnames = fulldata.keys()
     for j in modelnames:
-        print 'Model:' + j
+        print j
         for pi,pname in enumerate(fulldata[j]['parmnames']):
             print '\t' + pname + ': ' + str(fulldata[j]['bestparmsll'][pi])
         print '\tLogLike' + ' = ' + '-' + str(fulldata[j]['bestparmsll'][pi+1])
-        print '\tAIC'  + ' = ' + str(fulldata[j]['bestparmsll'][pi+2])
+        print '\tAIC'  + ' = ' + str(fulldata[j]['bestparmsll'][pi+2]) + '\n'
 

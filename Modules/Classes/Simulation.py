@@ -21,12 +21,17 @@ class Trialset(object):
 		
 		# figure out what the stimulus domain is
 		self.stimuli = stimuli
-
+                self.stimrange = []
+                for i in range(len(stimuli[0])):
+                        self.stimrange += [{'min': stimuli[:,i].min(),
+                                            'max': stimuli[:,i].max()}] 
+                
 		# initialize trials list
 		self.Set = [] # compact set
 		self.nunique = 0
 		self.nresponses = 0
                 self.task = ''
+                
                 
 	def __str__(self):
 		S  = 'Trialset containing: ' 
@@ -198,13 +203,13 @@ class Trialset(object):
                         # ps0 = np.zeros(ps1.shape)
                         if task is 'generate':                                
 			        # compute probabilities of generating exemplar in cat 1
-			        ps = model(categories, params).get_generation_ps(self.stimuli, 1,self.task)
+			        ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
                                 ps_add = ps[trial['response']]
                         elif task=='assign':
                                 #Compute probabilities of assigning exemplar to cat 0
-                 		ps0 = model(categories, params).get_generation_ps(self.stimuli, 0,self.task)
+                 		ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
                                 #Compute probabilities of assigning exemplar to cat 1
-                                ps1 = model(categories, params).get_generation_ps(self.stimuli, 1,self.task)
+                                ps1 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
                                 idc0 = trial['response'][0]
                                 idc1 = trial['response'][1]
                                 #ps_add = ps0[idc0]
@@ -226,7 +231,7 @@ class Trialset(object):
                                 #For prediction of error probabilities, simply
                                 #find the probability of classifying a
                                 #stimulus as the wrong category
-                                ps = model(categories, params).get_generation_ps(self.stimuli, 0,self.task)
+                                ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
                                 idc_err = trial['response'][0]
                                 #idc1 = trial['response'][1]
                                 ps_add = ps[idc_err]
@@ -364,8 +369,8 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
                 # format categories
 	        categories = [trial_obj.stimuli[i,:] for i in trial['categories'] if any(i)]
                 
-                ps0 = model_obj(categories, params).get_generation_ps(trial_obj.stimuli, 0,trial_obj.task)
-                ps1 = model_obj(categories, params).get_generation_ps(trial_obj.stimuli, 1,trial_obj.task)
+                ps0 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 0,trial_obj.task)
+                ps1 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 1,trial_obj.task)
 
 
                 if show_data is False:

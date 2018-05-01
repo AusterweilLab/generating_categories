@@ -17,7 +17,7 @@ tardir = 'chtctar/'
 privdir = os.path.join(tardir,'private') #private working folder that git ignores
 if not os.path.isdir(privdir):
     os.system('mkdir {}'.format(privdir))
-maintarname = 'allpickles220418.tar.gz'
+maintarname = 'allpickles010518.tar.gz'
 appendkey = ['finalparmsll','startparms','chunkstartparms']
 removekey = ['bestparmsll','chunkidx']
 #Go through each tarball and find the chtc file

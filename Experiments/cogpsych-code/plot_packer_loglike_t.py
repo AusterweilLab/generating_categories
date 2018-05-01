@@ -15,14 +15,26 @@ with open("pickles/all_data_e1_e2.p", "rb" ) as f:
 
 # get best params pickle
 # pickle can be "pickles/best_params_all_data_e1_e2.p", "pickles/best_params_nosofsky1986.p"
-with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
-	best_params = pickle.load( f )
+# get best params pickle
+with open("pickles/chtc_gs_best_params_all_data_e1_e2.p", "rb" ) as f:
+    best_params_t = pickle.load( f )
+
+#Rebuild it into a smaller dict
+best_params = dict()
+for modelname in best_params_t.keys():    
+    best_params[modelname] = dict()
+    for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
+        parmval = best_params_t[modelname]['bestparmsll']
+        best_params[modelname][parmname] = parmval[i]
+
+# with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
+# 	best_params = pickle.load( f )
 
 # compute copytweak loglike
 start_params = best_params[CopyTweak.model]
 
 # set up grid of param values
-gamma_grid = np.linspace(0, 1.50, 100)
+gamma_grid = np.linspace(0, 5.0, 100)
 loglikes = np.empty(gamma_grid.shape)
 
 # add task type to trials object
@@ -31,7 +43,8 @@ trials.task = 'generate'
 # evaluate loglike at each grid point
 for i, val in enumerate(gamma_grid):
 	curr = start_params.copy()
-	curr['tradeoff'] = val
+	curr['theta_cntrst'] = val
+        curr['theta_target'] = curr['determinism']
         curr = Packer.parmxform(curr, direction = 1)
 	loglikes[i] = -trials.loglike(curr, Packer)
 
@@ -45,7 +58,7 @@ fh = plt.figure(figsize=(5,3))
 # copytweak annotation
 copytweak_loglike = loglikes[gamma_grid == 0]
 plt.plot([min(gamma_grid), max(gamma_grid)], [copytweak_loglike, copytweak_loglike], '--', linewidth = 1, color='gray')
-plt.text(0.5, copytweak_loglike, 'Target Only (Copy \& Tweak)', ha = 'center', va = 'bottom')
+plt.text(0.5, copytweak_loglike, 'Target Only (Copy & Tweak)', ha = 'center', va = 'bottom')
 
 # contrast only annotation
 contrast_loglike = loglikes[gamma_grid == 2]
@@ -61,12 +74,13 @@ plt.text(x, max(loglikes) + 5, 'PACKER', ha = 'center', va = 'bottom', fontsize 
 plt.plot(gamma_grid, loglikes,'k-', linewidth = 1)
 plt.xlabel('$\gamma$ Parameter Value', fontsize = 12)
 
-xticks = np.arange(min(gamma_grid),max(gamma_grid)+0.2,0.2)
+xstep = 1.0
+xticks = np.round(np.arange(min(gamma_grid),max(gamma_grid)+xstep,xstep),1)
 xticklabels = [str(i) for i in xticks]
 xticklabels[0] = '0'
-xticklabels[-1] = '1'
-#plt.xticks(xticks)
-fh.gca().set_xticklabels(xticklabels)
+#xticklabels[-1] = '1'
+plt.xticks(xticks)
+#fh.gca().set_xticklabels(xticklabels)
 
 yticks = np.arange(-4950,-4650,50)
 yticklabels = [str(i) for i in yticks]

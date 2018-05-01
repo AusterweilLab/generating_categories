@@ -30,7 +30,7 @@ generation = pd.merge(generation, mapping, on='condition')
 # create trial set object
 trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(generation)
-lll
+
 with open('pickles/all_data_e1_e2.p','wb') as f:
 	pickle.dump(trials, f)
 
