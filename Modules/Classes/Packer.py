@@ -13,12 +13,13 @@ class Packer(Exemplar):
 	model = 'PACKER'
         modelshort = 'PACKER'
 	#parameter_names = ['specificity', 'tradeoff', 'determinism', 'baselinesim']
-        parameter_names = ['specificity', 'tradeoff', 'determinism'] 
+        #parameter_names = ['specificity', 'tradeoff', 'determinism']
+        parameter_names = ['specificity', 'theta_cntrst', 'theta_target'] 
 	parameter_rules = dict(
 		specificity = dict(min = 1e-10),
 		# tradeoff = dict(min = 0.0, max = 1.0),
-                tradeoff = dict(min = 0.0),
-		determinism = dict(min = 0.0),
+                theta_cntrst = dict(min = 0.0),
+		theta_target = dict(min = 0.0),
                 #baselinesim = dict(min = 0.0),
 		)
 
@@ -28,8 +29,8 @@ class Packer(Exemplar):
 		return [
 			np.random.uniform(0.1, 6.0),  # specificity
 			#np.random.uniform(0.0, 1.0),  # tradeoff
-                        np.random.uniform(0.1, 6.0),  # tradeoff
-			np.random.uniform(0.1, 6.0),  # determinism
+                        np.random.uniform(0.1, 6.0),  # theta_cntrst
+			np.random.uniform(0.1, 6.0),  # theta_target
                         #np.random.uniform(0.1, 6.0)   # baselinesim
 		] 
 
@@ -37,12 +38,12 @@ class Packer(Exemplar):
 	def get_generation_ps(self, stimuli, category, task='generate'):
 
                 # compute contrast sum similarity
-                #New attempt 110418. Updated 170418 - tradeoff is for contrast, determinism is tradeoff for target
+                #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
                 contrast_examples   = self.exemplars[self.assignments != category]
-                contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.tradeoff)
+                contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
 		# compute target sum similarity
 		target_examples = self.exemplars[self.assignments == category]
-		target_ss   = self._sum_similarity(stimuli, target_examples, param = self.determinism)
+		target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target)
                 #End new attempt 110418
                 
                 # # compute contrast sum similarity
@@ -69,11 +70,11 @@ class Packer(Exemplar):
                         contrast_examples_flip = target_examples
                         contrast_ss_flip = self._sum_similarity(stimuli,
                                                                 contrast_examples_flip,
-                                                                param = -1.0 * self.tradeoff)
+                                                                param = -1.0 * self.theta_cntrst)
                         target_examples_flip = contrast_examples
                         target_ss_flip   = self._sum_similarity(stimuli,
                                                                 target_examples_flip,
-                                                                param = self.determinism)
+                                                                param = self.theta_target)
                         #End test 110418
 
                         # #compute contrast and target ss if stimuli is assigned

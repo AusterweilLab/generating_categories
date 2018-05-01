@@ -160,7 +160,7 @@ class RepresentJK13(Model):
 	@staticmethod
 	def _make_rvs():
 		""" Return random parameters """
-		nf = ConjugateJK13.num_features
+		nf = RepresentJK13.num_features
 		return [
 			np.random.uniform(0.01, 0.5), # category_mean_bias, biased small
 			np.random.uniform(nf-0.99, nf+2.0), # category_variance_bias
@@ -176,7 +176,7 @@ class RepresentJK13(Model):
 		"""
 
 		# standard update procedure
-		super(ConjugateJK13, self)._update_()
+		super(RepresentJK13, self)._update_()
 
 		# set prior mean.
 		self.category_prior_mean = np.zeros(self.nfeatures)
@@ -195,7 +195,7 @@ class RepresentJK13(Model):
 			Weights are implemented as differences in the assumed [prior]
 			Domain covariance.
 		"""
-		super(ConjugateJK13, self)._wts_handler_()
+		super(RepresentJK13, self)._wts_handler_()
 		self.prior_variance = np.eye(self.nfeatures) * self.nfeatures
 		inds = np.diag_indices(self.nfeatures)
 		self.prior_variance[inds] *= self.wts
