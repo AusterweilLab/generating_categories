@@ -29,7 +29,7 @@ dataname = dataname_def
 execfile('validate_data.py')
 # get data from pickle
 with open(pickledir+src, "rb" ) as f:
-	trials = pickle.load( f )
+    trials = pickle.load( f )
 
 # get best params pickle
 with open("pickles/chtc_gs_best_params_all_data_e1_e2.p", "rb" ) as f:
@@ -66,7 +66,7 @@ con.close()
 #Get unique ppts
 pptlist = []#np.array([]);
 for i,row in info.iterrows():
-        pptlist += [row.pptmatch]
+    pptlist += [row.pptmatch]
         #    pptlist = np.concatenate((pptlist,trial['participant']))
 
 
@@ -84,16 +84,15 @@ except:
     
 # options for the optimization routine
 options = dict(
-	method = 'Nelder-Mead',
-	options = dict(maxiter = 500, disp = False),
-	tol = 0.01,
+    method = 'Nelder-Mead',
+    options = dict(maxiter = 500, disp = False),
+    tol = 0.01,
 ) 
 
 
 for model_obj in modelList:
     #model_obj = Packer
     model_name = model_obj.model
-
     if not ll_loadSuccess:
         #Get log likelihoods
         ll_list = []
@@ -117,19 +116,19 @@ for model_obj in modelList:
             params['wts'] = funcs.softmax(-ranges, theta = WT_THETA)[0]
             if model_obj ==  ConjugateJK13 or model_obj == RepresentJK13:
                 params['wts'] = 1.0 - params['wts']
-
             #simulate
             model = model_obj([As], params)
             pptdata = pd.DataFrame(columns = ['condition','betas'])
             #transform parms
             params = model.parmxform(params, direction = 1)
-
+            
             # Get all permutations of pptbeta and make a new trialObj for it
             nbetapermute = math.factorial(nstim)
             betapermute = [];
             likeli = 0 # np.zeros(len(pptbeta))#0
             likeli2 = 0 # np.zeros(len(pptbeta))#0
-            raw_array = np.zeros((nstim,nbetapermute))
+            raw_array = np.zeros((1,nbetapermute))#np.zeros((nstim,nbetapermute))
+            a = 2
 
             for i,beta in enumerate(funcs.permute(pptbeta)):
                 categories = As_num
@@ -139,32 +138,29 @@ for model_obj in modelList:
                 pptTrialObj = Simulation.Trialset(stimuli)
                 pptTrialObj.task = 'generate'
                 for trial,beta_el in enumerate(beta):
-                    pptDF = pptDF.append(
-                        dict(participant=0, stimulus=beta_el, trial=trial, condition=pptcondition, categories=[categories]),ignore_index = True
-                    )
+                        pptDF = pptDF.append(
+                                dict(participant=0, stimulus=beta_el, trial=trial, condition=pptcondition, categories=[categories]),ignore_index = True
+                        )
                 pptTrialObj.add_frame(pptDF)
                 #the neg loglikelihoods can get really large, which will tip it over to Inf when applying exp.
                 # To get around this, divide the nLL by some constant, exp it, add it to the prev prob, then log,
                 # and add it to the log of the same constant
-                raw_array_ps = pptTrialObj.loglike(params,model_obj,whole_array=True)
-                raw_array[:,i] = -np.log(raw_array_ps)
+                raw_array_ps = pptTrialObj.loglike(params,model_obj)
+                raw_array[:,i] = raw_array_ps
                 
                 #likeli += np.exp(pptTrialObj.loglike(params,model_obj,whole_array=False) - np.log(scale_constant))
                 #likeli2 += np.exp(pptTrialObj.loglike(params,model_obj,whole_array=False))
                 #likeli += np.array(pptTrialObj.loglike(params,model_obj,whole_array=False)).flatten()
                 
-                #likeli = np.log(likeli) + np.log(scale_constant)
-                raw_array_sum = raw_array.sum(0)    
-                raw_array_sum_max = raw_array_sum.max()
-                raw_array_t = sum(np.exp(raw_array_sum - raw_array_sum_max))
-                raw_array_ll = np.log(raw_array_t) + raw_array_sum_max
-                #execfile('plot_temp.py')
-                #lll
-            if likeli==np.inf:
-                lll
-                # print raw_array_t
-                # print likeli
-                # print np.log(likeli2)
+            #Should this be inside or outside the for loop?
+            #Doesn't actually matter, right?
+            #likeli = np.log(likeli) + np.log(scale_constant)
+            raw_array_sum = raw_array #raw_array.sum(0)    
+            raw_array_sum_max = raw_array_sum.max()
+            raw_array_t = np.exp(-(raw_array_sum - raw_array_sum_max)).sum()
+            raw_array_ll = -np.log(raw_array_t) + raw_array_sum_max
+
+            #execfile('plot_temp.py')
             ll_list += [raw_array_ll]
 
             print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
@@ -251,7 +247,7 @@ for m,model_obj in enumerate(modelList):
     y = x*coeff[0] + coeff[1]
     ax.plot(x,y,'--')
     ax.set_title('r = {:.3}, p = {:.2e}'.format(corr[0],corr[1]))
-    ax.set_xlabel('{} negLL'.format(model_name))
+    ax.set_xlabel('negLL\n{}'.format(model_name))
     ax.set_ylabel('Participant p(error)')
     
 plt.savefig('modelvsppt-t.pdf')

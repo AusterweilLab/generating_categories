@@ -1,4 +1,4 @@
-#Actually.. why not just use the old cold and weed out everything but the last trial?
+#actually.. why not just use the old cold and weed out everything but the last trial?
 #No wait... I should follow the order that is already chosen by the participant
 #Ok - only extract midbot
 import sqlite3
@@ -9,7 +9,7 @@ import pandas as pd
 execfile('Imports.py')
 from Modules.Classes import Simulation
 
-con = sqlite3.connect('experiments.db')
+con = sqlite3.connect('experiment-xcr.db')
 participants = pd.read_sql_query("SELECT participant, condition from participants", con)
 generation = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
@@ -30,16 +30,17 @@ generation = pd.merge(generation, participants, on='participant')
 generation = pd.merge(generation, mapping, on='condition')
 
 
+
 # create trial set object
 trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(generation)
 
-# with open('pickles/all_data_e1_e2.p','wb') as f:
-# 	pickle.dump(trials, f)
+with open('pickles/xcr.p','wb') as f:
+    pickle.dump(trials, f)
 
-# weed out all but last trials
-trials.Set = [i for i in trials.Set if len(i['categories'][1])>0]
-trials._update()
+# # weed out all but last trials
+# trials.Set = [i for i in trials.Set if len(i['categories'][1])>0]
+# trials._update()
 
 #with open('pickles/trials_2-4_e1_e2.p','wb') as f:
 #	pickle.dump(trials, f)

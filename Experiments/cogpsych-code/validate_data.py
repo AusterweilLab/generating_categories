@@ -3,6 +3,7 @@ s = 'Invalid data name supplied. Please select one of these options:'
 choices = ['pooled',
            'pooled-no1st',
            'catassign',
+           'xcr',
            'midbot',
            'nosofsky1986',
            'nosofsky1989',
@@ -24,6 +25,10 @@ elif dataname == 'catassign':
         # trials 2-4
         filename = 'catassign'
         task = "assign"
+elif dataname == 'xcr':
+        # experiment 1 only XOR, Cluster, Row conditions
+        filename = dataname
+        task = "generate"
 elif dataname == 'midbot':
         # experiment 2 only mid bottom conditions
         filename = dataname

@@ -84,21 +84,45 @@ def plotgradient(h, G, alphas, betas,
 	textsettings = dict(va = 'center', ha = 'center', fontsize = 10.0)
 
 	coords = gradientspace(alphas, G.shape[0])
+        #If number of elements in alpha_col doesn't match numel A,
+        #take the first element and expand it to fit A
+        alpha_col = checkcolors(alpha_col,coords.shape[0])
 	for j in range(coords.shape[0]):
 		h.text(coords[j,0],coords[j,1], 'A',
-			color = alpha_col, **textsettings)
+			color = alpha_col[j], **textsettings)
 
 	coords = gradientspace(betas, G.shape[0])
+        #If number of elements in beta_col doesn't match numel B,
+        #take the first element and expand it to fit B
+        beta_col = checkcolors(beta_col,coords.shape[0])
 	for j in range(coords.shape[0]):
 		h.text(coords[j,0],coords[j,1], 'B',
-			color = beta_col, **textsettings)
+			color = beta_col[j], **textsettings)
 
 	h.set_yticks([])
 	h.set_xticks([])
 	h.set_aspect('equal', adjustable='box')
 	h.axis([-0.5, G.shape[1]-0.5, -0.5, G.shape[0]-0.5])
 	return im
-	
+
+def checkcolors(colvector,length):
+        """
+        Simple code to check that the color vector supplied is some 
+        desired length. If it isn't, the first element is repeated 
+        to that length.
+        """
+        import collections
+        if not isinstance(colvector,str) and isinstance(colvector,collections.Sequence): #check that it is a list or sequence type but not str
+                if not len(colvector) == length:
+                        colvector_t = colvector[:] #clone list
+                        cv0 = colvector_t[0]
+                        colvector = [cv0 for i in range(length)]
+        else: 
+                cv0 = colvector #clone 
+                colvector = [cv0 for i in range(length)]
+
+        return colvector
+
 def gradientspace(coords, side):
 	"""
 	Converts a set of coordinates into integer locations within a

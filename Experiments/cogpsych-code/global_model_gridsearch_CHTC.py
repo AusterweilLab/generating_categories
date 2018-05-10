@@ -21,35 +21,36 @@ narg = len(sys.argv)
 
 if __name__ == "__main__" and narg>1:
 
-        # if len(sys.argv)<4:
-        #         unique_trials = unique_trials_def
-        # else:
-        #         unique_trials = int(sys.argv[3])
-        # if len(sys.argv)<3:
-        #         participant = participant_def
-        # else:
-        #         participant = int(sys.argv[2])
-        # if len(sys.argv)<2:
-        #         dataname = dataname_def
-        # else:
-        #         dataname = sys.argv[1]
-        dataname = dataname_def
-        participant = participant_def
-        unique_trials = unique_trials_def
-        runchunk = int(sys.argv[1]) #first arg from terminal is chunk idx
+    # if len(sys.argv)<4:
+    #         unique_trials = unique_trials_def
+    # else:
+    #         unique_trials = int(sys.argv[3])
+    # if len(sys.argv)<3:
+    #         participant = participant_def
+    # else:
+    #         participant = int(sys.argv[2])
+    # if len(sys.argv)<2:
+    #         dataname = dataname_def
+    # else:
+    #         dataname = sys.argv[1]
+    dataname = dataname_def
+    participant = participant_def
+    unique_trials = unique_trials_def
+    runchunk = int(sys.argv[1]) #first arg from terminal is chunk idx
 else:
-        dataname = dataname_def
-        participant = participant_def
-        unique_trials = unique_trials_def
-        runchunk = 93;
-datasets = ['pooled','pooled-no1st','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
+    dataname = dataname_def
+    participant = participant_def
+    unique_trials = unique_trials_def
+    runchunk = 93;
+    
+datasets = ['pooled','pooled-no1st','xcr','midbot','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
 
 
 #Check that output directory exists, otherwise create it
 pickledir = 'pickles/'
 outputdir = pickledir + 'newpickles/'
 if not os.path.isdir(outputdir):
-        os.system('mkdir ' + outputdir)
+    os.system('mkdir ' + outputdir)
 
 for dataname in datasets:
     execfile('validate_data.py')
@@ -62,7 +63,7 @@ for dataname in datasets:
     
     # get data from pickle
     with open(pickledir+src, "rb" ) as f:
-	trials = pickle.load( f )
+        trials = pickle.load( f )
 
     trials.task = task
 
@@ -72,9 +73,9 @@ for dataname in datasets:
 
     # options for the optimization routine
     options = dict(
-	method = 'Nelder-Mead',
-	options = dict(maxiter = 500, disp = False),
-	tol = 0.01,
+        method = 'Nelder-Mead',
+        options = dict(maxiter = 500, disp = False),
+        tol = 0.01,
     ) 
 
 
@@ -139,7 +140,7 @@ for dataname in datasets:
         print 'Total starting points extracted: ' + str(nfits)
         printcol = 20
         if nfits==0:
-            print 'No starting points extracted, moving on.'
+            print 'No starting points extracted, moving on.\n'
             continue
         for i in range(nfits):
             if np.mod(i+1,printcol) != 0:
@@ -179,13 +180,13 @@ for dataname in datasets:
         print 'Final results: '
         X = model_obj.params2dict(model_obj.clipper(results_best[0:-2]))
         for k, v in X.items():
-	    print '\t' + k + ' = ' + str(v) + ','
+            print '\t' + k + ' = ' + str(v) + ','
 
         print '\tLogLike = ' + str(results_best[-2])                        
         print '\tAIC = ' + str(results_best[-1])
                 
         #for k,v in results.items():
-        #	print k, v
+        #    print k, v
 
         
 

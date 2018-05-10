@@ -45,7 +45,7 @@ print 'Fitting Data: ' + dataname
 
 # get data from pickle
 with open(pickledir+src, "rb" ) as f:
-	trials = pickle.load( f )
+    trials = pickle.load( f )
 
 trials.task = task
 
@@ -55,28 +55,28 @@ trials = Simulation.extractPptData(trials,participant,unique_trials)
 
 # options for the optimization routine
 options = dict(
-	method = 'Nelder-Mead',
-	options = dict(maxiter = 500, disp = False),
-	tol = 0.01,
+    method = 'Nelder-Mead',
+    options = dict(maxiter = 500, disp = False),
+    tol = 0.01,
 ) 
 
 results = dict()
 for model_obj in [ConjugateJK13,RepresentJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, Packer]:
-	res = Simulation.hillclimber(model_obj, trials, options,results=True,callbackstyle='.')
-	X = model_obj.params2dict(model_obj.clipper(res.x))
-	results[model_obj.model] = X
+    res = Simulation.hillclimber(model_obj, trials, options,results=True,callbackstyle='.')
+    X = model_obj.params2dict(model_obj.clipper(res.x))
+    results[model_obj.model] = X
 
         #Simulation.show_final_p(model_obj,trials,res.x, show_data = False)
                 
 
 for k,v in results.items():
-	print k, v
+    print k, v
 
         
 
 # save final result in pickle
 with open(pickledir+dst,'wb') as f:
- 	pickle.dump(results, f)
+    pickle.dump(results, f)
 
 
 

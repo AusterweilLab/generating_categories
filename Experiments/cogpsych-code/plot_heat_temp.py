@@ -21,7 +21,7 @@ plt.close()
 
 #load data
 dataname_def = 'pooled'#'nosofsky1986'#'NGPMG1994'
-participant_def = 208 #'all'
+participant_def = 0 #cluster: 0,6,15; XOR: 10; row: 1,11; bottom: 208
 unique_trials_def = 'all'
 dataname = dataname_def
 execfile('validate_data.py')
@@ -93,7 +93,7 @@ for trial in range(ntrials):
         params = paramSet[i]
         #reverse-transform
         #params = model.parmxform(params, direction = -1)
-        ps += [model(categories,params).get_generation_ps(pptTrialObj.stimuli,1,'generate')]
+        ps += [model(categories,params,pptTrialObj.stimrange).get_generation_ps(pptTrialObj.stimuli,1,'generate')]
         
     plotVals = []
     psMax = 0
@@ -113,22 +113,31 @@ for trial in range(ntrials):
         plotVals += [(gps-gps.min())/ps_ElRange]
         #ax = f.add_subplot(trials,2,plotct)
         #print B
-        im = funcs.plotgradient(ax[trial,i], plotVals[i], A, B, clim = STAT_LIMS, cmap = 'PuOr')
+        # beta colours - set last beta to some other colour
+        betacol = ['black' for bi in range(len(B))]
+        betacol[len(B)-1] = 'green'
+        im = funcs.plotgradient(ax[trial,i], plotVals[i], A, B, clim = STAT_LIMS, cmap = 'PuOr',beta_col=betacol)
         ax[trial,i].set_ylabel('Trial {}'.format(trial))
         # cbar = f.add_axes([0.21, .1, 0.55, 0.12])
         # f.colorbar(im, cax=cbar, ticks=[0, 1], orientation='horizontal')
 
     #Print probabilities up to trial num
-    nll = np.zeros(len(models))
+    nll = np.zeros((ntrials,len(models)))
     for m,model in enumerate(models):
         params = paramSet[m]
         #params = model.parmxform(params, direction = -1)                        
         for t in range(trial+1):    
-            categoriesT = [pptTrialObj.stimuli[i,:] for i in pptTrialObj.Set[t]['categories'] if any(i)]    
-            psT = model(categoriesT,params).get_generation_ps(pptTrialObj.stimuli,1,'generate')
+            categoriesT = [pptTrialObj.stimuli[i,:] for i in pptTrialObj.Set[t]['categories'] if any(i)]
+            psT = model(categoriesT,params,pptTrialObj.stimrange).get_generation_ps(pptTrialObj.stimuli,1,'generate')
             psT_raw = psT[pptTrialObj.Set[t]['response']]
             psT_raw[psT_raw<1e-308] = 1e-308
-            nll[m] += -np.log(psT_raw)
+            nll[t,m] = -np.log(psT_raw)
+            if t+1 == ntrials:
+                sum_nll = sum(nll[:,m])
+                ax[t,m].set_xlabel('nLL = {}\n Total nLL = {}\n\n{}'.format(str(round(nll[t,m],2)),str(round(sum_nll,2)),models[m].modelshort))
+            else:
+                ax[t,m].set_xlabel('nLL = {}'.format(str(round(nll[t,m],2))))
+
     #print nll
 
 #plt.tight_layout(w_pad=-4.0, h_pad= 0.5)

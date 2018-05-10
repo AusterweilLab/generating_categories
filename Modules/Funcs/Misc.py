@@ -532,3 +532,15 @@ def printProg(i,print_ct = 0, steps = 1, breakline = 40, breakby = 'char'):
                 else:
                         raise Exception('Please specify breakby as either \'char\' or \'mult\'.')
         return print_ct
+
+def getrange(stimuli):
+    '''
+    Get the min and max for each stimulus feature. To be used when initialising models.
+    '''
+    stimrange = []
+    for i in range(len(stimuli[0])):
+        stimrange += [{'min': stimuli[:,i].min(),
+                       'max': stimuli[:,i].max()}]
+    return stimrange
+        
+

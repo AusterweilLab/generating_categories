@@ -26,6 +26,7 @@ WT_THETA = 1.5
 # plotting settings
 fontsettings = dict(fontsize = 12.0)
 col_order = ['Behavioral', 'PACKER', 'Copy and Tweak', 'Hierarchical Sampling','Hierarchical Sampling With Representativeness']
+#col_order = ['Hierarchical Sampling With Representativeness']
 col_names_short = ['Behavioral', 'PACKER', 'Copy & Tweak', 'Hier. Sampling','Hier. Sampling w/ Rep']
 row_order = ['Cluster','Row', 'XOR', 'Bottom', 'Middle']
 SMOOTHING_PARAM = 0.8
@@ -94,9 +95,9 @@ for model_name, model_obj in name_2_object.items():
             params['wts'] = np.array([0.5, 0.5])
 
         # assume no baselinesim
-        params['baselinesim'] = 0
+        params['baselinesim'] = 0        
         # simulate
-        model = model_obj([As], params)
+        model = model_obj([As], params,funcs.getrange(stimuli))
         for j in range(N_SAMPLES):   
             nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
             model.forget_category(1)

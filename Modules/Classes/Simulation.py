@@ -12,411 +12,421 @@ itcount = 0
 
 class Trialset(object):
 
-	"""
-	A class representing a collection of trials
+    """
+    A class representing a collection of trials
         Data (i.e., responses) is saved in a list Set
-	"""
+    """
         
-	def __init__(self, stimuli):
-		
-		# figure out what the stimulus domain is
-		self.stimuli = stimuli
-                self.stimrange = []
-                for i in range(len(stimuli[0])):
-                        self.stimrange += [{'min': stimuli[:,i].min(),
-                                            'max': stimuli[:,i].max()}] 
+    def __init__(self, stimuli):
+        
+        # figure out what the stimulus domain is        
+        self.stimuli = stimuli
+        self.stimrange = Funcs.getrange(stimuli)
                 
-		# initialize trials list
-		self.Set = [] # compact set
-		self.nunique = 0
-		self.nresponses = 0
-                self.task = ''
+        # initialize trials list
+        self.Set = [] # compact set
+        self.nunique = 0
+        self.nresponses = 0
+        self.task = ''
+        self.nparticipants = 0
+        self.participants = []
                 
-                
-	def __str__(self):
-		S  = 'Trialset containing: ' 
-		S += '\n\t ' + str(self.nunique) + ' unique trials '
-		S += '\n\t ' + str(self.nresponses) + ' total responses'
+    def __str__(self):
+        S  = 'Trialset containing: ' 
+        S += '\n\t ' + str(self.nunique) + ' unique trials '
+        S += '\n\t ' + str(self.nresponses) + ' total responses'
                 # S += '\nTask: ' + self.task
-		return S
+        return S
 
-	def _update(self):
-		self.nunique = len(self.Set)
-		self.nresponses = sum([len(i['response']) for i in self.Set])
+    def _update(self):
+        self.nunique = len(self.Set)
+        self.nresponses = sum([len(i['response']) for i in self.Set])
 
-	def add(self, response, categories = [], participant = []):
-		"""Add a single trial to the trial lists
+    def add(self, response, categories = [], participant = []):
+        """Add a single trial to the trial lists
                 
-                If response variable is a scalar, then add response to only one
-                category. If response variable is a 2-element list, then add the
-                value of the first element to the category specified by the
-                second element.
+        If response variable is a scalar, then add response to only one
+        category. If response variable is a 2-element list, then add the
+        value of the first element to the category specified by the
+        second element.
+        
+        Also add participant information (if available)
+        
+        """
+        
+        if type(response) is not list:
+            add2cat = None
+            responseType = 1
+            response = response
+        elif type(response) is list:
+            if len(response) == 2:
+                add2cat = response[1]
+                responseType = 2
+                response = response[0]                                
                 
-                Also add participant information (if available)
-
-                """
-
-                if type(response) is not list:
-                        add2cat = None
-                        responseType = 1
-                        response = response
-                elif type(response) is list:
-                        if len(response) == 2:
-                                add2cat = response[1]
-                                responseType = 2
-                                response = response[0]                                
-
-                        else:
-                                raise ValueError('The "response" variable needs',\
-                                                 'to be either a single number,',\
-                                                 'or a a list containing',\
-                                                 'only 2 elements.')
-                
-		# sort category lists, do a lookup
-		categories = [np.sort(i) for i in categories]
-		idx = self._lookup(categories)
-		# if there is no existing configuration, add a new one
-		if idx is None:
-			self.nunique += 1
-                        if responseType == 1:
-			        self.Set.append(dict(
-				        response = [response], 
-				        categories = categories,
-                                        participant = [participant])
-			        )
-                        elif responseType == 2:
-                                ncat = len(categories)                             
-                                respList =  [[] for _ in xrange(len(categories))]
-                                #respList[add2cat] = np.append(respList[add2cat],(response))
-                                pList = [[] for _ in xrange(len(categories))]
-                                respList[add2cat].append(response)
-                                pList[add2cat].append(participant)
+            else:
+                raise ValueError('The "response" variable needs',\
+                                 'to be either a single number,',\
+                                 'or a a list containing',\
+                                 'only 2 elements.')
+            
+        # sort category lists, do a lookup
+        categories = [np.sort(i) for i in categories]
+        idx = self._lookup(categories)
+        # if there is no existing configuration, add a new one
+        if idx is None:
+            self.nunique += 1            
+            if responseType == 1:
+                self.Set.append(dict(
+                    response = [response], 
+                    categories = categories,
+                    participant = [participant])
+                )
+            elif responseType == 2:
+                ncat = len(categories)                             
+                respList =  [[] for _ in xrange(len(categories))]
+                #respList[add2cat] = np.append(respList[add2cat],(response))
+                pList = [[] for _ in xrange(len(categories))]
+                respList[add2cat].append(response)
+                pList[add2cat].append(participant)
                                 
-			        self.Set.append(dict(
-				        response = respList,
-				        categories = categories,
-                                        participant = pList)
-			        )
+                self.Set.append(dict(
+                    response = respList,
+                    categories = categories,
+                    participant = pList)
+                )
+        # if there is an index, just add the response
+        else:
+            if responseType == 1:
+                self.Set[idx]['response'] = np.append(
+                    self.Set[idx]['response'], response)
+                self.Set[idx]['participant'] = np.append(
+                    self.Set[idx]['participant'], participant)
+            elif responseType == 2:
+                self.Set[idx]['response'][add2cat].append(response)
+                self.Set[idx]['participant'][add2cat].append(participant)
+                #self.Set[idx]['response'][add2cat] = np.append(
+                #        self.Set[idx]['response'][add2cat],response)
+                #Hmm, why can't I just use self.Set[idx]['response']...
+                #...[add2cat].append(response)?
 
-		# if there is an index, just add the response
-		else:
-                        if responseType == 1:
-			        self.Set[idx]['response'] = np.append(
-                                        self.Set[idx]['response'], response)
-                                self.Set[idx]['participant'] = np.append(
-                                        self.Set[idx]['participant'], participant)
-                        elif responseType == 2:
-                                self.Set[idx]['response'][add2cat].append(response)
-                                self.Set[idx]['participant'][add2cat].append(participant)
-                                #self.Set[idx]['response'][add2cat] = np.append(
-                                #        self.Set[idx]['response'][add2cat],response)
-                                #Hmm, why can't I just use self.Set[idx]['response']...
-                                #...[add2cat].append(response)?
-                                
+        #Add participant to list of unique participants
+        if isinstance(participant,int):
+            if not participant in self.participants:
+                self.participants = np.append(self.participants,participant)
+                self.nparticipants += 1
+        else: #if list or array
+            for pel in participant:
+                if not pel in self.participants:
+                    self.participants = np.append(self.participants,pel)
+                    self.nparticipants += 1
 
-		# increment response counter
-		self.nresponses += 1
+        # increment response counter
+        self.nresponses += 1
                 
-	def _lookup(self, categories):
-		"""
-			Look up if a category set is already in the compact set.
-			return the index if so, return None otherwise
-		"""
+    def _lookup(self, categories):
+        """
+            Look up if a category set is already in the compact set.
+            return the index if so, return None otherwise
+        """
 
-		for idx, trial in enumerate(self.Set):
+        for idx, trial in enumerate(self.Set):
 
-			# if the categories are not the same size, then they are 
-			# not equal...
-			if len(categories) != len(trial['categories']): continue
+            # if the categories are not the same size, then they are 
+            # not equal...
+            if len(categories) != len(trial['categories']): continue
 
-			# check equality of all pairs of categories
-			equals =[	np.array_equal(*arrs) 
-					for arrs in zip(categories, trial['categories'])]
+            # check equality of all pairs of categories
+            equals =[np.array_equal(*arrs) 
+                     for arrs in zip(categories, trial['categories'])]
 
-			# return index if all pairs are equal
-			if all(equals): return idx
+            # return index if all pairs are equal
+            if all(equals): return idx
 
-		# otherwise, return None
-		return None
+        # otherwise, return None
+        return None
 
 
-	def add_frame(self, generation, task = 'generate'):
-		"""
-		Add trials from a dataframe
+    def add_frame(self, generation, task = 'generate'):
+        """
+        Add trials from a dataframe
 
-		If task=='generate', then the dataframe must have columns:
+        If task=='generate', then the dataframe must have columns:
                 participant, trial, stimulus, categories
 
                 If task=='assign', then the dataframe must have columns:
                 participant, trial, stimulus, assignment, categories
 
-		Where categories is a embedded list of known categories
-		PRIOR to trial = 0.               
-		""" 
-                if task == 'generate':
-		        for pid, rows in generation.groupby('participant'):
-			        for num, row in rows.groupby('trial'):
-				        Bs = rows.loc[rows.trial<num, 'stimulus'].as_matrix()
-				        categories = row.categories.item() + [Bs]
-				        stimulus = row.stimulus.item()
-                                        self.add(stimulus, categories = categories,participant = pid)
+        Where categories is a embedded list of known categories
+        PRIOR to trial = 0.               
+        """ 
+        if task == 'generate':
+            for pid, rows in generation.groupby('participant'):
+                for num, row in rows.groupby('trial'):
+                    Bs = rows.loc[rows.trial<num, 'stimulus'].as_matrix()
+                    categories = row.categories.item() + [Bs]
+                    stimulus = row.stimulus.item()
+                    self.add(stimulus, categories = categories,participant = pid)
 
-                elif task == 'assign' or task == 'error':
-                        # So the response trials added here can be from any
-                        # category, not just the generated one
-                        for pid, rows in generation.groupby('participant'):
-                                #print pid
-                                for num, row in rows.groupby('trial'):
-                                        #categories don't grow in size here, so
-                                        #no + Bs
-                                        #print row.categories
-                                        categories = row.categories.item()
-                                        target = row.stimulus.item()
-                                        add2cat = row.assignment.item()
-                                        stimulus = [target,add2cat]
-                                        self.add(stimulus, categories = categories,participant = pid)
-                else:
-                        raise ValueError('Oh no, it looks like you have specified an illegal value for the task argument!')
+        elif task == 'assign' or task == 'error':
+            # So the response trials added here can be from any
+            # category, not just the generated one
+            for pid, rows in generation.groupby('participant'):
+                #print pid
+                for num, row in rows.groupby('trial'):
+                    #categories don't grow in size here, so
+                    #no + Bs
+                    #print row.categories
+                    categories = row.categories.item()
+                    target = row.stimulus.item()
+                    add2cat = row.assignment.item()
+                    stimulus = [target,add2cat]
+                    self.add(stimulus, categories = categories,participant = pid)
+        else:
+            raise ValueError('Oh no, it looks like you have specified an illegal value for the task argument!')
 
                 
-                return self
+        return self
                 
 
-	def loglike(self, params, model, whole_array=False):
-		"""
-			Evaluate a model object's log-likelihood on the
-			trial set based on the provided parameters.
-		"""
-                # reverse-transform parameter values
-                params = model.parmxform(params, direction = -1)
+    def loglike(self, params, model, whole_array=False):
+        """
+        Evaluate a model object's log-likelihood on the
+        trial set based on the provided parameters.
                 
-		# iterate over trials
-		loglike = 0
-                ps_list = np.array([])
-                task = self.task
-		for idx, trial in enumerate(self.Set):
+        If whole_array is True, then loglike returns the nLL
+        of each trial in the Trialset. 
+        """
+        # reverse-transform parameter values
+        params = model.parmxform(params, direction = -1)
+                
+        # iterate over trials
+        loglike = 0
+        ps_list = np.array([])
+        task = self.task
+        for idx, trial in enumerate(self.Set):
 
-			# format categories
-                        categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
+            # format categories
+            categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
 
-                        # if it's an assignment task, also compute probabilities for other category (cat0)
-                        # ps0 = np.zeros(ps1.shape)
-                        if task is 'generate':                                
-			        # compute probabilities of generating exemplar in cat 1
-			        ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
-                                ps_add = ps[trial['response']]
-                        elif task=='assign':
-                                #Compute probabilities of assigning exemplar to cat 0
-                 		ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
-                                #Compute probabilities of assigning exemplar to cat 1
-                                ps1 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
-                                idc0 = trial['response'][0]
-                                idc1 = trial['response'][1]
-                                #ps_add = ps0[idc0]
-                                ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
-                                #How about using binomial likelihoods instead?
-                                #200218 SX: aahh, it gives the same values. Cool
-                                # ps = []
-                                # for i,ps_el in enumerate(ps0):
-                                #         #find total assignments to category 0
-                                #         ct0 = sum(np.array(idc0) == i)
-                                #         #find total assignments to category 1
-                                #         ct1 = sum(np.array(idc1) == i)
-                                #         #total assignments overall
-                                #         ctmax = ct0+ct1
-                                        
-                                #         ps += [ss.binom.pmf(ct0, ctmax,ps_el)]
-
-                        elif task=='error':
-                                #For prediction of error probabilities, simply
-                                #find the probability of classifying a
-                                #stimulus as the wrong category
-                                ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
-                                idc_err = trial['response'][0]
-                                #idc1 = trial['response'][1]
-                                ps_add = ps[idc_err]
+            # if it's an assignment task, also compute probabilities for other category (cat0)
+            # ps0 = np.zeros(ps1.shape)
+            if task is 'generate':                                
+                # compute probabilities of generating exemplar in cat 1
+                ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
+                ps_add = ps[trial['response']]
+            elif task=='assign':
+                #Compute probabilities of assigning exemplar to cat 0
+                ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
+                #Compute probabilities of assigning exemplar to cat 1
+                ps1 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
+                idc0 = trial['response'][0]
+                idc1 = trial['response'][1]
+                #ps_add = ps0[idc0]
+                ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
+                #How about using binomial likelihoods instead?
+                #200218 SX: aahh, it gives the same values. Cool
+                # ps = []
+                # for i,ps_el in enumerate(ps0):
+                #         #find total assignments to category 0
+                #         ct0 = sum(np.array(idc0) == i)
+                #         #find total assignments to category 1
+                #         ct1 = sum(np.array(idc1) == i)
+                #         #total assignments overall
+                #         ctmax = ct0+ct1
+                
+                #         ps += [ss.binom.pmf(ct0, ctmax,ps_el)]
+                
+            elif task=='error':
+                #For prediction of error probabilities, simply
+                #find the probability of classifying a
+                #stimulus as the wrong category
+                ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
+                idc_err = trial['response'][0]
+                #idc1 = trial['response'][1]
+                ps_add = ps[idc_err]
 
                                 
-			# check for nans and zeros
-			if np.any(np.isnan(ps_add)):
-                                ps_add = np.zeros(ps_add.shape)
-                                # print categories
-                                # print params
-                                # print ps_add
-				# S = model.model  + ' returned NAN probabilities.'
-				# raise Exception(S)
-			ps_add[ps_add<1e-308] = 1e-308
+            # check for nans and zeros
+            if np.any(np.isnan(ps_add)):
+                ps_add = np.zeros(ps_add.shape)
+                # print categories
+                # print params
+                # print ps_add
+                # S = model.model  + ' returned NAN probabilities.'
+                # raise Exception(S)
+            ps_add[ps_add<1e-308] = 1e-308
 
-                        if whole_array:
-                                ps_list = np.append(ps_list,ps_add)
-                        else:
-			        loglike += np.sum(np.log(ps_add))                        
+            if whole_array:
+                ps_list = np.append(ps_list,ps_add)
+            else:
+                loglike += np.sum(np.log(ps_add))                        
 
-                if whole_array:
-                        return ps_list
-                else:
-                        return -1.0 * loglike
+        if whole_array:
+            return -1.0 * np.log(ps_list)
+        else:
+            return -1.0 * loglike
 
 
 def hillclimber(model_obj, trials_obj, options, inits = None, results = True,callbackstyle='none'):
-	"""
-	Run an optimization routine.
+    """
+    Run an optimization routine.
 
-	model_obj is one of the model implementation in the module.
-	init_params is a numpy array for the routine's starting location.
-	trials_obj is a Trialset object.
-	options is a dict of options for the routine. Example:
-		method = 'Nelder-Mead',
-		options = dict(maxiter = 500, disp = False),
-		tol = 0.01,
+    model_obj is one of the model implementation in the module.
+    init_params is a numpy array for the routine's starting location.
+    trials_obj is a Trialset object.
+    options is a dict of options for the routine. Example:
+        method = 'Nelder-Mead',
+        options = dict(maxiter = 500, disp = False),
+        tol = 0.01,
 
-	Function prints results to the console (if results is set to True), and returns the ResultSet
-	object.
-	"""
-        global currmodel
-        currmodel = model_obj
-        global currtrials
-        currtrials = trials_obj
-        global callback
-        callback = callbackstyle
-        global itcount
-	# set initial params
-	if inits is None:	
-		inits = model_obj.rvs(fmt = list) #returns random parameters as list
-                if results:
-                        print '\nStarting parms (randomly selected):'
-                        print inits
-        #transform inits to be bounded within rules
-        inits = model_obj.parmxform(inits, direction = 1)
-	# run search
-        itcount = 0
-	if results:
-                print 'Fitting: ' + model_obj.model
-                
-	res = op.minimize(	trials_obj.loglike, 
-				inits, 
-				args = (model_obj),
-				callback = _callback_fun_, 
-				**options
-        )
-        #reverse-transform the parms
-        res.x = model_obj.parmxform(res.x, direction = -1)
-        
-	# print results
+    Function prints results to the console (if results is set to True), and returns the ResultSet
+    object.
+    """
+    global currmodel
+    currmodel = model_obj
+    global currtrials
+    currtrials = trials_obj
+    global callback
+    callback = callbackstyle
+    global itcount
+    # set initial params
+    if inits is None:    
+        inits = model_obj.rvs(fmt = list) #returns random parameters as list
         if results:
-	        print '\n' + model_obj.model + ' Results:'
-	        print '\tIterations = ' + str(res.nit)
-	        print '\tMessage = ' + str(res.message)
-
-	        X = model_obj.params2dict(model_obj.clipper(res.x))
-	        for k, v in X.items():
-		        print '\t' + k + ' = ' + str(v) + ','
-	        print '\tLogLike = ' + str(res.fun)
+            print '\nStarting parms (randomly selected):'
+            print inits
+    #transform inits to be bounded within rules
+    inits = model_obj.parmxform(inits, direction = 1)
+    # run search
+    itcount = 0
+    if results:
+        print 'Fitting: ' + model_obj.model
+                
+    res = op.minimize(    trials_obj.loglike, 
+                inits, 
+                args = (model_obj),
+                callback = _callback_fun_, 
+                **options
+        )
+    #reverse-transform the parms
+    res.x = model_obj.parmxform(res.x, direction = -1)
+        
+    # print results
+    if results:
+        print '\n' + model_obj.model + ' Results:'
+        print '\tIterations = ' + str(res.nit)
+        print '\tMessage = ' + str(res.message)
+        
+        X = model_obj.params2dict(model_obj.clipper(res.x))
+        for k, v in X.items():
+            print '\t' + k + ' = ' + str(v) + ','
+            
+        print '\tLogLike = ' + str(res.fun)            
+        AIC = Funcs.aic(res.fun,len(inits))
+        print '\tAIC = ' + str(AIC)
                         
-	        AIC = Funcs.aic(res.fun,len(inits))
-	        print '\tAIC = ' + str(AIC)
-                        
-	return res
+    return res
 
 def _callback_fun_(xk):
-	"""
-	Function executed at each step of the hill-climber
-	"""
-        #callback = '.' #this line is here for easier manual switching of display
-
-        model_obj,trials_obj,display = _fetch_global_()
-        global itcount
-        #Set how many columns to print
-        printcol = 20 
-        if display is 'iter':
-                ll = trials_obj.loglike(xk,model_obj)                
-                xk = model_obj.parmxform(xk, direction = -1)
-                print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + '] f(x) = ' + str(round(ll,4))
-        elif display is '.':                
-                if (np.mod(itcount,printcol)!=0) & (itcount>0):
-                        print '\b.',
-                        sys.stdout.flush()
-                elif (itcount>0):
-	                print '\b.'
+    """
+    Function executed at each step of the hill-climber
+    """
+    #callback = '.' #this line is here for easier manual switching of display
+    
+    model_obj,trials_obj,display = _fetch_global_()
+    global itcount
+    #Set how many columns to print
+    printcol = 20 
+    if display is 'iter':
+        ll = trials_obj.loglike(xk,model_obj)                
+        xk = model_obj.parmxform(xk, direction = -1)
+        print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + '] f(x) = ' + str(round(ll,4))
+    elif display is '.':                
+        if (np.mod(itcount,printcol)!=0) & (itcount>0):
+            print '\b.',
+            sys.stdout.flush()
+        elif (itcount>0):
+            print '\b.'
 
                         
                 #print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + ']'
-        elif display is 'none':
-                pass
-        elif type(display) is str:
-                if np.mod(itcount,printcol)==0 & itcount>0:
-                        eval('print ' + display)
-                else:
-                        eval('print ' + '\b' +  display)
-                        
+    elif display is 'none':
+        pass
+    elif type(display) is str:
+        if np.mod(itcount,printcol)==0 & itcount>0:
+            eval('print ' + display)
+        else:
+            eval('print ' + '\b' +  display)
+            
 
-        itcount += 1
+    itcount += 1
 
 
 #Temporary function to enable printing of function value during callback of minimization
 def _fetch_global_():
-        global currmodel
-        global currtrials
-        global callback
-        return currmodel,currtrials,callback
+    global currmodel
+    global currtrials
+    global callback
+    return currmodel,currtrials,callback
 
 
 def show_final_p(model_obj, trial_obj, params, show_data = False):
-        #One final presentation of the set of probabilities for each stimulus
-        task = trial_obj.task
-        nstim = len(trial_obj.stimuli)
-        for idx, trial in enumerate(trial_obj.Set):
-                # format categories
-	        categories = [trial_obj.stimuli[i,:] for i in trial['categories'] if any(i)]
+    #One final presentation of the set of probabilities for each stimulus
+    task = trial_obj.task
+    nstim = len(trial_obj.stimuli)
+    for idx, trial in enumerate(trial_obj.Set):
+        # format categories
+        categories = [trial_obj.stimuli[i,:] for i in trial['categories'] if any(i)]
+        
+        ps0 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 0,trial_obj.task)
+        ps1 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 1,trial_obj.task)
+        
+        
+        if show_data is False:
+            print 'Model Predictions:'
+            dsize = int(np.sqrt(len(ps0)))
+            print np.atleast_2d(ps0).reshape(dsize,-1)
+            print np.atleast_2d(ps1).reshape(dsize,-1)
+        else:                        
+            dsize = int(np.sqrt(len(ps0)))
+            cat0ct = []
+            cat1ct = []
+            cat0pt = []
+            cat1pt = []
+            
+            responses = trial['response']                        
+            for j in range(nstim):#max(responses[0])+1):
+                cat0 = sum(np.array(responses[0])==j)
+                cat1 = sum(np.array(responses[1])==j)
+                catmaxct = cat0+cat1
+                cat0ct += [cat0]
+                cat1ct += [cat1]
+                p0 = float(cat0)/float(catmaxct)
+                p1 = 1-p0
+                cat0pt += [p0]
+                cat1pt += [p1]
                 
-                ps0 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 0,trial_obj.task)
-                ps1 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 1,trial_obj.task)
-
-
-                if show_data is False:
-                        print 'Model Predictions:'
-                        dsize = int(np.sqrt(len(ps0)))
-                        print np.atleast_2d(ps0).reshape(dsize,-1)
-                        print np.atleast_2d(ps1).reshape(dsize,-1)
-                else:                        
-                        dsize = int(np.sqrt(len(ps0)))
-                        cat0ct = []
-                        cat1ct = []
-                        cat0pt = []
-                        cat1pt = []
-                        
-                        responses = trial['response']                        
-                        for j in range(nstim):#max(responses[0])+1):
-                                cat0 = sum(np.array(responses[0])==j)
-                                cat1 = sum(np.array(responses[1])==j)
-                                catmaxct = cat0+cat1
-                                cat0ct += [cat0]
-                                cat1ct += [cat1]
-                                p0 = float(cat0)/float(catmaxct)
-                                p1 = 1-p0
-                                cat0pt += [p0]
-                                cat1pt += [p1]
-
-                        sse = sum((np.array(ps0)-np.array(cat0pt))**2 + \
-                              (np.array(ps1)-np.array(cat1pt))**2)
-                        
-                        cat0pt = [round(i,4) for i in cat0pt]
-                        cat1pt = [round(i,4) for i in cat1pt]
-
-                        ps0 = [round(i,4) for i in ps0]
-                        ps1 = [round(i,4) for i in ps1]
-
-                        print 'Condition ' + str(idx)
-                        print 'SSE = ' + str(sse)
-                        print 'Model Predictions (Cat0):'
-                        print np.flipud(np.atleast_2d(ps0).reshape(dsize,-1))
-                        print 'Observed Data (Cat0):'
-                        print np.flipud(np.atleast_2d(cat0pt).reshape(dsize,-1))
-                        # print 'Model Predictions (Cat1):'
-                        # print np.flipud(np.atleast_2d(ps1).reshape(dsize,-1))
-                        # print 'Observed Data (Cat1):'
-                        # print np.flipud(np.atleast_2d(cat1pt).reshape(dsize,-1))
-
+                sse = sum((np.array(ps0)-np.array(cat0pt))**2 + \
+                          (np.array(ps1)-np.array(cat1pt))**2)
+                
+                cat0pt = [round(i,4) for i in cat0pt]
+                cat1pt = [round(i,4) for i in cat1pt]
+                
+                ps0 = [round(i,4) for i in ps0]
+                ps1 = [round(i,4) for i in ps1]
+                
+                print 'Condition ' + str(idx)
+                print 'SSE = ' + str(sse)
+                print 'Model Predictions (Cat0):'
+                print np.flipud(np.atleast_2d(ps0).reshape(dsize,-1))
+                print 'Observed Data (Cat0):'
+                print np.flipud(np.atleast_2d(cat0pt).reshape(dsize,-1))
+                # print 'Model Predictions (Cat1):'
+                # print np.flipud(np.atleast_2d(ps1).reshape(dsize,-1))
+                # print 'Observed Data (Cat1):'
+                # print np.flipud(np.atleast_2d(cat1pt).reshape(dsize,-1))
+                
                 #lll
                 #print ps0
                 #print ps1
@@ -481,7 +491,7 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                                 pptList = pptcats
                         else:
                                 for i in ppt:
-                                        extractIdx = np.array(pptcats==round(i))
+                                        extractIdx = np.array(pptcats==np.array(round(i)))
                                         responsecats = np.array(responsecats)
                                         pptcats = np.array(pptcats)
                                         respList = responsecats[extractIdx]
@@ -511,9 +521,15 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
         output_objTemp = cp.deepcopy(output_obj.Set)
         output_obj.Set = []
         for ti,trialchunk in enumerate(output_objTemp):
-                if len(trialchunk['participant'])>0:
+                if len(trialchunk['participant'])>0:                        
                         #cleanIdx[ti] = False
-                        output_obj.Set.append(trialchunk)                
+                        output_obj.Set.append(trialchunk)
+                        
+        #Finally, update the unique participant list
+        if not ppt=='all':
+            output_obj.participants = ppt
+            output_obj.nparticipants = len(ppt)
+        
         return output_obj
                                 
 # def add_model_data():
