@@ -29,4 +29,9 @@ for i,file in enumerate(gsfiles):
             print '\t' + pname + ': ' + str(fulldata[j]['bestparmsll'][pi])
         print '\tLogLike' + ' = ' + '-' + str(fulldata[j]['bestparmsll'][pi+1])
         print '\tAIC'  + ' = ' + str(fulldata[j]['bestparmsll'][pi+2]) + '\n'
+        # for pi,pname in enumerate(fulldata[j]['parmnames']):
+        #     print str(fulldata[j]['bestparmsll'][pi])
+            
+        # print  str(fulldata[j]['bestparmsll'][pi+1]) 
+        # print  str(fulldata[j]['bestparmsll'][pi+2]) + '\n'
 

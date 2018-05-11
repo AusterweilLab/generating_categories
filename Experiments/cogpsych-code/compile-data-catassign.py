@@ -118,6 +118,6 @@ stimuli = stimuli.as_matrix()
 
 trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(assignment,task = 'assign')
-
+lll
 with open('pickles/catassign.p','wb') as f:
 	pickle.dump(trials, f)

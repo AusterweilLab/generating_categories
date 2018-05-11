@@ -437,100 +437,100 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
 
 # Extract participant-level data and particular unique trials
 def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
-        """
-        Extracts data for a single participant (or range of participants, if it's a list)
-        from a trialset object. Can also extract specific unique trials (aka
-        trained category stimuli).
+    """
+    Extracts data for a single participant (or range of participants, if it's a list)
+    from a trialset object. Can also extract specific unique trials (aka
+    trained category stimuli).
+    
+    If unique_trials is set to 'all', then all unique trials are included.
+    
+    Returns a trialset object
+    """
+    import copy as cp
+    if ppt != 'all' and type(ppt) is not list:
+        ppt = [ppt]        
 
-        If unique_trials is set to 'all', then all unique trials are included.
-
-        Returns a trialset object
-        """
-        import copy as cp
-        if ppt != 'all' and type(ppt) is not list:
-                ppt = [ppt]        
-
-        if unique_trials is not 'all':
-                #check for the type of input
-                if not hasattr(unique_trials,'__len__'):
-                        #scalars don't have this attr
-                        idx = unique_trials
-                elif not hasattr(unique_trials[0],'__len__'):
-                        #if it's a list of scalars, extract only those
-                        idx = unique_trials
-                else:
-                        #extract only trials that match these unique trials
-                        #Only handles one idx at a time for now 130218
-                        idx = trial_obj._lookup(unique_trials)
+    if unique_trials is not 'all':
+        #check for the type of input
+        if not hasattr(unique_trials,'__len__'):
+            #scalars don't have this attr
+            idx = unique_trials
+        elif not hasattr(unique_trials[0],'__len__'):
+            #if it's a list of scalars, extract only those
+            idx = unique_trials
+        else:
+            #extract only trials that match these unique trials
+            #Only handles one idx at a time for now 130218
+            idx = trial_obj._lookup(unique_trials)
                         
-                if idx is None:
-                        S = 'Specified set of unique trials not found in trial set.'
-                        raise Exception(S)
-                #Remove all unique trials except the selected one
-                if isinstance(idx,list):
-                        temp_obj = [chunk for i,chunk in enumerate(trial_obj.Set) if i in idx]
-                        trial_obj.Set = []
-                        trial_obj.Set = [chunk for chunk in temp_obj]
-                else:
-                        temp_obj = trial_obj.Set[idx]                        
-                        trial_obj.Set = []
-                        trial_obj.Set.append(temp_obj)
+        if idx is None:
+            S = 'Specified set of unique trials not found in trial set.'
+            raise Exception(S)
+        #Remove all unique trials except the selected one
+        if isinstance(idx,list):
+            temp_obj = [chunk for i,chunk in enumerate(trial_obj.Set) if i in idx]
+            trial_obj.Set = []
+            trial_obj.Set = [chunk for chunk in temp_obj]
+        else:
+            temp_obj = trial_obj.Set[idx]                        
+            trial_obj.Set = []
+            trial_obj.Set.append(temp_obj)
                 
                 
-        output_obj = cp.deepcopy(trial_obj)
-        ncategories = len(trial_obj.Set[0]['categories'])
-        for ti,trialchunk in enumerate(trial_obj.Set):
-                responsecats = trialchunk['response']
-                pptcats = trialchunk['participant']
-                respList = np.array([])
-                pptList = np.array([])
-                if trial_obj.task is 'generate':
-                        #convert pptcat and responsecat to array for easier indexing
-                        if ppt == 'all':
-                                respList = responsecats
-                                pptList = pptcats
-                        else:
-                                for i in ppt:
-                                        extractIdx = np.array(pptcats==np.array(round(i)))
-                                        responsecats = np.array(responsecats)
-                                        pptcats = np.array(pptcats)
-                                        respList = responsecats[extractIdx]
-                                        pptList = pptcats[extractIdx]
+    output_obj = cp.deepcopy(trial_obj)
+    ncategories = len(trial_obj.Set[0]['categories'])
+    for ti,trialchunk in enumerate(trial_obj.Set):
+        responsecats = trialchunk['response']
+        pptcats = trialchunk['participant']
+        respList = np.array([])
+        pptList = np.array([])
+        if trial_obj.task is 'generate':
+            #convert pptcat and responsecat to array for easier indexing
+            if ppt == 'all':
+                respList = responsecats
+                pptList = pptcats
+            else:
+                for i in ppt:
+                    extractIdx = np.array(pptcats==np.array(round(i)))
+                    responsecats = np.array(responsecats)
+                    pptcats = np.array(pptcats)
+                    respList = responsecats[extractIdx]
+                    pptList = pptcats[extractIdx]
                         
-                elif trial_obj.task is 'assign' or trial_obj.task is 'error':
-                        #iterate over categories of responses        
-                        respList = [np.array([], dtype = int) for _ in xrange(ncategories)]
-                        pptList = [np.array([], dtype = int) for _ in xrange(ncategories)]        
-                        for pi,pptcat in enumerate(pptcats):
-                                #convert pptcat and responsecat to array for easier indexing
-                                responsecat = np.array(responsecats[pi])
-                                pptcat = np.array(pptcat)
-                                if ppt == 'all':
-                                        respList[pi] = np.append(respList[pi],responsecat)
-                                        pptList[pi] = np.append(pptList[pi],pptcat)
-                                else:
-                                        for i in ppt:
-                                                extractIdx = pptcat==round(i)                            
-                                                respList[pi] = np.append(respList[pi],responsecat[extractIdx])
-                                                pptList[pi] = np.append(pptList[pi],pptcat[extractIdx])
+        elif trial_obj.task is 'assign' or trial_obj.task is 'error':
+            #iterate over categories of responses        
+            respList = [np.array([], dtype = int) for _ in xrange(ncategories)]
+            pptList = [np.array([], dtype = int) for _ in xrange(ncategories)]        
+            for pi,pptcat in enumerate(pptcats):
+                #convert pptcat and responsecat to array for easier indexing
+                responsecat = np.array(responsecats[pi])
+                pptcat = np.array(pptcat)
+                if ppt == 'all':
+                    respList[pi] = np.append(respList[pi],responsecat)
+                    pptList[pi] = np.append(pptList[pi],pptcat)
+                else:
+                    for i in ppt:
+                        extractIdx = pptcat==round(i)                            
+                        respList[pi] = np.append(respList[pi],responsecat[extractIdx])
+                        pptList[pi] = np.append(pptList[pi],pptcat[extractIdx])
                                 
-                output_obj.Set[ti]['response'] = respList
-                output_obj.Set[ti]['participant'] = pptList
-        #Clean up
-        #cleanIdx = np.ones(len(output_obj.Set),dtype=bool)
-        output_objTemp = cp.deepcopy(output_obj.Set)
-        output_obj.Set = []
-        for ti,trialchunk in enumerate(output_objTemp):
-                if len(trialchunk['participant'])>0:                        
-                        #cleanIdx[ti] = False
-                        output_obj.Set.append(trialchunk)
+        output_obj.Set[ti]['response'] = respList
+        output_obj.Set[ti]['participant'] = pptList
+    #Clean up
+    #cleanIdx = np.ones(len(output_obj.Set),dtype=bool)
+    output_objTemp = cp.deepcopy(output_obj.Set)
+    output_obj.Set = []
+    for ti,trialchunk in enumerate(output_objTemp):
+        if len(trialchunk['participant'])>0:                        
+            #cleanIdx[ti] = False
+            output_obj.Set.append(trialchunk)
                         
-        #Finally, update the unique participant list
-        if not ppt=='all':
-            output_obj.participants = ppt
-            output_obj.nparticipants = len(ppt)
+    #Finally, update the unique participant list
+    if not ppt=='all':
+        output_obj.participants = ppt
+        output_obj.nparticipants = len(ppt)
         
-        return output_obj
+    return output_obj
                                 
 # def add_model_data():
 #         #Temporary code to add model parm names to gs results

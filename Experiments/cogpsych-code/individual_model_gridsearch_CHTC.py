@@ -42,7 +42,7 @@ else:
     unique_trials = unique_trials_def
     runchunk = 1;
 #datasets = ['pooled','pooled-no1st','xcr','midbot','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
-datasets = ['catassign']        
+datasets = ['catassign']#why are fits to this so slow?        
 
 #Check that output directory exists, otherwise create it
 pickledir = 'pickles/'
@@ -138,15 +138,20 @@ for dataname in datasets:
         if nfits==0:
             print 'No starting points extracted, moving on.\n'
             continue
+        print 'Fitting participants:'
         #Run this for each participant, get the fits
         results[model_obj.model] = dict()
+        print_ct = 0
         for ppt in trials.participants:
             ppt = int(ppt)
-            if np.mod(ppt+1,printcol) != 0:
-                print str(ppt),
-                sys.stdout.flush()
-            else:
-                print str(ppt)
+            
+            print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
+
+            # if np.mod(ppt+1,printcol) != 0:
+            #     print str(ppt),
+            #     sys.stdout.flush()
+            # else:
+            #     print str(ppt)
 
             results_array = np.array(np.zeros([nfits,nparms+2])) #nparms+2 cols, where +2 is the LL and AIC. Third dimension is for each individual participant
             results_model = dict()
@@ -155,8 +160,8 @@ for dataname in datasets:
                 inits = startp[i,:]
             
                 res = Simulation.hillclimber(model_obj, trials_ppt, options,
-                                             inits=inits, results = False,
-                                             callbackstyle='none')
+                                             inits=inits, results = True,
+                                             callbackstyle='iter')
                 final_parms = res.x
                 final_ll = res.fun
                 final_aic =  funcs.aic(final_ll,nparms)

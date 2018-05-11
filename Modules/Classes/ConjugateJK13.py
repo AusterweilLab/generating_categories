@@ -167,7 +167,7 @@ class RepresentJK13(Model):
         nf = RepresentJK13.num_features
         return [
             np.random.uniform(0.01, 0.5), # category_mean_bias, biased small
-            np.random.uniform(nf-0.99, nf+2.0), # category_variance_bias
+            np.random.uniform(nf-0.99, nf+5.0), # category_variance_bias
             np.random.uniform(0.01, 5.0), # domain_variance_bias
             np.random.uniform(0.1, 6.0) # determinism
         ]
@@ -253,12 +253,7 @@ class RepresentJK13(Model):
             density = np.ones(len(stimuli)) * np.nan
         else:
             # #270418 Implementing representational draws
-            try:
-                target_dist_beta = multivariate_normal(mean = mu, cov = Sigma)
-            except:
-                print mu
-                print Sigma
-                lll
+            target_dist_beta = multivariate_normal(mean = mu, cov = Sigma)
             likelihood_beta = target_dist_beta.pdf(stimuli)
 
             #Get parameters for category beta (alternative hypothesis)
@@ -269,7 +264,7 @@ class RepresentJK13(Model):
             # since number of alternative hypotheses is always 1 if there are a total of 2 categories, p(h') will always be 1, right?
             #prior = 1
 
-            density = likelihood_beta/likelihood_alpha
+            density = np.log(likelihood_beta/likelihood_alpha)
             #The general equation is density = likelihood_beta/sum(likelihood_alpha*prior), where the sum is over all non-beta categories, but I'm leaving out the prior since it's just 1
             #As a quick hack to revert ConjugateJK13 to how it was in the manuscript prior to April 2018, uncomment the line below
             #density = target_dist_beta.pdf(stimuli)
@@ -309,7 +304,7 @@ class RepresentJK13(Model):
             else:
                 #target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)
                 #density_flip = target_dist_flip.pdf(stimuli)                                
-                density_flip = likelihood_alpha/likelihood_beta
+                density_flip = np.log(likelihood_alpha/likelihood_beta)
                 
                 
             ps = []
