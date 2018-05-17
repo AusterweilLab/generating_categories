@@ -14,7 +14,7 @@ pd.set_option('display.width', 200, 'precision', 2)
 
 
 databases = [ '../cat-assign/data/experiment.db',
-                        ]
+                        ] 
 
 # KEEP:
 keep_tables = [
@@ -107,7 +107,7 @@ participants = pd.merge(participants,mapcond,on = 'conditionStr')
 assignment = assignment.rename(columns={'response':'assignment'})
 
 # remove irrelevant cols from various dfs
-participants.drop(['timetaken','counterbalance','lab','original_pid','catflip','pptmatch','conditionStr','categoriesIdx','stimuli'],
+participants.drop(['timetaken','counterbalance','lab','catflip','conditionStr','categoriesIdx','stimuli'],
 		axis = 1, inplace=True)
 assignment.drop(['rt','correctcat'], axis = 1, inplace=True)
 
@@ -118,6 +118,6 @@ stimuli = stimuli.as_matrix()
 
 trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(assignment,task = 'assign')
-lll
+
 with open('pickles/catassign.p','wb') as f:
 	pickle.dump(trials, f)

@@ -1,5 +1,5 @@
 # Extract the pickled output that is produced from
-# global_model_gridsearch_CHTC.py
+# individual_model_gridsearch_CHTC.py
 
 import pickle, os, re, tarfile
 import pandas as pd
@@ -17,9 +17,9 @@ tardir = 'chtctar/'
 privdir = os.path.join(tardir,'private') #private working folder that git ignores
 if not os.path.isdir(privdir):
     os.system('mkdir {}'.format(privdir))
-maintarname = 'allpickles_ind080518.tar.gz'
-appendkey = ['finalparmsll','startparms','chunkstartparms']
-removekey = ['bestparmsll','chunkidx']
+maintarname = 'allpickles_ind110518.tar.gz'
+appendkey = ['finalparmsll','chunkstartparms','parmnames']
+removekey = ['bestparmsll','chunkidx','startparms']
 #Go through each tarball and find the chtc file
 #allfiles = os.listdir(tardir)
 data = dict()
@@ -87,9 +87,9 @@ for dataset in datasetsAll:
                 ind = np.argsort(results_all[:,-2]) #-2 is the column containing of LL
                 results_all_sorted = results_all[ind]
                 results_best = results_all_sorted[0,:]
-                startp_sorted = data[dataset][model][ppt]['startparms'][ind]
+                #startp_sorted = data[dataset][model][ppt]['startparms'][ind]
                 data[dataset][model][ppt]['finalparmsll'] = results_all_sorted
-                data[dataset][model][ppt]['startparms'] = startp_sorted
+                #data[dataset][model][ppt]['startparms'] = startp_sorted
                 data[dataset][model][ppt]['bestparmsll'] = results_best
 
                 # f = tar.extractfile(member)

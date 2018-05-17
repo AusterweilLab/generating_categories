@@ -77,7 +77,7 @@ modeleaseDB = "pickles/modelease_all_data_e1_e2.p"
 try:
     with open(modeleaseDB, "rb" ) as f:
         ll_global = pickle.load( f )
-        ll_loadSuccess = False
+        ll_loadSuccess = True
 except:
     ll_global = dict()
     ll_loadSuccess = False
@@ -219,7 +219,7 @@ for model_obj in modelList:
             #matched = funcs.getMatch(pptmatch,matchdb)
             #Add participant mean error to ll matrix
             ll[ll[:,0]==pptNew,2] = 1-accuracyEl
-
+        
         ll_global[model_name] = ll
         
         #Save pickle for faster running next time

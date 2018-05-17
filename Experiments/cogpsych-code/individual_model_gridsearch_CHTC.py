@@ -2,6 +2,7 @@ import pickle, sys, os
 import pandas as pd
 import numpy as np
 import time
+import sqlite3
 execfile('Imports.py')
 import Modules.Funcs as funcs
 from Modules.Classes import Simulation
@@ -11,8 +12,11 @@ from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
 
 
-# Specify default dataname
-dataname_def = 'nosofsky1986'
+# Specify defaults
+#dataname_def = 'catassign'
+fit_weights = True
+WT_THETA = 1.5 #for the attention weight fitting
+datasets = ['catassign']#why are fits to this so slow? 110518 ok fixed!
 participant_def = 'all'
 unique_trials_def = 'all'
 nchunks = 1000 #number of CHTC instances to run
@@ -32,17 +36,17 @@ if __name__ == "__main__" and narg>1:
     #         dataname = dataname_def
     # else:
     #         dataname = sys.argv[1]
-    dataname = dataname_def
+    #dataname = dataname_def
     participant = participant_def
     unique_trials = unique_trials_def
     runchunk = int(sys.argv[1]) #first arg from terminal is chunk idx
 else:
-    dataname = dataname_def
+    #dataname = dataname_def
     participant = participant_def
     unique_trials = unique_trials_def
     runchunk = 1;
 #datasets = ['pooled','pooled-no1st','xcr','midbot','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
-datasets = ['catassign']#why are fits to this so slow?        
+
 
 #Check that output directory exists, otherwise create it
 pickledir = 'pickles/'
@@ -50,6 +54,8 @@ outputdir = pickledir + 'newpickles/'
 if not os.path.isdir(outputdir):
     os.system('mkdir ' + outputdir)
 
+
+    
 for dataname in datasets:
     execfile('validate_data.py')
     
@@ -65,6 +71,13 @@ for dataname in datasets:
 
     trials.task = task
 
+    #Get generation data for computation of individual weights,
+    # if applicable
+    if len(raw_db)>0 and fit_weights:
+        con = sqlite3.connect(raw_db)
+        stats = pd.read_sql_query("SELECT * from betastats", con)
+        con.close()
+    
     #print trials
     trials = Simulation.extractPptData(trials,participant,unique_trials)
     
@@ -131,7 +144,7 @@ for dataname in datasets:
         
         nfits = startp.shape[0]
         print 'Fitting: ' + model_obj.model
-        print 'Total possible fits: {}'.format(nfitsTotal)
+        print 'Total possible starting points: {}'.format(nfitsTotal)
         print 'Running chunk {}, extracting starting points: [{}:{}]'.format(runchunk, chunkIdxStart, chunkIdxEnd)
         print 'Total starting points extracted: ' + str(nfits)
         printcol = 20
@@ -156,12 +169,20 @@ for dataname in datasets:
             results_array = np.array(np.zeros([nfits,nparms+2])) #nparms+2 cols, where +2 is the LL and AIC. Third dimension is for each individual participant
             results_model = dict()
             trials_ppt = Simulation.extractPptData(trials,ppt)
-            for i in range(nfits):            
+            pptOld = funcs.getCatassignID(ppt,source='analysis',fetch='old')
+            if fit_weights:
+                #Apply weights
+                ranges = stats[['xrange','yrange']].loc[stats['participant']==pptOld]
+                fixedparams = dict()
+                fixedparams['wts'] = funcs.softmax(-ranges, theta = WT_THETA)[0]
+                if model_obj ==  ConjugateJK13 or model_obj == RepresentJK13:
+                    fixedparams['wts'] = 1.0 - fixedparams['wts']
+
+            for i in range(nfits):                
                 inits = startp[i,:]
-            
                 res = Simulation.hillclimber(model_obj, trials_ppt, options,
-                                             inits=inits, results = True,
-                                             callbackstyle='iter')
+                                             inits=inits, fixedparams = fixedparams,
+                                             results = False, callbackstyle='none')
                 final_parms = res.x
                 final_ll = res.fun
                 final_aic =  funcs.aic(final_ll,nparms)
@@ -181,7 +202,7 @@ for dataname in datasets:
             #Also include chunk details
             results_model['chunkidx'] = [chunkIdxStart,chunkIdxEnd]
             results_model['chunkstartparms'] = startp
-            
+
             results[model_obj.model][ppt] = results_model
             
             #X = model_obj.params2dict(model_obj.clipper(res.x))
@@ -202,8 +223,7 @@ for dataname in datasets:
 
     # save final result in pickle
     with open(outputdir + 'chtc_ind_gs_'+dst,'wb') as f:
-        #pass 
         pickle.dump(results, f)
 
-#Simulation.print_gs_nicenice()
+
 

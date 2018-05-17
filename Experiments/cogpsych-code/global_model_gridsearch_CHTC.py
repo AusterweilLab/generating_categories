@@ -135,7 +135,7 @@ for dataname in datasets:
         results_array = np.array(np.zeros([nfits,nparms+2])) #nparms+1 cols, where +2 is the LL and AIC
         results_model = dict()
         print 'Fitting: ' + model_obj.model
-        print 'Total possible fits: {}'.format(nfitsTotal)
+        print 'Total possible starting points: {}'.format(nfitsTotal)
         print 'Running chunk {}, extracting starting points: [{}:{}]'.format(runchunk, chunkIdxStart, chunkIdxEnd)
         print 'Total starting points extracted: ' + str(nfits)
         printcol = 20

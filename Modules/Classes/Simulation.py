@@ -166,7 +166,7 @@ class Trialset(object):
                     Bs = rows.loc[rows.trial<num, 'stimulus'].as_matrix()
                     categories = row.categories.item() + [Bs]
                     stimulus = row.stimulus.item()
-                    self.add(stimulus, categories = categories,participant = pid)
+                    self.add(stimulus, categories = categories,participant = row.participant.item())
 
         elif task == 'assign' or task == 'error':
             # So the response trials added here can be from any
@@ -181,7 +181,7 @@ class Trialset(object):
                     target = row.stimulus.item()
                     add2cat = row.assignment.item()
                     stimulus = [target,add2cat]
-                    self.add(stimulus, categories = categories,participant = pid)
+                    self.add(stimulus, categories = categories,participant = row.participant.item())
         else:
             raise ValueError('Oh no, it looks like you have specified an illegal value for the task argument!')
 
@@ -189,7 +189,7 @@ class Trialset(object):
         return self
                 
 
-    def loglike(self, params, model, whole_array=False):
+    def loglike(self, params, model, fixedparams = None, whole_array=False):
         """
         Evaluate a model object's log-likelihood on the
         trial set based on the provided parameters.
@@ -197,9 +197,17 @@ class Trialset(object):
         If whole_array is True, then loglike returns the nLL
         of each trial in the Trialset. 
         """
+        
         # reverse-transform parameter values
-        params = model.parmxform(params, direction = -1)
-                
+        params = model.parmxform(params, direction = -1)        
+
+        # extract fixed parameters and feed it into params variable
+        if hasattr(fixedparams,'keys'):
+            #convert free parms to dict
+            params = model.params2dict(params)
+            for parmname in fixedparams.keys():
+                params[parmname] = fixedparams[parmname]
+        
         # iterate over trials
         loglike = 0
         ps_list = np.array([])
@@ -268,7 +276,7 @@ class Trialset(object):
             return -1.0 * loglike
 
 
-def hillclimber(model_obj, trials_obj, options, inits = None, results = True,callbackstyle='none'):
+def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None, results = True,callbackstyle='none'):
     """
     Run an optimization routine.
 
@@ -305,7 +313,7 @@ def hillclimber(model_obj, trials_obj, options, inits = None, results = True,cal
                 
     res = op.minimize(    trials_obj.loglike, 
                 inits, 
-                args = (model_obj),
+                args = (model_obj,fixedparams),
                 callback = _callback_fun_, 
                 **options
         )
@@ -510,9 +518,11 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                     pptList[pi] = np.append(pptList[pi],pptcat)
                 else:
                     for i in ppt:
-                        extractIdx = pptcat==round(i)                            
+                        extractIdx = pptcat==round(i)
                         respList[pi] = np.append(respList[pi],responsecat[extractIdx])
                         pptList[pi] = np.append(pptList[pi],pptcat[extractIdx])
+        else:
+            raise ValueError('trialset.task not specified. Please specify this as \'generate\' or \'assign\' in your script.')
                                 
         output_obj.Set[ti]['response'] = respList
         output_obj.Set[ti]['participant'] = pptList
@@ -521,10 +531,15 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
     output_objTemp = cp.deepcopy(output_obj.Set)
     output_obj.Set = []
     for ti,trialchunk in enumerate(output_objTemp):
-        if len(trialchunk['participant'])>0:                        
-            #cleanIdx[ti] = False
-            output_obj.Set.append(trialchunk)
-                        
+        if trial_obj.task is 'generate':
+            if len(trialchunk['participant'])>0:                        
+                #cleanIdx[ti] = False
+                output_obj.Set.append(trialchunk)
+        elif trial_obj.task is 'assign' or trial_obj.task is 'error':
+            if len(trialchunk['participant'][0])>0:                        
+                #cleanIdx[ti] = False
+                output_obj.Set.append(trialchunk)
+
     #Finally, update the unique participant list
     if not ppt=='all':
         output_obj.participants = ppt

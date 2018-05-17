@@ -23,12 +23,12 @@ unique_trials_def = 'all'
 dataname = dataname_def
 execfile('validate_data.py')
 # get data from pickle
-with open(pickledir+src, "rb" ) as f:
+with open(pickledir+src,"rb" ) as f:
     trials = pickle.load( f )
 
 # get best params pickle
 #bestpickle = "pickles/private/chtc_ind_gs_best_params_all_data_e1_e2.p"
-bestpickle = "pickles/private/chtc_ind_gs_best_params_trials_2-4_e1_e2.p"
+bestpickle = "pickles/private/chtc_ind_gs_best_params_catassign.p"
 with open(bestpickle, "rb" ) as f:
     results_t = pickle.load( f )
 
@@ -51,9 +51,17 @@ for modelname in results_t.keys():
         results[modelname] = results[modelname].append(tempdict, ignore_index = True)
 
 #Plot!
-x = np.histogram(results['PACKER']['nLL'])
-#plt.bar(x[1][0:-1],x[0],width=1)
-plt.hist(results['PACKER']['nLL'],linewidth=1,edgecolor='black')
-#plt.show()
+fh,axs = plt.subplots(1,len(results.keys()),figsize=(20,7))
+for m,model in enumerate(results.keys()):
+    #x = np.histogram(results[model]['nLL'])
+    #plt.bar(x[1][0:-1],x[0],width=1)
+    axs[m].hist(results[model]['nLL'],linewidth=1,edgecolor='black')
+    axs[m].set_title(model)
+    axs[m].set_xlabel('negLL')
+    if m==0:
+        axs[m].set_ylabel('Frequency')
+    axs[m].set_ylim([0,40])
+    
+plt.show()
         
 #modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]                            

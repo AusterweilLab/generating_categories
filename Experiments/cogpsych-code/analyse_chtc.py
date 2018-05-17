@@ -17,9 +17,9 @@ tardir = 'chtctar/'
 privdir = os.path.join(tardir,'private') #private working folder that git ignores
 if not os.path.isdir(privdir):
     os.system('mkdir {}'.format(privdir))
-maintarname = 'allpickles080518.tar.gz'
-appendkey = ['finalparmsll','startparms','chunkstartparms']
-removekey = ['bestparmsll','chunkidx']
+maintarname = 'allpickles110518.tar.gz'
+appendkey = ['finalparmsll','appendkey','chunkstartparms']
+removekey = ['bestparmsll','chunkidx','startparms']
 #Go through each tarball and find the chtc file
 #allfiles = os.listdir(tardir)
 data = dict()
@@ -27,7 +27,7 @@ datasetsAll = []
 modelsAll = []
 print_ct = 0
 tarct = 0
-maintar = tarfile.open(tardir+maintarname, "r:gz")
+maintar = tarfile.open(os.path.join(privdir,maintarname), "r:gz")
 for maintarmember in maintar.getmembers(): #for checkfile in allfiles:
     checkre = re.match('pickles(\d\d*)\.tar\.gz',maintarmember.name)
     if checkre!=None:
