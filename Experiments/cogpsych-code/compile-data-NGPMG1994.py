@@ -47,7 +47,7 @@ nconditions = len(trainedExemplarsL)
 # Note that due to a lack of individual-level data, I will have to generate counts from probabilities
 assignErr1 = np.array([[.010, .032, .061, .065, .075, .143]]).transpose() #this is the average data found on p355
 assignErr0 = 1-assignErr1
-assignCat0 = np.atleast_2d(np.array((assignErr*trials), dtype = int).repeat(nstim)).transpose()
+assignCat0 = np.atleast_2d(np.array((assignErr0*trials), dtype = int).repeat(nstim)).transpose()
 
 trainedExemplarsFlat = np.array([exemplars for sublist in trainedExemplarsL for subsublist in sublist for exemplars in subsublist])
 trainedExemplarsFlatCondIdx = np.arange(nconditions).repeat(8)
@@ -59,7 +59,7 @@ for condition in range(nconditions):
     currStim[currTrainedExemplars[0:4]] = trials-currStim[currTrainedExemplars[0:4]]
     assignCat0[currSelection] = currStim
 
-assignCat1 = trials-assignCat1 #so artificial
+assignCat1 = trials-assignCat0 #so artificial
 #So here, cat1 is the only wrong category, and cat0 is the only correct category
 
 assignMax = assignCat0 + assignCat1 #total assignments for each stimulus

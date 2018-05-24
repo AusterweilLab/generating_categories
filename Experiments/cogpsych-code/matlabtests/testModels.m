@@ -8,16 +8,16 @@ categoriesSet = repmat([ones(1,4),ones(1,4)*2],nconditions,1);
 nstim = prod(nstim_axes);
 stimCoords = ndspace(nstim_axes(1),numel(nstim_axes));%entire stimulus space
 % task = 'assign';
-normsteep_toggle = true;
+normsteep_toggle = false;
 
 %Prepare startparms for each model    
-parmsInitAll = {[2, .5, 2.2, 1],... %[specificity,tradeoff,determinism] - PACKER
-                [2,     2.2, .3]}; %[specificity,determinism] - CopyTweak  
+parmsInitAll = {[2, 0.9, .5, 0],... %[specificity,tradeoff,determinism] - PACKER
+                [2,     2.2, 0]}; %[specificity,determinism] - CopyTweak  
 % parmsInitAll = {[rand, rand, rand, 1],... %[specificity,tradeoff,determinism] - PACKER
 %                 [rand,       rand, 1]}; %[specificity,determinism] - CopyTweak
             %force CopyTweak parms to be same as PACKER
-% parmsInitAll{2} = [parmsInitAll{1}(1),parmsInitAll{1}(3),parmsInitAll{1}(4)];
-parmRulesAll = {[1e-10, 0, 0, 0; NaN, 1, NaN, NaN],...
+parmsInitAll{2} = [parmsInitAll{1}(1),parmsInitAll{1}(3),parmsInitAll{1}(4)];
+parmRulesAll = {[1e-10, 0, 0, 0; NaN, NaN, NaN, NaN],...
                 [1e-10,    0, 0; NaN,    NaN, NaN]};
 parmNamesAll = {{'Specifty', 'Tradeoff', 'Detrmnsm','NrmSteep'};
                 {'Specifty', 'Detrmnsm', 'NrmSteep'}};

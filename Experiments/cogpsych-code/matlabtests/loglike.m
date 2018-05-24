@@ -56,6 +56,9 @@ for i = 1:nConditions
     end
 end
 
+%Deal with inf
+lle(isinf(lle)) = 1e10;
+
 ll = sum(sum(lle));
 
 

@@ -5,7 +5,7 @@ determinism = 1;
 tradeoff = [.887,.5,.4,.1];
 % tradeoff2 = .1;
 
-task = 'assign';
+task = 'generate';
 % stimTest = [0,1;1,0;0,0;1,1];
 % stimTrain = [0,1;1,0;];
 
@@ -37,11 +37,14 @@ stimTrain = cartesian([1:2],4);
 % stimTest = [1,2;2,1;1,1;2,2;1,3;3,1;3,2;3,3;];
 % stimTrain = [1,2;2,1;1,1;2,2;1,3;3,1;3,2;3,3;];
 
-% stimTest = [0,1;1,0;0,0;1,1];
-% stimTrain = [0,1;1,0;0,0;1,1];
+stimTest = [0,1;1,0;0,0;1,1];
+stimTrain = [0,1;1,0;0,0;1,1];
 
-stimTest = [1,0;0,1];
-stimTrain = [0,1;1,0];
+% stimTest = [1,0;0,1];
+% stimTrain = [0,1;1,0];
+
+stimTest = [.5,1;2,0];%[1,2;2,1;1,1;2,2;1,3;3,1;3,2;3,3;2,3;];
+stimTrain = [.5,1;2,0];
 
 nStimTrain = size(stimTrain,1);
 nStimTest = size(stimTest,1);

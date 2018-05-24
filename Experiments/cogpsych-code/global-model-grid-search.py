@@ -8,12 +8,13 @@ from Modules.Classes import Simulation
 from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
+from Modules.Classes import RepresentJK13
 
-Simulation.print_gs_nicenice()
-lll
+# Simulation.print_gs_nicenice()
+# lll
 
 # Specify default dataname
-dataname_def = 'NGPMG1994'
+dataname_def = 'pooled'
 participant_def = 'all'
 unique_trials_def = 'all'
 
@@ -64,7 +65,7 @@ options = dict(
 
 #Run grid search
 results = dict()
-for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, Packer]:
+for model_obj in [ConjugateJK13,RepresentJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, Packer]:
     #Prepare list of grid search start points
     #Create base array
     nparms = len(model_obj.parameter_names)
@@ -147,9 +148,9 @@ for model_obj in [ConjugateJK13,CopyTweak,Packer]:# [ConjugateJK13, CopyTweak, P
         
 
 # save final result in pickle
-with open(pickledir+'gs_'+dst,'wb') as f:
-    #pass 
-    pickle.dump(results, f)
+# with open(pickledir+'gs_'+dst,'wb') as f:
+#     #pass 
+#     pickle.dump(results, f)
 
 #Simulation.print_gs_nicenice()
 

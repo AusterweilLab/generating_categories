@@ -1,4 +1,4 @@
-import pickle, sys
+import pickle, sys, os
 import pandas as pd
 import numpy as np
 import time
@@ -8,6 +8,7 @@ from Modules.Classes import Simulation
 from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
+from Modules.Classes import RepresentJK13
 
 
 # Specify default dataname
@@ -17,33 +18,43 @@ unique_trials_def = 'all'
 nchunks = 1000 #number of CHTC instances to run
 #Allow for input arguments at the shell
 narg = len(sys.argv)
+
 if __name__ == "__main__" and narg>1:
 
-        # if len(sys.argv)<4:
-        #         unique_trials = unique_trials_def
-        # else:
-        #         unique_trials = int(sys.argv[3])
-        # if len(sys.argv)<3:
-        #         participant = participant_def
-        # else:
-        #         participant = int(sys.argv[2])
-        # if len(sys.argv)<2:
-        #         dataname = dataname_def
-        # else:
-        #         dataname = sys.argv[1]
-        dataname = dataname_def
-        participant = participant_def
-        unique_trials = unique_trials_def
-        runchunk = int(sys.argv[1]) #first arg from terminal is chunk idx
+    # if len(sys.argv)<4:
+    #         unique_trials = unique_trials_def
+    # else:
+    #         unique_trials = int(sys.argv[3])
+    # if len(sys.argv)<3:
+    #         participant = participant_def
+    # else:
+    #         participant = int(sys.argv[2])
+    # if len(sys.argv)<2:
+    #         dataname = dataname_def
+    # else:
+    #         dataname = sys.argv[1]
+    dataname = dataname_def
+    participant = participant_def
+    unique_trials = unique_trials_def
+    runchunk = int(sys.argv[1]) #first arg from terminal is chunk idx
 else:
-        dataname = dataname_def
-        participant = participant_def
-        unique_trials = unique_trials_def
-        runchunk = 93;
-datasets = ['pooled','pooled-no1st','nosofsky1986','nosofsky1989','NGPMG1994']
+    dataname = dataname_def
+    participant = participant_def
+    unique_trials = unique_trials_def
+    runchunk = 93;
+    
+datasets = ['pooled','pooled-no1st','xcr','midbot','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
+
+
+#Check that output directory exists, otherwise create it
+pickledir = 'pickles/'
+outputdir = pickledir + 'newpickles/'
+if not os.path.isdir(outputdir):
+    os.system('mkdir ' + outputdir)
 
 for dataname in datasets:
     execfile('validate_data.py')
+    
     #add chunk number to dst
     dst = dst[0:-2] + '_chunk' + str(runchunk) + '.p'
     dst_error = dst[0:-2] + '_error.p'
@@ -52,7 +63,7 @@ for dataname in datasets:
     
     # get data from pickle
     with open(pickledir+src, "rb" ) as f:
-	trials = pickle.load( f )
+        trials = pickle.load( f )
 
     trials.task = task
 
@@ -62,15 +73,15 @@ for dataname in datasets:
 
     # options for the optimization routine
     options = dict(
-	method = 'Nelder-Mead',
-	options = dict(maxiter = 500, disp = False),
-	tol = 0.01,
+        method = 'Nelder-Mead',
+        options = dict(maxiter = 500, disp = False),
+        tol = 0.01,
     ) 
 
 
     #Run grid search
     results = dict()
-    for model_obj in [ConjugateJK13, CopyTweak, Packer]:
+    for model_obj in [ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
         #Prepare list of grid search start points
         #Create base array
         nparms = len(model_obj.parameter_names)
@@ -124,12 +135,12 @@ for dataname in datasets:
         results_array = np.array(np.zeros([nfits,nparms+2])) #nparms+1 cols, where +2 is the LL and AIC
         results_model = dict()
         print 'Fitting: ' + model_obj.model
-        print 'Total possible fits: {}'.format(nfitsTotal)
+        print 'Total possible starting points: {}'.format(nfitsTotal)
         print 'Running chunk {}, extracting starting points: [{}:{}]'.format(runchunk, chunkIdxStart, chunkIdxEnd)
         print 'Total starting points extracted: ' + str(nfits)
         printcol = 20
         if nfits==0:
-            print 'No starting points extracted, moving on.'
+            print 'No starting points extracted, moving on.\n'
             continue
         for i in range(nfits):
             if np.mod(i+1,printcol) != 0:
@@ -169,18 +180,18 @@ for dataname in datasets:
         print 'Final results: '
         X = model_obj.params2dict(model_obj.clipper(results_best[0:-2]))
         for k, v in X.items():
-	    print '\t' + k + ' = ' + str(v) + ','
+            print '\t' + k + ' = ' + str(v) + ','
 
         print '\tLogLike = ' + str(results_best[-2])                        
         print '\tAIC = ' + str(results_best[-1])
                 
         #for k,v in results.items():
-        #	print k, v
+        #    print k, v
 
         
 
     # save final result in pickle
-    with open(pickledir+'chtc_gs_'+dst,'wb') as f:
+    with open(outputdir + 'chtc_gs_'+dst,'wb') as f:
         #pass 
         pickle.dump(results, f)
 

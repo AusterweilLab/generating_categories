@@ -456,7 +456,7 @@ def valData(ins,s,options,tries = 5):
                 
         return outs
 
-def getMatch(match,db='../data_utilities/cmp_midbot.db',fetch='Old'):
+def getMatch(match,db='../cat-assign/data_utilities/cmp_midbot.db',fetch='Old'):
         """
         Fetch the Old and Matched participant number given some database. 
         Matches to the matched ppt number by default (i.e., fetches the old ppt number).
@@ -492,7 +492,30 @@ def getMatch(match,db='../data_utilities/cmp_midbot.db',fetch='Old'):
                         out = [];
 
         return out
-
+    
+def getCatassignID(inID,source='analysis',fetch='old'):
+    '''
+    #Fetch participant IDs from the catassign experiment (similar to getMatch, but takes
+    # data from the constructed catassign_pptID pickle made from make_participant_database.py
+    # in the cat-assign/analysis folder.
+    # source and fetch can be any of 'old','match','analysis', or 'assigned'
+    # Input can be any integer or 'all' (which returns a list), or a list.
+    '''
+    import pickle
+    file  = 'pickles/catassign_pptID.p'
+    with open(file,'rb') as f:
+        data = pickle.load(f)
+    if isinstance(inID,int):
+        out = data.loc[data[source] == inID][fetch].item()
+    elif inID is 'all':
+        out = list(data[source])
+    elif hasattr(inID,'__len__'):
+        out = []
+        for i in inID:
+            out += [data.loc[data[source] == i][fetch].item()]
+    return out
+    
+    
 #Function to print iteration progress nicely
 def printProg(i,print_ct = 0, steps = 1, breakline = 40, breakby = 'char'):
         """
@@ -532,3 +555,61 @@ def printProg(i,print_ct = 0, steps = 1, breakline = 40, breakby = 'char'):
                 else:
                         raise Exception('Please specify breakby as either \'char\' or \'mult\'.')
         return print_ct
+
+def getrange(stimuli):
+    '''
+    Get the min and max for each stimulus feature. To be used when initialising models.
+    '''
+    stimrange = []
+    for i in range(len(stimuli[0])):
+        stimrange += [{'min': stimuli[:,i].min(),
+                       'max': stimuli[:,i].max()}]
+    return stimrange
+        
+
+def getModelName(modelname,fetch='short'):
+    '''
+    Fetches the specified model name. FETCH can be 'short',long','class'.
+    '''
+    execfile('Imports.py')
+    from Modules.Classes import CopyTweak
+    from Modules.Classes import Packer
+    from Modules.Classes import ConjugateJK13
+    from Modules.Classes import RepresentJK13
+    model_keywords = dict()
+    modelnames = dict()
+    models = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]
+    #Set everything to lowercase
+    modelname = modelname.lower()
+    #First, add default names
+    for model in models:
+        modelnames[model.__name__] = [model.modelshort, model.model, model.__name__]
+        model_keywords[model.__name__] = [model.modelshort.lower(), model.model.lower(), model.__name__.lower()]
+    #Then add some base or keywords for each model
+    model_keywords['Packer'] += ['pack']
+    model_keywords['CopyTweak'] += ['copy','cp','c&t','cnt']
+    model_keywords['ConjugateJK13'] += ['cjk13','conjugate','hierarchical']
+    model_keywords['RepresentJK13'] += ['rjk13','rep','represent']
+    #Parse the fetch type
+    fetchtypes = ['short','long','class']
+    fetchidx = fetchtypes.index(fetch)
+    #Then try to identify the requested model
+    fetchmodel = ''    
+    for model in model_keywords.keys():        
+        if modelname in model_keywords[model]:
+            fetchmodel = modelnames[model][fetchidx]
+            return fetchmodel
+            
+    
+def get_initials(input,num_letters = 1,include_delim = True):
+    '''
+    Extracts the first num_letters of every word in a string. Treats underscores as delimiters.
+    '''
+    import re
+    if include_delim:
+        delim = re.findall('[\s+_]',input)
+        delim += [''] #last delimiter is blank
+        output = "".join(item[0:num_letters]+delim[i] for i,item in enumerate(re.findall("[a-zA-Z0-9]+", input)))
+    else:
+        output = "".join(item[0:num_letters] for item in re.findall("[a-zA-Z0-9]+", input))
+    return output

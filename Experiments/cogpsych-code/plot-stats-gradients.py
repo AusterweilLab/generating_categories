@@ -25,7 +25,9 @@ WT_THETA = 1.5
 
 # plotting settings
 fontsettings = dict(fontsize = 12.0)
-col_order = ['Behavioral', 'PACKER', 'Copy and Tweak', 'Hierarchical Sampling']
+col_order = ['Behavioral', 'PACKER', 'Copy and Tweak', 'Hierarchical Sampling','Hierarchical Sampling With Representativeness']
+#col_order = ['Hierarchical Sampling With Representativeness']
+col_names_short = ['Behavioral', 'PACKER', 'Copy & Tweak', 'Hier. Sampling','Hier. Sampling w/ Rep']
 row_order = ['Cluster','Row', 'XOR', 'Bottom', 'Middle']
 SMOOTHING_PARAM = 0.8
 
@@ -51,17 +53,26 @@ all_data = dict(Behavioral = observed)
 
 # custom modules
 execfile('Imports.py')
-from Modules.Classes import CopyTweak, Packer, ConjugateJK13
+from Modules.Classes import CopyTweak, Packer, ConjugateJK13, RepresentJK13
 import Modules.Funcs as funcs
 
 # get best params pickle
-with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
-    best_params = pickle.load( f )
+with open("pickles/chtc_gs_best_params_all_data_e1_e2.p", "rb" ) as f:
+    best_params_t = pickle.load( f )
+
+#Rebuild it into a smaller dict
+best_params = dict()
+for modelname in best_params_t.keys():    
+    best_params[modelname] = dict()
+    for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
+        parmval = best_params_t[modelname]['bestparmsll']
+        best_params[modelname][parmname] = parmval[i]
 
 name_2_object = {
     'PACKER': Packer, 
     'Copy and Tweak': CopyTweak, 
-    'Hierarchical Sampling': ConjugateJK13
+    'Hierarchical Sampling': ConjugateJK13,
+    'Hierarchical Sampling With Representativeness': RepresentJK13
 }
 
 # conduct simulations
@@ -78,15 +89,15 @@ for model_name, model_obj in name_2_object.items():
         # get weights
         if 'range' in STAT_OF_INTEREST:
             params['wts'] = funcs.softmax(-row[['xrange','yrange']], theta = WT_THETA)[0]
-            if model_obj ==  ConjugateJK13:
+            if model_obj ==  ConjugateJK13 or model_obj ==  RepresentJK13:
                 params['wts'] = 1.0 - params['wts']
         else:
             params['wts'] = np.array([0.5, 0.5])
 
         # assume no baselinesim
-        params['baselinesim'] = 0
+        params['baselinesim'] = 0        
         # simulate
-        model = model_obj([As], params)
+        model = model_obj([As], params,funcs.getrange(stimuli))
         for j in range(N_SAMPLES):   
             nums = model.simulate_generation(stimuli, 1, nexemplars = 4)
             model.forget_category(1)
@@ -112,7 +123,7 @@ for model_name, model_obj in name_2_object.items():
     all_data[model_obj.model] = model_data
 
 # plotting
-f, ax = plt.subplots(5,4,figsize = (6.7, 7.5))
+f, ax = plt.subplots(5,len(name_2_object)+1,figsize = (10, 8))
 for rownum, c in enumerate(row_order):
     A = stimuli[alphas[c],:]
     
@@ -142,7 +153,7 @@ for rownum, c in enumerate(row_order):
 
         # axis labeling
         if rownum == 0:
-            h.set_title(lab, **fontsettings)
+            h.set_title(col_names_short[colnum], **fontsettings)
 
         if colnum == 0:
             h.set_ylabel(c, **fontsettings)
@@ -168,10 +179,10 @@ cbar.set_xticklabels([
 ],**fontsettings)
 cbar.tick_params(length = 0)
 
-plt.tight_layout(w_pad=-4.0, h_pad= 0.1)
+plt.tight_layout(w_pad=-8.0, h_pad= 1)
 
-fname = 'gradients-' + STAT_OF_INTEREST
-#f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
+fname = 'gradients-t-' + STAT_OF_INTEREST
+f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
 #f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
 
 #path = '../../Manuscripts/cog-psych/figs/range-diff-gradients.pgf'

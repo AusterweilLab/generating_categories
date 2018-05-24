@@ -10,12 +10,12 @@ from Modules.Classes import Packer, CopyTweak
 
 # get trials pickle
 # pickle can be "pickles/all_data_e1_e2.p", "pickles/nosofsky1986.p"
-with open("pickles/nosofsky1986.p", "rb" ) as f:
+with open("pickles/all_data_e1_e2.p", "rb" ) as f:
 	trials = pickle.load( f )
 
 # get best params pickle
 # pickle can be "pickles/best_params_all_data_e1_e2.p", "pickles/best_params_nosofsky1986.p"
-with open("pickles/best_params_nosofsky1986.p", "rb" ) as f:
+with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
 	best_params = pickle.load( f )
 
 # compute copytweak loglike
@@ -26,7 +26,7 @@ gamma_grid = np.linspace(0, 1.0, 100)
 loglikes = np.empty(gamma_grid.shape)
 
 # add task type to trials object
-trials.task = 'assign'
+trials.task = 'generate'
 
 # evaluate loglike at each grid point
 for i, val in enumerate(gamma_grid):
@@ -75,6 +75,6 @@ fh.gca().set_yticklabels(yticklabels)
 plt.gca().yaxis.grid(True)
 plt.ylabel('Log-Likelihood ($L$)', fontsize = 12)
 
-plt.savefig('packer-loglike-n1986.png', bbox_inches='tight', transparent=False)
+plt.savefig('packer-loglike-t.png', bbox_inches='tight', transparent=False)
 path = '../../Manuscripts/cog-psych/figs/packer-loglike-n1986.pgf'
-funcs.save_as_pgf(fh, path)
+#funcs.save_as_pgf(fh, path)

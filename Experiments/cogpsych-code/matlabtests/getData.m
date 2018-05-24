@@ -30,7 +30,8 @@ switch data
             2     5     8    12     3     7    10    13] ; %diagonal
         stimTrainIdxAll = stimTrainIdxAll + 1; %Adjust indexing from 1 (instead of 0)
         stimTestIdx = 1:nstim; %test entire stimulus space
-
+        nconditions = size(stimTrainIdxAll,1);
+        stimTestIdx = repmat(stimTestIdx,nconditions,1);
         data_k = assignCat1;
         data_total = assignCat1+assignCat2;
         data_p = data_k./data_total;

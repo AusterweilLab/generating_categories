@@ -1,0 +1,133 @@
+\documentclass[12pt]{article} \usepackage[letterpaper, margin=1in,
+headheight=15pt]{geometry} \usepackage{amsmath, listings}
+
+
+\begin{document}
+
+\section{Description of the non-variant effect of gamma on generation and
+assignment probabilities in PACKER}
+
+This document refers to the version of PACKER as described in the manuscript
+submitted to Cognitive Psychology (sometime in 2017; henceforth referred to as
+the manuscript). In this version, PACKER performs very well in predicting the
+generation of new category exemplars. In particular, the tradeoff parameter
+(henceforth $\gamma$) actually affects the predictions generated in an expected
+way. However, when trying to produce predictions of category assignments,
+varying $\gamma$ does not affect the predictions in any way. The following
+section of this document describes why this is occurring.
+
+Equation 2 in the manuscript specifies that the aggregated similarity $a$
+between generation candidate $y_i$ and a vector of stored exemplars $x$ can be
+expressed as:
+
+\begin{equation} a(y_i, x) = \sum_j{f(x_j) s(y_i, x_j)}
+\label{eq:aggsim}
+\end{equation} where $f(x_j) = \gamma$ when $x_j$ is a member of a target
+category $T$ and $f(x_j) = \gamma - 1$ when $x_j$ is a member of a contrast
+category $C$.
+
+We can express Equation \ref{eq:aggsim} here a little differently:
+
+\begin{equation} a(y_i,x) = \gamma \sum_{k \in K_T}{s(y_i,x_k)} + (\gamma-1)
+\sum_{k \in K_C}{s(y_i,x_k)}
+\label{eq:aggsimsplit}
+\end{equation} where $K_T$ is the set of all target category members and $K_C$ is
+the set of all members of the contrast category. To make the algebra a little
+less tedious we can simplify some of the representations here. Let $t_i =
+\sum_{k \in K_T}{s(y_i,x_k)}$ and $c_i = \sum_{k \in K_C}{s(y_i,x_k)}$, which allows
+us to express Equation \ref{eq:aggsimsplit} as:
+
+\begin{equation} a(y_i,x) = \gamma t_i + (\gamma-1) c_i .
+\label{eq:aggsimsimp}
+\end{equation}
+
+According to the implementation of PACKER in the manuscript, an exponentiated
+Luce's choice rule is used to find the probability $p$ of generating candidate
+$y_i$:
+
+\begin{equation} p(y_i) = \dfrac{\exp \{\theta \cdot a(y_i, x)\}} {\sum_i{\exp
+\{\theta \cdot a(y_i,x)\}}} .
+\label{expluce}
+\end{equation} Thus far, Equation \ref{expluce} only apply to predictions of
+category generation. In order to extend PACKER to category assignment
+predictions, we need to find not the probability of generating candidate $y_i$,
+but rather, the probability of assigning candidate $y_i$ to the target category. 
+ these equations only apply to predictions of category
+generation. However, predictions of category assignments require some
+reconceptualization of these equations, although most of the equations retain
+the same structure. Specifically, for Equations \ref{eq:aggsim} to
+\ref{eq:expluce}, $i$ now iterates over each category (as opposed to each
+generation candidate; i.e., $i \in K$ $ y_i$ now represents the assignment of candidate $y$ to
+target category $i$. 
+
+Substituting $a(y_i,x)$ with Equation \ref{eq:aggsimsimp}:
+\begin{equation} p(y_i) = \dfrac{\exp \{\theta \cdot \gamma t_i + (\gamma-1)
+c_i\}} {\sum_i {\exp \{\theta \cdot \gamma t_i + (\gamma-1) c_i\}}}
+\label{eq:expluceexp}
+\end{equation}
+
+
+Whereas the denominator in Equation \ref{eq:expluceexp} is the summation of
+aggregated similarities over all generation candidates in category generation,
+category assignment predictions require that the denominator specifies the
+summation over all category assignments. Specifically, $i$ in the summation term
+represents each category, as opposed to each generation candidate.
+
+This model assumes that people represent categories as exemplars in a
+multidimensional space, and that generation is constrained by both similarity to
+members of the category being generated \textit{and} dissimilarity to members of
+other categories. The model assumes people generate categories that are
+dissimilar to known categories and have strong within-class similarity.
+
+The similarity between exemplars $x_i$ and $x_j$ is computed using Shepard's
+law:
+
+\begin{equation} s\left(x_i,x_j\right) = \exp \left\{ -c \left[\sum_{k}{ w_k
+\left| x_{ik} - x_{jk} \right|^r }\right]^{1/r} \right\}
+\label{eq:similarity}
+\end{equation}
+
+When prompted to make a generation decision, participants are thought to
+consider both similarity to examples from other categories as well as similarity
+to examples in the target category. More formally, the aggregated similarity $a$
+between candidate $y$ and the model's stored exemplars $x$ can be computed as:
+
+\begin{equation} a(y, x) = \sum_j{f(x_j) s(y, x_j)}
+\end{equation}
+
+Where $f(x_j)$ is a function specifying each stored example's degree of
+contribution toward generation. Although $f(x_j)$ may be set arbitrarily, in
+PACKER it is set according to class assignment. For known members of the target
+category, $f(x_j) = \gamma$. For members of contrast categories, $f(x_j) =
+\gamma - 1$. $\gamma$ is thus a free parameter ($0 \leq \gamma \leq 1$)
+controlling the trade-off between within-class similarity and between-class
+dissimilarity: $\gamma = 1$ produces exclusive consideration of same-category
+members, and $\gamma = 0$ produces exclusive consideration of opposite-category
+members. When $\gamma = 0.5$, the similarity to contrast categories is
+effectively subtracted from the similarity to the target category.
+
+The probability that a given item $y$ will be generated given the model's memory
+$x$ is computed using relative summed similarity values across all generation
+candidates $y_i$:
+
+\begin{equation} p(y) = \dfrac { \exp \left \{ \theta \cdot a \left( y, x
+\right) \right \} } { \sum_i{ \exp \left \{ \theta \cdot a \left( y_i, x \right)
+\right\} } }
+\label{eq:packer-choice}
+\end{equation}
+
+Where $\theta$ ($\geq 0$) is a free parameter controlling overall response
+determinism.
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+ 

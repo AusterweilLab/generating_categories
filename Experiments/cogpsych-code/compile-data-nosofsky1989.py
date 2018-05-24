@@ -118,4 +118,4 @@ trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(generation,task = 'assign')
 
 with open('pickles/nosofsky1989.p','wb') as f:
-	pickle.dump(trials, f)
+    pickle.dump(trials, f)

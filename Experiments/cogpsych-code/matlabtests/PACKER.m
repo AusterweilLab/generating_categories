@@ -19,8 +19,8 @@ specificity = parms(1);
 tradeoff = parms(2);
 determinism = parms(3);
 
-softmax = false;
-normsim = true;
+softmax = true;
+normsim = false;
 
 if numel(parms)<4
     normsim = false;
@@ -33,11 +33,20 @@ end
 if nCat~=2
     error('Fix generation of fx vector in the code before proceeding')
 else
-    %This will need to be fixed if nCat>2
-    fx = repmat(tradeoff-1,nStimTrain,nCat); %gammas
-    for k = 1:nCat       
-        fx(categories==k,k) = tradeoff; %target category
+    %testing as of 110418
+    fx = ones(nStimTrain,nCat);
+    for k = 1:nCat
+        fx(categories ~= k,k) = -tradeoff; %contrast category
     end
+    %end test.
+    
+    %original code before 110418
+%     %This will need to be fixed if nCat>2
+%     fx = repmat(tradeoff-1,nStimTrain,nCat); %gammas
+%     for k = 1:nCat       
+%         fx(categories==k,k) = tradeoff; %target category
+%     end
+    %End original code 110418
 end
 if numel(categories)~=nStimTrain
     error('Size of categories vector doesn''nt match size of stimTrain.')
@@ -59,6 +68,11 @@ for i = 1:nStimTest
         similarity(j,i) = exp(-specificity*distance(j,i));
     end
     for k = 1:nCat
+%         target_sim = sum(similarity(categories == k,i));
+%         contrast_sim = sum(similarity(categories ~= k,i));
+%         %Express tradeoff as how much more contrast is compared to target
+%         tradeoff_sub = tradeoff * target_sim/contrast_sim;
+%         similarity_tradeoff(i,k) = target_sim - tradeoff_sub * contrast_sim;
         similarity_tradeoff(i,k) = sum(fx(:,k) .* similarity(:,i));
     end    
 end
@@ -86,7 +100,10 @@ end
    
 
 if softmax
-    exp_sim = exp(determinism*similarity_tradeoff);
+    %subtract max for numerical stability
+    similarity_tradeoff = determinism*similarity_tradeoff;
+    similarity_tradeoff = similarity_tradeoff - max(similarity_tradeoff(:));
+    exp_sim = exp(similarity_tradeoff);
 else %use Luce's regular rule   
     exp_sim = determinism*similarity_tradeoff; %for consistency I'm leaving the exp in, but note there's no exp actually happening
 end
