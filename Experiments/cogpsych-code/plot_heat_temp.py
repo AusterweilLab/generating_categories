@@ -22,10 +22,11 @@ plt.close()
 
 #load data
 dataname_def = 'catassign'#'nosofsky1986'#'NGPMG1994'
-participant_def = 5 #cluster: 0,6,15; XOR: 10; row: 1,11; bottom: 208
+participant_def = 'all' #cluster: 0,6,15; XOR: 10; row: 1,11; bottom: 208
 unique_trials_def = 'all'
 dataname = dataname_def
 ind = True #individual fits or not?
+WT_THETA = 1.5 #for the attention weight fitting
 
 narg = len(sys.argv)
 if __name__ == "__main__" and narg>1:
@@ -44,6 +45,13 @@ trials.task = task
 
 if ind:
     parmspath = os.path.join(pickledir,'private','chtc_ind_gs_'+dst)
+    #Get generation data for computation of individual weights,
+    # if applicable
+    if len(raw_db)>0:
+        con = sqlite3.connect(raw_db)
+        stats = pd.read_sql_query("SELECT * from betastats", con)
+        con.close()
+
 else:
     parmspath = os.path.join(pickledir,'chtc_gs_'+dst)
 
@@ -86,6 +94,7 @@ for ppt in pptlist:
     paramsJKR = best_params[RepresentJK13.model]
     paramSet = [paramsP,paramsCT,paramsJK,paramsJKR]
 
+    
     pptTrialObj = Simulation.extractPptData(trials,ppt,unique_trials_def)
     ntrials = len(pptTrialObj.Set)
     # plt.ioff()
@@ -137,6 +146,14 @@ for ppt in pptlist:
         ps = []
         for i,model in enumerate(models):
             params = paramSet[i]
+            if ind:
+                #Apply weights
+                pptOld = funcs.getCatassignID(int(ppt),source='analysis',fetch='old')
+                ranges = stats[['xrange','yrange']].loc[stats['participant']==pptOld]
+                params['wts'] = funcs.softmax(-ranges, theta = WT_THETA)[0]
+                if model ==  ConjugateJK13 or model == RepresentJK13:
+                    params['wts'] = 1.0 - params['wts']
+
             #reverse-transform
             #params = model.parmxform(params, direction = -1)
             ps += [model(categories,params,pptTrialObj.stimrange).get_generation_ps(pptTrialObj.stimuli,1,task)]
@@ -186,11 +203,19 @@ for ppt in pptlist:
                     ax[t,m].set_title('{}'.format(models[m].modelshort))
                 if t+1 == ntrials:
                     sum_nll = sum(nll[:,m])
-                    parmstr = ''
+                    parmstr = ''                
+                    if ind and not 'wts' in models[m].parameter_names:
+                        models[m].parameter_names += ['wts']
                     for parmname in models[m].parameter_names:
-                        parmval = '{:.2E}'.format(best_params[models[m].model][parmname])
-                        if abs(float(parmval))<10000:
-                            parmval = '{}'.format(round(best_params[models[m].model][parmname],2))
+                        if parmname is 'wts':
+                            parmvalnum1 = best_params[models[m].model][parmname][0]
+                            parmvalnum2 = best_params[models[m].model][parmname][1]
+                            parmval = '[{:.2},{:.2}]'.format(parmvalnum1,parmvalnum2)
+                        else:
+                            parmvalnum = best_params[models[m].model][parmname]
+                            parmval = '{:.2E}'.format(parmvalnum)
+                            if abs(float(parmval))<10000:
+                                parmval = '{}'.format(round(best_params[models[m].model][parmname],2))
                         parmstr += '{} = {}\n'.format(funcs.get_initials(parmname,3),parmval)
                     if not task is 'generate':
                         error_str = 'Error = {}'.format(round(error_rate,2))
@@ -203,7 +228,7 @@ for ppt in pptlist:
         #print nll
 
     #plt.tight_layout(w_pad=-4.0, h_pad= 0.5)
-    #plt.savefig('indfits/private/indheat{}.pdf'.format(int(ppt)))
+    plt.savefig('indfits/private/indheat{}.pdf'.format(int(ppt)))
     plt.cla()
     #plt.draw()
     #plt.ioff()

@@ -17,8 +17,9 @@ tardir = 'chtctar/'
 privdir = os.path.join(tardir,'private') #private working folder that git ignores
 if not os.path.isdir(privdir):
     os.system('mkdir {}'.format(privdir))
-maintarname = 'allpickles_ind110518.tar.gz'
+maintarname = 'allpickles_ind160518.tar.gz'
 appendkey = ['finalparmsll','chunkstartparms','parmnames']
+appendOnce = ['parmnames'] #append this key only once per participant
 removekey = ['bestparmsll','chunkidx','startparms']
 #Go through each tarball and find the chtc file
 #allfiles = os.listdir(tardir)
@@ -72,7 +73,8 @@ for maintarmember in maintar.getmembers(): #for checkfile in allfiles:
                                     data[dataset][model][ppt][key] = datachunk[model][ppt][key]
                             else:
                                 for key in appendkey:
-                                    data[dataset][model][ppt][key] = np.concatenate((data[dataset][model][ppt][key], datachunk[model][ppt][key]),0)
+                                    if not key in appendOnce:
+                                        data[dataset][model][ppt][key] = np.concatenate((data[dataset][model][ppt][key], datachunk[model][ppt][key]),0)
         #Remove file from private folder after use
         os.system('rm {}'.format(os.path.join(privdir,filename)))
         
