@@ -1,4 +1,3 @@
-#Temporary file to generate ps plots
 #Gives a good idea of the distribution of generation probabilities at each step of exemplar generation
 #given some parameter and alpha stimuli values
 import pickle, math
@@ -25,7 +24,6 @@ dataname_def = 'catassign'#'nosofsky1986'#'NGPMG1994'
 participant_def = 'all' #cluster: 0,6,15; XOR: 10; row: 1,11; bottom: 208
 unique_trials_def = 'all'
 dataname = dataname_def
-ind = True #individual fits or not?
 WT_THETA = 1.5 #for the attention weight fitting
 
 narg = len(sys.argv)
@@ -35,6 +33,9 @@ else:
     participant = participant_def
 
 execfile('validate_data.py')
+
+if dataname is 'catassign':
+    ind = True #individual fits or not?    
 
 # get data from pickle
 with open(pickledir+src, "rb" ) as f:

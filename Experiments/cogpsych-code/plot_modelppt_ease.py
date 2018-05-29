@@ -10,7 +10,7 @@ from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
-from scipy.stats.stats import pearsonr
+from scipy.stats import stats as ss
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -27,6 +27,14 @@ participant_def = 'all'
 unique_trials_def = 'all'
 dataname = dataname_def
 execfile('validate_data.py')
+
+#Some plotting options
+font = {'family' : 'DejaVu Sans',
+        'weight' : 'regular',
+        'size'   : 18}
+
+plt.rc('font', **font)
+
 # get data from pickle
 with open(pickledir+src, "rb" ) as f:
     trials = pickle.load( f )
@@ -77,7 +85,7 @@ modeleaseDB = "pickles/modelease_all_data_e1_e2.p"
 try:
     with open(modeleaseDB, "rb" ) as f:
         ll_global = pickle.load( f )
-        ll_loadSuccess = True
+        ll_loadSuccess = False
 except:
     ll_global = dict()
     ll_loadSuccess = False
@@ -159,7 +167,9 @@ for model_obj in modelList:
             raw_array_sum_max = raw_array_sum.max()
             raw_array_t = np.exp(-(raw_array_sum - raw_array_sum_max)).sum()
             raw_array_ll = -np.log(raw_array_t) + raw_array_sum_max
-
+            print raw_array_ll
+            if ppt>100:
+                lll
             #execfile('plot_temp.py')
             ll_list += [raw_array_ll]
 
@@ -226,17 +236,20 @@ for model_obj in modelList:
         with open(modeleaseDB, "wb" ) as f:
             pickle.dump(ll_global, f)
 
-fh,axs = plt.subplots(1,len(modelList), figsize=(20,7))
+fh,axs = plt.subplots(1,len(modelList), figsize=(20,8))
 
 for m,model_obj in enumerate(modelList):
     model_name = model_obj.model
+    model_short = model_obj.modelshort
     ll = ll_global[model_name]
     #Get correlations
-    corr = pearsonr(ll[:,1],ll[:,2])
+    corr_p = ss.pearsonr(ll[:,1],ll[:,2])
+    corr_s = ss.spearmanr(ll[:,1],ll[:,2])
     cov = np.cov(ll[:,1],ll[:,2])
     print model_name
-    print '\tr = ' + str(corr[0])
-    print '\tp = ' + str(corr[1])
+    print '\tPearson  r   = {:.3}, p = {:.2e}'.format(corr_p[0],corr_p[1])
+    #print '\tp = ' + str(corr[1])
+    print '\tSpearman rho = {:.3}, p = {:.2e}'.format(corr_s[0],corr_s[1])
     ax = axs[m]
     #Plot figure
     ax.scatter(ll[:,1],ll[:,2])
@@ -245,10 +258,17 @@ for m,model_obj in enumerate(modelList):
     coeff = np.polyfit(ll[:,1],ll[:,2],1)
     x = np.array([min(ll[:,1]),max(ll[:,1])])
     y = x*coeff[0] + coeff[1]
+    titlestr_p = 'r = {:.3}, p = {:.2e}'.format(corr_p[0],corr_p[1])
+    rho = r'$\rho$'
+    titlestr_s = '{} = {:.3}, p = {:.2e}'.format(rho,corr_s[0],corr_s[1])
     ax.plot(x,y,'--')
-    ax.set_title('r = {:.3}, p = {:.2e}'.format(corr[0],corr[1]))
-    ax.set_xlabel('negLL\n{}'.format(model_name))
-    ax.set_ylabel('Participant p(error)')
+    ax.set_title('{}\n{}'.format(titlestr_p, titlestr_s),fontsize=16)
+    ax.set_xlabel('negLL\n{}'.format(model_short))
+    if m==0:
+        ax.set_ylabel('Participant p(error)')
+    else:
+        ax.set_ylabel('')
+        ax.set_yticklabels([])
     
-plt.savefig('modelvsppt-t.pdf')
+plt.savefig('modelvsppt.pdf')
 plt.cla()

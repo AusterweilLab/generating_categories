@@ -11,7 +11,7 @@ from Modules.Classes import Packer, CopyTweak
 # get trials pickle
 # pickle can be "pickles/all_data_e1_e2.p", "pickles/nosofsky1986.p"
 with open("pickles/all_data_e1_e2.p", "rb" ) as f:
-	trials = pickle.load( f )
+    trials = pickle.load( f )
 
 # get best params pickle
 # pickle can be "pickles/best_params_all_data_e1_e2.p", "pickles/best_params_nosofsky1986.p"
@@ -28,7 +28,7 @@ for modelname in best_params_t.keys():
         best_params[modelname][parmname] = parmval[i]
 
 # with open("pickles/best_params_all_data_e1_e2.p", "rb" ) as f:
-# 	best_params = pickle.load( f )
+#     best_params = pickle.load( f )
 
 # compute copytweak loglike
 start_params = best_params[CopyTweak.model]
@@ -42,15 +42,15 @@ trials.task = 'generate'
 
 # evaluate loglike at each grid point
 for i, val in enumerate(gamma_grid):
-	curr = start_params.copy()
-	curr['theta_cntrst'] = val
-        curr['theta_target'] = curr['determinism']
-        curr = Packer.parmxform(curr, direction = 1)
-	loglikes[i] = -trials.loglike(curr, Packer)
+    curr = start_params.copy()
+    curr['theta_cntrst'] = val
+    curr['theta_target'] = curr['determinism']
+    curr = Packer.parmxform(curr, direction = 1)
+    loglikes[i] = -trials.loglike(curr, Packer)
 
 
 for i in range(len(gamma_grid)):
-	print i, gamma_grid[i], loglikes[i]
+    print i, gamma_grid[i], loglikes[i]
 
 # plot it
 fh = plt.figure(figsize=(5,3))
