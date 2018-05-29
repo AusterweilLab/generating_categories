@@ -1,0 +1,47 @@
+% \documentclass[12pt]{article} \usepackage[letterpaper, margin=1in,
+% headheight=15pt]{geometry} \usepackage{amsmath, listings}
+
+
+% \begin{document}
+
+\section{Participants, Materials, and Procedure}
+
+Experiment 2 recruited 122 participants who each generated one set of four Alpha
+and four Beta category exemplars. Among these 122 generated category sets were
+102 unique sets (i.e., they contained a unique collection of Alpha and Beta
+exemplars). Consequently, for Experiment 3, we recruited 102 participants with
+one participant presented with a different unique category set.
+
+Participants observed four blocks of eight trials. Each trial began with the
+presentation of a fixation cross for 500 ms. This was followed by the
+presentation of one exemplar randomly sampled without replacement from the
+unique category set. Participants were tasked with assigning the presented
+exemplar to either the Alpha or Beta category with no time limit imposed.
+Feedback was automatically displayed for 2500 ms after each response. 
+
+\section{Results}
+
+Overall accuracy of the participants was high, with a mean error rate of $.19$
+($SD = .19$). 
+
+[Place error curve plots here, not unlike what NGPMG1994 has done. This is
+already plotted - check the cat-assign/analysis directory]
+
+[Move on to modelling analyses. Include correlation plots, don't worry about
+individual fits. Also include the varying of PACKER's performance (and maybe
+representativeness?) on correlation with changing tradeoff. ]
+
+[Note Joe's comments on figure formatting (font size, remove redundant y-axes, etc)]
+
+
+
+
+
+
+
+
+
+
+
+
+

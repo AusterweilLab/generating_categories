@@ -1,0 +1,20 @@
+####Summary of Thomas 1998
+#####Thomas, R. D. (1998). Learning correlations in categorization tasks using large, ill-defined categories. Journal of Experimental Psychology: Learning, Memory, and Cognition, 24(1), 119–143. [PDF](pdf/Thomas_1998.pdf)
+
+In this paper, Thomas sought to address whether or not exemplar information (as opposed to rule-based information) is important in categorization. If exemplar information is important (which is seen as evidence against a purely rule-based model, or at least, does not disprove an exemplar-based account), then participants should be invariant in their responses when making exemplar feature predictions when the features are positively correlated vs negatively correlated (Experiment 1), or simply correlated vs non-correlated (Experiment 2). The introduction provides a pretty good brief review of the general progression of categorization models, beginning with rule-based models, to prototype, then exemplar models. For most of the paper, Thomas keeps a broad distinction between rule-based models and exemplar-based models (which, for the purposes of her paper, include both prototype and exemplar models.)
+
+Overall, it appeared that most participants used exemplar-based information in categorization. Specifically, they were able to learn the correlation between the dimensions when asked to predict an exemplar's missing feature, demonstrating that a rule-based account cannot be the sole explanation in categorization. Other participants only responded with the correct predictions for exemplars associated with the given category (see Figure 7), suggesting some explicit influence of the category boundary. 
+
+#####General Methods
+
+Between-subjects design. Two conditions, n=5 in each, for both experiments (each experiment with a different group of participants, and except for the *uniform* condition in Experiment 2 where n=4.) In both experiments, one condition had stimuli with positively correlated dimensions, and the other had stimuli with negatively correlated dimensions. Both conditions had the same optimal bound.
+
+In Experiment 1, participants observed two sessions of 960 category learning trials (four blocks of 240 trials), followed by a third session of 240 trials (one block of 240 trials) after which came two blocks of surprise prediction trials. In Experiment 2, participants saw three sessions comprising 800 trials each, followed by a fourth session that had 200 trials of category learning followed by 200 trials of prediction. On each prediction trial, participants were shown one exemplar with one feature missing, and asked to generate the missing feature that would make the exemplar appropriate for some given category.
+
+Both experiments were essentially the same. However, Thomas recognised that in the negative correlation condition in Experiment 1 may be affected by selective attention (since it would be easier to focus on one feature to accurately categorise). To remedy this, in Experiment 2, Thomas used categories that required the distribution of attention across both stimulus dimensions. Specifically, an exclusive-or rule (Category A stimuli had high values on both dimensions or low values on both dimensions; Category B stimuli had a high value on one dimension and a low value on the other) was used as the optimal bound. 
+
+#####Relevance to current work
+
+This paper would be useful to cite as prior work that has looked at 1) the consistency of exemplar distributions across categories and 2) linking category learning and category generation. It is not by any means a pure category generation study, but the probing of participants' prediction of missing exemplar attributes is one step towards full exemplar generation.
+
+One key difference between Thomas' work and ours that we might one to keep in mind is that she trained participants on both categories, whereas in our category generation studies we only train them on one. Thomas' study is also a low-N study with multiple sessions and many more trials than ours.

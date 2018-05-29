@@ -14,7 +14,7 @@ class ConjugateJK13(Model):
     """
 
     model = "Hierarchical Sampling"
-    modelshort = "Conjugate"
+    modelshort = "Hier. Samp."
     num_features = 2 #hard code on first init, then update whenever trials come in
     parameter_names = [    'category_mean_bias',   'category_variance_bias',
                            'domain_variance_bias', 'determinism' ]
@@ -148,7 +148,7 @@ class RepresentJK13(Model):
     """
 
     model = "Hierarchical Sampling With Representativeness"
-    modelshort = "Represent"
+    modelshort = "Representative"
     num_features    = 2 # hard coded number of assumed features
     #num_features = self.nfeatures
     parameter_names = [    'category_mean_bias',   'category_variance_bias',

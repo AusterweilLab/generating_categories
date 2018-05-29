@@ -8,6 +8,7 @@ design-sheet.html
 # python
 __pycache__/
 *.py[cod]
+*.pyc
 *$py.class
 
 #latex
@@ -28,7 +29,7 @@ Modules/tests/
 Manuscripts/cog-psych/review_materials/
 
 private/
-
+Archive/
 *~
 
 

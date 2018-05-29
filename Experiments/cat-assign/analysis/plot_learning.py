@@ -45,6 +45,7 @@ errorAll = pd.DataFrame(columns = ['participant','block0','block1','block2','blo
 for i, row in info.iterrows():
     fh, ax = plt.subplots(1,2,figsize = (12,6))
     ppt  = row.participant
+    pptmatch = row.pptmatch
     pptAssign = assignment.loc[assignment['participant']==ppt].sort_values('trial')
     nBaseStim = len(eval(row.categories))
     nTrials = len(pptAssign)
@@ -59,7 +60,6 @@ for i, row in info.iterrows():
         errordict['block'+str(j)] = 1-accuracyEl
     errorAll = errorAll.append(errordict, ignore_index=True)
     avgerror = np.mean(error)
-    pptmatch = row.pptmatch
     #Prepare to plot configuration
     #get matched data
     matchdb='../data_utilities/cmp_midbot.db'
