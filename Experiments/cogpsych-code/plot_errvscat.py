@@ -1,3 +1,4 @@
+#Plot a scatterplot of error likelihoods vs category assignment likelihoods
 #Get the loglikelihoods of a given data set as a measure of how easy the model
 #can generate that dataset
 import pickle, math
@@ -81,11 +82,12 @@ for i,row in info.iterrows():
 pptlist = np.unique(pptlist)
 
 #see if ll_global exists as a pickle, otherwise construct new ll
-modeleaseDB = "pickles/modelease_all_data_e1_e2.p"
+errcatDB = "pickles/errcat_all_data_e1_e2.p"
+errcatindDB = "pickles/errcatind_all_data_e1_e2.p"
 try:
-    with open(modeleaseDB, "rb" ) as f:
+    with open(errcatDB, "rb" ) as f:
         ll_global = pickle.load( f )
-        ll_loadSuccess = False
+        ll_loadSuccess = True
 except:
     ll_global = dict()
     ll_loadSuccess = False
@@ -133,42 +135,40 @@ for model_obj in modelList:
             # Get all permutations of pptbeta and make a new trialObj for it
             nbetapermute = math.factorial(nstim)
             betapermute = [];
-            #likeli = 0 # np.zeros(len(pptbeta))#0
-            #likeli2 = 0 # np.zeros(lenp(ptbeta))#0
+            likeli = 0 # np.zeros(len(pptbeta))#0
+            likeli2 = 0 # np.zeros(len(pptbeta))#0
             raw_array = np.zeros((1,nbetapermute))#np.zeros((nstim,nbetapermute))
-            #a = 2
-            categories = [As_num,pptbeta]
-            raw_array_ll = Simulation.loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1)
+            a = 2
 
-            # for i,beta in enumerate(funcs.permute(pptbeta)):
-            #     categories = As_num
-            #     trials = range(nstim)
-            #     pptDF = pd.DataFrame(columns = ['participant','stimulus','trial','condition','categories'])
-            #     pptDF.stimulus = pd.to_numeric(pptDF.stimulus)
-            #     pptTrialObj = Simulation.Trialset(stimuli)
-            #     pptTrialObj.task = 'generate'
-            #     for trial,beta_el in enumerate(beta):
-            #             pptDF = pptDF.append(
-            #                     dict(participant=0, stimulus=beta_el, trial=trial, condition=pptcondition, categories=[categories]),ignore_index = True
-            #             )
-            #     pptTrialObj.add_frame(pptDF)
-            #     #the neg loglikelihoods can get really large, which will tip it over to Inf when applying exp.
-            #     # To get around this, divide the nLL by some constant, exp it, add it to the prev prob, then log,
-            #     # and add it to the log of the same constant
-            #     raw_array_ps = pptTrialObj.loglike(params,model_obj)
-            #     raw_array[:,i] = raw_array_ps
+            for i,beta in enumerate(funcs.permute(pptbeta)):
+                categories = As_num
+                trials = range(nstim)
+                pptDF = pd.DataFrame(columns = ['participant','stimulus','trial','condition','categories'])
+                pptDF.stimulus = pd.to_numeric(pptDF.stimulus)
+                pptTrialObj = Simulation.Trialset(stimuli)
+                pptTrialObj.task = 'generate'
+                for trial,beta_el in enumerate(beta):
+                        pptDF = pptDF.append(
+                                dict(participant=0, stimulus=beta_el, trial=trial, condition=pptcondition, categories=[categories]),ignore_index = True
+                        )
+                pptTrialObj.add_frame(pptDF)
+                #the neg loglikelihoods can get really large, which will tip it over to Inf when applying exp.
+                # To get around this, divide the nLL by some constant, exp it, add it to the prev prob, then log,
+                # and add it to the log of the same constant
+                raw_array_ps = pptTrialObj.loglike(params,model_obj)
+                raw_array[:,i] = raw_array_ps
                 
-            #     #likeli += np.exp(pptTrialObj.loglike(params,model_obj,whole_array=False) - np.log(scale_constant))
-            #     #likeli2 += np.exp(pptTrialObj.loglike(params,model_obj,whole_array=False))
-            #     #likeli += np.array(pptTrialObj.loglike(params,model_obj,whole_array=False)).flatten()
+                #likeli += np.exp(pptTrialObj.loglike(params,model_obj,whole_array=False) - np.log(scale_constant))
+                #likeli2 += np.exp(pptTrialObj.loglike(params,model_obj,whole_array=False))
+                #likeli += np.array(pptTrialObj.loglike(params,model_obj,whole_array=False)).flatten()
                 
-            # #Should this be inside or outside the for loop?
-            # #Doesn't actually matter, right?
-            # #likeli = np.log(likeli) + np.log(scale_constant)
-            # raw_array_sum = raw_array #raw_array.sum(0)    
-            # raw_array_sum_max = raw_array_sum.max()
-            # raw_array_t = np.exp(-(raw_array_sum - raw_array_sum_max)).sum()
-            # raw_array_ll = -np.log(raw_array_t) + raw_array_sum_max
+            #Should this be inside or outside the for loop?
+            #Doesn't actually matter, right?
+            #likeli = np.log(likeli) + np.log(scale_constant)
+            raw_array_sum = raw_array #raw_array.sum(0)    
+            raw_array_sum_max = raw_array_sum.max()
+            raw_array_t = np.exp(-(raw_array_sum - raw_array_sum_max)).sum()
+            raw_array_ll = -np.log(raw_array_t) + raw_array_sum_max
             print raw_array_ll
             if ppt>100:
                 lll
@@ -177,35 +177,6 @@ for model_obj in modelList:
 
             print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
             #print ppt
-    
-            # retiring this bottom bit for now
-            # for j in range(N_SAMPLES):
-            #     gen = model.simulate_generation(stimuli,1,nexemplars = 4)
-            #     model.forget_category(1)
-            #     gen.sort()
-            #     addrow = dict(condition = [pptcondition], betas = str(gen))        
-            #     pptdata = pptdata.append(pd.DataFrame(addrow),ignore_index = True)
-            
-            # pptdata = pptdata.groupby(['condition','betas'])['betas']
-            # pptdata = pptdata.agg(['size']);
-            # pptdata = pptdata.reset_index();
-            # betall = pptdata['size'].loc[pptdata['betas']==str(pptbeta)]        
-            # if len(betall)<1:
-            #     ll_one = MIN_LL
-            # else:
-            #     ll_one = betall
-            # ll_list.append(ll_one)
-            # print ll_one
-            #This takes forever and never seems to captur pptbeta. Maybe calculate likelihoods analytically by adding the product of all possible combinations of pptbeta?
-            
-            #Old method, which is probably wrong anyway 200318
-            # for ppt in pptlist:
-            #     trialsPpt = Simulation.extractPptData(trials,int(ppt),unique_trials)
-            #     #run fits
-            #     res = Simulation.hillclimber(model_obj, trialsPpt, options,results=False,callbackstyle='none')
-            #     #X = model_obj.params2dict(model_obj.clipper(res.x))
-            #     ll_list.append(res['fun'])
-            #     print '.'
 
         ll_list = np.atleast_2d(ll_list)
         pptlist2d = np.atleast_2d(pptlist)
@@ -235,7 +206,7 @@ for model_obj in modelList:
         ll_global[model_name] = ll
         
         #Save pickle for faster running next time
-        with open(modeleaseDB, "wb" ) as f:
+        with open(errcatDB, "wb" ) as f:
             pickle.dump(ll_global, f)
 
 fh,axs = plt.subplots(1,len(modelList), figsize=(20,8))
@@ -272,5 +243,5 @@ for m,model_obj in enumerate(modelList):
         ax.set_ylabel('')
         ax.set_yticklabels([])
     
-plt.savefig('modelvsppt.pdf')
+plt.savefig('errvscat.pdf')
 plt.cla()

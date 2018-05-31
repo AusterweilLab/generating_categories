@@ -3,7 +3,7 @@ import scipy.stats as ss
 import numpy as np
 import sys
 
-import Modules.Funcs as Funcs
+import Modules.Funcs as funcs
 
 currmodel='' #temp
 currtrials=''
@@ -21,7 +21,7 @@ class Trialset(object):
         
         # figure out what the stimulus domain is        
         self.stimuli = stimuli
-        self.stimrange = Funcs.getrange(stimuli)
+        self.stimrange = funcs.getrange(stimuli)
                 
         # initialize trials list
         self.Set = [] # compact set
@@ -275,7 +275,6 @@ class Trialset(object):
         else:
             return -1.0 * loglike
 
-
 def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None, results = True,callbackstyle='none'):
     """
     Run an optimization routine.
@@ -331,7 +330,7 @@ def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None
             print '\t' + k + ' = ' + str(v) + ','
             
         print '\tLogLike = ' + str(res.fun)            
-        AIC = Funcs.aic(res.fun,len(inits))
+        AIC = funcs.aic(res.fun,len(inits))
         print '\tAIC = ' + str(AIC)
                         
     return res
@@ -546,7 +545,52 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
         output_obj.nparticipants = len(ppt)
         
     return output_obj
-                                
+
+def loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1,
+                    fixedparams = None, task = 'generate'):
+    """
+    Finds the total loglikelihood of generating all permutations of some
+    specified category. Default category to permute is 1 (i.e., the second category.)
+    """
+    if len(categories)>2:
+        raise ValueError('This function can\'t deal with more than two',\
+                    'categories yet. To fix this, go bug Xian or do it yourself.')
+
+    import pandas as pd
+    import math
+    cat2perm = categories[permute_category]
+    cat2notperm = categories[1-permute_category]
+    nstim = len(cat2perm)
+    #condition and ppt numbers aren't important so just give it some arbitrary
+    #value
+    pptnum = 0;
+    pptcondition = 'meh';
+    # Get all permutations of cat2perm and make a new trialObj for it
+    nbetapermute = math.factorial(nstim)
+    raw_array = np.zeros((1,nbetapermute))
+    #Iterate over the different permutations of to-be-permuted category
+    for i, pexemplars in enumerate(funcs.permute(cat2perm)):
+        pptDF = pd.DataFrame(columns = ['participant','stimulus','trial','condition','categories'])
+        pptDF.stimulus = pd.to_numeric(pptDF.stimulus)
+        pptTrialObj = Trialset(stimuli)
+        pptTrialObj.task = task
+        for trial,exemplar in enumerate(pexemplars):
+                pptDF = pptDF.append(
+                        dict(participant=pptnum, stimulus=exemplar, trial=trial, condition=pptcondition, categories=[cat2notperm]),ignore_index = True
+                )
+        pptTrialObj.add_frame(pptDF)
+        #the neg loglikelihoods can get really large, which will tip it over to Inf when applying exp.
+        # To get around this, divide the nLL by some constant, exp it, add it to the prev prob, then log,
+        # and add it to the log of the same constant
+        raw_array_ps = pptTrialObj.loglike(params,model_obj)
+        raw_array[:,i] = raw_array_ps
+        
+    raw_array_max = raw_array.max()
+    raw_array_t = np.exp(-(raw_array - raw_array_max)).sum()
+    raw_array_ll = -np.log(raw_array_t) + raw_array_max
+    return raw_array_ll
+
+
 # def add_model_data():
 #         #Temporary code to add model parm names to gs results
 #         import re
@@ -608,4 +652,5 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
 #                                 print '\t' + pname + ': ' + str(fulldata[j]['bestparmsll'][pi])
 #                         print '\tLogLike' + ' = ' + '-' + str(fulldata[j]['bestparmsll'][pi+1])
 #                         print '\tAIC'  + ' = ' + str(fulldata[j]['bestparmsll'][pi+2])
+
 
