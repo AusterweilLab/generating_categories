@@ -506,13 +506,19 @@ def getCatassignID(inID,source='analysis',fetch='old'):
     with open(file,'rb') as f:
         data = pickle.load(f)
     if isinstance(inID,int):
-        out = data.loc[data[source] == inID][fetch].item()
+        out = data.loc[data[source] == inID][fetch].item()        
     elif inID is 'all':
         out = list(data[source])
     elif hasattr(inID,'__len__'):
         out = []
         for i in inID:
             out += [data.loc[data[source] == i][fetch].item()]
+    #Make sure that only ints are returned
+    if isinstance(out,float):
+        out = int(out)
+    elif isinstance(out,list):
+        out = [int(i) if not np.isnan(i) else np.nan for i in out]
+        
     return out
     
     

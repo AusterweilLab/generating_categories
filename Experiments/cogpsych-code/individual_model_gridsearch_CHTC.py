@@ -11,10 +11,13 @@ from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
 
+#Toggle 
+fit_weights = True
+fiterror = True #Toggle if fitting error
 
 # Specify defaults
 #dataname_def = 'catassign'
-fit_weights = True
+
 WT_THETA = 1.5 #for the attention weight fitting
 datasets = ['catassign']#why are fits to this so slow? 110518 ok fixed!
 participant_def = 'all'
@@ -58,18 +61,24 @@ if not os.path.isdir(outputdir):
     
 for dataname in datasets:
     execfile('validate_data.py')
-    
-    #add chunk number to dst
-    dst = dst[0:-2] + '_chunk' + str(runchunk) + '.p'
-    dst_error = dst[0:-2] + '_error.p'
-    
+        
     print 'Grid Searching Data: ' + dataname
     
     # get data from pickle
     with open(pickledir+src, "rb" ) as f:
         trials = pickle.load( f )
 
-    trials.task = task
+    if fiterror:
+        #Force task to fit error, and appen err to dst filename
+        trials.task = 'error'
+        dst = dst + '_fit2error' 
+    else:
+        trials.task = task
+
+    #add chunk number to dst
+    dst = dst[0:-2] + '_chunk' + str(runchunk) + '.p'
+    dst_error = dst[0:-2] + '_error.p'
+
 
     #Get generation data for computation of individual weights,
     # if applicable

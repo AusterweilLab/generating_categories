@@ -23,7 +23,7 @@ WT_THETA = 1.5
 MIN_LL = 1e-10
 
 # Specify default dataname
-dataname_def = 'midbot'#'nosofsky1986'#'NGPMG1994'
+dataname_def = 'catassign'#'nosofsky1986'#'NGPMG1994'
 participant_def = 'all'
 unique_trials_def = 'all'
 dataname = dataname_def
@@ -40,6 +40,7 @@ plt.rc('font', **font)
 with open(pickledir+src, "rb" ) as f:
     trials = pickle.load( f )
 
+    
 # get best params pickle
 with open("pickles/chtc_gs_best_params_all_data_e1_e2.p", "rb" ) as f:
     best_params_t = pickle.load( f )
@@ -56,7 +57,7 @@ modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]
 #Prepare matched database    
 matchdb='../cat-assign/data_utilities/cmp_midbot.db'
         
-unique_trials = 'all'
+#unique_trials = 'all'
 trials.task = task
 
 #Get learning data
@@ -66,6 +67,8 @@ info = pd.read_sql_query("SELECT * from participants", con)
 assignment = pd.read_sql_query("SELECT * FROM assignment", con)
 stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
 con.close()
+#and learning trialobj
+
 #Get generation data
 data_generate_file = 'experiment-midbot.db'
 con = sqlite3.connect(data_generate_file)
@@ -81,15 +84,15 @@ for i,row in info.iterrows():
 
 pptlist = np.unique(pptlist)
 
-#see if ll_global exists as a pickle, otherwise construct new ll
+#see if llg exists as a pickle, otherwise construct new ll
 errcatDB = "pickles/errcat_all_data_e1_e2.p"
 errcatindDB = "pickles/errcatind_all_data_e1_e2.p"
 try:
     with open(errcatDB, "rb" ) as f:
-        ll_global = pickle.load( f )
+        llg = pickle.load( f ) #llglobal
         ll_loadSuccess = True
 except:
-    ll_global = dict()
+    llg = dict()
     ll_loadSuccess = False
     
 # options for the optimization routine
@@ -126,55 +129,32 @@ for model_obj in modelList:
             params['wts'] = funcs.softmax(-ranges, theta = WT_THETA)[0]
             if model_obj ==  ConjugateJK13 or model_obj == RepresentJK13:
                 params['wts'] = 1.0 - params['wts']
-            #simulate
-            model = model_obj([As], params)
-            pptdata = pd.DataFrame(columns = ['condition','betas'])
             #transform parms
+            model = model_obj([As], params)
             params = model.parmxform(params, direction = 1)
-            
+            #Extract ppt-unique trialobj
+            # Note that ppt numbers in the trialset
+            # object are of the 'analysis' type, while the ppt numbers in this
+            # loop are of the 'match' type
+            pptAnalysis = funcs.getCatassignID(ppt,fetch='analysis')
+            pptTrialObj = Simulation.extractPptData(trials,ppt)
+            pptTrialObj.task = 'assign'
+            catassign_ll = pptTrialObj.loglike(params,model_obj)
+            pptTrialObj.task = 'error'
+            error_ll = pptTrialObj.loglike(params,model_obj)
+            lll
             # Get all permutations of pptbeta and make a new trialObj for it
             nbetapermute = math.factorial(nstim)
             betapermute = [];
-            likeli = 0 # np.zeros(len(pptbeta))#0
-            likeli2 = 0 # np.zeros(len(pptbeta))#0
-            raw_array = np.zeros((1,nbetapermute))#np.zeros((nstim,nbetapermute))
-            a = 2
-
-            for i,beta in enumerate(funcs.permute(pptbeta)):
-                categories = As_num
-                trials = range(nstim)
-                pptDF = pd.DataFrame(columns = ['participant','stimulus','trial','condition','categories'])
-                pptDF.stimulus = pd.to_numeric(pptDF.stimulus)
-                pptTrialObj = Simulation.Trialset(stimuli)
-                pptTrialObj.task = 'generate'
-                for trial,beta_el in enumerate(beta):
-                        pptDF = pptDF.append(
-                                dict(participant=0, stimulus=beta_el, trial=trial, condition=pptcondition, categories=[categories]),ignore_index = True
-                        )
-                pptTrialObj.add_frame(pptDF)
-                #the neg loglikelihoods can get really large, which will tip it over to Inf when applying exp.
-                # To get around this, divide the nLL by some constant, exp it, add it to the prev prob, then log,
-                # and add it to the log of the same constant
-                raw_array_ps = pptTrialObj.loglike(params,model_obj)
-                raw_array[:,i] = raw_array_ps
-                
-                #likeli += np.exp(pptTrialObj.loglike(params,model_obj,whole_array=False) - np.log(scale_constant))
-                #likeli2 += np.exp(pptTrialObj.loglike(params,model_obj,whole_array=False))
-                #likeli += np.array(pptTrialObj.loglike(params,model_obj,whole_array=False)).flatten()
-                
-            #Should this be inside or outside the for loop?
-            #Doesn't actually matter, right?
-            #likeli = np.log(likeli) + np.log(scale_constant)
-            raw_array_sum = raw_array #raw_array.sum(0)    
-            raw_array_sum_max = raw_array_sum.max()
-            raw_array_t = np.exp(-(raw_array_sum - raw_array_sum_max)).sum()
-            raw_array_ll = -np.log(raw_array_t) + raw_array_sum_max
-            print raw_array_ll
-            if ppt>100:
-                lll
-            #execfile('plot_temp.py')
+            raw_array = np.zeros((1,nbetapermute))
+            categories = [As_num,pptbeta]
+            #Get the categorisation (assignment) loglikelihoods
+            #To do this, create trialobj
+            
+            raw_array_ll = Simulation.loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1,task
+                                                      = 'assign')
             ll_list += [raw_array_ll]
-
+            
             print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
             #print ppt
 
@@ -203,18 +183,18 @@ for model_obj in modelList:
             #Add participant mean error to ll matrix
             ll[ll[:,0]==pptNew,2] = 1-accuracyEl
         
-        ll_global[model_name] = ll
+        llg[model_name] = ll
         
         #Save pickle for faster running next time
         with open(errcatDB, "wb" ) as f:
-            pickle.dump(ll_global, f)
+            pickle.dump(llg, f)
 
 fh,axs = plt.subplots(1,len(modelList), figsize=(20,8))
 
 for m,model_obj in enumerate(modelList):
     model_name = model_obj.model
     model_short = model_obj.modelshort
-    ll = ll_global[model_name]
+    ll = llg[model_name]
     #Get correlations
     corr_p = ss.pearsonr(ll[:,1],ll[:,2])
     corr_s = ss.spearmanr(ll[:,1],ll[:,2])

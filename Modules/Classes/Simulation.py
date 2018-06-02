@@ -227,7 +227,9 @@ class Trialset(object):
                 #Compute probabilities of assigning exemplar to cat 0
                 ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
                 #Compute probabilities of assigning exemplar to cat 1
-                ps1 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
+                ps1 = model(categories, params,
+                            self.stimrange).get_generation_ps(self.stimuli,
+                                                              1,self.task)
                 idc0 = trial['response'][0]
                 idc1 = trial['response'][1]
                 #ps_add = ps0[idc0]
@@ -249,10 +251,44 @@ class Trialset(object):
                 #For prediction of error probabilities, simply
                 #find the probability of classifying a
                 #stimulus as the wrong category
-                ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
-                idc_err = trial['response'][0]
-                #idc1 = trial['response'][1]
-                ps_add = ps[idc_err]
+
+                #The old way (prior to 010618) was to simply treat cat 0 as
+                #correct and cat 1 as incorrect, since that's the way that the
+                #only error dataset NGPMG1994 has been set up. This is quite
+                #pointless, and I've generalised the code here so that it really
+                #looks at errors in categorising.
+                #ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
+                #idc_err = trial['response'][0]
+
+                #Compute probabilities of assigning exemplar to cat 0
+                ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
+                #Compute probabilities of assigning exemplar to cat 1
+                ps1 = model(categories, params,
+                            self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
+                idc0 = trial['response'][0] 
+                idc1 = trial['response'][1] 
+
+                #Actual category exemplars
+                correctcat = trial['categories']
+                
+                correctps = []
+                wrongps   = []
+                #Iterate over each category
+                for i in range(len(correctcat)):
+                    #Get right and wrong responses
+                    correctresp = np.array([exemplar for exemplar in
+                                              trial['response'][i] if exemplar in
+                                              correctcat[i]])
+                    wrongresp = np.array([exemplar for exemplar in
+                                              trial['response'][i] if not exemplar in
+                                              correctcat[i]])
+                    #Get entire probability space
+                    ps = model(categories, params,
+                               self.stimrange).get_generation_ps(self.stimuli, i,self.task)                    
+                    correctps = np.concatenate([correctps,ps[correctresp]])
+                    wrongps   = np.concatenate([wrongps,1-ps[wrongresp]])
+
+                ps_add = np.concatenate([correctps,wrongps])
 
                                 
             # check for nans and zeros
@@ -579,12 +615,14 @@ def loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1
                         dict(participant=pptnum, stimulus=exemplar, trial=trial, condition=pptcondition, categories=[cat2notperm]),ignore_index = True
                 )
         pptTrialObj.add_frame(pptDF)
-        #the neg loglikelihoods can get really large, which will tip it over to Inf when applying exp.
-        # To get around this, divide the nLL by some constant, exp it, add it to the prev prob, then log,
-        # and add it to the log of the same constant
         raw_array_ps = pptTrialObj.loglike(params,model_obj)
         raw_array[:,i] = raw_array_ps
-        
+    #Compute the total likelihood as the sum of the likelihood of each
+    #permutation. Since I don't know an easy way to add something which is in
+    #log-form, I'll convert it to exp first. However, the neg loglikelihoods can
+    #get really large, which will tip it over to Inf when applying exp. To get
+    #around this, subtract the LL by some constant (e.g., its max), exp it, add
+    #up the probabilities, then log, and add it to the log of the constant
     raw_array_max = raw_array.max()
     raw_array_t = np.exp(-(raw_array - raw_array_max)).sum()
     raw_array_ll = -np.log(raw_array_t) + raw_array_max

@@ -75,7 +75,14 @@ for dataname in datasets:
     dst = dst[0:-2] + '_chunk' + str(runchunk) + '.p'
     dst_error = dst[0:-2] + '_error.p'
     
+    #Get generation data for computation of individual weights,
+    # if applicable
+    if len(raw_db)>0 and fit_weights:
+        con = sqlite3.connect(raw_db)
+        stats = pd.read_sql_query("SELECT * from betastats", con)
+        con.close()
 
+    
     #print trials
     trials = Simulation.extractPptData(trials,participant,unique_trials)
     

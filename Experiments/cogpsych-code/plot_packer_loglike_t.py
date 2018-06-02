@@ -34,7 +34,7 @@ for modelname in best_params_t.keys():
 start_params = best_params[CopyTweak.model]
 
 # set up grid of param values
-gamma_grid = np.linspace(0, 5.0, 100)
+gamma_grid = np.linspace(0, 100.0, 100)
 loglikes = np.empty(gamma_grid.shape)
 
 # add task type to trials object
