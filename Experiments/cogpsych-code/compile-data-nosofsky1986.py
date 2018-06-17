@@ -135,6 +135,9 @@ trials = trials.add_frame(generation,task = 'assign')
 # with open('pickles/nosofsky1986.p','wb') as f:
 # 	pickle.dump(trials, f)
 
+####
+
+
 
 # with open('pickles/nosofsky1986_p0.p','wb') as f:
 # 	pickle.dump(trials_p0, f)

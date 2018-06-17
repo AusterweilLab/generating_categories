@@ -1,5 +1,5 @@
 # Extract the pickled output that is produced from
-# individual_model_gridsearch_CHTC.py
+# individual_model_gridsearch_CHTC.py and saves the best params as a pickle
 
 import pickle, os, re, tarfile
 import pandas as pd
@@ -17,7 +17,7 @@ tardir = 'chtctar/'
 privdir = os.path.join(tardir,'private') #private working folder that git ignores
 if not os.path.isdir(privdir):
     os.system('mkdir {}'.format(privdir))
-maintarname = 'allpickles_ind160518.tar.gz'
+maintarname = 'allpickles_ind070618.tar.gz'
 appendkey = ['finalparmsll','chunkstartparms','parmnames']
 appendOnce = ['parmnames'] #append this key only once per participant
 removekey = ['bestparmsll','chunkidx','startparms']

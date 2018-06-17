@@ -27,8 +27,8 @@ if not os.path.isdir(os.path.join(workingdir,'Experiments')):
 # Copy generating-categories into new folder. Only include Modules and cogpsych code folder.
 # Remember to exclude some folders like chtctar
 os.system('rsync -av --progress '
-          '--exclude={} --exclude={}  --exclude={} --exclude={} --exclude={} '
-          '{} {} '.format('chtctar','chtc_code','*best_params*','matlabtests','*~',
+          '--exclude={} --exclude={}  --exclude={} --exclude={} --exclude={} --exclude={} '
+          '{} {} '.format('chtctar','chtc_code','*best_params*','matlabtests','private','*~',
                           os.path.join(finddir,'Experiments','cogpsych-code'),
                           os.path.join(workingdir,'Experiments'),
           ))

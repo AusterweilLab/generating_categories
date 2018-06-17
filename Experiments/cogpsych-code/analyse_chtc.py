@@ -17,8 +17,9 @@ tardir = 'chtctar/'
 privdir = os.path.join(tardir,'private') #private working folder that git ignores
 if not os.path.isdir(privdir):
     os.system('mkdir {}'.format(privdir))
-maintarname = 'allpickles110518.tar.gz'
-appendkey = ['finalparmsll','appendkey','chunkstartparms']
+maintarname = 'allpickles070618.tar.gz'
+appendkey = ['finalparmsll','parmnames','chunkstartparms']
+appendOnce = ['parmnames'] #append this key only once per participant
 removekey = ['bestparmsll','chunkidx','startparms']
 #Go through each tarball and find the chtc file
 #allfiles = os.listdir(tardir)
@@ -40,10 +41,12 @@ for maintarmember in maintar.getmembers(): #for checkfile in allfiles:
         maintar.extract(maintarmember,privdir)
         tar = tarfile.open(os.path.join(privdir,filename), "r:gz")
         for member in tar.getmembers():            
-            checkmembername = re.search('chtc_gs_best_params_(.*)_chunk{}\.p'.format(chunk),member.name)            
+            checkmembername = re.search('chtc_gs_best_params_(.*)_chunk{}\.p'.format(chunk),member.name)
             if checkmembername != None:
                 f = tar.extractfile(member)
                 dataset = checkmembername.group(1)
+                #remove .p if in dataset - necessary for an annoying little bug in an earlier version of the fitting code
+                dataset = dataset.replace('.p','')
                 if not dataset in datasetsAll:
                     datasetsAll += [dataset]
                 datachunk = pickle.load(f)
@@ -63,7 +66,8 @@ for maintarmember in maintar.getmembers(): #for checkfile in allfiles:
                     else:
                         #Otherwise, just append the stuff as ndicated by appendkey
                         for key in appendkey:
-                            data[dataset][model][key] = np.concatenate((data[dataset][model][key], datachunk[model][key]),0)
+                            if not key in appendOnce:
+                                data[dataset][model][key] = np.concatenate((data[dataset][model][key], datachunk[model][key]),0)
         #Remove file from private folder after use
         os.system('rm {}'.format(os.path.join(privdir,filename)))
         
@@ -75,9 +79,9 @@ for dataset in datasetsAll:
         ind = np.argsort(results_all[:,-2]) #-2 is the column containing of LL
         results_all_sorted = results_all[ind]
         results_best = results_all_sorted[0,:]
-        startp_sorted = data[dataset][model]['startparms'][ind]
+        #startp_sorted = data[dataset][model]['startparms'][ind]
         data[dataset][model]['finalparmsll'] = results_all_sorted
-        data[dataset][model]['startparms'] = startp_sorted
+        #data[dataset][model]['startparms'] = startp_sorted
         data[dataset][model]['bestparmsll'] = results_best
                             
             # f = tar.extractfile(member)

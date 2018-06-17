@@ -94,7 +94,7 @@ trainedExemplarsL = [[[ 1, 4, 6, 7],[    10, 11, 13]], #dimensional
                      [[    1, 5, 8],[ 2,  6, 11, 14]], #crisscross
                      [[ 3, 6, 9,12],[ 0,  1, 14, 15]], #intext
                      [[ 1, 2, 6,11],[ 4,  9, 13, 14]]]  #diagonal
-lll
+
 # Generate list of conditions matched to each row of assigned frequencies
 conditionsBase  = np.array([[0,1,2,3]])#np.array([['Dimensional','Criss-Cross','Interior-Exterior','Diagonal']])
 conditions = np.array(conditionsBase).repeat(8,1).transpose()

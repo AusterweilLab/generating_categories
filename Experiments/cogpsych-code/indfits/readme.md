@@ -1,4 +1,4 @@
-This directory contains the optimized parameter values for each individual. The csv files are generated from the print_gs_results_csv_ind.py script in the cogpsych-code/ directory (which should be just one up from the current directory.)
+This directory contains the optimized parameter values for each individual to the catassign data. The csv files are generated from the print_gs_results_csv_ind.py script in the cogpsych-code/ directory (which should be just one up from the current directory.)
 
 This directory is also where the individually fitted heat plots are found. These plots show the probability of assigning a stimulus to category Beta, with darker shades representing higher probability. Because these figures can take up quite a bit of hard drive space, they're kept in a folder named 'private' by default. If you got this fresh off git, you probably won't see this. They can however be generated relatively quickly with the plot_heat.py script in the parent directory (i.e., cogpsych-code/) with `dataname_def` set to `'catassign'` and check that `ind` is set to `True`.
 

@@ -2,6 +2,7 @@ import pickle, sys, os
 import pandas as pd
 import numpy as np
 import time
+import sqlite3
 execfile('Imports.py')
 import Modules.Funcs as funcs
 from Modules.Classes import Simulation
@@ -11,10 +12,11 @@ from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
 
 #Toggle 
-fit_weights = True
+fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
 fiterror = True #Toggle if fitting error
 
 # Specify default dataname
+datasets = ['catassign']
 #dataname_def = 'nosofsky1986'
 participant_def = 'all'
 unique_trials_def = 'all'
@@ -36,18 +38,18 @@ if __name__ == "__main__" and narg>1:
     #         dataname = dataname_def
     # else:
     #         dataname = sys.argv[1]
-    dataname = dataname_def
+    #dataname = dataname_def
     participant = participant_def
     unique_trials = unique_trials_def
     runchunk = int(sys.argv[1]) #first arg from terminal is chunk idx
 else:
-    dataname = dataname_def
+    #dataname = dataname_def
     participant = participant_def
     unique_trials = unique_trials_def
     runchunk = 93;
     
 #datasets = ['pooled','pooled-no1st','xcr','midbot','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
-datasets = ['']
+
 
 #Check that output directory exists, otherwise create it
 pickledir = 'pickles/'
@@ -65,9 +67,9 @@ for dataname in datasets:
         trials = pickle.load( f )
 
     if fiterror:
-        #Force task to fit error, and appen err to dst filename
+        #Force task to fit error, and append err to dst filename
         trials.task = 'error'
-        dst = dst + '_fit2error' 
+        dst = dst[0:-2] + '_fit2error' + dst[-2:]
     else:
         trials.task = task
         
@@ -75,7 +77,14 @@ for dataname in datasets:
     dst = dst[0:-2] + '_chunk' + str(runchunk) + '.p'
     dst_error = dst[0:-2] + '_error.p'
     
+    #Get generation data for computation of individual weights,
+    # if applicable
+    if len(raw_db)>0 and fit_weights:
+        con = sqlite3.connect(raw_db)
+        stats = pd.read_sql_query("SELECT * from betastats", con)
+        con.close()
 
+    
     #print trials
     trials = Simulation.extractPptData(trials,participant,unique_trials)
     
@@ -143,6 +152,7 @@ for dataname in datasets:
         nfits = startp.shape[0]
         results_array = np.array(np.zeros([nfits,nparms+2])) #nparms+1 cols, where +2 is the LL and AIC
         results_model = dict()
+
         print 'Fitting: ' + model_obj.model
         print 'Total possible starting points: {}'.format(nfitsTotal)
         print 'Running chunk {}, extracting starting points: [{}:{}]'.format(runchunk, chunkIdxStart, chunkIdxEnd)
@@ -161,7 +171,7 @@ for dataname in datasets:
             inits = startp[i,:]
             res = Simulation.hillclimber(model_obj, trials, options,
                                          inits=inits, results = False,
-                                         callbackstyle='none')
+                                         callbackstyle='iter')
             final_parms = res.x
             final_ll = res.fun
             final_aic =  funcs.aic(final_ll,nparms)

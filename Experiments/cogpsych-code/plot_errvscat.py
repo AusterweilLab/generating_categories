@@ -22,6 +22,9 @@ N_SAMPLES = 10000
 WT_THETA = 1.5
 MIN_LL = 1e-10
 
+#Toggle
+fit_weights = True #add calculation of weights to the generation of LL
+
 # Specify default dataname
 dataname_def = 'catassign'#'nosofsky1986'#'NGPMG1994'
 participant_def = 'all'
@@ -42,8 +45,14 @@ with open(pickledir+src, "rb" ) as f:
 
     
 # get best params pickle
-with open("pickles/chtc_gs_best_params_all_data_e1_e2.p", "rb" ) as f:
+#bestparamdb = "pickles/chtc_gs_best_params_all_data_e1_e2.p"
+bestparamdb = "pickles/chtc_gs_best_params_catassign.p"
+bestparamerrdb = "pickles/chtc_gs_best_params_catassign_fit2err.p"
+with open(bestparamdb, "rb" ) as f:
     best_params_t = pickle.load( f )
+
+with open(bestparamerrdb, "rb" ) as f:
+    best_params_err_t = pickle.load( f )
 
 #Rebuild it into a smaller dict
 best_params = dict()
@@ -52,6 +61,14 @@ for modelname in best_params_t.keys():
     for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
         parmval = best_params_t[modelname]['bestparmsll']
         best_params[modelname][parmname] = parmval[i]
+#Rebuild it into a smaller dict
+best_params_err = dict()
+for modelname in best_params_err_t.keys():    
+    best_params_err[modelname] = dict()
+    for i,parmname in enumerate(best_params_err_t[modelname]['parmnames']):
+        parmval = best_params_err_t[modelname]['bestparmsll']
+        best_params_err[modelname][parmname] = parmval[i]
+
 modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]                            
 
 #Prepare matched database    
@@ -109,6 +126,7 @@ for model_obj in modelList:
     if not ll_loadSuccess:
         #Get log likelihoods
         ll_list = []
+        ll_list_err = []
         scale_constant = 1e308;
         print_ct = 0
         for ppt in pptlist:
@@ -120,44 +138,42 @@ for model_obj in modelList:
             #Get alphas with an ugly line of code
             As_num  = eval(info['stimuli'].loc[pptloc].as_matrix()[0])[0:4];
             As = stimuli[As_num,:]
-            params  = best_params[model_name]
             pptcondition = info['condition'].loc[pptloc].as_matrix()[0];
             pptbeta = eval(info['stimuli'].loc[pptloc].as_matrix()[0])[4:8];
             nstim = len(pptbeta);    
-            #Get weights
-            ranges = stats[['xrange','yrange']].loc[stats['participant']==pptOld]
-            params['wts'] = funcs.softmax(-ranges, theta = WT_THETA)[0]
-            if model_obj ==  ConjugateJK13 or model_obj == RepresentJK13:
-                params['wts'] = 1.0 - params['wts']
             #transform parms
+            params = best_params[model_name]
             model = model_obj([As], params)
             params = model.parmxform(params, direction = 1)
+
+            params_err  = best_params_err[model_name]
+            model = model_obj([As], params_err)
+            params_err = model.parmxform(params_err, direction = 1)
+            #Get weights
+            if fit_weights:
+                ranges = stats[['xrange','yrange']].loc[stats['participant']==pptOld]
+                params['wts'] = funcs.softmax(-ranges, theta = WT_THETA)[0]
+                if model_obj ==  ConjugateJK13 or model_obj == RepresentJK13:
+                    params['wts'] = 1.0 - params['wts']                    
+                params_err['wts'] = params['wts']
             #Extract ppt-unique trialobj
             # Note that ppt numbers in the trialset
             # object are of the 'analysis' type, while the ppt numbers in this
             # loop are of the 'match' type
-            pptAnalysis = funcs.getCatassignID(ppt,fetch='analysis')
-            pptTrialObj = Simulation.extractPptData(trials,ppt)
+            pptAnalysis = funcs.getCatassignID(ppt,fetch='analysis',source='match')
+            pptTrialObj = Simulation.extractPptData(trials,pptAnalysis)
             pptTrialObj.task = 'assign'
             catassign_ll = pptTrialObj.loglike(params,model_obj)
             pptTrialObj.task = 'error'
-            error_ll = pptTrialObj.loglike(params,model_obj)
-            lll
-            # Get all permutations of pptbeta and make a new trialObj for it
-            nbetapermute = math.factorial(nstim)
-            betapermute = [];
-            raw_array = np.zeros((1,nbetapermute))
-            categories = [As_num,pptbeta]
-            #Get the categorisation (assignment) loglikelihoods
-            #To do this, create trialobj
-            
-            raw_array_ll = Simulation.loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1,task
-                                                      = 'assign')
-            ll_list += [raw_array_ll]
-            
+            error_ll = pptTrialObj.loglike(params_err,model_obj)
+            ll_list += [catassign_ll]
+            ll_list_err += [error_ll]
+            if print_ct>2:
+                print pptTrialObj.Set
+                lll
             print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
             #print ppt
-
+        lll
         ll_list = np.atleast_2d(ll_list)
         pptlist2d = np.atleast_2d(pptlist)
         ll = np.concatenate((pptlist2d,ll_list),axis=0).T

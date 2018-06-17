@@ -230,6 +230,8 @@ class Trialset(object):
                 ps1 = model(categories, params,
                             self.stimrange).get_generation_ps(self.stimuli,
                                                               1,self.task)
+
+                
                 idc0 = trial['response'][0]
                 idc1 = trial['response'][1]
                 #ps_add = ps0[idc0]
@@ -259,18 +261,17 @@ class Trialset(object):
                 #looks at errors in categorising.
                 #ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
                 #idc_err = trial['response'][0]
-
                 #Compute probabilities of assigning exemplar to cat 0
-                ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
+                ps0 = model(categories, params,
+                            self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
                 #Compute probabilities of assigning exemplar to cat 1
                 ps1 = model(categories, params,
                             self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
                 idc0 = trial['response'][0] 
                 idc1 = trial['response'][1] 
-
                 #Actual category exemplars
                 correctcat = trial['categories']
-                
+
                 correctps = []
                 wrongps   = []
                 #Iterate over each category
@@ -282,12 +283,23 @@ class Trialset(object):
                     wrongresp = np.array([exemplar for exemplar in
                                               trial['response'][i] if not exemplar in
                                               correctcat[i]])
+                    print correctresp
+                    print wrongresp
                     #Get entire probability space
                     ps = model(categories, params,
-                               self.stimrange).get_generation_ps(self.stimuli, i,self.task)                    
-                    correctps = np.concatenate([correctps,ps[correctresp]])
-                    wrongps   = np.concatenate([wrongps,1-ps[wrongresp]])
+                               self.stimrange).get_generation_ps(self.stimuli,
+                                                                 i,self.task)
+                    if len(correctresp)>0:
+                        correctps = np.concatenate([correctps,ps[correctresp]])
+                    if len(wrongresp)>0:
+                        wrongps   = np.concatenate([wrongps,ps[wrongresp]])
+                        
 
+                print ps0
+
+                print correctps
+
+                print wrongps
                 ps_add = np.concatenate([correctps,wrongps])
 
                                 

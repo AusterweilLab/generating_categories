@@ -1,35 +1,82 @@
 execfile('Imports.py')
 
 from Modules.Classes import Simulation
+import Modules.Funcs as funcs
 import re
 import os
 import pickle
 import pandas as pd
-
+import csv
+import numpy as np
 #Find all gs fits and print them. Nice nice.        
 pickledir = 'pickles/'
+writefile = 'globalfits'
 prefix = 'chtc_gs_best_params'
-#Compile regexp obj
-allfiles =  os.listdir(pickledir)
-r = re.compile(prefix)
-gsfiles = filter(r.match,allfiles)
+printdata = ['catassign','e1_e2']#'all'
+if not printdata is 'all':
+    gsfiles = []
+    data_names = []
+    allfiles =  os.listdir(pickledir)
+    for i in printdata:
+        pattern = '{}_(.*{}.*).p'.format(prefix,i)
+        gsfiles += [re.match(pattern,file).group(0) for file in allfiles if re.match(pattern,file)]
+        data_names += [re.match(pattern,file).group(1) for file in allfiles if re.match(pattern,file)]
+else:
+    allfiles =  os.listdir(pickledir)
+    r = re.compile(prefix)
+    pattern = '{}_(.*).p'.format(prefix)
+    gsfiles = [re.match(pattern,file).group(0) for file in allfiles if re.match(pattern,file)]
+    data_names = [re.match(pattern,file).group(1) for file in allfiles if re.match(pattern,file)]
+    #r = re.compile('{}_({}.*)'.format(prefix,printdata))
+    #gsfiles = filter(r.match,allfiles)
 
-#Compute total SSE
-header = ['Model','Parameters'] #First line of csv - add data_names to this
-data_names = []
+
+headerBase = ['Model','nLL','AIC','Parm'] #First line of csv
 results = [] #This will be same length as data_names
+# Extract datafile names  and add to header
+header = headerBase[:]
+modelname_print = funcs.getModelName(j,fetch='short') #fetch short version of model name
+for dname in data_names:
+    header += [dname]
+
+#Iterate though each data file
+data = dict()
 for i,file in enumerate(gsfiles):
-    #Extract key data from each file    
-    # print '\n' + file
-    # print '------'
-    data_names += [gsfiles[0][len(prefix)+1:-2]] #ignore the prefix when populating data names    
     with open(pickledir+file,'rb') as f:
         fulldata = pickle.load(f)        
     model_names = fulldata.keys()
-    for j in model_names:
-        # print j
-        for pi,pname in enumerate(fulldata[j]['parmnames']):
-            print '\t' + pname + ': ' + str(fulldata[j]['bestparmsll'][pi])
-        print '\tLogLike' + ' = ' + '-' + str(fulldata[j]['bestparmsll'][pi+1])
-        print '\tAIC'  + ' = ' + str(fulldata[j]['bestparmsll'][pi+2]) + '\n'
+    dn = data_names[i]
+    #Iterate through each model
+    for mn in model_names:
+        #with open(os.path.join(writedir,file[0:len(file)-2]+'_'+modelname_print+'.csv'),'wb') as f:
+        parmnames = fulldata[mn]['parmnames']
+        nparms = len(parmnames)
+        nllAIC = fulldata[mn]['bestparmsll'][[nparms,nparms+1]]
+        parmvals = fulldata[mn]['bestparmsll']
+        for pi,parm in enumerate(parmnames):
+            if not mn in data.keys():
+                data[mn] = dict()
+            if not dn in data[mn].keys():
+                data[mn][dn] = dict()
+            data[mn][dn]['nllAIC'] = nllAIC
+            data[mn][dn][parm] = parmvals[pi]
 
+#Perform the writing separately to make things a bit neater
+with open(writefile+'.csv','wb') as f:
+    wr = csv.writer(f)
+    #write header
+    wr.writerow(header)
+    model_names = data.keys()
+    for mn in model_names:
+        model_print = funcs.getModelName(mn,fetch='short') #fetch short version of model name
+        parmnames = fulldata[mn]['parmnames']
+        for parm in parmnames:
+            nllAIC = data[mn][data_names[0]]['nllAIC']
+            nllAIC = ['{:.2f}'.format(round(el,2)) for el in nllAIC]
+            parmvals = []
+            for dn in data_names:
+                parmvals += ['{:.2f}'.format(round(data[mn][dn][parm],2))]
+            data_write = np.concatenate([[model_print],nllAIC,[parm],parmvals])
+            data_write = list(data_write) #things seem a little simpler as lists
+            #print(data_write)
+            wr.writerow(data_write)

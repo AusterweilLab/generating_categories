@@ -12,8 +12,8 @@ from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
 
 #Toggle 
-fit_weights = True
-fiterror = True #Toggle if fitting error
+fit_weights = False
+fiterror = True #Toggle if fitting error (as opposed to category choices)
 
 # Specify defaults
 #dataname_def = 'catassign'
@@ -71,7 +71,7 @@ for dataname in datasets:
     if fiterror:
         #Force task to fit error, and appen err to dst filename
         trials.task = 'error'
-        dst = dst + '_fit2error' 
+        dst = dst[0:-2] + '_fit2error' + dst[-2:]
     else:
         trials.task = task
 
@@ -179,10 +179,10 @@ for dataname in datasets:
             results_model = dict()
             trials_ppt = Simulation.extractPptData(trials,ppt)
             pptOld = funcs.getCatassignID(ppt,source='analysis',fetch='old')
+            fixedparams = dict()
             if fit_weights:
                 #Apply weights
                 ranges = stats[['xrange','yrange']].loc[stats['participant']==pptOld]
-                fixedparams = dict()
                 fixedparams['wts'] = funcs.softmax(-ranges, theta = WT_THETA)[0]
                 if model_obj ==  ConjugateJK13 or model_obj == RepresentJK13:
                     fixedparams['wts'] = 1.0 - fixedparams['wts']
