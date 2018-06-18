@@ -231,9 +231,10 @@ class Trialset(object):
                             self.stimrange).get_generation_ps(self.stimuli,
                                                               1,self.task)
 
-                
+
                 idc0 = trial['response'][0]
                 idc1 = trial['response'][1]
+
                 #ps_add = ps0[idc0]
                 ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
                 #How about using binomial likelihoods instead?
@@ -253,7 +254,8 @@ class Trialset(object):
                 #For prediction of error probabilities, simply
                 #find the probability of classifying a
                 #stimulus as the wrong category
-
+                #There's something really wrong with how I'm doing things here.
+                
                 #The old way (prior to 010618) was to simply treat cat 0 as
                 #correct and cat 1 as incorrect, since that's the way that the
                 #only error dataset NGPMG1994 has been set up. This is quite
@@ -269,6 +271,7 @@ class Trialset(object):
                             self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
                 idc0 = trial['response'][0] 
                 idc1 = trial['response'][1] 
+
                 #Actual category exemplars
                 correctcat = trial['categories']
 
@@ -283,8 +286,7 @@ class Trialset(object):
                     wrongresp = np.array([exemplar for exemplar in
                                               trial['response'][i] if not exemplar in
                                               correctcat[i]])
-                    print correctresp
-                    print wrongresp
+
                     #Get entire probability space
                     ps = model(categories, params,
                                self.stimrange).get_generation_ps(self.stimuli,
@@ -295,11 +297,6 @@ class Trialset(object):
                         wrongps   = np.concatenate([wrongps,ps[wrongresp]])
                         
 
-                print ps0
-
-                print correctps
-
-                print wrongps
                 ps_add = np.concatenate([correctps,wrongps])
 
                                 

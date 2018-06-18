@@ -49,6 +49,11 @@ for maintarmember in maintar.getmembers(): #for checkfile in allfiles:
                     datasetsAll += [dataset]
                 datachunk = pickle.load(f)
                 models = datachunk.keys()
+                #Remove fit_weights from models, since it's not a model
+                fit_weights = False
+                if 'fit_weights' in models:                                        
+                    models.remove('fit_weights')
+                    fit_weights = True
                 if not dataset in data:
                     data[dataset] = dict()            
                 for model in models:
@@ -102,6 +107,7 @@ for dataset in datasetsAll:
     # save final result in pickle    
     dst = dataset
     results = data[dataset]
+    results['fit_weights'] = fit_weights
     with open('{}private/chtc_ind_gs_best_params_{}.p'.format(pickledir,dst),'wb') as f:
         #pass 
         pickle.dump(results, f)

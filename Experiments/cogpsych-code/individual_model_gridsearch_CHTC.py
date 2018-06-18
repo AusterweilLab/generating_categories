@@ -101,6 +101,7 @@ for dataname in datasets:
 
     #Run grid search
     results = dict()
+    results['fit_weights'] = fit_weights
     for model_obj in [Packer, CopyTweak, ConjugateJK13, RepresentJK13]:
         #Prepare list of grid search start points
         #Create base array
@@ -162,7 +163,7 @@ for dataname in datasets:
             continue
         print 'Fitting participants:'
         #Run this for each participant, get the fits
-        results[model_obj.model] = dict()
+        results[model_obj.model] = dict()        
         print_ct = 0
         for ppt in trials.participants:
             ppt = int(ppt)

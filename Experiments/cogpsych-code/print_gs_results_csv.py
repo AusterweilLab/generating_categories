@@ -31,11 +31,11 @@ else:
     #gsfiles = filter(r.match,allfiles)
 
 
-headerBase = ['Model','nLL','AIC','Parm'] #First line of csv
+headerBase = ['Model','Parm'] #First line of csv
 results = [] #This will be same length as data_names
 # Extract datafile names  and add to header
 header = headerBase[:]
-modelname_print = funcs.getModelName(j,fetch='short') #fetch short version of model name
+
 for dname in data_names:
     header += [dname]
 
@@ -71,12 +71,25 @@ with open(writefile+'.csv','wb') as f:
         model_print = funcs.getModelName(mn,fetch='short') #fetch short version of model name
         parmnames = fulldata[mn]['parmnames']
         for parm in parmnames:
-            nllAIC = data[mn][data_names[0]]['nllAIC']
-            nllAIC = ['{:.2f}'.format(round(el,2)) for el in nllAIC]
             parmvals = []
             for dn in data_names:
                 parmvals += ['{:.2f}'.format(round(data[mn][dn][parm],2))]
-            data_write = np.concatenate([[model_print],nllAIC,[parm],parmvals])
+            data_write = np.concatenate([[model_print],[parm],parmvals])
             data_write = list(data_write) #things seem a little simpler as lists
             #print(data_write)
             wr.writerow(data_write)
+        #Write nll and AIC
+        nll = []
+        for dn in data_names:
+            nll += ['{:.2f}'.format(round(data[mn][dn]['nllAIC'][0],2))]
+        data_write = np.concatenate([[model_print],['nLL'],nll])
+        data_write = list(data_write) #things seem a little simpler as lists
+        wr.writerow(data_write)
+        aic = []
+        for dn in data_names:
+            aic += ['{:.2f}'.format(round(data[mn][dn]['nllAIC'][1],2))]
+        data_write = np.concatenate([[model_print],['AIC'],aic])
+        data_write = list(data_write) #things seem a little simpler as lists
+        wr.writerow(data_write)
+
+

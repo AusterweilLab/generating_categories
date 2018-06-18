@@ -99,6 +99,7 @@ for dataname in datasets:
 
     #Run grid search
     results = dict()
+
     for model_obj in [ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
         #Prepare list of grid search start points
         #Create base array
@@ -171,7 +172,7 @@ for dataname in datasets:
             inits = startp[i,:]
             res = Simulation.hillclimber(model_obj, trials, options,
                                          inits=inits, results = False,
-                                         callbackstyle='iter')
+                                         callbackstyle='none')
             final_parms = res.x
             final_ll = res.fun
             final_aic =  funcs.aic(final_ll,nparms)
