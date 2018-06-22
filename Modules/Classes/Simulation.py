@@ -271,7 +271,9 @@ class Trialset(object):
                             self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
                 idc0 = trial['response'][0] 
                 idc1 = trial['response'][1] 
-
+                ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
+ 
+                #190618 after much thought, error should be exactly the same as assign though...
                 #Actual category exemplars
                 correctcat = trial['categories']
 
@@ -297,7 +299,7 @@ class Trialset(object):
                         wrongps   = np.concatenate([wrongps,ps[wrongresp]])
                         
 
-                ps_add = np.concatenate([correctps,wrongps])
+                #ps_add = np.concatenate([correctps,wrongps])
 
                                 
             # check for nans and zeros
@@ -320,6 +322,35 @@ class Trialset(object):
         else:
             return -1.0 * loglike
 
+    def correlate(self, params, model, alphas, fixedparams = None):
+        """Returns the correlation between model generation fit and observed
+        participant error. This functions extracts the data for each individual
+        participant in the trialset object, computes the observed error from that
+        and calculates the model fit (negative LL) to that participant's data.        
+
+        """
+        from scipy.stats import stats as ss        
+        ppts = self.participants
+        ppt_err_rate = []
+        ll = []
+        for ppt in ppts:
+            pptTrialObj = extractPptData(self.ppt)
+            nresp = 0.0
+            nresp_correct = 0.0
+            for trial in pptTrialObj.Set:
+                correctcats = trial['categories']
+                #Iterate over each category
+                for i,correctcat in enumerate(correctcats):
+                    #update number of responses                    
+                    nresp += len(trial['response'][i])
+                    for correct in correctcat:
+                        nresp_correct += trial['response'][i].count(correct)
+            ppt_err_rate += [1-(nresp_correct/nresp)]
+            #get the total ll of all permutations of the beta category
+            ll += [pptTrialObj.loglike(params, model)]
+        correlation = ss.pearsonr(ppt_err_rate,ll)
+
+        
 def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None, results = True,callbackstyle='none'):
     """
     Run an optimization routine.
@@ -379,6 +410,67 @@ def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None
         print '\tAIC = ' + str(AIC)
                         
     return res
+
+def hillclimber_corr(model_obj, trials_obj, options, fixedparams = None, inits = None, results = True,callbackstyle='none'):
+    """
+    Run an optimization routine that maximises correlations.
+
+    model_obj is one of the model implementation in the module.
+    init_params is a numpy array for the routine's starting location.
+    trials_obj is a Trialset object.
+    options is a dict of options for the routine. Example:
+        method = 'Nelder-Mead',
+        options = dict(maxiter = 500, disp = False),
+        tol = 0.01,
+
+    Function prints results to the console (if results is set to True), and returns the ResultSet
+    object.
+    """
+    global currmodel
+    currmodel = model_obj
+    global currtrials
+    currtrials = trials_obj
+    global callback
+    callback = callbackstyle
+    global itcount
+    # set initial params
+    if inits is None:    
+        inits = model_obj.rvs(fmt = list) #returns random parameters as list
+        if results:
+            print '\nStarting parms (randomly selected):'
+            print inits
+    #transform inits to be bounded within rules
+    inits = model_obj.parmxform(inits, direction = 1)
+    # run search
+    itcount = 0
+    if results:
+        print 'Fitting: ' + model_obj.model
+                
+    res = op.minimize(    trials_obj.loglike, 
+                inits, 
+                args = (model_obj,fixedparams),
+                callback = _callback_fun_, 
+                **options
+        )
+    #reverse-transform the parms
+    res.x = model_obj.parmxform(res.x, direction = -1)
+        
+    # print results
+    if results:
+        print '\n' + model_obj.model + ' Results:'
+        print '\tIterations = ' + str(res.nit)
+        print '\tMessage = ' + str(res.message)
+        
+        X = model_obj.params2dict(model_obj.clipper(res.x))
+        for k, v in X.items():
+            print '\t' + k + ' = ' + str(v) + ','
+            
+        print '\tLogLike = ' + str(res.fun)            
+        AIC = funcs.aic(res.fun,len(inits))
+        print '\tAIC = ' + str(AIC)
+                        
+    return res
+
 
 def _callback_fun_(xk):
     """

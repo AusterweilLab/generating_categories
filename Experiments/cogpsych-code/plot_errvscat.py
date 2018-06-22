@@ -24,7 +24,7 @@ MIN_LL = 1e-10
 
 #Toggle
 fit_weights = True #add calculation of weights to the generation of LL
-
+fit_ind = True
 # Specify default dataname
 dataname_def = 'catassign'#'nosofsky1986'#'NGPMG1994'
 participant_def = 'all'
@@ -46,8 +46,12 @@ with open(pickledir+src, "rb" ) as f:
     
 # get best params pickle
 #bestparamdb = "pickles/chtc_gs_best_params_all_data_e1_e2.p"
-bestparamdb = "pickles/chtc_gs_best_params_catassign.p"
-bestparamerrdb = "pickles/chtc_gs_best_params_catassign_fit2err.p"
+if fit_ind:
+    bestparamdb = "pickles/private/chtc_ind_gs_best_params_catassign.p"
+else:
+    bestparamdb = "pickles/chtc_gs_best_params_catassign.p"
+bestparamerrdb = "pickles/chtc_gs_best_params_catassign.p"
+#bestparamerrdb = "pickles/chtc_gs_best_params_catassign_fit2err.p"
 with open(bestparamdb, "rb" ) as f:
     best_params_t = pickle.load( f )
 
@@ -56,11 +60,25 @@ with open(bestparamerrdb, "rb" ) as f:
 
 #Rebuild it into a smaller dict
 best_params = dict()
-for modelname in best_params_t.keys():    
-    best_params[modelname] = dict()
-    for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
-        parmval = best_params_t[modelname]['bestparmsll']
-        best_params[modelname][parmname] = parmval[i]
+
+if fit_ind:
+    models = best_params_t.keys()
+    if 'fit_weights' in models:
+        models.remove('fit_weights')
+    for modelname in models:
+        best_params[modelname] = dict()
+        for ppt in best_params_t[modelname].keys():    
+            best_params[modelname][ppt] = dict()
+            for i,parmname in enumerate(best_params_t[modelname][ppt]['parmnames']):
+                parmval = best_params_t[modelname][ppt]['bestparmsll']
+                best_params[modelname][ppt][parmname] = parmval[i]
+    #Rebuild it into a smaller dict
+else:
+    for modelname in best_params_t.keys():    
+        best_params[modelname] = dict()
+        for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
+            parmval = best_params_t[modelname]['bestparmsll']
+            best_params[modelname][parmname] = parmval[i]
 #Rebuild it into a smaller dict
 best_params_err = dict()
 for modelname in best_params_err_t.keys():    
@@ -68,6 +86,7 @@ for modelname in best_params_err_t.keys():
     for i,parmname in enumerate(best_params_err_t[modelname]['parmnames']):
         parmval = best_params_err_t[modelname]['bestparmsll']
         best_params_err[modelname][parmname] = parmval[i]
+
 
 modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]                            
 
@@ -102,12 +121,15 @@ for i,row in info.iterrows():
 pptlist = np.unique(pptlist)
 
 #see if llg exists as a pickle, otherwise construct new ll
-errcatDB = "pickles/errcat_all_data_e1_e2.p"
-errcatindDB = "pickles/errcatind_all_data_e1_e2.p"
+if fit_ind:
+    errcatDB = "pickles/errcatind.p"
+else:
+    errcatDB = "pickles/errcat.p"
+
 try:
     with open(errcatDB, "rb" ) as f:
         llg = pickle.load( f ) #llglobal
-        ll_loadSuccess = True
+        ll_loadSuccess = False
 except:
     llg = dict()
     ll_loadSuccess = False
@@ -141,8 +163,13 @@ for model_obj in modelList:
             pptcondition = info['condition'].loc[pptloc].as_matrix()[0];
             pptbeta = eval(info['stimuli'].loc[pptloc].as_matrix()[0])[4:8];
             nstim = len(pptbeta);    
-            #transform parms
-            params = best_params[model_name]
+            #transform parms            
+            if fit_ind:
+                pptAnalysis = funcs.getCatassignID(pptNew,source='match',fetch='analysis')
+                params = best_params[model_name][pptAnalysis]
+            else:
+                params = best_params[model_name]
+                
             model = model_obj([As], params)
             params = model.parmxform(params, direction = 1)
 
@@ -168,36 +195,19 @@ for model_obj in modelList:
             error_ll = pptTrialObj.loglike(params_err,model_obj)
             ll_list += [catassign_ll]
             ll_list_err += [error_ll]
-            if print_ct>2:
-                print pptTrialObj.Set
-                lll
             print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
             #print ppt
-        lll
-        ll_list = np.atleast_2d(ll_list)
-        pptlist2d = np.atleast_2d(pptlist)
-        ll = np.concatenate((pptlist2d,ll_list),axis=0).T
 
+        ll_list = np.atleast_2d(ll_list)
+        ll_list_err = np.atleast_2d(ll_list_err)
+        pptlist2d = np.atleast_2d(pptlist)
+        ll = np.concatenate((pptlist2d,ll_list,ll_list_err),axis=0).T
+        
         #sort
         ll = ll[ll[:,1].argsort()]
         #Add third col of zeros
-        ll = np.concatenate((ll,np.atleast_2d(np.zeros(len(ll))).T),axis=1)    
-    
-        #attach ppt errors
-        for i, row in info.iterrows():
-            #fh, ax = plt.subplots(1,2,figsize = (12,6))
-            ppt  = row.participant
-            pptAssign = assignment.loc[assignment['participant']==ppt].sort_values('trial')
-            nTrials = len(pptAssign)
-            accuracyEl = float(sum(pptAssign.correctcat == pptAssign.response))/nTrials
+        #ll = np.concatenate((ll,np.atleast_2d(np.zeros(len(ll))).T),axis=1)    
 
-
-            pptNew = row.pptmatch
-            #Prepare to plot configuration
-            #get matched data
-            #matched = funcs.getMatch(pptmatch,matchdb)
-            #Add participant mean error to ll matrix
-            ll[ll[:,0]==pptNew,2] = 1-accuracyEl
         
         llg[model_name] = ll
         
@@ -232,12 +242,19 @@ for m,model_obj in enumerate(modelList):
     titlestr_s = '{} = {:.3}, p = {:.2e}'.format(rho,corr_s[0],corr_s[1])
     ax.plot(x,y,'--')
     ax.set_title('{}\n{}'.format(titlestr_p, titlestr_s),fontsize=16)
-    ax.set_xlabel('negLL\n{}'.format(model_short))
+    if fit_ind:
+        ax.set_xlabel('categorization (ind) negLL\n{}'.format(model_short))
+    else:        
+        ax.set_xlabel('categorization negLL\n{}'.format(model_short))
     if m==0:
-        ax.set_ylabel('Participant p(error)')
+        ax.set_ylabel('error negLL')
     else:
         ax.set_ylabel('')
         ax.set_yticklabels([])
+
+if fit_ind:        
+    plt.savefig('errvscatind.pdf')
+else:
+    plt.savefig('errvscat.pdf')
     
-plt.savefig('errvscat.pdf')
 plt.cla()

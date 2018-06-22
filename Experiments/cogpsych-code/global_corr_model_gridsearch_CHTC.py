@@ -10,16 +10,15 @@ from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
+import get_corr as gc
 
 #Toggle 
-fit_weights = False
-fiterror = False #Toggle if fitting error (as opposed to category choices)
+fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
+fiterror = False #Toggle if fitting error #190618 since we've determined that error is the same as assign, I should probably keep this to False all the time yes?
 
-# Specify defaults
-#dataname_def = 'catassign'
-
-WT_THETA = 1.5 #for the attention weight fitting
-datasets = ['catassign']#why are fits to this so slow? 110518 ok fixed!
+# Specify default dataname
+datasets = ['catassign']
+#dataname_def = 'nosofsky1986'
 participant_def = 'all'
 unique_trials_def = 'all'
 nchunks = 1000 #number of CHTC instances to run
@@ -27,19 +26,6 @@ nchunks = 1000 #number of CHTC instances to run
 narg = len(sys.argv)
 
 if __name__ == "__main__" and narg>1:
-    # if len(sys.argv)<4:
-    #         unique_trials = unique_trials_def
-    # else:
-    #         unique_trials = int(sys.argv[3])
-    # if len(sys.argv)<3:
-    #         participant = participant_def
-    # else:
-    #         participant = int(sys.argv[2])
-    # if len(sys.argv)<2:
-    #         dataname = dataname_def
-    # else:
-    #         dataname = sys.argv[1]
-    #dataname = dataname_def
     participant = participant_def
     unique_trials = unique_trials_def
     runchunk = int(sys.argv[1]) #first arg from terminal is chunk idx
@@ -47,7 +33,8 @@ else:
     #dataname = dataname_def
     participant = participant_def
     unique_trials = unique_trials_def
-    runchunk = 1;
+    runchunk = 93;
+    
 #datasets = ['pooled','pooled-no1st','xcr','midbot','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
 
 
@@ -57,11 +44,9 @@ outputdir = pickledir + 'newpickles/'
 if not os.path.isdir(outputdir):
     os.system('mkdir ' + outputdir)
 
-
-    
 for dataname in datasets:
     execfile('validate_data.py')
-        
+    
     print 'Grid Searching Data: ' + dataname
     
     # get data from pickle
@@ -69,28 +54,25 @@ for dataname in datasets:
         trials = pickle.load( f )
 
     if fiterror:
-        #Force task to fit error, and appen err to dst filename
+        #Force task to fit error, and append err to dst filename
         trials.task = 'error'
         dst = dst[0:-2] + '_fit2error' + dst[-2:]
     else:
         trials.task = task
-
+        
     #add chunk number to dst
     dst = dst[0:-2] + '_chunk' + str(runchunk) + '.p'
     dst_error = dst[0:-2] + '_error.p'
-
-
+    
     #Get generation data for computation of individual weights,
     # if applicable
     if len(raw_db)>0 and fit_weights:
         con = sqlite3.connect(raw_db)
         stats = pd.read_sql_query("SELECT * from betastats", con)
         con.close()
-    
-    #print trials
+
     trials = Simulation.extractPptData(trials,participant,unique_trials)
     
-
     # options for the optimization routine
     options = dict(
         method = 'Nelder-Mead',
@@ -101,8 +83,8 @@ for dataname in datasets:
 
     #Run grid search
     results = dict()
-    results['fit_weights'] = fit_weights
-    for model_obj in [Packer, CopyTweak, ConjugateJK13, RepresentJK13]:
+
+    for model_obj in [ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
         #Prepare list of grid search start points
         #Create base array
         nparms = len(model_obj.parameter_names)
@@ -153,6 +135,9 @@ for dataname in datasets:
             startp[:,idx] = startp[:,idx] + min
         
         nfits = startp.shape[0]
+        results_array = np.array(np.zeros([nfits,nparms+2])) #nparms+1 cols, where +2 is the LL and AIC
+        results_model = dict()
+
         print 'Fitting: ' + model_obj.model
         print 'Total possible starting points: {}'.format(nfitsTotal)
         print 'Running chunk {}, extracting starting points: [{}:{}]'.format(runchunk, chunkIdxStart, chunkIdxEnd)
@@ -161,79 +146,58 @@ for dataname in datasets:
         if nfits==0:
             print 'No starting points extracted, moving on.\n'
             continue
-        print 'Fitting participants:'
-        #Run this for each participant, get the fits
-        results[model_obj.model] = dict()        
-        print_ct = 0
-        for ppt in trials.participants:
-            ppt = int(ppt)
+        for i in range(nfits):
+            if np.mod(i+1,printcol) != 0:
+                print str(i),
+                sys.stdout.flush()
+            else:
+                print str(i)
             
-            print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
-
-            # if np.mod(ppt+1,printcol) != 0:
-            #     print str(ppt),
-            #     sys.stdout.flush()
-            # else:
-            #     print str(ppt)
-
-            results_array = np.array(np.zeros([nfits,nparms+2])) #nparms+2 cols, where +2 is the LL and AIC. Third dimension is for each individual participant
-            results_model = dict()
-            trials_ppt = Simulation.extractPptData(trials,ppt)
-            pptOld = funcs.getCatassignID(ppt,source='analysis',fetch='old')
-            fixedparams = dict()
-            if fit_weights:
-                #Apply weights
-                ranges = stats[['xrange','yrange']].loc[stats['participant']==pptOld]
-                fixedparams['wts'] = funcs.softmax(-ranges, theta = WT_THETA)[0]
-                if model_obj ==  ConjugateJK13 or model_obj == RepresentJK13:
-                    fixedparams['wts'] = 1.0 - fixedparams['wts']
-
-            for i in range(nfits):                
-                inits = startp[i,:]
-                res = Simulation.hillclimber(model_obj, trials_ppt, options,
-                                             inits=inits, fixedparams = fixedparams,
-                                             results = False, callbackstyle='none')
-                final_parms = res.x
-                final_ll = res.fun
-                final_aic =  funcs.aic(final_ll,nparms)
-                final_results_row = np.array(final_parms + [final_ll] + [final_aic]) #np.append(final_parms,final_ll)
-                results_array[i,:] = final_results_row
+            inits = startp[i,:]
+            res = Simulation.hillclimber(model_obj, trials, options,
+                                         inits=inits, results = False,
+                                         callbackstyle='none')
+            final_parms = res.x
+            final_ll = res.fun
+            final_aic =  funcs.aic(final_ll,nparms)
+            final_results_row = np.array(final_parms + [final_ll] + [final_aic]) #np.append(final_parms,final_ll)
+            results_array[i,:] = final_results_row
 
 
-            #Get indices sorted to LL
-            ind = np.argsort( results_array[:,-2] );
-            startp_sorted = startp[ind]
-            results_array_sorted = results_array[ind]
-            results_best = results_array_sorted[0,:]
-            results_model['startparms'] = startp_sorted
-            results_model['finalparmsll'] = results_array_sorted
-            results_model['bestparmsll'] = results_best
-            results_model['parmnames'] = model_obj.parameter_names
-            #Also include chunk details
-            results_model['chunkidx'] = [chunkIdxStart,chunkIdxEnd]
-            results_model['chunkstartparms'] = startp
-
-            results[model_obj.model][ppt] = results_model
-            
-            #X = model_obj.params2dict(model_obj.clipper(res.x))
-            #results[model_obj.model] = X
-            #startp_dict = model_obj.params2dict(model_obj.clipper(inits))
-
+        #Get indices sorted to LL
+        ind = np.argsort( results_array[:,-2] );
+        startp_sorted = startp[ind]
+        results_array_sorted = results_array[ind]
+        results_best = results_array_sorted[0,:]
+        results_model['startparms'] = startp_sorted
+        results_model['finalparmsll'] = results_array_sorted
+        results_model['bestparmsll'] = results_best
+        results_model['parmnames'] = model_obj.parameter_names
+        #Also include chunk details
+        results_model['chunkidx'] = [chunkIdxStart,chunkIdxEnd]
+        results_model['chunkstartparms'] = startp
+        results[model_obj.model] = results_model
+        #X = model_obj.params2dict(model_obj.clipper(res.x))
+        #results[model_obj.model] = X
+        #startp_dict = model_obj.params2dict(model_obj.clipper(inits))
         print '\nDone fitting ' + model_obj.model + '.\n'
-        # print 'Final results: '
-        # X = model_obj.params2dict(model_obj.clipper(results_best[0:-2]))
-        # for k, v in X.items():
-        # print '\t' + k + ' = ' + str(v) + ','
+        print 'Final results: '
+        X = model_obj.params2dict(model_obj.clipper(results_best[0:-2]))
+        for k, v in X.items():
+            print '\t' + k + ' = ' + str(v) + ','
 
-        # print '\tLogLike = ' + str(results_best[-2])                        
-        # print '\tAIC = ' + str(results_best[-1])
+        print '\tLogLike = ' + str(results_best[-2])                        
+        print '\tAIC = ' + str(results_best[-1])
                 
+        #for k,v in results.items():
+        #    print k, v
 
         
 
     # save final result in pickle
-    with open(outputdir + 'chtc_ind_gs_'+dst,'wb') as f:
+    with open(outputdir + 'chtc_gs_'+dst,'wb') as f:
+        #pass 
         pickle.dump(results, f)
 
-
+#Simulation.print_gs_nicenice()
 

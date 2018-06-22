@@ -6,12 +6,21 @@ import seaborn as sns
 sns.set_style("whitegrid")
 
 savedir = 'individual_learn'
-
+plotind = False
+plotall = True
 colors = ["#34495e", "#e74c3c"]
 sns.set_palette(colors)
 
 execfile('Imports.py')
 import Modules.Funcs as funcs
+
+#Some plotting options
+font = {'family' : 'DejaVu Sans',
+        'weight' : 'regular',
+        'size'   : 18}
+
+plt.rc('font', **font)
+
 
 #Import data
 con = sqlite3.connect('../data/experiment.db')
@@ -41,9 +50,9 @@ sub_font = 11
 
 
 #Compute learning curves, averaged within each block
+
 errorAll = pd.DataFrame(columns = ['participant','block0','block1','block2','block3'])
 for i, row in info.iterrows():
-    fh, ax = plt.subplots(1,2,figsize = (12,6))
     ppt  = row.participant
     pptmatch = row.pptmatch
     pptAssign = assignment.loc[assignment['participant']==ppt].sort_values('trial')
@@ -61,62 +70,66 @@ for i, row in info.iterrows():
     errorAll = errorAll.append(errordict, ignore_index=True)
     avgerror = np.mean(error)
     #Prepare to plot configuration
-    #get matched data
-    matchdb='../data_utilities/cmp_midbot.db'
-    matched = funcs.getMatch(pptmatch,matchdb)
+    if plotind:
+        fh, ax = plt.subplots(1,2,figsize = (12,6))
+        #get matched data
+        matchdb='../data_utilities/cmp_midbot.db'
+        matched = funcs.getMatch(pptmatch,matchdb)
 
-    condition = row.condition
-    palphas = alphas_m[condition]
-    pbetas = df_m.stimulus[df_m.participant == matched]
+        condition = row.condition
+        palphas = alphas_m[condition]
+        pbetas = df_m.stimulus[df_m.participant == matched]
+        #Plot learning curves
+        x = range(nBlocks)
+        y = error
+        ax[0].plot(x, y, '-s', alpha = 1)
+        #Plot mean
+        #ax[0].plot([0,nBlocks-1],[avgerror, avgerror],'--g')
+        # plt.ylim((0,1))
+        # plt.xlabel('Block')
+        # plt.xticks(range(nBlocks))
+        axes = plt.gca()
+        #ax[0].set_xlim([xmin,xmax])
+        ax[0].set_ylim([0,1])
+        ax[0].set_xlabel('Block')
+        ax[0].set_ylabel('p(error)')
+        ax[0].xaxis.set_ticks(range(nBlocks))
+        ax[0].set_title('Learning curve\nmean_error = {:.2f}'.format(avgerror))
+        #Plot configurations
+        funcs.plotclasses(ax[1], stimuli_m, palphas, pbetas)
+        ax[1].set_title('Stimulus Configuration\n ID_Old: {}, ID_Current:{}'.format(matched,ppt))
+
+        fname = os.path.join(savedir,str(matched) + '.png')
+        fh.savefig(fname, bbox_inches='tight', transparent=False)
+        plt.cla()
+    
+#Plot average
+if plotall:
+    fh, ax = plt.subplots(1,1,figsize = (6,6))
     #Plot learning curves
     x = range(nBlocks)
-    y = error
-    ax[0].plot(x, y, '-s', alpha = 1)
+    y = []
+    for i in range(nBlocks):
+        y.append(errorAll.mean()['block'+str(i)])
+    ax.plot(x, y, '-s', alpha = 1)
     #Plot mean
-    #ax[0].plot([0,nBlocks-1],[avgerror, avgerror],'--g')
+    avgerror = np.mean(y)
+    ax.plot([0,nBlocks-1],[avgerror, avgerror],'--g')
     # plt.ylim((0,1))
     # plt.xlabel('Block')
     # plt.xticks(range(nBlocks))
     axes = plt.gca()
     #ax[0].set_xlim([xmin,xmax])
-    ax[0].set_ylim([0,1])
-    ax[0].set_xlabel('Block')
-    ax[0].set_ylabel('p(error)')
-    ax[0].xaxis.set_ticks(range(nBlocks))
-    ax[0].set_title('Learning curve\nmean_error = {:.2f}'.format(avgerror))
-    #Plot configurations
-    funcs.plotclasses(ax[1], stimuli_m, palphas, pbetas)
-    ax[1].set_title('Stimulus Configuration\n ID_Old: {}, ID_Current:{}'.format(matched,ppt))
+    ax.set_ylim([0,.5])
+    ax.set_xlim([0,nBlocks-1])
+    ax.set_xlabel('Block')
+    ax.set_ylabel('p(error)')
+    ax.xaxis.set_ticks(range(nBlocks))
+    #ax.set_title('Global learning curve\nN = {}, grand_mean_error = {:.2f}'.format(len(info),avgerror),fontsize=16)
 
-    fname = os.path.join(savedir,str(matched) + '.png')
+    fname = os.path.join(savedir,'All.pdf')
     fh.savefig(fname, bbox_inches='tight', transparent=False)
     plt.cla()
-    
-#Plot average
-fh, ax = plt.subplots(1,1,figsize = (6,6))
-#Plot learning curves
-x = range(nBlocks)
-y = []
-for i in range(nBlocks):
-    y.append(errorAll.mean()['block'+str(i)])
-ax.plot(x, y, '-s', alpha = 1)
-#Plot mean
-avgerror = np.mean(y)
-ax.plot([0,nBlocks-1],[avgerror, avgerror],'--g')
-# plt.ylim((0,1))
-# plt.xlabel('Block')
-# plt.xticks(range(nBlocks))
-axes = plt.gca()
-#ax[0].set_xlim([xmin,xmax])
-ax.set_ylim([0,1])
-ax.set_xlabel('Block')
-ax.set_ylabel('p(error)')
-ax.xaxis.set_ticks(range(nBlocks))
-ax.set_title('Global learning curve\nN = {}, grand_mean_error = {:.2f}'.format(len(info),avgerror))
-    
-fname = os.path.join(savedir,'All.png')
-fh.savefig(fname, bbox_inches='tight', transparent=False)
-plt.cla()
     
 
 

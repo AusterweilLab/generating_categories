@@ -1,0 +1,41 @@
+%!TEX output_directory = latex_out/
+
+\documentclass[12pt]{article}
+\usepackage[letterpaper, margin=1in, headheight=15pt]{geometry}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{pgfplots}
+\usepackage{fancyhdr}
+\usepackage{csquotes}
+\usepackage{todonotes}
+\usepackage{verbatim}
+\usepackage[toc]{appendix}
+\usepackage[natbibapa]{apacite}
+
+% set up PGF
+\pgfplotsset{compat=1.6}
+\newcommand\inputpgf[2]{{
+\let\pgfimageWithoutPath\pgfimage
+\renewcommand{\pgfimage}[2][]{\pgfimageWithoutPath[##1]{#1/##2}}
+\input{#1/#2}
+}}
+
+% set up notes-- different backgrounds for Nolan and Joe!
+\newcommand\nbcnote[1]{\todo[inline, backgroundcolor = yellow]{\textbf{NBC}: #1}}
+\newcommand\jlanote[1]{\todo[inline, backgroundcolor = lime]{\textbf{JLA}: #1}}
+
+% set up header % 
+\pagestyle{fancy}
+\fancyhf{} % sets both header and footer to nothing
+\renewcommand{\headrulewidth}{0pt}
+\lhead{RUNNING HEAD: Similarity and Contrast in Concept Generation}
+\fancyhead[R]{\thepage}
+
+
+\begin{document}
+\doublespacing
+
+
+\include{methods_results_e3}
+
+\end{document}

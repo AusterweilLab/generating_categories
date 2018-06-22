@@ -1,0 +1,134 @@
+%!TEX output_directory = latex_out/
+
+\documentclass[12pt]{article}
+\usepackage[letterpaper, margin=1in, headheight=15pt]{geometry}
+\usepackage{amsmath,fancyvrb}
+
+
+
+\begin{document}
+\VerbatimFootnotes
+
+\section*{Conjugate Implementation of the Jern \& Kemp (2013) Model with Representativeness}
+
+The representativeness model is very similar to the Jern \& Kemp (2013)
+hierarchical Bayesian model. The essential difference here is the ultimate
+formulation of response probabilities. Where in the original hierarchical
+Bayesian model the exemplars are drawn from Gaussian distributions, in the
+representativeness model each exemplar is drawn in proportion to the exemplar's
+representativeness. The representativeness of an exemplar is defined by
+Tenenbaum and Griffiths (2012) as the relative evidence that is provided by the
+exemplar $x$ for a given hypothesis $h$ compared to all other hypotheses $h'$:
+
+\begin{equation}
+  R(x,h) = \log \dfrac{p(x|h)}{\sum_{h'\neq h}{p(x|h')p(h')}}
+\label{representativeness}
+\end{equation}
+
+For simplicity, and consistency with the original hierarchical Bayesian model,
+we define $h_{C}$ as a multivariate normal distribution for a particular
+category $C$ parameterised by $\mu_C$ and $\Sigma_C$. For completeness, this
+document will repeat some information from the hierarchical Bayesian model
+document and describee how we compute these variables.
+
+\subsection*{Computing $\mu_C$}
+Assuming $(\mu_C, \Sigma_C)$ are Normal-Inverse-Wishart distributed (unknown mean, unknown variance):
+\
+\begin{equation}
+  \mu_C = \dfrac
+    {\kappa\mu_{0} + n_C \bar{x_C}}
+    {\kappa + n_C}
+    \label{eq:category_mus}
+\end{equation}
+\ 
+where:
+\begin{itemize}
+    \setlength\itemsep{-0.5em}
+    \item $\mu_{0}$ is the prior mean along $p$ dimensions. Here we set it to the middle of the space.
+    \item $\kappa$ is a scalar hyper-parameter, roughly weighting the importance of $\mu_{0}$. $\kappa$ must be greater than zero.
+    \item $n_C$ is the number of observations in $x_C$
+    \item $\bar{x_C}$ is the sample mean along $p$ dimensions
+\end{itemize}
+
+In the case of a populated class, $\mu_{C}$ ends up lying somewhere between $\mu_{0}$ and $\bar{x_C}$, depending on $\kappa_{0}$ and $n_C$. In the case of an empty class, $n_C = 0$, Equation \ref{eq:category_mus} reduces to $\mu_{C} = \mu_{0}$. Because we set $\mu_0$ to the center of the space, this outcome is the same as if we had integrated over all possible $\mu_C$. 
+
+In practice, if $n_C = 0$, the model picks a stimulus at random from all candidates (uniform probabilities). 
+
+\subsection*{Computing $\Sigma_D$}
+
+Unlike $\mu_C$, $\Sigma_C$ cannot be computed considering only the members of category $y$. Instead, $\Sigma_C$ is influenced both by the distribution of $x_C$ and by members of other categories through $\Sigma_D$.
+
+$\Sigma_D$ is inferred based on the observed (empirical) category covariances $C_y$. We assume these covariances to be Wishart-distributed, and so $\Sigma_D$ can be computed as:
+
+\
+\begin{equation}
+    \Sigma_D = \Sigma_0 + \sum_{C}{C_C}
+\end{equation}
+\
+$\Sigma_{0}$ is a $d$-by-$d$ prior covariance matrix. We use a $d$-dimensional identity matrix $I_d$ multiplied element-wise against a free parameter, $\lambda$, controlling the amount of variance assumed by the prior:
+\
+\begin{equation}
+    \Sigma_0 =  \lambda I_d
+\end{equation}
+
+Thus, categories are assumed to have some degree of variance along each feature (specified by $\lambda$), but not are assumed to possess feature-feature correlations. Differences in the assumed variance among the features, similarly to weighting in an exemplar model, can be implemented through a small change to the equation. Specifically, the variance assumed of dimension $k$ is given by:
+\
+\begin{equation}
+    \Sigma_{0k} =  \lambda w_k d
+\end{equation}
+\
+where $d$ is the number of dimensions, and $w_k$ ($0 \leq w_k \geq 1$, $\sum_k{w_k} = 1$) indicates the dimension's relative share of the total assumed variability. Under this system, evenly distributed weights result in uniformly assumed variances, equal to $\lambda$.
+
+\subsection*{Computing $\Sigma_C$}
+
+Assuming $(\mu_C, \Sigma_C)$ are Normal-Inverse-Wishart distributed, $\Sigma_C$ can be computed as:
+
+\begin{equation}
+  \Sigma_C = [\Sigma_D\nu + C_C +
+    \dfrac
+    {\kappa n_C}
+    {\kappa + n_C}
+    (\bar{x_C}-\mu_C)(\bar{x_C}-\mu_C)^T
+  ] (\nu + n_C)^{-1}
+  \label{eq:Sigma_y}
+\end{equation}
+\
+$\kappa$, $\bar{x_C}$, $C_C$, $n_C$, $\mu_0$,  are the same values as described above. $\nu$ is an additional free parameter, weighting the importance of $\Sigma_{D}$. $\nu$ must be greater than $d-1$. When $x_b$ is empty, Equation \ref{eq:Sigma_y} reduces to $\Sigma_C = \Sigma_D$.
+
+\subsection*{Computing response probabilities $p(y | x_C)$}
+
+As mentioned earlier, this is the point where the representativeness model
+diverges from the hierarchical Bayesian model. Specifically, the probability of
+generating exemplar $x$ is proportional to its representativeness:
+
+\begin{equation}
+  p(x) \propto R(x,h) ,
+\end{equation}
+where $h$ is a multivariate normal distribution parameterised by $\mu_{C}$ and
+$\Sigma_{C}$.
+ 
+In practice, $p(x)$ is computed by first obtaining the representativeness of
+every possible generation candidate $x_i$. The end probability is a
+normalization of these values:
+
+\begin{equation}
+  p(x) = \dfrac
+    {\exp( \theta \cdot R(x,h))}
+    {\sum_i \exp( \theta \cdot R(x_i,h_i))} 
+\end{equation}
+\
+where $\theta$ is a response determinism parameter.
+
+\subsection*{Description of free parameters}
+
+\begin{itemize}
+    \setlength\itemsep{-0.5em}
+    \item $\kappa$. Scalar, $\kappa>0$. Weights the importance of $\mu_{0}$ in inferring category $\mu_{C}$.
+    \item $\lambda$. Scalar, $\lambda>0$. Sets the assumed variance in the domain prior, $\Sigma_{0}$.
+    \item $\nu$. Scalar, $\nu > d-1$. Weights the importance of $\Sigma_{D}$ in inferring the domain $\Sigma_{C}$.
+    \item $\theta$. Scalar, $\theta > 0$. Response determinism parameter.
+\end{itemize}
+
+
+
+\end{document}
