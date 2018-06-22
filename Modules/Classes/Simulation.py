@@ -373,6 +373,8 @@ def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None
     global callback
     callback = callbackstyle
     global itcount
+    global fitLL
+    fitLL = True
     # set initial params
     if inits is None:    
         inits = model_obj.rvs(fmt = list) #returns random parameters as list
@@ -411,11 +413,12 @@ def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None
                         
     return res
 
-def hillclimber_corr(model_obj, trials_obj, options, fixedparams = None, inits = None, results = True,callbackstyle='none'):
+def hillclimber_corr(model_obj, pptdata, tso, options, fixedparams = None, inits = None, results = True,callbackstyle='none'):
     """
     Run an optimization routine that maximises correlations.
 
     model_obj is one of the model implementation in the module.
+    pptdata is a dataframe containing information on each participant's error
     init_params is a numpy array for the routine's starting location.
     trials_obj is a Trialset object.
     options is a dict of options for the routine. Example:
@@ -428,11 +431,17 @@ def hillclimber_corr(model_obj, trials_obj, options, fixedparams = None, inits =
     """
     global currmodel
     currmodel = model_obj
-    global currtrials
-    currtrials = trials_obj
+    global currpptdata
+    currpptdata = pptdata
+    global currtso
+    currtso = tso
     global callback
     callback = callbackstyle
     global itcount
+    global fitLL
+    fitLL = False
+    execfile('Imports.py')
+    import Modules.Funcs as funcs
     # set initial params
     if inits is None:    
         inits = model_obj.rvs(fmt = list) #returns random parameters as list
@@ -446,9 +455,9 @@ def hillclimber_corr(model_obj, trials_obj, options, fixedparams = None, inits =
     if results:
         print 'Fitting: ' + model_obj.model
                 
-    res = op.minimize(    trials_obj.loglike, 
+    res = op.minimize(funcs.get_corr, 
                 inits, 
-                args = (model_obj,fixedparams),
+                args = (pptdata,tso,model_obj,fixedparams),
                 callback = _callback_fun_, 
                 **options
         )
@@ -475,17 +484,26 @@ def hillclimber_corr(model_obj, trials_obj, options, fixedparams = None, inits =
 def _callback_fun_(xk):
     """
     Function executed at each step of the hill-climber
+    If fitLL is true, it means regular hillclimber is running. Else, it's maximising correlations.
     """
     #callback = '.' #this line is here for easier manual switching of display
-    
-    model_obj,trials_obj,display = _fetch_global_()
     global itcount
+    global fitLL
+    if fitLL:
+        model_obj,trials_obj,display = _fetch_global_(fitLL)
+    else:
+        model_obj,pptdata,tso,display = _fetch_global_(fitLL)
     #Set how many columns to print
     printcol = 20 
     if display is 'iter':
-        ll = trials_obj.loglike(xk,model_obj)                
+        if fitLL:
+            fit = trials_obj.loglike(xk,model_obj)                
+        else:
+            execfile('Imports.py')
+            import Modules.Funcs as funcs
+            fit = funcs.get_corr(xk,pptdata,tso,model_obj,print_on=False) #220618 hmm not entirely sure if this works but can try
         xk = model_obj.parmxform(xk, direction = -1)
-        print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + '] f(x) = ' + str(round(ll,4))
+        print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + '] f(x) = ' + str(round(fit,4))        
     elif display is '.':                
         if (np.mod(itcount,printcol)!=0) & (itcount>0):
             print '\b.',
@@ -508,11 +526,17 @@ def _callback_fun_(xk):
 
 
 #Temporary function to enable printing of function value during callback of minimization
-def _fetch_global_():
+def _fetch_global_(fitLL=True):
     global currmodel
-    global currtrials
     global callback
-    return currmodel,currtrials,callback
+    if fitLL:
+        global currtrials
+        return currmodel,currtrials,callback
+    else:
+        global currpptdata
+        global currtso
+        return currmodel,currpptdata,currtso,callback
+
 
 
 def show_final_p(model_obj, trial_obj, params, show_data = False):

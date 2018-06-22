@@ -2,8 +2,9 @@ import pickle
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import get_corr as gc
+#import get_corr as gc
 import sqlite3
+import math
 from scipy.stats import stats as ss
 
 execfile('Imports.py')
@@ -45,7 +46,8 @@ start_params = best_params[CopyTweak.model]
 trials.task = 'generate'
 
 #Get learning data
-data_assign_file = '../cat-assign/data/experiment.db'
+#data_assign_file = '../cat-assign/data/experiment.db'
+data_assign_file = 'experiment-catassign.db'
 con = sqlite3.connect(data_assign_file)
 info = pd.read_sql_query("SELECT * from participants", con)
 assignment = pd.read_sql_query("SELECT * FROM assignment", con)
@@ -66,42 +68,20 @@ for i,row in info.iterrows():
 pptlist = np.unique(pptlist)
 
 # set up grid of param values
-gamma_grid = np.linspace(0, 50.0, 100)
+gamma_grid = np.linspace(0, 20.0, 100)
 corrs = np.empty(gamma_grid.shape)
 
 # evaluate correlation at each grid point
-catassign_corrs = "pickles/catassign_packer_corr50.p"
+catassign_corrs = "pickles/catassign_packer_corr20.p"
 
 
 try:
     with open(catassign_corrs,'rb') as f:
         corrs = pickle.load(f)
-        lll
+
 except:
-    #Generate a list of all participant errors and their attention_weights
-    pptdata = pd.DataFrame(columns=['pptmatch','ppterror','ppt_att','alphas','betas'])
-    for i,row in info.iterrows():
-        ppt = row.participant
-        pptAssign = assignment.loc[assignment['participant']==ppt].sort_values('trial')
-        nTrials = len(pptAssign)
-        accuracyEl = float(sum(pptAssign.correctcat == pptAssign.response))/nTrials
-        pptmatch = row.pptmatch
-        #Compute and add weights
-        pptOld = funcs.getCatassignID(pptmatch,source='match',fetch='old')
-        ranges = stats[['xrange','yrange']].loc[stats['participant']==pptOld]
-        #Find alphas and betas
-        pptloc = info['pptmatch']==pptmatch
-        #Get alphas with an ugly line of code
-        alphas  = eval(info['stimuli'].loc[pptloc].as_matrix()[0])[0:4];
-        betas = eval(info['stimuli'].loc[pptloc].as_matrix()[0])[4:8];        
-        pptdata = pptdata.append(
-            dict(pptmatch = pptmatch, ppterror = 1-accuracyEl,
-                 ppt_att = funcs.softmax(-ranges, theta = WT_THETA)[0],
-                 alphas = alphas, betas = betas),            
-            ignore_index=True
-        )
-    #sort according to pptmatch
-    pptdata = pptdata.sort_values(by='pptmatch')
+    #Generate some key variables (ppt errors, trialset objects)
+    pptdata,tso = funcs.prep_corrvar(info,assignment,stimuli,stats,WT_THETA)
     
     if parallelOn:
         #Try parallelising the calculation of corrs
@@ -109,7 +89,8 @@ except:
         def gcpar(parm):
             #helper function to make parallelising get_corr easier
             print '.'
-            corr = gc.get_corr(parm,pptdata,Packer,stimuli,print_on = False)[0] #-trials.loglike(curr, Packer)
+            corr = funcs.get_corr(parm,pptdata,tso,Packer,print_on = False)[0] #-trials.loglike(curr, Packer)
+            corr = -corr
             return corr
         for i, val in enumerate(gamma_grid):
             curr_el = start_params.copy()
@@ -130,7 +111,8 @@ except:
             curr['theta_cntrst'] = val
             curr['theta_target'] = curr['determinism']
             #curr = Packer.parmxform(curr, direction = 1)
-            corr = gc.get_corr(curr,pptdata,Packer,stimuli,print_on = True)[0] #-trials.loglike(curr, Packer)
+            corr = funcs.get_corr(curr,pptdata,tso,Packer,print_on = False)[0] #-trials.loglike(curr, Packer)
+            corrs[i] = -corr
             print corrs[i]
             
     #Save pickle for faster running next time
