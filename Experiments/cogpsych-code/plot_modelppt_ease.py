@@ -16,6 +16,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("whitegrid")
 
+#Some plotting options
+font = {'family' : 'DejaVu Sans',
+        'weight' : 'regular',
+        'size'   : 20}
+show_p = True #show pearson r in plots
+show_s = True #show spearman tho in plots
+
 #Specify simulation values
 N_SAMPLES = 10000
 WT_THETA = 1.5
@@ -28,10 +35,6 @@ unique_trials_def = 'all'
 dataname = dataname_def
 execfile('validate_data.py')
 
-#Some plotting options
-font = {'family' : 'DejaVu Sans',
-        'weight' : 'regular',
-        'size'   : 18}
 
 plt.rc('font', **font)
 
@@ -40,7 +43,9 @@ with open(pickledir+src, "rb" ) as f:
     trials = pickle.load( f )
 
 # get best params pickle
-with open("pickles/chtc_gs_best_params_all_data_e1_e2.p", "rb" ) as f:
+#bestparmdb = "pickles/chtc_gs_best_params_all_data_e1_e2.p"
+bestparmdb = "pickles/chtc_gs_best_params_corr.p"
+with open(bestparmdb, "rb" ) as f:
     best_params_t = pickle.load( f )
 
 #Rebuild it into a smaller dict
@@ -51,6 +56,9 @@ for modelname in best_params_t.keys():
         parmval = best_params_t[modelname]['bestparmsll']
         best_params[modelname][parmname] = parmval[i]
 modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]                            
+
+#Specify plot order
+modelPlotOrder = np.array([[Packer,RepresentJK13],[CopyTweak,ConjugateJK13]])
 
 #Prepare matched database    
 matchdb='../cat-assign/data_utilities/cmp_midbot.db'
@@ -81,11 +89,11 @@ for i,row in info.iterrows():
 pptlist = np.unique(pptlist)
 
 #see if ll_global exists as a pickle, otherwise construct new ll
-modeleaseDB = "pickles/modelease_all_data_e1_e2.p"
+modeleaseDB = "pickles/modelease_corr.p"
 try:
     with open(modeleaseDB, "rb" ) as f:
         ll_global = pickle.load( f )
-        ll_loadSuccess = False
+        ll_loadSuccess = True
 except:
     ll_global = dict()
     ll_loadSuccess = False
@@ -104,7 +112,6 @@ for model_obj in modelList:
     if not ll_loadSuccess:
         #Get log likelihoods
         ll_list = []
-        scale_constant = 1e308;
         print_ct = 0
         for ppt in pptlist:
             #since info contains the new mapping of ppts, and pptlist contains old,
@@ -171,8 +178,9 @@ for model_obj in modelList:
         with open(modeleaseDB, "wb" ) as f:
             pickle.dump(ll_global, f)
 
-fh,axs = plt.subplots(1,len(modelList), figsize=(20,8))
-
+#fh,axs = plt.subplots(2,int(np.ceil(len(modelList)/2)), figsize=(20,8))
+fh,axs = plt.subplots(2,int(np.ceil(len(modelList)/2)), figsize=(15,15))
+plt.tight_layout(w_pad=1,h_pad=5.0,rect=(.05,.05,.95,.95))
 for m,model_obj in enumerate(modelList):
     model_name = model_obj.model
     model_short = model_obj.modelshort
@@ -185,7 +193,8 @@ for m,model_obj in enumerate(modelList):
     print '\tPearson  r   = {:.3}, p = {:.2e}'.format(corr_p[0],corr_p[1])
     #print '\tp = ' + str(corr[1])
     print '\tSpearman rho = {:.3}, p = {:.2e}'.format(corr_s[0],corr_s[1])
-    ax = axs[m]
+    model_loc = modelPlotOrder==model_obj
+    ax = axs[model_loc][0]
     #Plot figure
     ax.scatter(ll[:,1],ll[:,2])
 
@@ -193,13 +202,37 @@ for m,model_obj in enumerate(modelList):
     coeff = np.polyfit(ll[:,1],ll[:,2],1)
     x = np.array([min(ll[:,1]),max(ll[:,1])])
     y = x*coeff[0] + coeff[1]
-    titlestr_p = 'r = {:.3}, p = {:.2e}'.format(corr_p[0],corr_p[1])
-    rho = r'$\rho$'
-    titlestr_s = '{} = {:.3}, p = {:.2e}'.format(rho,corr_s[0],corr_s[1])
+    #Format presentation of correlation values
+    if show_p:
+        titlestr_p = 'r = {:.3}, p = {:.2e}'.format(corr_p[0],corr_p[1])
+    else:
+        titlestr_p = ''
+    if show_s:        
+        rho = r'$\rho$'
+        titlestr_s = '{} = {:.3}, p = {:.2e}'.format(rho,corr_s[0],corr_s[1])
+    else:
+        titlestr_p = ''
+    if show_p and show_s:
+        titlestr_all = '{}\n{}'.format(titlestr_p,titlestr_s)
+    else:
+        if show_p:
+            titlestr_all = '{}'.format(titlestr_p)
+        elif show_s:
+            titlestr_all = '{}'.format(titlestr_s)
+        else:
+            titlestr_all = ''
+    #Find ideal position for text
+    xrange = ax.get_xlim()
+    textx = (xrange[1]-xrange[0])*.1+xrange[0]
+    texty = .62
+    ax.text(textx,texty,titlestr_all,fontsize=12)
     ax.plot(x,y,'--')
-    ax.set_title('{}\n{}'.format(titlestr_p, titlestr_s),fontsize=16)
-    ax.set_xlabel('negLL\n{}'.format(model_short))
-    if m==0:
+    ax.set_title(model_short)
+    ax.set_xlabel('negLL')
+    #ax.set_title('{}\n{}'.format(titlestr_p, titlestr_s),fontsize=12)
+    #ax.set_xlabel('negLL\n{}'.format(model_short))
+    first_col = np.where(model_loc)    
+    if first_col[1][0]==0:
         ax.set_ylabel('Participant p(error)')
     else:
         ax.set_ylabel('')

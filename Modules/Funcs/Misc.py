@@ -621,7 +621,13 @@ def get_initials(input,num_letters = 1,include_delim = True):
     return output
 
 ##Sorry, don't mean to clog things up here but for convenience I'm dumping more misc functions here
-def get_corr(start_params,pptdata,tso,model_obj,fixedparams=None,pearson=True,print_on = False):
+def get_corr(start_params,pptdata,tso,model_obj,fixedparams=None,pearson=True,print_on = False, parmxform = False):
+    """
+    Returns the correlation between model fits (to generation probabilities) and observed participant error in the
+    catassign data (experiment 3). start_params is the set of parameter values, pptdata and tso can be obtained through
+    the prep_corrvar function.
+
+    """
     execfile('Imports.py')
     import Modules.Funcs as funcs
     from Modules.Classes import ConjugateJK13
@@ -630,7 +636,6 @@ def get_corr(start_params,pptdata,tso,model_obj,fixedparams=None,pearson=True,pr
     import math
     import numpy as np
     from scipy.stats import stats as ss
-
     #convert free parms to dict
     if not type(start_params) is dict:
         start_params = model_obj.params2dict(start_params)        
@@ -652,8 +657,9 @@ def get_corr(start_params,pptdata,tso,model_obj,fixedparams=None,pearson=True,pr
         #Initialise model (the value of the arguments here don't really matter)
         model = model_obj(np.array([[0,0]]), params)
         #pptdata = pd.DataFrame(columns = ['condition','betas'])
-        #transform parms
-        params = model.parmxform(params, direction = 1)
+        if parmxform:
+            #transform parms    
+            params = model.parmxform(params, direction = 1)
         tso_ppt = tso[pi]
         raw_array = []#np.zeros((1,nbetapermute))#np.zeros((nstim,nbetapermute))
         for tso_ppti in tso_ppt:
@@ -662,12 +668,11 @@ def get_corr(start_params,pptdata,tso,model_obj,fixedparams=None,pearson=True,pr
             # and add it to the log of the same constant
             raw_array_ps = tso_ppti.loglike(params,model_obj)
             raw_array += [raw_array_ps]
-
+            
         raw_array_sum = np.array(raw_array) #raw_array.sum(0)    
         raw_array_sum_max = raw_array_sum.max()
         raw_array_t = np.exp(-(raw_array_sum - raw_array_sum_max)).sum()
         raw_array_ll = -np.log(raw_array_t) + raw_array_sum_max
-
         ll_list += [raw_array_ll]
         if print_on:
             #Print progress
@@ -677,7 +682,7 @@ def get_corr(start_params,pptdata,tso,model_obj,fixedparams=None,pearson=True,pr
     error_list = pptdata.ppterror.as_matrix()
     if pearson:
         corr = ss.pearsonr(ll_list,error_list)
-    else:
+    else:        
         corr = ss.spearmanr(ll_list,error_list)
 
     r = corr[0] * -1.0

@@ -189,7 +189,7 @@ class Trialset(object):
         return self
                 
 
-    def loglike(self, params, model, fixedparams = None, whole_array=False):
+    def loglike(self, params, model, fixedparams = None, whole_array=False, parmxform = True):
         """
         Evaluate a model object's log-likelihood on the
         trial set based on the provided parameters.
@@ -199,7 +199,8 @@ class Trialset(object):
         """
         
         # reverse-transform parameter values
-        params = model.parmxform(params, direction = -1)        
+        if parmxform:
+            params = model.parmxform(params, direction = -1)        
 
         # extract fixed parameters and feed it into params variable
         if hasattr(fixedparams,'keys'):
@@ -213,13 +214,11 @@ class Trialset(object):
         ps_list = np.array([])
         task = self.task
         for idx, trial in enumerate(self.Set):
-
             # format categories
             categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
-
             # if it's an assignment task, also compute probabilities for other category (cat0)
             # ps0 = np.zeros(ps1.shape)
-            if task is 'generate':                                
+            if task == 'generate':                                
                 # compute probabilities of generating exemplar in cat 1
                 ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
                 ps_add = ps[trial['response']]
@@ -413,7 +412,7 @@ def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None
                         
     return res
 
-def hillclimber_corr(model_obj, pptdata, tso, options, fixedparams = None, inits = None, results = True,callbackstyle='none'):
+def hillclimber_corr(model_obj, pptdata, tso, options, fixedparams = None, inits = None, results = True,callbackstyle='none',pearson=True):
     """
     Run an optimization routine that maximises correlations.
 
@@ -457,7 +456,7 @@ def hillclimber_corr(model_obj, pptdata, tso, options, fixedparams = None, inits
                 
     res = op.minimize(funcs.get_corr, 
                 inits, 
-                args = (pptdata,tso,model_obj,fixedparams),
+                args = (pptdata,tso,model_obj,fixedparams,pearson),
                 callback = _callback_fun_, 
                 **options
         )
@@ -718,9 +717,10 @@ def loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1
                     'categories yet. To fix this, go bug Xian or do it yourself.')
 
     import pandas as pd
-    import math
+    import math    
     cat2perm = categories[permute_category]
     cat2notperm = categories[1-permute_category]
+
     nstim = len(cat2perm)
     #condition and ppt numbers aren't important so just give it some arbitrary
     #value

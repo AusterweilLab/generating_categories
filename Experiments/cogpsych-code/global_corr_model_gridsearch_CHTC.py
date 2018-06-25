@@ -78,9 +78,10 @@ options = dict(
 ) 
 
 
-#Run grid search
+
 results = dict()
 pptdata,tso = funcs.prep_corrvar(info,assignment,stimuli,stats,WT_THETA)
+#Run grid search
 for model_obj in [ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
     #Prepare list of grid search start points
     #Create base array
@@ -153,7 +154,7 @@ for model_obj in [ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
         inits = startp[i,:]
         res = Simulation.hillclimber_corr(model_obj, pptdata, tso, options,
                                      inits=inits, results = False,
-                                     callbackstyle='iter')
+                                          callbackstyle='none',pearson=False)
         final_parms = res.x
         final_ll = res.fun
         final_aic =  funcs.aic(final_ll,nparms)

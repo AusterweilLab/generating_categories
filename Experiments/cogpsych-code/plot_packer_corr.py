@@ -89,7 +89,7 @@ except:
         def gcpar(parm):
             #helper function to make parallelising get_corr easier
             print '.'
-            corr = funcs.get_corr(parm,pptdata,tso,Packer,print_on = False)[0] #-trials.loglike(curr, Packer)
+            corr = funcs.get_corr(parm,pptdata,tso,Packer,print_on = False, parmxform=True)[0] #-trials.loglike(curr, Packer)
             corr = -corr
             return corr
         for i, val in enumerate(gamma_grid):
@@ -111,7 +111,7 @@ except:
             curr['theta_cntrst'] = val
             curr['theta_target'] = curr['determinism']
             #curr = Packer.parmxform(curr, direction = 1)
-            corr = funcs.get_corr(curr,pptdata,tso,Packer,print_on = False)[0] #-trials.loglike(curr, Packer)
+            corr = funcs.get_corr(curr,pptdata,tso,Packer,print_on = False, parmxform=True)[0] #-trials.loglike(curr, Packer)
             corrs[i] = -corr
             print corrs[i]
             

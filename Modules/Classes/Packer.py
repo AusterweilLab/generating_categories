@@ -56,13 +56,13 @@ class Packer(Exemplar):
         aggregate = contrast_ss + target_ss
         # add baseline similarity
         #aggregate = aggregate + self.baselinesim
-        if task is 'generate': 
+        if task == 'generate': 
             # NaN out known members - only for task=generate
             known_members = Funcs.intersect2d(stimuli, target_examples)
             aggregate[known_members] = np.nan
             ps = Funcs.softmax(aggregate, theta = 1.0)                       
             #ps = Funcs.softmax(aggregate, theta = self.determinism)                        
-        elif task is 'assign' or task is 'error':
+        elif task == 'assign' or task == 'error':
             #New test 110418
             #compute contrast and target ss if stimuli is assigned
             #to other cateogry
@@ -99,9 +99,7 @@ class Packer(Exemplar):
                     #ps_element = Funcs.softmax(agg_element, theta = self.determinism)
                     ps_element = Funcs.softmax(agg_element, theta = 1.0)
                     ps = np.append(ps,ps_element[0])
-
-                        
-
+                    
         return ps
 
         
