@@ -189,7 +189,7 @@ class Trialset(object):
         return self
                 
 
-    def loglike(self, params, model, fixedparams = None, whole_array=False, parmxform = True):
+    def loglike(self, params, model, fixedparams = None, whole_array=False, parmxform = True,seedrng = False):
         """
         Evaluate a model object's log-likelihood on the
         trial set based on the provided parameters.
@@ -212,6 +212,8 @@ class Trialset(object):
         # iterate over trials
         loglike = 0
         ps_list = np.array([])
+        if self.task is '':
+            raise Exception('Task for trialset object not defined.')
         task = self.task
         for idx, trial in enumerate(self.Set):
             # format categories
@@ -220,15 +222,15 @@ class Trialset(object):
             # ps0 = np.zeros(ps1.shape)
             if task == 'generate':                                
                 # compute probabilities of generating exemplar in cat 1
-                ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
+                ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
                 ps_add = ps[trial['response']]
             elif task=='assign':
                 #Compute probabilities of assigning exemplar to cat 0
-                ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
+                ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
                 #Compute probabilities of assigning exemplar to cat 1
                 ps1 = model(categories, params,
                             self.stimrange).get_generation_ps(self.stimuli,
-                                                              1,self.task)
+                                                              1,self.task,seedrng = seedrng)
 
 
                 idc0 = trial['response'][0]
@@ -264,10 +266,10 @@ class Trialset(object):
                 #idc_err = trial['response'][0]
                 #Compute probabilities of assigning exemplar to cat 0
                 ps0 = model(categories, params,
-                            self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
+                            self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
                 #Compute probabilities of assigning exemplar to cat 1
                 ps1 = model(categories, params,
-                            self.stimrange).get_generation_ps(self.stimuli, 1,self.task)
+                            self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
                 idc0 = trial['response'][0] 
                 idc1 = trial['response'][1] 
                 ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
@@ -291,7 +293,7 @@ class Trialset(object):
                     #Get entire probability space
                     ps = model(categories, params,
                                self.stimrange).get_generation_ps(self.stimuli,
-                                                                 i,self.task)
+                                                                 i,self.task,seedrng = seedrng)
                     if len(correctresp)>0:
                         correctps = np.concatenate([correctps,ps[correctresp]])
                     if len(wrongresp)>0:
@@ -321,7 +323,7 @@ class Trialset(object):
         else:
             return -1.0 * loglike
 
-    def correlate(self, params, model, alphas, fixedparams = None):
+    def correlate(self, params, model, alphas, fixedparams = None,seedrng = False):
         """Returns the correlation between model generation fit and observed
         participant error. This functions extracts the data for each individual
         participant in the trialset object, computes the observed error from that
@@ -346,7 +348,7 @@ class Trialset(object):
                         nresp_correct += trial['response'][i].count(correct)
             ppt_err_rate += [1-(nresp_correct/nresp)]
             #get the total ll of all permutations of the beta category
-            ll += [pptTrialObj.loglike(params, model)]
+            ll += [pptTrialObj.loglike(params, model,seedrng=seedrng)]
         correlation = ss.pearsonr(ppt_err_rate,ll)
 
         
@@ -373,6 +375,7 @@ def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None
     callback = callbackstyle
     global itcount
     global fitLL
+    global seedrng
     fitLL = True
     # set initial params
     if inits is None:    
@@ -438,6 +441,7 @@ def hillclimber_corr(model_obj, pptdata, tso, options, fixedparams = None, inits
     callback = callbackstyle
     global itcount
     global fitLL
+    global seedrng
     fitLL = False
     execfile('Imports.py')
     import Modules.Funcs as funcs
@@ -488,6 +492,7 @@ def _callback_fun_(xk):
     #callback = '.' #this line is here for easier manual switching of display
     global itcount
     global fitLL
+    global seedrng
     if fitLL:
         model_obj,trials_obj,display = _fetch_global_(fitLL)
     else:
@@ -496,7 +501,7 @@ def _callback_fun_(xk):
     printcol = 20 
     if display is 'iter':
         if fitLL:
-            fit = trials_obj.loglike(xk,model_obj)                
+            fit = trials_obj.loglike(xk,model_obj,seedrng = seedrng)                
         else:
             execfile('Imports.py')
             import Modules.Funcs as funcs
@@ -546,8 +551,8 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
         # format categories
         categories = [trial_obj.stimuli[i,:] for i in trial['categories'] if any(i)]
         
-        ps0 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 0,trial_obj.task)
-        ps1 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 1,trial_obj.task)
+        ps0 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 0,trial_obj.task,seedrng = seedrng)
+        ps1 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 1,trial_obj.task,seedrng = seedrng)
         
         
         if show_data is False:
@@ -707,7 +712,7 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
     return output_obj
 
 def loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1,
-                    fixedparams = None, task = 'generate'):
+                    fixedparams = None, task = 'generate',seedrng = False):
     """
     Finds the total loglikelihood of generating all permutations of some
     specified category. Default category to permute is 1 (i.e., the second category.)
@@ -740,7 +745,7 @@ def loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1
                         dict(participant=pptnum, stimulus=exemplar, trial=trial, condition=pptcondition, categories=[cat2notperm]),ignore_index = True
                 )
         pptTrialObj.add_frame(pptDF)
-        raw_array_ps = pptTrialObj.loglike(params,model_obj)
+        raw_array_ps = pptTrialObj.loglike(params,model_obj,seedrng = seedrng)
         raw_array[:,i] = raw_array_ps
     #Compute the total likelihood as the sum of the likelihood of each
     #permutation. Since I don't know an easy way to add something which is in

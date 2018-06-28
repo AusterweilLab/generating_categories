@@ -35,7 +35,7 @@ class Packer(Exemplar):
         ] 
 
 
-    def get_generation_ps(self, stimuli, category, task='generate'):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
         # compute contrast sum similarity
         #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
         contrast_examples   = self.exemplars[self.assignments != category]
@@ -126,7 +126,7 @@ class CopyTweak(Exemplar):
                 np.random.uniform(0.1, 6.0), # determinism
                 #np.random.uniform(0.1, 6.0)   # baselinesim
         ]
-    def get_generation_ps(self, stimuli, category, task='generate'):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
                 
         # return uniform probabilities if there are no exemplars
         target_is_populated = any(self.assignments == category)
@@ -136,6 +136,7 @@ class CopyTweak(Exemplar):
 
         # get pairwise similarities with target category
         similarity = self._sum_similarity(stimuli, self.categories[category])
+
         # add baseline similarity
         #similarity = similarity + self.baselinesim
         if task is 'generate': 

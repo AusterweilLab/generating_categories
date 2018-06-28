@@ -94,7 +94,7 @@ class ConjugateJK13(Model):
 
         return (mu,Sigma)
 
-    def get_generation_ps(self, stimuli, category, task='generate'):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
 
         # random response if there are no target members.
         target_is_populated = any(self.assignments == category)
@@ -243,7 +243,10 @@ class RepresentJK13(Model):
 
         return (mu,Sigma)
 
-    def get_generation_ps(self, stimuli, category, task='generate'):
+    def get_generation_ps(self, stimuli, category, task='generate', seedrng = False):
+        if seedrng:
+            np.random.seed(234983) #some arbitrary seed value here
+
         target_is_populated = any(self.assignments == category)                
         mu,Sigma = self.get_musig(stimuli, category)
                 

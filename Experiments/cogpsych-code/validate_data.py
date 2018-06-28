@@ -60,3 +60,4 @@ else:
 
 src = '{}.p'.format(filename)
 dst = 'best_params_{}.p'.format(filename)
+bestparmchtc = 'chtc_gs_best_params_{}.p'.format(filename)

@@ -16,12 +16,21 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("whitegrid")
 
+pearson = True
+if pearson:
+    corrtype = 'p'
+else:
+    corrtype = 's'
+
+savefilename='modelvsppt{}.pdf'.format(corrtype)
+bestparmdb = "pickles/chtc_gs_best_params_corr{}.p".format(corrtype)
+modeleaseDB = "pickles/modelease_corr{}.p".format(corrtype)
 #Some plotting options
 font = {'family' : 'DejaVu Sans',
         'weight' : 'regular',
         'size'   : 20}
 show_p = True #show pearson r in plots
-show_s = True #show spearman tho in plots
+show_s = False #show spearman tho in plots
 
 #Specify simulation values
 N_SAMPLES = 10000
@@ -44,7 +53,7 @@ with open(pickledir+src, "rb" ) as f:
 
 # get best params pickle
 #bestparmdb = "pickles/chtc_gs_best_params_all_data_e1_e2.p"
-bestparmdb = "pickles/chtc_gs_best_params_corr.p"
+#bestparmdb = "pickles/chtc_gs_best_params_corrs.p"
 with open(bestparmdb, "rb" ) as f:
     best_params_t = pickle.load( f )
 
@@ -87,9 +96,7 @@ for i,row in info.iterrows():
 
 
 pptlist = np.unique(pptlist)
-
 #see if ll_global exists as a pickle, otherwise construct new ll
-modeleaseDB = "pickles/modelease_corr.p"
 try:
     with open(modeleaseDB, "rb" ) as f:
         ll_global = pickle.load( f )
@@ -177,7 +184,6 @@ for model_obj in modelList:
         #Save pickle for faster running next time
         with open(modeleaseDB, "wb" ) as f:
             pickle.dump(ll_global, f)
-
 #fh,axs = plt.subplots(2,int(np.ceil(len(modelList)/2)), figsize=(20,8))
 fh,axs = plt.subplots(2,int(np.ceil(len(modelList)/2)), figsize=(15,15))
 plt.tight_layout(w_pad=1,h_pad=5.0,rect=(.05,.05,.95,.95))
@@ -196,12 +202,35 @@ for m,model_obj in enumerate(modelList):
     model_loc = modelPlotOrder==model_obj
     ax = axs[model_loc][0]
     #Plot figure
-    ax.scatter(ll[:,1],ll[:,2])
+    if pearson:
+        ax.scatter(ll[:,1],ll[:,2])
+        #Add best fit line
+        coeff = np.polyfit(ll[:,1],ll[:,2],1)
+        x = np.array([min(ll[:,1]),max(ll[:,1])])
+        y = x*coeff[0] + coeff[1]
+        #Find ideal position for text
+        xrange = ax.get_xlim()
+        textx = (xrange[1]-xrange[0])*.1+xrange[0]
+        texty = .62
+        #Specify axis label strings
+        xlabel = 'negLL'
+        ylabel = 'Participant p(error)'
+    else:
+        rankorderx = range(len(ll[:,1]))
+        rankordery = ll[:,2].argsort()
+        ax.scatter(rankorderx,rankordery)
+        #Add best fit line
+        coeff = np.polyfit(rankorderx,rankordery,1)
+        x = np.array([min(rankorderx),max(rankordery)])
+        y = x*coeff[0] + coeff[1]
+        #Find ideal position for text
+        xrange = ax.get_xlim()
+        yrange = ax.get_ylim()
+        textx = (xrange[1]-xrange[0])*.1+xrange[0]
+        texty = (yrange[1]-yrange[0])*.85+yrange[0]
+        xlabel = 'negLL rank order'
+        ylabel = 'Participant p(error) rank order '
 
-    #Add best fit line
-    coeff = np.polyfit(ll[:,1],ll[:,2],1)
-    x = np.array([min(ll[:,1]),max(ll[:,1])])
-    y = x*coeff[0] + coeff[1]
     #Format presentation of correlation values
     if show_p:
         titlestr_p = 'r = {:.3}, p = {:.2e}'.format(corr_p[0],corr_p[1])
@@ -211,7 +240,7 @@ for m,model_obj in enumerate(modelList):
         rho = r'$\rho$'
         titlestr_s = '{} = {:.3}, p = {:.2e}'.format(rho,corr_s[0],corr_s[1])
     else:
-        titlestr_p = ''
+        titlestr_s = ''
     if show_p and show_s:
         titlestr_all = '{}\n{}'.format(titlestr_p,titlestr_s)
     else:
@@ -221,22 +250,34 @@ for m,model_obj in enumerate(modelList):
             titlestr_all = '{}'.format(titlestr_s)
         else:
             titlestr_all = ''
-    #Find ideal position for text
-    xrange = ax.get_xlim()
-    textx = (xrange[1]-xrange[0])*.1+xrange[0]
-    texty = .62
     ax.text(textx,texty,titlestr_all,fontsize=12)
     ax.plot(x,y,'--')
     ax.set_title(model_short)
-    ax.set_xlabel('negLL')
+    ax.set_xlabel(xlabel)
     #ax.set_title('{}\n{}'.format(titlestr_p, titlestr_s),fontsize=12)
     #ax.set_xlabel('negLL\n{}'.format(model_short))
     first_col = np.where(model_loc)    
     if first_col[1][0]==0:
-        ax.set_ylabel('Participant p(error)')
+        ax.set_ylabel(ylabel)
     else:
         ax.set_ylabel('')
         ax.set_yticklabels([])
     
-plt.savefig('modelvsppt.pdf')
+plt.savefig(savefilename)
 plt.cla()
+
+#Also print the likelihood ratio test results for PACKER vs CopyTweak
+# This is simply -2(LL_Packer - LL_CopyTweak)
+#280618  - ok likelihood ratio test doesn't seem to make sense. Run bootstrap instead.
+#Get global generation LL using these parameters
+# global_ll_packer = trials.loglike(best_params['PACKER'],Packer,parmxform=False)
+# global_ll_copytweak = trials.loglike(best_params['Copy and Tweak'],CopyTweak,parmxform=False)
+
+# from scipy import stats as s2
+# ll_ratio = -2.0 * (global_ll_packer - global_ll_copytweak)
+# pval = s2.chi2.sf(ll_ratio,1);
+
+# print "Likelihood ratio test:"
+# print "\t chi_sq (1) = {}, p = {:.3}".format(ll_ratio,pval)
+
+#Run bootstrap

@@ -122,6 +122,9 @@ for i in range(nPpt):
                 print '\tTime start: ' + timestart + ' ('+ str(pptdata.iloc[0]['start']/1000) + ')' 
                 print '\tTime end: ' + timeend +  ' ('+ str(pptdata.iloc[0]['finish']/1000) + ')'
 
+#Print averages
+print 'Average time taken: {}'
+
 lll        
         
 

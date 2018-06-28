@@ -13,7 +13,7 @@ from Modules.Classes import RepresentJK13
 import get_corr as gc
 WT_THETA = 1.5
 #Toggle 
-fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
+pearson = False #fit correlations using pearson r. Uses spearman rho if false.
 
 participant_def = 'all'
 unique_trials_def = 'all'
@@ -154,7 +154,7 @@ for model_obj in [ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
         inits = startp[i,:]
         res = Simulation.hillclimber_corr(model_obj, pptdata, tso, options,
                                      inits=inits, results = False,
-                                          callbackstyle='none',pearson=False)
+                                          callbackstyle='none',pearson=pearson)
         final_parms = res.x
         final_ll = res.fun
         final_aic =  funcs.aic(final_ll,nparms)

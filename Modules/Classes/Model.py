@@ -126,7 +126,7 @@ class Model(object):
         
 
     @abc.abstractmethod
-    def get_generation_ps(self, stimuli, category): pass
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False): pass
 
     def __init__(self, categories, params, stimrange=[{'min':-1,'max':1}]):
         """
