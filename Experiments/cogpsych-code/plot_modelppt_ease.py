@@ -3,6 +3,7 @@
 import pickle, math
 import pandas as pd
 import sqlite3
+import random
 execfile('Imports.py')
 import Modules.Funcs as funcs
 from Modules.Classes import Simulation
@@ -21,6 +22,10 @@ if pearson:
     corrtype = 'p'
 else:
     corrtype = 's'
+#Bootstrap parameters
+nbootstraps = 1000
+nsamples = len(pptlist)
+nsamprange = range(nsamples)
 
 savefilename='modelvsppt{}.pdf'.format(corrtype)
 bestparmdb = "pickles/chtc_gs_best_params_corr{}.p".format(corrtype)
@@ -188,6 +193,8 @@ for model_obj in modelList:
 fh,axs = plt.subplots(2,int(np.ceil(len(modelList)/2)), figsize=(15,15))
 plt.tight_layout(w_pad=1,h_pad=5.0,rect=(.05,.05,.95,.95))
 for m,model_obj in enumerate(modelList):
+    model_loc = modelPlotOrder==model_obj
+    ax = axs[model_loc][0]
     model_name = model_obj.model
     model_short = model_obj.modelshort
     ll = ll_global[model_name]
@@ -195,12 +202,41 @@ for m,model_obj in enumerate(modelList):
     corr_p = ss.pearsonr(ll[:,1],ll[:,2])
     corr_s = ss.spearmanr(ll[:,1],ll[:,2])
     cov = np.cov(ll[:,1],ll[:,2])
+    #Run bootstrap
+    corr_bs_p = []
+    corr_bs_s = []
+    bestfitlines = []
+    for bsi in range(nbootstraps):
+        bs_samples = [random.choice(nsamprange) for ct in nsamprange]
+        ll_bs = ll[bs_samples,:]
+        corr_bs_p += [ss.pearsonr(ll_bs[:,1],ll_bs[:,2])[0]]            
+        corr_bs_s += [ss.spearmanr(ll_bs[:,1],ll_bs[:,2])[0]]
+        #Find best fit line
+        bscoeff = np.polyfit(ll_bs[:,1],ll_bs[:,2],1)
+        bestfitlines += [bscoeff]
+
+    #Get upper and lower 95% percentile of y at each x
+    xrange = np.linspace(min(ll[:,1]),max(ll[:,1]),100)
+    yrangeLL = []
+    yrangeUL = []
+    for xi in xrange:
+        yrangeAll = [xi*bfl[0] + bfl[1] for bfl in bestfitlines]
+        yrangePct = np.percentile(yrangeAll,(2.5, 97.5))
+        yrangeLL += [yrangePct[0]]
+        yrangeUL += [yrangePct[1]]
+    ax.plot(xrange,yrangeUL,'g:')
+    ax.plot(xrange,yrangeLL,'g:')
+    
+    #Get 95% CI
+    ci_95_p = np.percentile(corr_bs_p,(2.5, 97.5))
+    ci_95_s = np.percentile(corr_bs_s,(2.5, 97.5))
+        
     print model_name
-    print '\tPearson  r   = {:.3}, p = {:.2e}'.format(corr_p[0],corr_p[1])
+    print '\tPearson  r   = {:.3f} 95%CI[{:.3f},{:.3f}], p = {:.2e}'.format(
+        corr_p[0],ci_95_p[0],ci_95_p[1],corr_p[1])
     #print '\tp = ' + str(corr[1])
-    print '\tSpearman rho = {:.3}, p = {:.2e}'.format(corr_s[0],corr_s[1])
-    model_loc = modelPlotOrder==model_obj
-    ax = axs[model_loc][0]
+    print '\tSpearman rho = {:.3f} 95%CI[{:.3f},{:.3f}], p = {:.2e}'.format(
+        corr_s[0],ci_95_s[0],ci_95_s[1],corr_s[1])
     #Plot figure
     if pearson:
         ax.scatter(ll[:,1],ll[:,2])
@@ -230,7 +266,7 @@ for m,model_obj in enumerate(modelList):
         texty = (yrange[1]-yrange[0])*.85+yrange[0]
         xlabel = 'negLL rank order'
         ylabel = 'Participant p(error) rank order '
-
+        
     #Format presentation of correlation values
     if show_p:
         titlestr_p = 'r = {:.3}, p = {:.2e}'.format(corr_p[0],corr_p[1])
@@ -280,4 +316,3 @@ plt.cla()
 # print "Likelihood ratio test:"
 # print "\t chi_sq (1) = {}, p = {:.3}".format(ll_ratio,pval)
 
-#Run bootstrap
