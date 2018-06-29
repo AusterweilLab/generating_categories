@@ -17,15 +17,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("whitegrid")
 
-pearson = True
+pearson = False
 if pearson:
     corrtype = 'p'
 else:
     corrtype = 's'
 #Bootstrap parameters
 nbootstraps = 1000
-nsamples = len(pptlist)
-nsamprange = range(nsamples)
 
 savefilename='modelvsppt{}.pdf'.format(corrtype)
 bestparmdb = "pickles/chtc_gs_best_params_corr{}.p".format(corrtype)
@@ -98,6 +96,10 @@ pptlist = []#np.array([]);
 for i,row in info.iterrows():
     pptlist += [row.pptmatch]
         #    pptlist = np.concatenate((pptlist,trial['participant']))
+
+#Specify a few more bootstrap parameters
+nsamples = len(pptlist)
+nsamprange = range(nsamples)
 
 
 pptlist = np.unique(pptlist)
@@ -206,26 +208,35 @@ for m,model_obj in enumerate(modelList):
     corr_bs_p = []
     corr_bs_s = []
     bestfitlines = []
+    if not pearson:
+        rankorderx_base = np.array(range(len(ll[:,1])))
+        rankordery_base = ll[:,2].argsort()
     for bsi in range(nbootstraps):
         bs_samples = [random.choice(nsamprange) for ct in nsamprange]
         ll_bs = ll[bs_samples,:]
         corr_bs_p += [ss.pearsonr(ll_bs[:,1],ll_bs[:,2])[0]]            
         corr_bs_s += [ss.spearmanr(ll_bs[:,1],ll_bs[:,2])[0]]
-        #Find best fit line
-        bscoeff = np.polyfit(ll_bs[:,1],ll_bs[:,2],1)
+        if pearson:
+            #Find best fit line        
+            bscoeff = np.polyfit(ll_bs[:,1],ll_bs[:,2],1)
+            xrange_bs = np.linspace(min(ll[:,1]),max(ll[:,1]),100)
+        else:
+            rankorderx = rankorderx_base[bs_samples]            
+            rankordery = rankordery_base[bs_samples]
+            #Add best fit line
+            bscoeff = np.polyfit(rankorderx,rankordery,1)
+            xrange_bs = np.linspace(min(rankorderx),max(rankorderx),100)            
         bestfitlines += [bscoeff]
-
     #Get upper and lower 95% percentile of y at each x
-    xrange = np.linspace(min(ll[:,1]),max(ll[:,1]),100)
     yrangeLL = []
     yrangeUL = []
-    for xi in xrange:
+    for xi in xrange_bs:
         yrangeAll = [xi*bfl[0] + bfl[1] for bfl in bestfitlines]
         yrangePct = np.percentile(yrangeAll,(2.5, 97.5))
         yrangeLL += [yrangePct[0]]
         yrangeUL += [yrangePct[1]]
-    ax.plot(xrange,yrangeUL,'g:')
-    ax.plot(xrange,yrangeLL,'g:')
+    ax.plot(xrange_bs,yrangeUL,'g:')
+    ax.plot(xrange_bs,yrangeLL,'g:')
     
     #Get 95% CI
     ci_95_p = np.percentile(corr_bs_p,(2.5, 97.5))
@@ -257,7 +268,7 @@ for m,model_obj in enumerate(modelList):
         ax.scatter(rankorderx,rankordery)
         #Add best fit line
         coeff = np.polyfit(rankorderx,rankordery,1)
-        x = np.array([min(rankorderx),max(rankordery)])
+        x = np.array([min(rankorderx),max(rankorderx)])
         y = x*coeff[0] + coeff[1]
         #Find ideal position for text
         xrange = ax.get_xlim()
