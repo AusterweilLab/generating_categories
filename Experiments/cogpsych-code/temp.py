@@ -1,5 +1,6 @@
+
 # plotting
-f, ax = plt.subplots(5,len(name_2_object)+1,figsize = (10, 8))
+f, ax = plt.subplots(5,len(name_2_object)+1,figsize = (10, 10))
 for rownum, c in enumerate(row_order):
     A = stimuli[alphas[c],:]
     
@@ -55,11 +56,11 @@ cbar.set_xticklabels([
 ],**fontsettings)
 cbar.tick_params(length = 0)
 
-plt.tight_layout(w_pad=-8.0, h_pad= 1)
+plt.tight_layout(w_pad=-2.0, h_pad= .5)
 
-fname = 'gradients-t-' + STAT_OF_INTEREST
-#f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
+fname = 'gradients-' + STAT_OF_INTEREST
+f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
 #f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
 
-#path = '../../Manuscripts/cog-psych/figs/range-diff-gradients.pgf'
-#funcs.save_as_pgf(f, path)
+path = '../../Manuscripts/cog-psych/revision/figs/range-diff-gradients.pgf'
+funcs.save_as_pgf(f, path)

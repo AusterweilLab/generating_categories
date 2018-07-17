@@ -17,8 +17,8 @@ cats = [A,B]
 # params for PACKER
 params = dict(
     specificity = 1.0,
-    tradeoff = 0.5,
-    determinism = 3.0
+    theta_cntrst = 1.5, #0.5
+    theta_target = 1.5
 )
 
 wts = dict(
@@ -63,5 +63,5 @@ cbar.tick_params(length = 0)
 
 f.savefig('packer-attention-examples.png', bbox_inches='tight', transparent=False)
 
-path = '../../Manuscripts/cog-psych/figs/packer-attention-examples.pgf'
+path = '../../Manuscripts/cog-psych/revision/figs/packer-attention-examples.pgf'
 funcs.save_as_pgf(f, path)

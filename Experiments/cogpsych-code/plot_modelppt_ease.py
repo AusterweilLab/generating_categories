@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("whitegrid")
 
-pearson = False
+pearson = True
 if pearson:
     corrtype = 'p'
 else:
@@ -32,7 +32,7 @@ modeleaseDB = "pickles/modelease_corr{}.p".format(corrtype)
 font = {'family' : 'DejaVu Sans',
         'weight' : 'regular',
         'size'   : 20}
-show_p = True #show pearson r in plots
+show_p = False #show pearson r in plots
 show_s = False #show spearman tho in plots
 
 #Specify simulation values
@@ -198,7 +198,7 @@ for m,model_obj in enumerate(modelList):
     model_loc = modelPlotOrder==model_obj
     ax = axs[model_loc][0]
     model_name = model_obj.model
-    model_short = model_obj.modelshort
+    model_print = model_obj.modelprint
     ll = ll_global[model_name]
     #Get correlations
     corr_p = ss.pearsonr(ll[:,1],ll[:,2])
@@ -299,10 +299,10 @@ for m,model_obj in enumerate(modelList):
             titlestr_all = ''
     ax.text(textx,texty,titlestr_all,fontsize=12)
     ax.plot(x,y,'--')
-    ax.set_title(model_short)
+    ax.set_title(model_print)
     ax.set_xlabel(xlabel)
     #ax.set_title('{}\n{}'.format(titlestr_p, titlestr_s),fontsize=12)
-    #ax.set_xlabel('negLL\n{}'.format(model_short))
+    #ax.set_xlabel('negLL\n{}'.format(model_print))
     first_col = np.where(model_loc)    
     if first_col[1][0]==0:
         ax.set_ylabel(ylabel)

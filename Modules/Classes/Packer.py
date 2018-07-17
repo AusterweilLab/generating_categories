@@ -12,6 +12,7 @@ class Packer(Exemplar):
 
     model = 'PACKER'
     modelshort = 'PACKER'
+    modelprint = 'PACKER'
     #parameter_names = ['specificity', 'tradeoff', 'determinism', 'baselinesim']
     #parameter_names = ['specificity', 'tradeoff', 'determinism']
     parameter_names = ['specificity', 'theta_cntrst', 'theta_target'] 
@@ -111,6 +112,7 @@ class CopyTweak(Exemplar):
 
     model = 'Copy and Tweak'
     modelshort = 'CopyTweak'
+    modelprint = "Copy & Tweak"
     # parameter_names = ['specificity', 'determinism', 'baselinesim']
     parameter_names = ['specificity', 'determinism']        
     parameter_rules = dict(

@@ -55,6 +55,15 @@ for i in range(len(gamma_grid)):
 # plot it
 fh = plt.figure(figsize=(5,3))
 
+# equal weight annotation
+tempparm = start_params.copy()
+tempparm['theta_cntrst'] = tempparm['determinism']
+tempparm['theta_target'] = tempparm['determinism']
+tempparm = Packer.parmxform(tempparm, direction = 1)
+equal_loglike = -trials.loglike(tempparm, Packer)
+
+plt.plot(start_params['determinism'],equal_loglike,'d',linewidth=1,color='k')
+plt.text(start_params['determinism']+.2,equal_loglike,r'$\theta_c=\theta_t$')
 # copytweak annotation
 copytweak_loglike = loglikes[gamma_grid == 0]
 plt.plot([min(gamma_grid), max(gamma_grid)], [copytweak_loglike, copytweak_loglike], '--', linewidth = 1, color='gray')
@@ -67,12 +76,12 @@ contrast_loglike = loglikes[gamma_grid == 2]
 
 # PACKER annotation
 x = float(gamma_grid[loglikes == max(loglikes)])
-plt.text(x, max(loglikes) + 5, 'PACKER', ha = 'center', va = 'bottom', fontsize = 12)
+plt.text(x, max(loglikes) -50, 'PACKER', ha = 'center', va = 'bottom', fontsize = 12)
 
 
 # plot main line
 plt.plot(gamma_grid, loglikes,'k-', linewidth = 1)
-plt.xlabel(r'$\theta_{contrast}$ Parameter Value', fontsize = 12)
+plt.xlabel(r'$\theta_c$ Parameter Value', fontsize = 12)
 
 xstep = 1.0
 xticks = np.round(np.arange(min(gamma_grid),max(gamma_grid)+xstep,xstep),1)
@@ -90,6 +99,6 @@ fh.gca().set_yticklabels(yticklabels)
 plt.gca().yaxis.grid(True)
 plt.ylabel('Log-Likelihood ($L$)', fontsize = 12)
 
-plt.savefig('packer-loglike-t.pdf', bbox_inches='tight', transparent=False)
-#path = '../../Manuscripts/cog-psych/figs/packer-loglike-t.pgf'
-#funcs.save_as_pgf(fh, path)
+plt.savefig('packer-loglike.pdf', bbox_inches='tight', transparent=False)
+path = '../../Manuscripts/cog-psych/revision/figs/packer-loglike.pgf'
+funcs.save_as_pgf(fh, path)

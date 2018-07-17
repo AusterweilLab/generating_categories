@@ -128,7 +128,7 @@ class Model(object):
     @abc.abstractmethod
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False): pass
 
-    def __init__(self, categories, params, stimrange=[{'min':-1,'max':1}]):
+    def __init__(self, categories, params, stimrange=[{'min':-1,'max':1},{'min':-1,'max':1}]):
         """
         Initialize the model. "categories" should be a list of numpy
         arrays with the same number of columns (features). Items in 

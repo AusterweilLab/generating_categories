@@ -144,7 +144,7 @@ plt.text(x, max(corrs), 'PACKER', ha = 'center', va = 'bottom', fontsize = 12)
 
 # plot main line
 plt.plot(gamma_grid, corrs,'k-', linewidth = 1)
-plt.xlabel(r'$\theta_{contrast}$ Parameter Value', fontsize = 12)
+plt.xlabel(r'$\theta_c$ Parameter Value', fontsize = 12)
 
 xstep = 10
 xticks = np.round(np.arange(min(gamma_grid),max(gamma_grid)+xstep,xstep),1)
@@ -163,5 +163,5 @@ plt.gca().yaxis.grid(True)
 plt.ylabel('Correlation ($r$)', fontsize = 12)
 
 plt.savefig('packer-corr.pdf', bbox_inches='tight', transparent=False)
-#path = '../../Manuscripts/cog-psych/figs/packer-corrs-t.pgf'
+#path = '../../Manuscripts/cog-psych/revision/figs/packer-corrs.pgf'
 #funcs.save_as_pgf(fh, path)

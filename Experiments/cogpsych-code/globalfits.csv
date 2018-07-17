@@ -1,22 +1,22 @@
 Model,Parm,catassign_fit2err,catassign,all_data_e1_e2,trials_2-4_e1_e2
-PACKER,specificity,540.30,2.90,0.48,0.90
-PACKER,theta_cntrst,5.66,0.97,3.16,2.03
-PACKER,theta_target,34.40,0.01,3.49,2.56
-PACKER,nLL,38.82,1518.89,4544.61,3390.19
-PACKER,AIC,83.63,3043.78,9095.23,6786.37
-CopyTweak,specificity,944.26,2.91,3.20,3.20
-CopyTweak,determinism,43.14,0.98,2.97,2.97
-CopyTweak,nLL,38.82,1518.89,4919.17,3578.87
-CopyTweak,AIC,81.63,3041.78,9842.35,7161.73
-Representative,category_mean_bias,14.96,16.14,11.23,19.24
-Representative,category_variance_bias,1.00,1.00,2.84,2.05
-Representative,domain_variance_bias,0.33,2.12,1.92,3.55
-Representative,determinism,4.75,2.15,5.88,11.62
-Representative,nLL,266.89,1574.81,4434.81,3322.66
-Representative,AIC,541.79,3157.63,8877.62,6653.33
-Hier. Samp.,category_mean_bias,13.66,9.82,0.00,0.00
-Hier. Samp.,category_variance_bias,1.00,1.00,5.60,5.60
-Hier. Samp.,domain_variance_bias,0.73,1.68,0.05,0.05
-Hier. Samp.,determinism,53.74,20.28,3.17,3.17
-Hier. Samp.,nLL,387.51,1560.22,4952.05,3611.75
-Hier. Samp.,AIC,783.02,3128.45,9912.11,7231.49
+PACKER,specificity,540.297,2.905,0.483,0.905
+PACKER,theta_cntrst,5.664,0.965,3.163,2.034
+PACKER,theta_target,34.400,0.010,3.494,2.565
+PACKER,nLL,38.816,1518.889,4544.614,3390.186
+PACKER,AIC,83.632,3043.777,9095.228,6786.371
+CopyTweak,specificity,944.263,2.906,3.197,3.197
+CopyTweak,determinism,43.141,0.975,2.972,2.972
+CopyTweak,nLL,38.816,1518.889,4919.173,3578.866
+CopyTweak,AIC,81.632,3041.777,9842.346,7161.732
+Representative,category_mean_bias,14.960,16.144,11.232,19.236
+Representative,category_variance_bias,1.000,1.000,2.844,2.050
+Representative,domain_variance_bias,0.333,2.122,1.917,3.549
+Representative,determinism,4.746,2.145,5.885,11.622
+Representative,nLL,266.893,1574.813,4434.809,3322.664
+Representative,AIC,541.786,3157.626,8877.617,6653.328
+Hier. Samp.,category_mean_bias,13.662,9.822,0.000,0.000
+Hier. Samp.,category_variance_bias,1.000,1.000,5.597,5.597
+Hier. Samp.,domain_variance_bias,0.728,1.684,0.055,0.055
+Hier. Samp.,determinism,53.739,20.278,3.175,3.175
+Hier. Samp.,nLL,387.512,1560.224,4952.054,3611.747
+Hier. Samp.,AIC,783.024,3128.449,9912.108,7231.494

@@ -25,9 +25,9 @@ WT_THETA = 1.5
 
 # plotting settings
 fontsettings = dict(fontsize = 12.0)
-col_order = ['Behavioral', 'PACKER', 'Copy and Tweak', 'Hierarchical Sampling','Hierarchical Sampling With Representativeness']
+col_order = ['Behavioral', 'PACKER', 'Copy and Tweak','Hierarchical Sampling With Representativeness', 'Hierarchical Sampling']
 #col_order = ['Hierarchical Sampling With Representativeness']
-col_names_short = ['Behavioral', 'PACKER', 'Copy & Tweak', 'Hier. Sampling','Hier. Sampling w/ Rep']
+col_names_short = ['Behavioral', 'PACKER', 'Copy & Tweak','Representativeness', 'Hier. Bayes']
 row_order = ['Cluster','Row', 'XOR', 'Bottom', 'Middle']
 SMOOTHING_PARAM = 0.8
 
@@ -123,7 +123,7 @@ for model_name, model_obj in name_2_object.items():
     all_data[model_obj.model] = model_data
 
 # plotting
-f, ax = plt.subplots(5,len(name_2_object)+1,figsize = (10, 8))
+f, ax = plt.subplots(5,len(name_2_object)+1,figsize = (10, 10))
 for rownum, c in enumerate(row_order):
     A = stimuli[alphas[c],:]
     
@@ -179,11 +179,11 @@ cbar.set_xticklabels([
 ],**fontsettings)
 cbar.tick_params(length = 0)
 
-plt.tight_layout(w_pad=-8.0, h_pad= 1)
+plt.tight_layout(w_pad=-2.0, h_pad= .5)
 
-fname = 'gradients-t-' + STAT_OF_INTEREST
+fname = 'gradients-' + STAT_OF_INTEREST
 f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
 #f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
 
-#path = '../../Manuscripts/cog-psych/figs/range-diff-gradients.pgf'
-#funcs.save_as_pgf(f, path)
+path = '../../Manuscripts/cog-psych/revision/figs/range-diff-gradients.pgf'
+funcs.save_as_pgf(f, path)

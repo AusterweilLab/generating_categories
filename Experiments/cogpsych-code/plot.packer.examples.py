@@ -15,11 +15,11 @@ B = np.array([[ 0.25,  0.25]])
 cats = [A,B]
 
 # params for PACKER
-c, theta = 1.0, 3.
+c, theta = 1.0, 3.0
 
-pos =     [c, 1.0, theta]
-neg =     [c, 0.0, theta]
-pos_neg = [c, 0.5, theta]
+pos =     [c, 0.0, theta] #target similarity only
+neg =     [c, theta, 0.0] #contrast similarity only
+pos_neg = [c, theta, theta] #both contrast and target
 
 prob_spaces = {
     'Target Influence': Packer(cats,pos),
@@ -41,15 +41,15 @@ for i, k in enumerate(['Contrast Influence', 'Target Influence', 'Combination'])
     im = funcs.plotgradient(h, g, A, B, cmap = 'Blues', beta_col = 'w')
 
     title = prefix[i] + ' ' + k
-    # h.set_title(title, fontsize = 11)
+    h.set_title(title, fontsize = 11)
 
-    tradeoffstr = str(m.tradeoff)
-    if tradeoffstr in ['0.0', '1.0']:
-        tradeoffstr = tradeoffstr[0]
+    tradeoffstr = str(int(m.theta_cntrst))
+    #if tradeoffstr in ['0.0', '10.0']:
+    #    tradeoffstr = tradeoffstr[0]
     xlab  = '$\{'
     xlab += 'c = ' + str(int(c)) + ','
-    xlab += '\gamma = ' + tradeoffstr  + ','
-    xlab += '\\theta = ' + str(int(theta))
+    xlab += '\\theta_c = ' + tradeoffstr  + ','
+    xlab += '\\theta_t = ' + str(int(m.theta_target))
     xlab += '\}$'
     h.set_xlabel(xlab)
 
@@ -65,5 +65,5 @@ cbar.tick_params(length = 0)
 fname = 'packer-examples'
 f.savefig('packer-examples.pdf', bbox_inches='tight', transparent=True)
 
-path = '../../Manuscripts/cog-psych/figs/packer-examples.pgf'
-# funcs.save_as_pgf(f, path)
+path = '../../Manuscripts/cog-psych/revision/figs/packer-examples.pgf'
+funcs.save_as_pgf(f, path)

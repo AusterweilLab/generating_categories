@@ -73,7 +73,7 @@ with open(writefile+'.csv','wb') as f:
         for parm in parmnames:
             parmvals = []
             for dn in data_names:
-                parmvals += ['{:.2f}'.format(round(data[mn][dn][parm],2))]
+                parmvals += ['{:.3f}'.format(round(data[mn][dn][parm],3))]
             data_write = np.concatenate([[model_print],[parm],parmvals])
             data_write = list(data_write) #things seem a little simpler as lists
             #print(data_write)
@@ -81,13 +81,13 @@ with open(writefile+'.csv','wb') as f:
         #Write nll and AIC
         nll = []
         for dn in data_names:
-            nll += ['{:.2f}'.format(round(data[mn][dn]['nllAIC'][0],2))]
+            nll += ['{:.3f}'.format(round(data[mn][dn]['nllAIC'][0],3))]
         data_write = np.concatenate([[model_print],['nLL'],nll])
         data_write = list(data_write) #things seem a little simpler as lists
         wr.writerow(data_write)
         aic = []
         for dn in data_names:
-            aic += ['{:.2f}'.format(round(data[mn][dn]['nllAIC'][1],2))]
+            aic += ['{:.3f}'.format(round(data[mn][dn]['nllAIC'][1],3))]
         data_write = np.concatenate([[model_print],['AIC'],aic])
         data_write = list(data_write) #things seem a little simpler as lists
         wr.writerow(data_write)

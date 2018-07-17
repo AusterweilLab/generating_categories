@@ -15,6 +15,7 @@ class ConjugateJK13(Model):
 
     model = "Hierarchical Sampling"
     modelshort = "Hier. Samp."
+    modelprint = "Hier. Bayes"
     num_features = 2 #hard code on first init, then update whenever trials come in
     parameter_names = [    'category_mean_bias',   'category_variance_bias',
                            'domain_variance_bias', 'determinism' ]
@@ -149,6 +150,7 @@ class RepresentJK13(Model):
 
     model = "Hierarchical Sampling With Representativeness"
     modelshort = "Representative"
+    modelprint = "Representativeness"
     num_features    = 2 # hard coded number of assumed features
     #num_features = self.nfeatures
     parameter_names = [    'category_mean_bias',   'category_variance_bias',
@@ -219,6 +221,7 @@ class RepresentJK13(Model):
                                          self.stimrange[nf]['max'])]
             mu = np.array(mu)
 
+            #mu = self.category_prior_mean #isn't this more correct?
             Sigma = self.Domain * self.category_variance_bias
         else:            
             # get target category stats
