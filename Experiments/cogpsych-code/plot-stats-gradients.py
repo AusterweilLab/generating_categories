@@ -25,9 +25,9 @@ WT_THETA = 1.5
 
 # plotting settings
 fontsettings = dict(fontsize = 12.0)
-col_order = ['Behavioral', 'PACKER', 'Copy and Tweak','Hierarchical Sampling With Representativeness', 'Hierarchical Sampling']
+col_order = ['Behavioral', 'PACKER', 'Copy and Tweak','Hierarchical Sampling With Representativeness', 'Hierarchical Sampling','Copy and Tweak Rep']
 #col_order = ['Hierarchical Sampling With Representativeness']
-col_names_short = ['Behavioral', 'PACKER', 'Copy & Tweak','Representativeness', 'Hier. Bayes']
+col_names_short = ['Behavioral', 'PACKER', 'Copy & Tweak','Representativeness', 'Hier. Bayes','Copy & Tweak Rep']
 row_order = ['Cluster','Row', 'XOR', 'Bottom', 'Middle']
 SMOOTHING_PARAM = 0.8
 
@@ -53,7 +53,7 @@ all_data = dict(Behavioral = observed)
 
 # custom modules
 execfile('Imports.py')
-from Modules.Classes import CopyTweak, Packer, ConjugateJK13, RepresentJK13
+from Modules.Classes import CopyTweak, Packer, ConjugateJK13, RepresentJK13, CopyTweakRep
 import Modules.Funcs as funcs
 
 # get best params pickle
@@ -72,7 +72,8 @@ name_2_object = {
     'PACKER': Packer, 
     'Copy and Tweak': CopyTweak, 
     'Hierarchical Sampling': ConjugateJK13,
-    'Hierarchical Sampling With Representativeness': RepresentJK13
+    'Hierarchical Sampling With Representativeness': RepresentJK13,
+    'Copy and Tweak Rep': CopyTweakRep
 }
 
 # conduct simulations
@@ -181,9 +182,9 @@ cbar.tick_params(length = 0)
 
 plt.tight_layout(w_pad=-2.0, h_pad= .5)
 
-fname = 'gradients-' + STAT_OF_INTEREST
+fname = 'gradients-t-' + STAT_OF_INTEREST
 f.savefig(fname + '.pdf', bbox_inches='tight', transparent=False)
 #f.savefig(fname + '.png', bbox_inches='tight', transparent=False)
 
-path = '../../Manuscripts/cog-psych/revision/figs/range-diff-gradients.pgf'
-funcs.save_as_pgf(f, path)
+#path = '../../Manuscripts/cog-psych/revision/figs/range-diff-gradients.pgf'
+#funcs.save_as_pgf(f, path)

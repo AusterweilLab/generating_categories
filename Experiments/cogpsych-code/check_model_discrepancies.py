@@ -12,6 +12,8 @@ from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
+from Modules.Classes import CopyTweakRep
+from Modules.Classes import PackerRep
 
 saveGold = False
 

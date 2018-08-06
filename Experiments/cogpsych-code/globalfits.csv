@@ -1,22 +1,26 @@
-Model,Parm,catassign_fit2err,catassign,all_data_e1_e2,trials_2-4_e1_e2
-PACKER,specificity,540.297,2.905,0.483,0.905
-PACKER,theta_cntrst,5.664,0.965,3.163,2.034
-PACKER,theta_target,34.400,0.010,3.494,2.565
-PACKER,nLL,38.816,1518.889,4544.614,3390.186
-PACKER,AIC,83.632,3043.777,9095.228,6786.371
-CopyTweak,specificity,944.263,2.906,3.197,3.197
-CopyTweak,determinism,43.141,0.975,2.972,2.972
-CopyTweak,nLL,38.816,1518.889,4919.173,3578.866
-CopyTweak,AIC,81.632,3041.777,9842.346,7161.732
-Representative,category_mean_bias,14.960,16.144,11.232,19.236
-Representative,category_variance_bias,1.000,1.000,2.844,2.050
-Representative,domain_variance_bias,0.333,2.122,1.917,3.549
-Representative,determinism,4.746,2.145,5.885,11.622
-Representative,nLL,266.893,1574.813,4434.809,3322.664
-Representative,AIC,541.786,3157.626,8877.617,6653.328
-Hier. Samp.,category_mean_bias,13.662,9.822,0.000,0.000
-Hier. Samp.,category_variance_bias,1.000,1.000,5.597,5.597
-Hier. Samp.,domain_variance_bias,0.728,1.684,0.055,0.055
-Hier. Samp.,determinism,53.739,20.278,3.175,3.175
-Hier. Samp.,nLL,387.512,1560.224,4952.054,3611.747
-Hier. Samp.,AIC,783.024,3128.449,9912.108,7231.494
+Model,Parm,catassign_fit2err,catassign,all_data_e1_e2,trials_2-4_e1_e2,,,,
+PACKER,specificity,540.297,2.905,0.483,0.905,,,,
+PACKER,theta_cntrst,5.664,0.965,3.163,2.034,,,,
+PACKER,theta_target,34.4,0.01,3.494,2.565,,,,
+PACKER,nLL,38.816,1518.889,4544.614,3390.186,,,PACKER,4544.614
+PACKER,AIC,83.632,3043.777,9095.228,6786.371,,,COPYTWEAK,4919.173
+CopyTweak,specificity,944.263,2.906,3.197,3.197,,,COPYTWEAKREP,4836.538
+CopyTweak,determinism,43.141,0.975,2.972,2.972,,,REP,4439.218
+CopyTweak,nLL,38.816,1518.889,4919.173,3578.866,,,HierBayes,4952.054
+CopyTweak,AIC,81.632,3041.777,9842.346,7161.732,,,,
+CopyTweakRep,specificity, , ,0.263,0.263,,,,
+CopyTweakRep,determinism, , ,9.807,9.807,,,,
+CopyTweakRep,nLL, , ,4836.538,3496.231,,,,
+CopyTweakRep,AIC, , ,9677.076,6996.462,,,,
+Representative,category_mean_bias,14.96,16.144,6.967,13.829,,,,
+Representative,category_variance_bias,1,1,2.883,2.155,,,,
+Representative,domain_variance_bias,0.333,2.122,1.029,2.534,,,,
+Representative,determinism,4.746,2.145,2.861,7.89,,,,
+Representative,nLL,266.893,1574.813,4439.218,3322.789,,,,
+Representative,AIC,541.786,3157.626,8886.436,6653.578,,,,
+Hier. Samp.,category_mean_bias,13.662,9.822,0,0,,,,
+Hier. Samp.,category_variance_bias,1,1,5.597,5.597,,,,
+Hier. Samp.,domain_variance_bias,0.728,1.684,0.055,0.055,,,,
+Hier. Samp.,determinism,53.739,20.278,3.175,3.175,,,,
+Hier. Samp.,nLL,387.512,1560.224,4952.054,3611.747,,,,
+Hier. Samp.,AIC,783.024,3128.449,9912.108,7231.494,,,,

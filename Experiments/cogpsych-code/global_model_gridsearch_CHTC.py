@@ -10,13 +10,14 @@ from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
+from Modules.Classes import CopyTweakRep
 
 #Toggle 
 fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
-fiterror = True #Toggle if fitting error
+fiterror = False #Toggle if fitting error
 
 # Specify default dataname
-datasets = ['catassign']
+datasets = ['pooled','pooled-no1st']
 #dataname_def = 'nosofsky1986'
 participant_def = 'all'
 unique_trials_def = 'all'
@@ -46,7 +47,7 @@ else:
     #dataname = dataname_def
     participant = participant_def
     unique_trials = unique_trials_def
-    runchunk = 93;
+    runchunk = 11;
     
 #datasets = ['pooled','pooled-no1st','xcr','midbot','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
 
@@ -100,7 +101,7 @@ for dataname in datasets:
     #Run grid search
     results = dict()
 
-    for model_obj in [ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
+    for model_obj in [CopyTweakRep,ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
         #Prepare list of grid search start points
         #Create base array
         nparms = len(model_obj.parameter_names)
