@@ -216,12 +216,12 @@ class RepresentJK13(Model):
         if not target_is_populated:
             mu = []
             #randomly sample mu from uniform                        
-            for nf in range(self.nfeatures):
-                mu += [np.random.uniform(self.stimrange[nf]['min'],
-                                         self.stimrange[nf]['max'])]
-            mu = np.array(mu)
+            # for nf in range(self.nfeatures):
+            #     mu += [np.random.uniform(self.stimrange[nf]['min'],
+            #                              self.stimrange[nf]['max'])]
+            # mu = np.array(mu)
 
-            #mu = self.category_prior_mean #isn't this more correct?
+            mu = self.category_mean_bias * self.category_prior_mean #isn't this more correct?
             Sigma = self.Domain * self.category_variance_bias
         else:            
             # get target category stats

@@ -11,7 +11,7 @@ from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
 from Modules.Classes import CopyTweakRep
-
+from Modules.Classes import PackerRep
 #Toggle 
 fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
 fiterror = False #Toggle if fitting error

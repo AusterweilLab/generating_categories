@@ -260,43 +260,69 @@ class PackerRep(Exemplar):
 
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
 
-        contrast_examples   = self.exemplars[self.assignments != category]
-        target_examples = self.exemplars[self.assignments == category]
 
+        
         # compute target and contrast sum similarity for target category
         #New attempt 110418. Updated
         #170418 - theta_cntrst is for contrast, theta_target is tradeoff for
         #target
+        contrast_examples   = self.exemplars[self.assignments != category]
         contrast_ss_t   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
+        target_examples = self.exemplars[self.assignments == category]
         target_ss_t   = self._sum_similarity(stimuli, target_examples, param = self.theta_target)
         #End new attempt 110418        
         # aggregate target and contrast similarity
-        aggregate_target = contrast_ss_t + target_ss_t
-         
-        aggregate_contrast = -aggregate_target
+        aggregate_t = contrast_ss_t + target_ss_t
 
+        #When I eventually generalize this model to accept more than 2
+        #categories, I can use something like this to compute the denominator
+        denom = 0
+        #Will need to figure out the prior though?
+        # prior = np.ones * 1/self.ncategories; #temp assume uniform
+        # for nc in range(self.ncategories):
+        #     if nc != category:
+        #         contrast_examples = self.exemplars[self.assignments != nc]                
+        #         contrast_ss = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
+        #         target_examples = self.exemplars[self.assignments == nc]                
+        #         target_ss = self._sum_similarity(stimuli, target_examples, param = self.theta_target)
+        #         denom +=  (target_ss + contrast_ss) * prior[nc]
+        #Compute target and contrast sum sim for all other cats
+        contrast_examples   = self.exemplars[self.assignments == category]
+        contrast_ss_c   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
+        target_examples = self.exemplars[self.assignments != category]
+        target_ss_c   = self._sum_similarity(stimuli, target_examples, param = self.theta_target)
+        #End new attempt 110418        
+        # aggregate target and contrast similarity
+        aggregate_c = contrast_ss_c + target_ss_c
+        
+        
         # since number of alternative hypotheses is always 1 if there are a total of 2 categories, p(h') will always be 1, right?
         #prior = 1            
-        representativeness = np.log(aggregate_target/aggregate_contrast)
+        representativeness = np.log(aggregate_t/aggregate_c)
 
         if task == 'generate': 
             # NaN out known members - only for task=generate
             known_members = Funcs.intersect2d(stimuli, target_examples)
-            aggregate[known_members] = np.nan
-            ps = Funcs.softmax(aggregate, theta = 1.0)                       
+            representativeness[known_members] = np.nan
+            ps = Funcs.softmax(representativeness, theta = 1.0)                       
             #ps = Funcs.softmax(aggregate, theta = self.determinism)                        
         elif task == 'assign' or task == 'error':
             #New test 110418
             #compute contrast and target ss if stimuli is assigned
             #to other cateogry
-            contrast_examples_flip = target_examples
-            contrast_ss_flip = self._sum_similarity(stimuli,
-                                                    contrast_examples_flip,
-                                                    param = -1.0 * self.theta_cntrst)
-            target_examples_flip = contrast_examples
-            target_ss_flip   = self._sum_similarity(stimuli,
-                                                    target_examples_flip,
-                                                    param = self.theta_target)
+            #note this code is wrong if ncat > 2
+            if self.ncategories>2:
+                raise Exception('Cat assignment code for PackerRep not' + 
+                                'appropriate for ncat more than 2. Fix it pls.')
+            representativeness_flip = np.log(aggregate_c/aggregate_t)
+            # contrast_examples_flip = target_examples
+            # contrast_ss_flip = self._sum_similarity(stimuli,
+            #                                         contrast_examples_flip,
+            #                                         param = -1.0 * self.theta_cntrst)
+            # target_examples_flip = contrast_examples
+            # target_ss_flip   = self._sum_similarity(stimuli,
+            #                                         target_examples_flip,
+            #                                         param = self.theta_target)
             #End test 110418
 
             # #compute contrast and target ss if stimuli is assigned
@@ -317,10 +343,10 @@ class PackerRep(Exemplar):
 
             #Go through each stimulus and calculate their ps
             ps = np.array([])
-            for i in range(len(aggregate)):
-                    agg_element = np.array([aggregate[i],aggregate_flip[i]])
+            for i in range(len(representativeness)):
+                    rep_element = np.array([representativeness[i],representativeness_flip[i]])
                     #ps_element = Funcs.softmax(agg_element, theta = self.determinism)
-                    ps_element = Funcs.softmax(agg_element, theta = 1.0)
+                    ps_element = Funcs.softmax(rep_element, theta = 1.0)
                     ps = np.append(ps,ps_element[0])
                     
         return ps
