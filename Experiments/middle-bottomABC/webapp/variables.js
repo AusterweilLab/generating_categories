@@ -1,15 +1,25 @@
 // ------------------------------------------------------ //
 // ------------------------------------------------------ //
 // initalize participant data. this entire array is saved to json
+//global session counter
+var session = {
+	count: 0, //counter
+	condition: '', //can be 'b' or 'bc' - initialised in experiment.js,
+	types: [['b','bc'],['bc','b']], //should correspond with the order defined in sessionorders
+	ntypes: 2,
+	sessionorders: ['b-bc','bc-b'] //should correspond with strings specified in cgi-bin/config.py
+}
 var data = {
 	experiment: {
 		Stimuli: 'Size-Color Squares',
-		Experiment: 'Generating-Categories',
+		Experiment: 'Generating-Multiple-Categories',
 		Paradigm: 'TACL'
 	},
-	observation: {},
-	generation: {},
-	generalization: {},
+	submit:{}, //data on the final final page, incl demographics
+	//Note the experimental data below have two empty objects, one for each session
+	observation: [{},{}],
+	generation: [{},{}],
+	generalization: [{},{}],
 	info: {
 		exposed: false,
 		lab: null,
@@ -37,23 +47,29 @@ var exemplars = {
 // ------------------------------------------------------ //
 // phase-specific settings
 var observation = {
-	nblocks: 3,
+	nblocks: 1,
 	counter: 0,
 	isi: 500,
 	ui: null,
-	instructions: 'html/instructions/observe.html'
+	instructions: ['html/instructions/observe.html',
+				   'html/instructions/observe2.html']
 };
 
 var generation = {
-	ntrials: 4,
+	ntrialsbase: 4,
+	ntrials: 0, //specified in generation.js
 	counter: 0,
+	countbc:0, // counter for bc condition
+	bcnames: ['Beta','Gamma'],
 	isi: observation.isi,
 	generated: [],
 	direction: {color: 1, size: 1},
 	stimulus: null,
 	rt: null,
 	ui: null,
-	instructions: 'html/instructions/generate.html'
+	instructionsb1: 'html/instructions/generatebeta.html',
+	instructionsb2: 'html/instructions/generatebeta2.html',
+	instructionsc:  'html/instructions/generategamma.html'
 }
 
 var generalization = {

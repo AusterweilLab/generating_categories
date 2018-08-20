@@ -80,8 +80,8 @@ StimulusSet.prototype.make_stimuli = function() {
 
 	// set counterbalance if not specified
 	if (data.info.counterbalance === undefined) {
-    data.info.counterbalance = randi(0, counterbalance.length - 1);
-  }
+		data.info.counterbalance = randi(0, counterbalance.length - 1);
+	}
 
   var counterbalance_order = get_stimulus_order(this.side, data.info.counterbalance)
 

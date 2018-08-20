@@ -14,7 +14,7 @@ tardir = 'chtctar/'
 privdir = os.path.join(tardir,'private') #private working folder that git ignores
 if not os.path.isdir(privdir):
     os.system('mkdir {}'.format(privdir))
-maintarname = 'allpickles200718.tar.gz'
+maintarname = 'allpickles180818.tar.gz'
     
 appendkey = ['finalparmsll','parmnames','chunkstartparms']
 appendOnce = ['parmnames'] #append this key only once per participant

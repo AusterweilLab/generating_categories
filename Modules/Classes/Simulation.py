@@ -217,7 +217,10 @@ class Trialset(object):
         task = self.task
         for idx, trial in enumerate(self.Set):
             # format categories
-            categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
+            #170818 - uh oh, looks like this line doesn't correctly account for lists with [0]
+            #Lists with [0] should be recognised as valid categories, and not empty
+            #categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
+            categories = [self.stimuli[i,:] for i in trial['categories'] if len(i)>0]
             # if it's an assignment task, also compute probabilities for other category (cat0)
             # ps0 = np.zeros(ps1.shape)
             if task == 'generate':                                
@@ -549,8 +552,8 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
     nstim = len(trial_obj.stimuli)
     for idx, trial in enumerate(trial_obj.Set):
         # format categories
-        categories = [trial_obj.stimuli[i,:] for i in trial['categories'] if any(i)]
-        
+        #categories = [trial_obj.stimuli[i,:] for i in trial['categories'] if any(i)]
+        categories = [trial_obj.stimuli[i,:] for i in trial['categories'] if len(i)>0]
         ps0 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 0,trial_obj.task,seedrng = seedrng)
         ps1 = model_obj(categories, params, trial_obj.stimrange).get_generation_ps(trial_obj.stimuli, 1,trial_obj.task,seedrng = seedrng)
         

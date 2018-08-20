@@ -166,7 +166,7 @@ class CopyTweak(Exemplar):
 
 class CopyTweakRep(Exemplar):
     """
-    Continuous implementation of the copy-and-tweak model, with a representativeness front end.
+    Continuous implementation of the copy-and-tweak model, with a representativeness back end.
     """
 
     model = 'Copy and Tweak Rep'
@@ -197,9 +197,9 @@ class CopyTweakRep(Exemplar):
 
         # get pairwise similarities with target category
         similarity_target = self._sum_similarity(stimuli, self.categories[category])
-
         #Treat similarity as density estimate (i.e., the likelihoods in representativeness)
         similarity_contrast = self._sum_similarity(stimuli, self.categories[1-category])
+        #print [i*self.determinism for i in similarity_contrast]
         # since number of alternative hypotheses is always 1 if there are a total of 2 categories, p(h') will always be 1, right?
         #prior = 1            
         representativeness = np.log(similarity_target/similarity_contrast)
@@ -258,25 +258,29 @@ class PackerRep(Exemplar):
         ] 
 
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
-
-
-        
-        # compute target and contrast sum similarity for target category
-        #New attempt 110418. Updated
-        #170418 - theta_cntrst is for contrast, theta_target is tradeoff for
-        #target
-        contrast_examples   = self.exemplars[self.assignments != category]
-        contrast_ss_t   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):        
+        # compute target representativeness
         target_examples = self.exemplars[self.assignments == category]
-        target_ss_t   = self._sum_similarity(stimuli, target_examples, param = self.theta_target)
+        contrast_examples   = self.exemplars[self.assignments != category]
+
+        target_is_populated = any(self.assignments == category)
+        if not target_is_populated:
+            ncandidates = stimuli.shape[0]
+            return np.ones(ncandidates) / float(ncandidates)
+
+        similarity_target   = self._sum_similarity(stimuli, target_examples)
+        similarity_contrast = self._sum_similarity(stimuli, contrast_examples)
+        #print similarity_contrast
+        representativeness_target = np.log(similarity_target/similarity_contrast) * self.theta_target
+        representativeness_contrast = np.log(similarity_contrast/similarity_target) * -1.0 * self.theta_cntrst
+        representativeness = representativeness_target + representativeness_contrast
+        
+        #contrast_ss_num   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
         #End new attempt 110418        
         # aggregate target and contrast similarity
-        aggregate_t = contrast_ss_t + target_ss_t
-
         #When I eventually generalize this model to accept more than 2
         #categories, I can use something like this to compute the denominator
-        denom = 0
+        #denom = 0
         #Will need to figure out the prior though?
         # prior = np.ones * 1/self.ncategories; #temp assume uniform
         # for nc in range(self.ncategories):
@@ -286,19 +290,11 @@ class PackerRep(Exemplar):
         #         target_examples = self.exemplars[self.assignments == nc]                
         #         target_ss = self._sum_similarity(stimuli, target_examples, param = self.theta_target)
         #         denom +=  (target_ss + contrast_ss) * prior[nc]
-        #Compute target and contrast sum sim for all other cats
-        contrast_examples   = self.exemplars[self.assignments == category]
-        contrast_ss_c   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
-        target_examples = self.exemplars[self.assignments != category]
-        target_ss_c   = self._sum_similarity(stimuli, target_examples, param = self.theta_target)
-        #End new attempt 110418        
         # aggregate target and contrast similarity
-        aggregate_c = contrast_ss_c + target_ss_c
-        
+        #can confirm that aggregate_den here and similarity_contrast in copytweakrep are the same (gotta remember to add self.determinism as a factor for similarity_contrast to make them exactly the same)
         
         # since number of alternative hypotheses is always 1 if there are a total of 2 categories, p(h') will always be 1, right?
         #prior = 1            
-        representativeness = np.log(aggregate_t/aggregate_c)
 
         if task == 'generate': 
             # NaN out known members - only for task=generate
@@ -314,7 +310,7 @@ class PackerRep(Exemplar):
             if self.ncategories>2:
                 raise Exception('Cat assignment code for PackerRep not' + 
                                 'appropriate for ncat more than 2. Fix it pls.')
-            representativeness_flip = np.log(aggregate_c/aggregate_t)
+            representativeness_flip = self.theta_target*representativeness_contrast - self.theta_cntrst*representativeness_target
             # contrast_examples_flip = target_examples
             # contrast_ss_flip = self._sum_similarity(stimuli,
             #                                         contrast_examples_flip,
@@ -337,7 +333,7 @@ class PackerRep(Exemplar):
             #                                         param = self.tradeoff)
 
 
-            aggregate_flip = target_ss_flip + contrast_ss_flip
+            #aggregate_flip = target_ss_flip + contrast_ss_flip
             # add baseline similarity
             #aggregate_flip = aggregate_flip + self.baselinesim
 

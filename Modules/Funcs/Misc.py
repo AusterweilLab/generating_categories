@@ -583,9 +583,10 @@ def getModelName(modelname,fetch='short'):
     from Modules.Classes import ConjugateJK13
     from Modules.Classes import RepresentJK13
     from Modules.Classes import CopyTweakRep
+    from Modules.Classes import PackerRep
     model_keywords = dict()
     modelnames = dict()
-    models = [Packer,CopyTweak,ConjugateJK13,RepresentJK13,CopyTweakRep]
+    models = [Packer,CopyTweak,ConjugateJK13,RepresentJK13,CopyTweakRep,PackerRep]
     #Set everything to lowercase
     modelname = modelname.lower()
     #First, add default names
@@ -594,6 +595,7 @@ def getModelName(modelname,fetch='short'):
         model_keywords[model.__name__] = [model.modelshort.lower(), model.model.lower(), model.__name__.lower()]
     #Then add some base or keywords for each model
     model_keywords['Packer'] += ['pack']
+    model_keywords['PackerRep'] += ['pr','packrep']
     model_keywords['CopyTweak'] += ['copy','cp','c&t','cnt']
     model_keywords['CopyTweakRep'] += ['ctr','copyrep']
     model_keywords['ConjugateJK13'] += ['cjk13','conjugate','hierarchical']

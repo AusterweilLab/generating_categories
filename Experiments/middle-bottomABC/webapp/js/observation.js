@@ -11,6 +11,8 @@ function observe() {
 				presentationorder, shuffle(observation.alphas)
 			);
 	}
+	//reset counter
+	observation.counter = 0
 
 	// put elements in div, hide it
 	stage.innerHTML = observation.ui;
@@ -37,7 +39,7 @@ function observe() {
 		stimulusdiv.style.visibility = 'visible';
 
 		// mark participant as exposed to stimuli
-		if (observation.counter == 0) {
+		if (observation.counter == 0 && data.info.exposed == false) {
 			markexposed();
 			data.info.exposed = true;
 			savedata(data);
@@ -67,7 +69,7 @@ function observe() {
 		continuebutton.style.visibility = 'hidden';
 		observation.rt = Date.now() - timer;
 		
-		data.observation[observation.counter] = {
+		data.observation[session.count][observation.counter] = {
 				trial: observation.counter, 
 				stimulus: observation.stimulus.id, 
 				rt: observation.rt
@@ -77,7 +79,13 @@ function observe() {
 		observation.counter += 1;
 		if (observation.counter == presentationorder.length) {
 			savedata(data);
-			inserthtml(generation.instructions);
+			if (session.count==0){
+				//first session
+				inserthtml(generation.instructionsb1);
+			} else {
+				//second session
+				inserthtml(generation.instructionsb2);
+			}
 			
 		// start next trial
 		} else { init(); }

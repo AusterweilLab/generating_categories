@@ -1,6 +1,6 @@
 function generate() {
 	stage.innerHTML = '';	
-
+	
 	// some function globals
 	var dupemessage;
 	var continuebutton;
@@ -8,10 +8,20 @@ function generate() {
 	var color_control
 	var size_control
 
+	//reset counter
+	generation.counter = 0
+
+	//get category type
+	if (session.condition=='bc'){
+		generation.category = session.condition[generation.countbc]
+		generation.ntrials = generation.ntrialsbase
+	} else {
+		generation.category = 'b'
+		generation.ntrials = generation.ntrialsbase*2
+	}
 
 	// function to start a new trial
-	function init() {
-
+	function init() {		
 		// replace existing ui.
 		stage.innerHTML = generation.ui;
 		stage.style.visibility = 'hidden'; // hide everything during setup
@@ -32,6 +42,9 @@ function generate() {
 		size_control.oninput =  function() { generate_handler() };
 		color_control.oninput =  function() { generate_handler() };
 
+		// update category label in instruction
+		document.getElementById('categoryID').innerHTML = generation.bcnames[generation.countbc];
+		
 		// draw ui, start interface after delay
 		setTimeout( function() {
 				stage.style.visibility = 'visible' // show ui
@@ -78,8 +91,10 @@ function generate() {
 		generation.generated.push(generation.stimulus.id);
 
 		// add a row of data
-		data.generation[generation.counter] = {
-			trial: generation.counter,
+		var counterbase = generation.countbc*generation.ntrialsbase // should be either 0 or 4
+		data.generation[session.count][generation.counter+counterbase] = {
+			category: generation.category,
+			trial: generation.counter+counterbase,
 			stimulus: generation.stimulus.id,
 			rt: generation.rt,
 		};
@@ -89,8 +104,21 @@ function generate() {
 
 		if (generation.counter >= generation.ntrials) {
 			savedata(data);
-			inserthtml(generalization.instructions);
-
+			if (session.condition=='bc' && generation.countbc==0){ //If bc condition, move on to gamma
+				generation.countbc += 1 //add to countbc
+				inserthtml(generation.instructionsc);
+			} else
+			{
+				if (session.count==0){ //move on to second session
+					session.count += 1;
+					session.condition = session.types[sessionorderIdx][session.count]
+					//reset memory of previously generated examples
+					generation.generated = [];
+					inserthtml(observation.instructions[session.count]);
+				} else { // Else proceed to generalization
+					inserthtml(generalization.instructions);
+				}
+			}
 		// start next trial	
 		} else { init() }
 

@@ -1,0 +1,2 @@
+Link for quick testing:
+http://alab.local/middle-bottomABC/webapp/?assignmentId=12ALONGRANDOMCHARACTERSTRING34&hitId=56ALONGRANDOMCHARACTERSTRING78&workerId=NOLANDEBUG123&turkSubmitTo=https%3A%2F%2Fworkersandbox.mturk.com

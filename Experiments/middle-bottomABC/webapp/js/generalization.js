@@ -4,6 +4,9 @@ function generalize() {
 	// make presentation order
 	var presentationorder = randperm(stimuli.nstimuli);
 
+	//reset counter
+	generalization.counter = 0
+	
 	// put elements in div, hide it
 	stage.innerHTML = generalization.ui;
 	stage.style.visibility = 'hidden';
@@ -12,10 +15,12 @@ function generalize() {
 	var stimulusdiv = document.getElementById('stimulus');
 	var alphabutton = document.getElementById('classify_alpha');
 	var betabutton  = document.getElementById('classify_beta');
+	var gammabutton  = document.getElementById('classify_gamma');
 
 	// define button functions
 	alphabutton.onclick = function() {classifyhandler('Alpha')};
 	betabutton.onclick = function() {classifyhandler('Beta')};
+	gammabutton.onclick = function() {classifyhandler('Gamma')};
 
 	// function to set up a single trial
 	function init() {

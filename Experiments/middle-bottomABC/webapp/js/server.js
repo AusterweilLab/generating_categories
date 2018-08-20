@@ -35,16 +35,18 @@ function checkworker() {
 // get ID, condition, and counterbalance assignments
 function getassignments() {
 	$.ajax({
-			type: "POST",
-			url: "cgi-bin/get-assignments.cgi",
-		}).done( function(o) {
-
-			var res = JSON.parse(o);
-			data.info.participant = res.data.participant;
-			data.info.condition = res.data.condition;
-			data.info.counterbalance = res.data.counterbalance
-	  	startup()
-		});
+		type: "POST",
+		url: "cgi-bin/get-assignments.cgi",
+		error: function(x,e){console.log('Some ajax error in getassignments(). ' + x.responseText)}
+	}).done( function(o) {
+		console.log(o)
+		var res = JSON.parse(o);
+		data.info.participant = res.data.participant;
+		data.info.condition = res.data.condition;
+		data.info.counterbalance = res.data.counterbalance;
+		data.info.sessionorder = res.data.sessionorder
+	  	startup()			
+	});
 }
 
 

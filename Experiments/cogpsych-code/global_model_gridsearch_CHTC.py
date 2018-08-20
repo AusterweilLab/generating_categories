@@ -101,7 +101,7 @@ for dataname in datasets:
     #Run grid search
     results = dict()
 
-    for model_obj in [CopyTweakRep,ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
+    for model_obj in [CopyTweakRep,ConjugateJK13, RepresentJK13, CopyTweak, Packer, PackerRep]:
         #Prepare list of grid search start points
         #Create base array
         nparms = len(model_obj.parameter_names)
