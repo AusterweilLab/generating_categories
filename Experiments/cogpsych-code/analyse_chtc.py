@@ -1,7 +1,7 @@
 # Extract the pickled output that is produced from
 # global_model_gridsearch_CHTC.py
 
-import pickle, os, re, tarfile
+import pickle, os, re, tarfile, sys
 import pandas as pd
 import numpy as np
 import time
@@ -14,7 +14,12 @@ tardir = 'chtctar/'
 privdir = os.path.join(tardir,'private') #private working folder that git ignores
 if not os.path.isdir(privdir):
     os.system('mkdir {}'.format(privdir))
-maintarname = 'allpickles180818.tar.gz'
+
+narg = len(sys.argv)
+if __name__ == "__main__" and narg>1:
+    maintarname = sys.argv[1]
+else:
+    maintarname = 'allpickles200818.tar.gz'
     
 appendkey = ['finalparmsll','parmnames','chunkstartparms']
 appendOnce = ['parmnames'] #append this key only once per participant

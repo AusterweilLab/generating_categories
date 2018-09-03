@@ -3,12 +3,12 @@ CopyTweak,specificity,3.218,3.218
 CopyTweak,determinism,3.004,3.004
 CopyTweak,nLL,4904.745,3564.438
 CopyTweak,AIC,9813.489,7132.875
-Representative,category_mean_bias,12.226,315320748447330.750
-Representative,category_variance_bias,1.000,75517217048903.938
-Representative,domain_variance_bias,7.041,2.486
-Representative,determinism,10.214,298623586768542.125
-Representative,nLL,4387.738,3277.265
-Representative,AIC,8783.476,6562.530
+Representative,category_mean_bias,12.226,19278594912831.730
+Representative,category_variance_bias,1.000,4414947373143.349
+Representative,domain_variance_bias,7.041,2.907
+Representative,determinism,10.214,20538213255602.086
+Representative,nLL,4387.738,3286.110
+Representative,AIC,8783.476,6580.220
 PACKER,specificity,0.506,0.930
 PACKER,theta_cntrst,3.088,2.024
 PACKER,theta_target,3.473,2.591
@@ -21,10 +21,10 @@ Hier. Samp.,determinism,3.090,3.090
 Hier. Samp.,nLL,4936.980,3596.673
 Hier. Samp.,AIC,9881.960,7201.346
 PACKERRep,specificity,0.302,0.302
-PACKERRep,theta_cntrst,6.004,6.004
-PACKERRep,theta_target,2.533,2.533
-PACKERRep,nLL,219779.120,3474.276
-PACKERRep,AIC,439564.240,6954.552
+PACKERRep,theta_cntrst,2.533,6.004
+PACKERRep,theta_target,6.004,2.533
+PACKERRep,nLL,4814.583,3474.276
+PACKERRep,AIC,9635.166,6954.552
 CopyTweakRep,specificity,0.302,0.302
 CopyTweakRep,determinism,8.525,8.525
 CopyTweakRep,nLL,4814.583,3474.276

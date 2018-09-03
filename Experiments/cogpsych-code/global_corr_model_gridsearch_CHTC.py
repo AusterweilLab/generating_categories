@@ -6,6 +6,7 @@ import sqlite3
 execfile('Imports.py')
 import Modules.Funcs as funcs
 from Modules.Classes import Simulation
+from Modules.Classes import CopyTweakRep
 from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
@@ -13,7 +14,7 @@ from Modules.Classes import RepresentJK13
 import get_corr as gc
 WT_THETA = 1.5
 #Toggle 
-pearson = False #fit correlations using pearson r. Uses spearman rho if false.
+pearson = True #fit correlations using pearson r. Uses spearman rho if false.
 
 participant_def = 'all'
 unique_trials_def = 'all'
@@ -82,7 +83,7 @@ options = dict(
 results = dict()
 pptdata,tso = funcs.prep_corrvar(info,assignment,stimuli,stats,WT_THETA)
 #Run grid search
-for model_obj in [ConjugateJK13, RepresentJK13, CopyTweak, Packer]:
+for model_obj in [ConjugateJK13, RepresentJK13, CopyTweakRep, CopyTweak, Packer]:
     #Prepare list of grid search start points
     #Create base array
     nparms = len(model_obj.parameter_names)

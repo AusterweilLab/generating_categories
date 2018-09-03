@@ -30,17 +30,20 @@ def easymodel(model,params,trialnum):
     return ps
 
 #temp model runs
-packerparms = [.263,.321,9.479]
+packerparms = [.5, 1.0,.0]#[.302,2.533,6.004]#[.263,.321,9.479]
+packerparms2 = [.5,.7,.3]#[.302,6.004,2.533]#[.263,.321,9.479]
 copytweakparms = [.263, 9.807]
-packerparms2 = [copytweakparms[0], 0, copytweakparms[1]]
+#packerparms2 = [copytweakparms[0], 0, copytweakparms[1]]
 print trials.loglike(packerparms,PackerRep,parmxform=False)
 #print trials.loglike(copytweakparms,CopyTweakRep,parmxform=False)
 
-test_cp = easymodel(CopyTweakRep,copytweakparms,19)
+test_cp = easymodel(PackerRep,packerparms,19)
 test_packer = easymodel(PackerRep,packerparms2,19)
 
-# print test_cp
-# print test_packer
+
+print test_cp
+print test_packer
+print test_cp-test_packer
 lll
 
 #loop over each trial

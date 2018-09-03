@@ -8,7 +8,9 @@ execfile('Imports.py')
 import Modules.Funcs as funcs
 from Modules.Classes import Simulation
 from Modules.Classes import CopyTweak
+from Modules.Classes import CopyTweakRep
 from Modules.Classes import Packer
+from Modules.Classes import PackerRep
 from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
 from scipy.stats import stats as ss
@@ -23,10 +25,10 @@ if pearson:
 else:
     corrtype = 's'
 #Bootstrap parameters
-nbootstraps = 1000
+nbootstraps = 10
 
-savefilename='modelvsppt{}.pdf'.format(corrtype)
-bestparmdb = "pickles/chtc_gs_best_params_corr{}.p".format(corrtype)
+savefilename='modelvsppt{}_t.pdf'.format(corrtype)
+bestparmdb = "pickles/chtc_gs_best_params_corr{}_new.p".format(corrtype)
 modeleaseDB = "pickles/modelease_corr{}.p".format(corrtype)
 #Some plotting options
 font = {'family' : 'DejaVu Sans',
@@ -67,10 +69,12 @@ for modelname in best_params_t.keys():
     for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
         parmval = best_params_t[modelname]['bestparmsll']
         best_params[modelname][parmname] = parmval[i]
-modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]                            
+#modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]
+modelList = [CopyTweak,CopyTweakRep,Packer, RepresentJK13,]                            
 
 #Specify plot order
-modelPlotOrder = np.array([[Packer,RepresentJK13],[CopyTweak,ConjugateJK13]])
+#modelPlotOrder = np.array([[Packer,RepresentJK13],[CopyTweak,ConjugateJK13]])
+modelPlotOrder = np.array([[CopyTweak,CopyTweakRep],[Packer,RepresentJK13]])
 
 #Prepare matched database    
 matchdb='../cat-assign/data_utilities/cmp_midbot.db'
@@ -104,13 +108,20 @@ nsamprange = range(nsamples)
 
 pptlist = np.unique(pptlist)
 #see if ll_global exists as a pickle, otherwise construct new ll
+ll_loadSuccess = {}
+for model in modelList:
+    ll_loadSuccess[model.model] = False
+    
 try:
     with open(modeleaseDB, "rb" ) as f:
         ll_global = pickle.load( f )
-        ll_loadSuccess = True
+        #Check that model name exists in global, otherwise run it again
+        for model in modelList:
+            if model.model in ll_global.keys():
+                ll_loadSuccess[model.model] = True
 except:
     ll_global = dict()
-    ll_loadSuccess = False
+    #ll_loadSuccess = False
     
 # options for the optimization routine
 options = dict(
@@ -120,10 +131,17 @@ options = dict(
 ) 
 
 
+#Prepare corr var
+if 'tso' not in ll_global.keys():
+    pptdata,tso = funcs.prep_corrvar(info,assignment,stimuli,stats,WT_THETA)
+    ll_global['tso'] = tso
+else:
+    tso = ll_global['tso']
+
 for model_obj in modelList:
     #model_obj = Packer
     model_name = model_obj.model
-    if not ll_loadSuccess:
+    if not ll_loadSuccess[model_name]:
         #Get log likelihoods
         ll_list = []
         print_ct = 0
@@ -157,7 +175,7 @@ for model_obj in modelList:
             #Get loglikelihoods
             raw_array_ll = Simulation.loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1)
             ll_list += [raw_array_ll]
-
+            print categories,raw_array_ll
             print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
 
         #Re-organise the lists
