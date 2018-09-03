@@ -30,7 +30,7 @@ headerserver = '#! /bin/python';
 headerlocal  = '#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python'; 
 
 #Define possible data locations
-datadirserver = 'destination = "/var/services/homes/xian/CloudStation/data/generate-categories"';
+datadirserver = 'destination = "/var/services/homes/xian/CloudStation/data/middle-bottomABC"';
 datadirlocal = 'destination = "../../datatemp"';
 
 if headerchange == 'server':

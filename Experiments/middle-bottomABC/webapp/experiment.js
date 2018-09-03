@@ -12,10 +12,6 @@ function startup() {
 	load_template("html/templates/observe.html", observation);
 	load_template("html/templates/generate.html", generation);
 	load_template("html/templates/generalize.html", generalization);
-
-	//allocate first session given the assigned sessionorder condition
-	sessionorderIdx = session.sessionorders.indexOf(data.info.sessionorder)
-	session.condition = session.types[sessionorderIdx][session.count]
 	
 	// get start time
 	data.info.start = Date.now();
@@ -24,7 +20,7 @@ function startup() {
 	savedata(data)
 
 	// BEGIN EXPERIMENT
-	inserthtml(observation.instructions[session.count]);
+	inserthtml(observation.instructions);
 };
 
 // ------------------------------------------------------ //

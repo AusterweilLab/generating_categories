@@ -69,7 +69,7 @@ function observe() {
 		continuebutton.style.visibility = 'hidden';
 		observation.rt = Date.now() - timer;
 		
-		data.observation[session.count][observation.counter] = {
+		data.observation[observation.counter] = {
 				trial: observation.counter, 
 				stimulus: observation.stimulus.id, 
 				rt: observation.rt
@@ -79,14 +79,7 @@ function observe() {
 		observation.counter += 1;
 		if (observation.counter == presentationorder.length) {
 			savedata(data);
-			if (session.count==0){
-				//first session
-				inserthtml(generation.instructionsb1);
-			} else {
-				//second session
-				inserthtml(generation.instructionsb2);
-			}
-			
+			inserthtml(generation.instructions[data.info.gentype])			
 		// start next trial
 		} else { init(); }
 

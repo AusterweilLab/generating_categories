@@ -625,7 +625,7 @@ def get_initials(input,num_letters = 1,include_delim = True):
     return output
 
 ##Sorry, don't mean to clog things up here but for convenience I'm dumping more misc functions here
-def get_corr(start_params,pptdata,tso,model_obj,fixedparams=None,pearson=True,print_on = False, parmxform = False):
+def get_corr(start_params,pptdata,tso,model_obj,fixedparams=None,pearson=True,print_on = False, parmxform = False, return_ll = False):
     """
     Returns the correlation between model fits (to generation probabilities) and observed participant error in the
     catassign data (experiment 3). start_params is the set of parameter values, pptdata and tso can be obtained through
@@ -691,7 +691,11 @@ def get_corr(start_params,pptdata,tso,model_obj,fixedparams=None,pearson=True,pr
 
     r = corr[0] * -1.0
     #p = corr[1]
-    return r
+
+    if return_ll:
+        return ll_list
+    else:
+        return r
 
 
 

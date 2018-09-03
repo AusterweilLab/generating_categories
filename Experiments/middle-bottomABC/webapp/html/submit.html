@@ -28,7 +28,7 @@
   ageInput.name = 'age';
   ageInput.maxLength = '3';
   ageInput.style = 'width:50px';
-  ageInput.onkeypress = function(){return isNumber(event)};//Prevent entry of non-numerical characters
+  ageInput.onkeypress = function(event){return isNumber(event)};//Prevent entry of non-numerical characters
   form.appendChild(ageInput);//append element
   form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
   
@@ -188,14 +188,25 @@
   }
   
   //Upon form submission, stop timer and save the data in the server data folder
-  $(form).submit(
-	  function(){
-	  data.submit.timeTotal = timeTaken;
-	  data.submit.age = ageInput.value;
-	  data.submit.sex = sexInput.value;
-	  data.submit.comments = commentArea.value;
-	  savedata(data)
-  }
+  $(submitButton).on("click",
+	  function(event){
+		  event.preventDefault(); // prevent default submit for firefox
+
+		  //code goes here
+		  data.submit.timeTotal = timeTaken;
+		  data.submit.age = ageInput.value;
+		  data.submit.sex = sexInput.value;
+		  data.submit.comments = commentArea.value;
+		  savedata(data,false) //set asynchronous to false for this last save
+
+		  //Submit form
+		  // setTimeout(function(){
+		  // 	  $(form).submit();
+		  // },1)
+		  $(form).submit();
+		  //$(this).unbind('submit').submit(); // continue the submit unbind preventDefault
+
+	  }
   )
   
 </script>

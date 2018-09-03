@@ -1,4 +1,4 @@
-#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python
+#! /bin/python
 print "Content-Type: text/html"	# html is following
 print 													# blank line, end of headers
 
@@ -9,6 +9,13 @@ print 													# blank line, end of headers
 # Workers are ineligible if they have participated in a study 
 # using the same paradigm within the last 14 days.
 # - - - - - - - - - - - - - - - - - - - - - - - -
+
+debug_workers = [
+						'NOLANDEBUG123', # Debug
+						'ATROS9SFZ8929', # Nolan's Account
+    'A1G22IHEURCO4P' # Xian's Account
+					]
+
 
 # set up worker database
 workerdb = dict(
@@ -58,10 +65,10 @@ conn.close()
 # ------------------
 # check records and return result
 # if worker does not exist, then records will be []
-if not records: 
+if not records or data['workerId'] in debug_workers: 
 	output = dict(status = 'go')
 else:
 	output = dict(status = 'exposed')
-	
+
 print json.dumps(output)
 sys.exit()

@@ -1,4 +1,4 @@
-#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python
+#! /bin/python
 print "Content-Type: text/html"	# html is following
 print 													# blank line, end of headers
 
@@ -9,7 +9,8 @@ print 													# blank line, end of headers
 # these worker IDs will not be added to the table
 debug_workers = [
 						'NOLANDEBUG123', # Debug
-						'ATROS9SFZ8929' # Nolan's Account
+						'ATROS9SFZ8929', # Nolan's Account
+    'A1G22IHEURCO4P' # Xian's Account
 					]
 
 # set up worker database info

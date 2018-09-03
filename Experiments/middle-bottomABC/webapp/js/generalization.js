@@ -3,7 +3,6 @@ function generalize() {
 
 	// make presentation order
 	var presentationorder = randperm(stimuli.nstimuli);
-
 	//reset counter
 	generalization.counter = 0
 	
@@ -15,12 +14,23 @@ function generalize() {
 	var stimulusdiv = document.getElementById('stimulus');
 	var alphabutton = document.getElementById('classify_alpha');
 	var betabutton  = document.getElementById('classify_beta');
-	var gammabutton  = document.getElementById('classify_gamma');
+	var gammabutton  = document.getElementById('classify_gamma');		
+	
 
 	// define button functions
 	alphabutton.onclick = function() {classifyhandler('Alpha')};
 	betabutton.onclick = function() {classifyhandler('Beta')};
 	gammabutton.onclick = function() {classifyhandler('Gamma')};
+	
+	//If it's not the beta-gamma condition, remove the gamma button
+	if (data.info.gentype!=2){
+		//Remove gamma button
+		gammabutton.parentNode.removeChild(gammabutton)
+		if (data.info.gentype==0) {
+			//For not-alpha condition, rewrite the text in the button from beta Not Alpha
+			betabutton.innerHTML = 'NOT Alpha'
+		}
+	}
 
 	// function to set up a single trial
 	function init() {

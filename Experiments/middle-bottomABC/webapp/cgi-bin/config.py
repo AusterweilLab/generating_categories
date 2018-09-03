@@ -8,13 +8,13 @@ print                                                             # blank line, 
 # - - - - - - - - - - - - - - - - - - - - - - - -
 # USER SHOULD SET THESE PARAMETERS
 # This is where all the data is stored (X.json and workers.db) 
-destination = "../../datatemp"
+destination = "/var/services/homes/xian/CloudStation/data/middle-bottomABC"
 assignmentdb = destination + "/assignments.db"
 
 # what are the conditions?
 conditions = ['Middle', 'Bottom']
 counterbalances = range(8)
-sessionorders = ['b-bc','bc-b']
+gentypes = range(3)
 
 #  ----- DATA ORGANIZATION -----
 # Database: ~/CloudStation/data/assignments.db
@@ -40,7 +40,7 @@ if not os.path.isfile(assignmentdb):
     (Participant INTEGER,
     Condition TEXT, 
     Counterbalance INTEGER, 
-    Sessionorder TEXT,
+    Gentype INTEGER,
     Complete INTEGER)'''
     c.execute(cmd)
     conn.commit()

@@ -2,13 +2,16 @@
 // ------------------------------------------------------ //
 // initalize participant data. this entire array is saved to json
 //global session counter
-var session = {
-	count: 0, //counter
-	condition: '', //can be 'b' or 'bc' - initialised in experiment.js,
-	types: [['b','bc'],['bc','b']], //should correspond with the order defined in sessionorders
-	ntypes: 2,
-	sessionorders: ['b-bc','bc-b'] //should correspond with strings specified in cgi-bin/config.py
-}
+
+// var session = {
+// 	count: 0, //counter
+// 	condition: '', //can be 'b' or 'bc' - initialised in experiment.js,
+// 	//types: [['b','bc'],['bc','b']], //should correspond with the order defined in sessionorders	
+// 	//sessionorders: ['b-bc','bc-b'] //should correspond with strings specified in cgi-bin/config.py
+// 	ntypes: len(gentypes),
+	
+// }
+
 var data = {
 	experiment: {
 		Stimuli: 'Size-Color Squares',
@@ -17,9 +20,9 @@ var data = {
 	},
 	submit:{}, //data on the final final page, incl demographics
 	//Note the experimental data below have two empty objects, one for each session
-	observation: [{},{}],
-	generation: [{},{}],
-	generalization: [{},{}],
+	observation: {},
+	generation:  {},
+	generalization: {},
 	info: {
 		exposed: false,
 		lab: null,
@@ -47,12 +50,11 @@ var exemplars = {
 // ------------------------------------------------------ //
 // phase-specific settings
 var observation = {
-	nblocks: 1,
+	nblocks: 3,
 	counter: 0,
-	isi: 500,
+	isi: 1000,
 	ui: null,
-	instructions: ['html/instructions/observe.html',
-				   'html/instructions/observe2.html']
+	instructions: 'html/instructions/observe.html'
 };
 
 var generation = {
@@ -67,9 +69,10 @@ var generation = {
 	stimulus: null,
 	rt: null,
 	ui: null,
-	instructionsb1: 'html/instructions/generatebeta.html',
-	instructionsb2: 'html/instructions/generatebeta2.html',
-	instructionsc:  'html/instructions/generategamma.html'
+	instructions: ['html/instructions/generatenalpha.html',
+				   'html/instructions/generatebeta.html',
+				   'html/instructions/generatebeta.html'], // generatebeta starts off both conditions 1 and 2
+	instructionsgamma: 'html/instructions/generategamma.html'
 }
 
 var generalization = {

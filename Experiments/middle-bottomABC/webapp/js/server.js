@@ -44,7 +44,7 @@ function getassignments() {
 		data.info.participant = res.data.participant;
 		data.info.condition = res.data.condition;
 		data.info.counterbalance = res.data.counterbalance;
-		data.info.sessionorder = res.data.sessionorder
+		data.info.gentype = res.data.gentype
 	  	startup()			
 	});
 }
@@ -97,10 +97,14 @@ function load_template(url, obj) {
 
 
 // send participant data to server
-function savedata(data) {
+function savedata(data,asynctf){
+	if (typeof asynctf==="undefined"){
+		asynctf=true
+	}
 	$.ajax({
-			type: "POST",
-		  url: "cgi-bin/save-data.cgi",
-		  data: JSON.stringify(data),
+		type: "POST",
+		async:asynctf,
+		url: "cgi-bin/save-data.cgi",
+		data: JSON.stringify(data),
 		})
 }

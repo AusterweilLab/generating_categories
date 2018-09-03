@@ -1,10 +1,11 @@
 # Set the HOST on AWS
-# HOST = 'mechanicalturk.sandbox.amazonaws.com'
-HOST = 'mechanicalturk.amazonaws.com'
+HOST = 'mechanicalturk.sandbox.amazonaws.com'
+#HOST = 'mechanicalturk.amazonaws.com'
 
 # configuration for the external HIT
 externalconfig = dict(
-		url = "https://alab.psych.wisc.edu/experiments/generate-categories/",
+		#url = "https://alab.psych.wisc.edu/experiments/generate-categories/",
+                url = "https://alab.psych.wisc.edu/experiments/catgen/",
 		frame_height = 600, 
 )
 
@@ -25,10 +26,10 @@ qualifications.add(
 
 # set HIT config
 hitconfig = dict(
-	title = "Category learning experiment (10-15min)",
-	description = "Learn a new category in a quick HIT.",
+	title = "Categorisation experiment (10-15min)",
+	description = "Learn and test categories of shapes in a quick HIT.",
 	keywords = ["category", "learning", "psychology", "experiment"],
-	reward = 1.5,
+	reward = 1.0,
 	qualifications = qualifications,
 	duration = datetime.timedelta(minutes = 30),
 	lifetime = datetime.timedelta(days = 7),

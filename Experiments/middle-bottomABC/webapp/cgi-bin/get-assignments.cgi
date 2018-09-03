@@ -1,4 +1,4 @@
-#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python
+#! /bin/python
 
 #  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # This script assigns a participant number, experiment condition
@@ -78,30 +78,30 @@ counts = invertcounts(counts)
 participant_counter = int(weightedchoice(counts))
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
-# Get the next sessionorder condition number
+# Get the next gentype condition number
 
 cmd = """
-SELECT COUNT(Sessionorder)
+SELECT COUNT(Gentype)
 FROM Assignments
 WHERE Complete = 1
 AND Condition = ?
 AND Counterbalance = ?
-AND Sessionorder = ?
+AND Gentype = ?
 """
 
 counts = dict()
-for i in sessionorders:
+for i in gentypes:
         c.execute(cmd,(participant_cond, participant_counter,i))
         counts[str(i)] = c.fetchone()[0] + 1
 
-# Sessionorder is weighted choice based on counts
+# gentype is weighted choice based on counts
 counts = invertcounts(counts)
-participant_sessionorder = weightedchoice(counts)
+participant_gentype = int(weightedchoice(counts))
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
 # write participant to database
-data = (participant_num, participant_cond, participant_counter, participant_sessionorder, False)
+data = (participant_num, participant_cond, participant_counter, participant_gentype, False)
 c.execute('INSERT INTO Assignments VALUES (?,?,?,?,?)', data)
 conn.commit()
 conn.close()
@@ -115,7 +115,7 @@ data = dict(
         participant = participant_num, 
         condition = participant_cond,
         counterbalance = participant_counter,
-        sessionorder = participant_sessionorder)    
+        gentype = participant_gentype)    
 )
 print json.dumps(data)
 sys.exit()

@@ -613,23 +613,22 @@ $f(x_j)=0$, the exemplar does not contribute to generation.
 
 PACKER sets $f(x_j)$ depending on exemplar $x_j$'s category membership:
 $f(x_j) = \theta_t$ if $x_j$ is a member of the target category, and
-$f(x_j) = -\theta_c$ if $x_j$ is a member of a contrast category.
-$\theta_t$ and $\theta_c$ are free parameters
-($0 \leq (\theta_t,\theta_c) \leq 1$) controlling the trade-off
-between within- and between-category similarity. For example, when
-$\theta_t = \theta_c = 0.5$, $f(x_j) = 0.5$ for members of the
-target category and $f(x_j) = -0.5$ for members of other categories; thus, the
-model is likely to generate items that are similar to members of the target
-category but are not similar to members of other categories. In this way,
-$\theta_t > 0$ with $\theta_c = 0$ produces exclusive consideration
-of target-category members, and $\theta_c > 0$ with $\theta_t = 0$
-produces exclusive consideration of contrast-category members. The combination
-of $\theta_t$ and $\theta_c$ parameters thus specifies a wide
-breadth of possible approaches; by fitting it to a dataset, one can describe the
-relative roles of between-category contrast and within-category similarity in
-generation. See Figure \ref{fig:packer-examples} for an illustration of how
-these parameters control the relative influence of within-category similarity
-and contrast to other categories when generating a new exemplar.
+$f(x_j) = -\theta_c$ if $x_j$ is a member of a contrast category. $\theta_t$ and
+$\theta_c$ are free parameters ($0 \leq \theta_t,\theta_c$) controlling the
+trade-off between within- and between-category similarity. For example, when
+$\theta_t = \theta_c = 0.5$, $f(x_j) = 0.5$ for members of the target category
+and $f(x_j) = -0.5$ for members of other categories; thus, the model is likely
+to generate items that are similar to members of the target category but are not
+similar to members of other categories. In this way, $\theta_t > 0$ with
+$\theta_c = 0$ produces exclusive consideration of target-category members, and
+$\theta_c > 0$ with $\theta_t = 0$ produces exclusive consideration of
+contrast-category members. The combination of $\theta_t$ and $\theta_c$
+parameters thus specifies a wide breadth of possible approaches; by fitting it
+to a dataset, one can describe the relative roles of between-category contrast
+and within-category similarity in generation. See Figure
+\ref{fig:packer-examples} for an illustration of how these parameters control
+the relative influence of within-category similarity and contrast to other
+categories when generating a new exemplar.
 
 \begin{figure}
 	\begin{center} \inputpgf{figs/}{packer-examples.pgf}
@@ -815,11 +814,11 @@ Bayesian model emphasizes the generation of exemplars that maintain
 distributional commonalities across categories. In contrast, the
 representativeness model focuses on the generation of exemplars that are
 representative of the underlying distribution for a target category. Generally,
-this representativeness mechanism results in the generation of exemplars that
-are less similar (i.e., more different) to contrast categories. We see this
-illustrated in Figure \ref{fig:representative-examples}, where the
-representativeness model displays a strong preference for generating exemplars
-from target category 'B' that are further away from the contrast category 'A'.
+this mechanism of representativeness results in the generation of exemplars that
+are less similar to exemplars from other categories. We see this illustrated in
+Figure \ref{fig:representative-examples}, where the representativeness model
+displays a strong preference for generating exemplars from target category 'B'
+that are further away from the contrast category 'A'.
 
 \begin{figure}
 	\begin{center} \inputpgf{figs/}{hbm-examples.pgf}
@@ -1908,7 +1907,7 @@ of how formal approaches may be used to gain insight into the nature of creative
 cognition.
 
 In addition to demonstrating the utility of formal modeling in the study
-creative cognition, the PACKER model more specifically offers an additional
+creative cognition, the contrast models more specifically offer an additional
 interpretation of some of the field's most central findings. For example,
 perhaps the most foundational principle from this literature concerns the
 limiting influence of prior knowledge: Individuals create new categories
@@ -1916,30 +1915,33 @@ composed of features from existing classes, and what is created can be
 influenced drastically through the introduction of cues or examples
 \citep{marsh1999inadvertent,smith1993constraining}. In this paper, we have
 identified another important aspect of the constraining influence of prior
-knowledge: What is generated cannot be the same as what is already known.
+knowledge: What is generated tends to be different to what is already known.
 Further, there is systematicity in how generated categories differ from prior
-knowledge. The results of our simulations with PACKER demonstrate that this
-influence is concisely explained in terms of a trade-off between within-category
-similarity and between-category dissimilarity.
+knowledge. The results of our simulations suggest that this conceptualization of
+difference can be addressed in at least two different ways. Specifically,
+simulations with PACKER demonstrate that the constraining influence of
+difference is concisely explained in terms of a trade-off between
+within-category similarity and between-category dissimilarity. Conversely, the
+representativeness model shows that this influence can also be the result of
+enhancing the representativeness of generated exemplars to their category. [xian edit]
 
-Similarly, PACKER may offer an additional interpretation of existing accounts of
-creative generation. Most notably, a leading account within the creative
-cognition literature, the Path of Least Resistance
-\citep{ward1994structured,ward1995s}, also explains generation in terms of an
-exemplar-based retrieval process. This account was designed to explain the
-creative generation of natural categories (e.g., new species of plants and
-animals) and as a result relies strongly on the hierarchical organization of
-these categories: Individuals are thought to retrieve an example of the
-higher-level category being generated (e.g., \textit{bird} may be retrieved from
-the category \textit{animal}), and then systematically alter what was retrieved
-to make something new. As the PACKER model does not assume knowledge is
-hierarchically organized \citep[this is true of the exemplar view more broadly,
-see][]{murphy2016exemplar}, the model may be viewed as a formal instantiation of
-the Path of Least Resistance for application in a traditional artificial
-categorization domain (when there is no established hierarchy of categories).
-PACKER's success in explaining generation within an artificial domain motivates
-future work exploring the nature of category contrast within a more naturalistic
-setting.
+PACKER may offer an additional interpretation of existing accounts of creative
+generation. Most notably, a leading account within the creative cognition
+literature, the Path of Least Resistance \citep{ward1994structured,ward1995s},
+also explains generation in terms of an exemplar-based retrieval process. This
+account was designed to explain the creative generation of natural categories
+(e.g., new species of plants and animals) and as a result relies strongly on the
+hierarchical organization of these categories: Individuals are thought to
+retrieve an example of the higher-level category being generated (e.g.,
+\textit{bird} may be retrieved from the category \textit{animal}), and then
+systematically alter what was retrieved to make something new. As the PACKER
+model does not assume knowledge is hierarchically organized \citep[this is true
+of the exemplar view more broadly, see][]{murphy2016exemplar}, the model may be
+viewed as a formal instantiation of the Path of Least Resistance for application
+in a traditional artificial categorization domain (when there is no established
+hierarchy of categories). PACKER's success in explaining generation within an
+artificial domain motivates future work exploring the nature of category
+contrast within a more naturalistic setting.
 
 \subsection{Implications For Categorization}
 
@@ -1979,7 +1981,7 @@ representativeness). In this sense one can see the patterns of performance in
 the category generation task as recapitulating the order of semantic
 organization.
 
-\subsection{Exemplar dissimilarity and Representativeness in Categorization} 
+\subsection{Disentangling Exemplar dissimilarity and Representativeness in Categorization} 
 
 \sxlnote{I'm struggling a little with this section! That said, I think this may
   also be a good point to address Charles' concern re: the possible conditions
@@ -1994,6 +1996,15 @@ not yet clear -- it could be an indication of a fundamental difference between
 the processes involved in generation versus learning where exemplar
 dissimilarity is a larger factor in category generation while representativeness
 exerts more influence in category learning.
+
+In this paper, we have developed two novel models of category generation, each
+involving a different conceptualization of contrast.  However, there is no theoretical constraint that dictates the It is also possible to treat the similarity
+
+A thorough investigation to disentangle the two contrast mechanisms here is
+beyond the scope of the current article. However, as a quick proof of concept it
+is useful to check if the addition of a representativeness mechanism to an
+exemplar model would yield any benefit at all. 
+
 
 Xian: Please
 write about the two hypotheses and that followup work needs to look into why the

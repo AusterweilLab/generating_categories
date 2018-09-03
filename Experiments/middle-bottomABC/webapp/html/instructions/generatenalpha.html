@@ -1,0 +1,31 @@
+<div id='instructions'>
+  
+  <p>
+	There is another category of geometric figures that are
+	NOT from the Alpha category.&nbsp;&nbsp; Instead of
+	showing you examples, we would like
+	to know what you think is likely to NOT be in Alpha
+	category.
+  </p>
+  
+  <p>
+	You will now be given the chance to create examples of any size or color in order to show what you expect would NOT
+	be in the Alpha category.&nbsp;&nbsp; You will be asked to produce <span id='ntrials'></span> examples - they can be
+	quite similar or quite different to each other, depending on what you think makes the most sense for this
+	category.&nbsp;&nbsp; Each example needs to be unique, but the computer will let you know if you accidentally create
+	a repeat.
+  </p>
+  
+  <a href="#" onclick="generate()">Continue.</a>
+  
+</div>
+
+<script type='text/javascript'>
+	//get category type
+	if (data.info.gentype==2){
+		generation.ntrials = generation.ntrialsbase
+	} else {
+		generation.ntrials = generation.ntrialsbase*2
+	}
+  document.getElementById('ntrials').innerHTML = generation.ntrials;
+</script>
