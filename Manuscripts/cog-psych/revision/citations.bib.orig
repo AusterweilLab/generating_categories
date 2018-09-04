@@ -430,6 +430,7 @@ url = {http://papers.nips.cc/paper/6581-improved-variational-inference-with-inve
 }
 
 @book{berger16,
+<<<<<<< HEAD
   author = {J. Berger},
   title = {Contagious: Why Things Catch On},
   publisher = {Simon and Schuster},
@@ -443,6 +444,21 @@ url = {http://papers.nips.cc/paper/6581-improved-variational-inference-with-inve
   publisher = {Free Press},
   address = {New York: NY},
   year = {2003}
+=======
+	author = {J. Berger},
+	title = {Contagious: Why Things Catch On},
+	publisher = {Simon and Schuster},
+	address = {New York: NY},
+	year = {2016}
+}
+
+@book{rogers03,
+	author = {E. M. Rogers},
+	title = {Diffusion of Innovations},
+	publisher = {Free Press},
+	address = {New York: NY},
+	year = {2003}
+>>>>>>> fa4dccadcb57811604c1a369d6a84d2ee3b5c24e
 }
 
 @book{kaufman2010handbook,
