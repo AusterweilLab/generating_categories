@@ -41,6 +41,7 @@ for dname in data_names:
 
 #Iterate though each data file
 data = dict()
+parmnames_global = {}
 for i,file in enumerate(gsfiles):
     with open(pickledir+file,'rb') as f:
         fulldata = pickle.load(f)        
@@ -50,6 +51,7 @@ for i,file in enumerate(gsfiles):
     for mn in model_names:
         #with open(os.path.join(writedir,file[0:len(file)-2]+'_'+modelname_print+'.csv'),'wb') as f:
         parmnames = fulldata[mn]['parmnames']
+        parmnames_global[mn] = parmnames
         nparms = len(parmnames)
         nllAIC = fulldata[mn]['bestparmsll'][[nparms,nparms+1]]
         parmvals = fulldata[mn]['bestparmsll']
@@ -69,7 +71,7 @@ with open(writefile+'.csv','wb') as f:
     model_names = data.keys()
     for mn in model_names:
         model_print = funcs.getModelName(mn,fetch='short') #fetch short version of model name
-        parmnames = fulldata[mn]['parmnames']
+        parmnames = parmnames_global[mn]
         for parm in parmnames:
             parmvals = []
             for dn in data_names:

@@ -18,7 +18,10 @@ with open(pickledir+src,'rb') as f:
     trials = pickle.load(f)
 trials.task = task
 
-        
+with open(pickledir+'/corrvar.p','rb') as f:
+    corrvar = pickle.load(f)
+tso = corrvar['tso']
+pptdata = corrvar['pptdata']  
 
 def easymodel(model,params,trialnum):
     # format categories
@@ -30,20 +33,25 @@ def easymodel(model,params,trialnum):
     return ps
 
 #temp model runs
-packerparms = [.5, 1.0,.0]#[.302,2.533,6.004]#[.263,.321,9.479]
-packerparms2 = [.5,.7,.3]#[.302,6.004,2.533]#[.263,.321,9.479]
-copytweakparms = [.263, 9.807]
+#packerparms = [.5, 1.0,.0]#[.302,2.533,6.004]#[.263,.321,9.479]
+#packerparms2 = [.5,.7,.3]#[.302,6.004,2.533]#[.263,.321,9.479]
+copytweakparms = [.217796,.01]#[.263, 9.807]
+
+corr = funcs.get_corr(CopyTweak.parmxform(copytweakparms,direction=1),pptdata,tso,CopyTweak,return_ll=False)
+ll = funcs.get_corr(CopyTweak.parmxform(copytweakparms,direction=1),pptdata,tso,CopyTweak,return_ll=True)
+
+print corr
+print ll
 #packerparms2 = [copytweakparms[0], 0, copytweakparms[1]]
-print trials.loglike(packerparms,PackerRep,parmxform=False)
-#print trials.loglike(copytweakparms,CopyTweakRep,parmxform=False)
+#print trials.loglike(packerparms,PackerRep,parmxform=False)
+#print trials.loglike(copytweakparms,CopyTweak,parmxform=False)
 
-test_cp = easymodel(PackerRep,packerparms,19)
-test_packer = easymodel(PackerRep,packerparms2,19)
+#test_cp = easymodel(CopyTweak,copytweakparms,19)
+#test_packer = easymodel(PackerRep,packerparms2,19)
 
 
-print test_cp
-print test_packer
-print test_cp-test_packer
+#print test_packer
+#print test_cp-test_packer
 lll
 
 #loop over each trial

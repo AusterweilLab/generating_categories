@@ -25,10 +25,10 @@ if pearson:
 else:
     corrtype = 's'
 #Bootstrap parameters
-nbootstraps = 10
+nbootstraps = 1000
 
 savefilename='modelvsppt{}_t.pdf'.format(corrtype)
-bestparmdb = "pickles/chtc_gs_best_params_corr{}_new.p".format(corrtype)
+bestparmdb = "pickles/chtc_gs_best_params_corr{}.p".format(corrtype)
 modeleaseDB = "pickles/modelease_corr{}.p".format(corrtype)
 #Some plotting options
 font = {'family' : 'DejaVu Sans',
@@ -69,12 +69,12 @@ for modelname in best_params_t.keys():
     for i,parmname in enumerate(best_params_t[modelname]['parmnames']):
         parmval = best_params_t[modelname]['bestparmsll']
         best_params[modelname][parmname] = parmval[i]
-#modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]
-modelList = [CopyTweak,CopyTweakRep,Packer, RepresentJK13,]                            
+modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]
+#modelList = [CopyTweak,CopyTweakRep,Packer, RepresentJK13,]                            
 
 #Specify plot order
-#modelPlotOrder = np.array([[Packer,RepresentJK13],[CopyTweak,ConjugateJK13]])
-modelPlotOrder = np.array([[CopyTweak,CopyTweakRep],[Packer,RepresentJK13]])
+modelPlotOrder = np.array([[Packer,RepresentJK13],[CopyTweak,ConjugateJK13]])
+#modelPlotOrder = np.array([[CopyTweak,CopyTweakRep],[Packer,RepresentJK13]])
 
 #Prepare matched database    
 matchdb='../cat-assign/data_utilities/cmp_midbot.db'
@@ -135,6 +135,7 @@ options = dict(
 if 'tso' not in ll_global.keys():
     pptdata,tso = funcs.prep_corrvar(info,assignment,stimuli,stats,WT_THETA)
     ll_global['tso'] = tso
+    ll_global['pptdata'] = pptdata
 else:
     tso = ll_global['tso']
 
@@ -175,7 +176,7 @@ for model_obj in modelList:
             #Get loglikelihoods
             raw_array_ll = Simulation.loglike_allperm(params, model_obj, categories, stimuli, permute_category = 1)
             ll_list += [raw_array_ll]
-            print categories,raw_array_ll
+            #print categories,raw_array_ll
             print_ct = funcs.printProg(ppt,print_ct,steps = 1, breakline = 20, breakby = 'char')
 
         #Re-organise the lists

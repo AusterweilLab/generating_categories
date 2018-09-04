@@ -50,6 +50,7 @@ p = 2.0/(len(hues)-1) # baserate of overlap (2 categories, N bins)
 expected = binom.pmf(range(n+1), n, p) * 22
 
 x = range(0,7)
+#chi-sq test with binomial
 for i, k in enumerate(['Positive','Neutral','Negative']):
 	v = shared_hues[k]
 	y = funcs.histvec(v, x, density = False)
@@ -60,6 +61,14 @@ for i, k in enumerate(['Positive','Neutral','Negative']):
 plt.bar(x, expected + 0.75, 1, # added 0.75 to adjust for bottom of bar at -0.75
 	facecolor = [0.7,0.7,0.7], edgecolor = 'k', linewidth = 0.75,
 	label = 'Expected (Binomial)', bottom = -0.75)
+
+#chi-sq test assuming regularity
+expected_reg = [16.5,0,0,0,0,0,5.5]
+for i, k in enumerate(['Positive','Neutral','Negative']):
+	v = shared_hues[k]
+	y = funcs.histvec(v, x, density = False)
+	print k, chisquare(y, expected_reg)
+	#plt.plot(x, y, linestyles[k], lw = 1, label = k)
 
 
 plt.axis([-0.6,6.6,-0.75,22.75])
@@ -73,7 +82,7 @@ plt.ylabel('Participants', fontsize = 12)
 fname = 'distinct-hues'
 fh.savefig(fname + '.png', bbox_inches = 'tight', pad_inches=0.0)
 
-path = '../../Manuscripts/cog-psych/figs/jk13-huecontrast.pgf'
-funcs.save_as_pgf(fh, path)
+#path = '../../Manuscripts/cog-psych/figs/jk13-huecontrast.pgf'
+#funcs.save_as_pgf(fh, path)
 
 		

@@ -116,8 +116,8 @@ class CopyTweak(Exemplar):
     # parameter_names = ['specificity', 'determinism', 'baselinesim']
     parameter_names = ['specificity', 'determinism']        
     parameter_rules = dict(
-        specificity = dict(min = 1e-10),
-        determinism = dict(min = 0.0),
+        specificity = dict(min = 0.01),
+        determinism = dict(min = 0.01),
         #baselinesim = dict(min = 0.0),
         )
 
@@ -138,16 +138,15 @@ class CopyTweak(Exemplar):
 
         # get pairwise similarities with target category
         similarity = self._sum_similarity(stimuli, self.categories[category])
-
         # add baseline similarity
         #similarity = similarity + self.baselinesim
-        if task is 'generate': 
+        if task == 'generate': 
             # NaN out known members - only for task=generate
             known_members = Funcs.intersect2d(stimuli, self.categories[category])
             similarity[known_members] = np.nan
             # get generation probabilities given each source
             ps = Funcs.softmax(similarity, theta = self.determinism)
-        elif task is 'assign' or task is 'error':
+        elif task == 'assign' or task == 'error':
             # get pairwise similarities with contrast category
             similarity_flip = self._sum_similarity(stimuli, self.categories[1-category])
             # add baseline similarity
@@ -162,6 +161,7 @@ class CopyTweak(Exemplar):
 
 
                 #self.determinism = max(1e-308,self.determinism)
+                
         return ps
 
 class CopyTweakRep(Exemplar):
@@ -175,8 +175,8 @@ class CopyTweakRep(Exemplar):
     # parameter_names = ['specificity', 'determinism', 'baselinesim']
     parameter_names = ['specificity', 'determinism']        
     parameter_rules = dict(
-        specificity = dict(min = 1e-10),
-        determinism = dict(min = 0.0),
+        specificity = dict(min = 0.01),
+        determinism = dict(min = 0.01),
         #baselinesim = dict(min = 0.0),
         )
 
@@ -205,13 +205,13 @@ class CopyTweakRep(Exemplar):
         representativeness = np.log(similarity_target/similarity_contrast)
         # add baseline similarity
         #similarity = similarity + self.baselinesim
-        if task is 'generate': 
+        if task == 'generate': 
             # NaN out known members - only for task=generate
             known_members = Funcs.intersect2d(stimuli, self.categories[category])
             representativeness[known_members] = np.nan
             # get generation probabilities given each source
             ps = Funcs.softmax(representativeness, theta = self.determinism)
-        elif task is 'assign' or task is 'error':
+        elif task == 'assign' or task == 'error':
             # get pairwise similarities with contrast category
             #similarity_flip = self._sum_similarity(stimuli, self.categories[1-category])
             representativeness_flip = np.log(similarity_contrast/similarity_target)
