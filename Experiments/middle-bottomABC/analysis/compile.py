@@ -11,7 +11,7 @@ import Modules.Funcs as funcs
 db_dst = '../data/experiment.db'
 assignmentdb = '../data/assignments.db'
 exclude = [
-	]
+    ]
 
 
 # get worker info
@@ -23,34 +23,36 @@ c.close()
 # are marked as complete and without a previous exposure
 data = []
 for i, row in assignments.iterrows():
-	
-	if not row.Complete: continue
+    
+    if not row.Complete: continue
 
-	# skip if data file does not exist or is manually excluded
-	pid = int(row.Participant)
-	path = '../data/' + str(pid) + '.json'
-	if pid in exclude: continue
-	if not os.path.exists(path): continue
+    # skip if data file does not exist or is manually excluded
+    pid = int(row.Participant)
+    path = '../data/' + str(pid) + '.json'
+    if pid in exclude: continue
+    if not os.path.exists(path): continue
 
-	with open(path,'r') as fh:
-		S = fh.read()
-		
-		try: json.loads(S)
-		except ValueError: 
-			S = S[:-25]
-			print pid, json.loads(S)['info']['browser']
+    with open(path,'r') as fh:
+        S = fh.read()
+        fail = False
+        try: json.loads(S)
+        except ValueError:
+            fail = True
+            S = S[:-25]
+            print pid, json.loads(S)['info']['browser']
 
-	pdata = json.loads(S)
-	if pdata['info']['lab']: continue
+    pdata = json.loads(S)
+    if pdata['info']['lab']: continue
+    if fail: continue
 
-	data.append(json.loads(S))
+    data.append(json.loads(S))
 
 # create participant table
 rows = []
 for i in data:
-	r = dict(i['info'])
-	del r['browser']
-	rows.append(r)
+    r = dict(i['info'])
+    del r['browser']
+    rows.append(r)
 
 participants = pd.DataFrame(data = rows)
 del participants['exposed']
@@ -59,20 +61,20 @@ del participants['exposed']
 # create generated categories table
 rows = []
 for i in data:
-	for j in i['generation']:
-		row = i['generation'][j]
-		row['participant'] = i['info']['participant']
-		rows.append(row)
+    for j in i['generation']:
+        row = i['generation'][j]
+        row['participant'] = i['info']['participant']
+        rows.append(row)
 generation = pd.DataFrame(rows, dtype = int)
 
 # create generalization table
 rows = []
 for i in data:
-	for j in i['generalization']:
-		row = i['generalization'][j]
-		row['participant'] = i['info']['participant']
-		row['response'] = row['response'] == 'Beta'
-		rows.append(row)
+    for j in i['generalization']:
+        row = i['generalization'][j]
+        row['participant'] = i['info']['participant']
+        row['response'] = row['response'] == 'Beta'
+        rows.append(row)
 generalization = pd.DataFrame(rows, dtype = int)
 
 # create stimulus table
@@ -94,20 +96,20 @@ stimuli.index.rename('stimulus')
 
 # counterbalance table
 counterbalance = pd.DataFrame([
-	dict(counterbalance = 0, xax = 'size', yax = 'color', color = 'dark-light', size = 'small-big'), #
-	dict(counterbalance = 1, xax = 'size', yax = 'color', color = 'light-dark', size = 'small-big'), #
-	dict(counterbalance = 2, xax = 'size', yax = 'color', color = 'dark-light', size = 'big-small'), #
-	dict(counterbalance = 3, xax = 'size', yax = 'color', color = 'light-dark', size = 'big-small'), #
-	dict(counterbalance = 4, xax = 'color', yax = 'size', color = 'dark-light', size = 'small-big'), #
-	dict(counterbalance = 5, xax = 'color', yax = 'size', color = 'light-dark', size = 'small-big'), #
-	dict(counterbalance = 6, xax = 'color', yax = 'size', color = 'dark-light', size = 'big-small'), #
-	dict(counterbalance = 7, xax = 'color', yax = 'size', color = 'light-dark', size = 'big-small'), #
+    dict(counterbalance = 0, xax = 'size', yax = 'color', color = 'dark-light', size = 'small-big'), #
+    dict(counterbalance = 1, xax = 'size', yax = 'color', color = 'light-dark', size = 'small-big'), #
+    dict(counterbalance = 2, xax = 'size', yax = 'color', color = 'dark-light', size = 'big-small'), #
+    dict(counterbalance = 3, xax = 'size', yax = 'color', color = 'light-dark', size = 'big-small'), #
+    dict(counterbalance = 4, xax = 'color', yax = 'size', color = 'dark-light', size = 'small-big'), #
+    dict(counterbalance = 5, xax = 'color', yax = 'size', color = 'light-dark', size = 'small-big'), #
+    dict(counterbalance = 6, xax = 'color', yax = 'size', color = 'dark-light', size = 'big-small'), #
+    dict(counterbalance = 7, xax = 'color', yax = 'size', color = 'light-dark', size = 'big-small'), #
 ])
 
 # training examples table
 alphas = pd.DataFrame(dict(
-	Middle = [30, 32, 48, 50 ],
-	Bottom = [12, 14, 30, 32],
+    Middle = [30, 32, 48, 50 ],
+    Bottom = [12, 14, 30, 32],
 ))
 
 # compute beta category betastats for each participant
@@ -116,31 +118,31 @@ top_nums = range(72,81)
 betastats = []
 for pid, rows in generation.groupby('participant'):
 
-	condition = participants.loc[participants.participant == pid, 'condition']
-	betas = rows.stimulus
-	betas = stimuli.as_matrix()[betas,:]
-	p_alphas = alphas[condition].as_matrix()[:,0]
-	p_alphas = stimuli.as_matrix()[p_alphas,:]
+    condition = participants.loc[participants.participant == pid, 'condition']
+    betas = rows.stimulus
+    betas = stimuli.as_matrix()[betas,:]
+    p_alphas = alphas[condition].as_matrix()[:,0]
+    p_alphas = stimuli.as_matrix()[p_alphas,:]
 
-	# stats battery
-	stats = funcs.stats_battery(betas, alphas = p_alphas)
+    # stats battery
+    stats = funcs.stats_battery(betas, alphas = p_alphas)
 
-	# compute top and bottom stats
-	nums = rows.stimulus
-	bottom_used = any(nums.isin(bottom_nums))
-	bottom_only = all(nums.isin(bottom_nums))
-	top_used = any(nums.isin(top_nums))
-	top_only = all(nums.isin(top_nums))
-	top_and_bottom = bottom_used & top_used
+    # compute top and bottom stats
+    nums = rows.stimulus
+    bottom_used = any(nums.isin(bottom_nums))
+    bottom_only = all(nums.isin(bottom_nums))
+    top_used = any(nums.isin(top_nums))
+    top_only = all(nums.isin(top_nums))
+    top_and_bottom = bottom_used & top_used
 
-	attl_fields = dict(
-							participant = pid, 
-							bottom_used = bottom_used, bottom_only = bottom_only,
-							top_used = top_used, top_only = top_only,
-							top_and_bottom = top_and_bottom
-							)
-	stats.update(attl_fields)
-	betastats.append(stats)
+    attl_fields = dict(
+        participant = pid, 
+        bottom_used = bottom_used, bottom_only = bottom_only,
+        top_used = top_used, top_only = top_only,
+        top_and_bottom = top_and_bottom
+    )
+    stats.update(attl_fields)
+    betastats.append(stats)
 betastats = pd.DataFrame(betastats)
 
 

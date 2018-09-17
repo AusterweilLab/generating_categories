@@ -13,3 +13,4 @@ os.system('ssh -i ~/Dropbox/.ssh/luke -p 1202 -t xian@alab.psych.wisc.edu \'{};{
 os.system('scp -i ~/Dropbox/.ssh/luke -P 1202 xian@alab.psych.wisc.edu:{} data/'.format(os.path.join(serverdir,zipfile)))
 #untar data
 os.system('tar -xvzf data/{} -C data/'.format(zipfile))        
+print 'Data extracted to the data folder. Feel free to compile by going into the analysis folder and running \'python compile.py\'.'

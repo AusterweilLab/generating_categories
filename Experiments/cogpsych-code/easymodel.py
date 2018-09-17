@@ -12,7 +12,7 @@ from Modules.Classes import CopyTweakRep
 from Modules.Classes import PackerRep
 
 #Generate default trialset
-dataname = 'pooled-no1st'
+dataname = 'pooled'
 execfile('validate_data.py')
 with open(pickledir+src,'rb') as f:
     trials = pickle.load(f)
@@ -33,15 +33,30 @@ def easymodel(model,params,trialnum):
     return ps
 
 #temp model runs
-#packerparms = [.5, 1.0,.0]#[.302,2.533,6.004]#[.263,.321,9.479]
+packerparms = [.506, 3.08,3.47]#[.302,2.533,6.004]#[.263,.321,9.479]
 #packerparms2 = [.5,.7,.3]#[.302,6.004,2.533]#[.263,.321,9.479]
-copytweakparms = [.217796,.01]#[.263, 9.807]
+#copytweakparms = [.217796,.01]#[.263, 9.807]
+hbparms = [12.226, 1, 27.041,10.214]
 
-corr = funcs.get_corr(CopyTweak.parmxform(copytweakparms,direction=1),pptdata,tso,CopyTweak,return_ll=False)
-ll = funcs.get_corr(CopyTweak.parmxform(copytweakparms,direction=1),pptdata,tso,CopyTweak,return_ll=True)
+#getcorr
+#corr = funcs.get_corr(CopyTweak.parmxform(copytweakparms,direction=1),pptdata,tso,CopyTweak,return_ll=False)
+#ll = funcs.get_corr(CopyTweak.parmxform(copytweakparms,direction=1),pptdata,tso,CopyTweak,return_ll=True)
+#print corr
+#print ll
 
-print corr
-print ll
+#print easymodel(ConjugateJK13,hbparms,0)
+#print easymodel(RepresentJK13,hbparms,0)
+
+f, ax = plt.subplots(1,2)
+ao = easymodel(RepresentJK13,hbparms,20)
+a = np.flipud(ao.reshape([9,9]))
+bo = easymodel(Packer,packerparms,20)
+b = np.flipud(bo.reshape([9,9]))
+ax[0].imshow(a,cmap='hot',interpolation='nearest')
+ax[1].imshow(b,cmap='hot',interpolation='nearest')
+print ao
+plt.show()
+
 #packerparms2 = [copytweakparms[0], 0, copytweakparms[1]]
 #print trials.loglike(packerparms,PackerRep,parmxform=False)
 #print trials.loglike(copytweakparms,CopyTweak,parmxform=False)
@@ -66,4 +81,4 @@ lll
 #         print test_packer
 
 
-#print test_cp-test_packer 
+#print test_cp-test_packer

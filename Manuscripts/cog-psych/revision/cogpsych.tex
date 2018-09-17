@@ -159,7 +159,20 @@ critical importance of contrast in the creation of new ideas.
 To successfully generate something novel, what is generated must be different
 from what is already known. This fundamental constraint, ``being different'', or
 contrasting from other categories in the relevant domain, is the focus of our
-work. Although implicitly assumed in some work, this constraint has been
+work. Intuitively, the influence of contrast may be expected in a number of
+real-life scenarios involving the generation of new categories. For instance, a
+college student who has been eating instant noodles for a week may be more
+inclined to seek out something healthier and less carbohydrate-heavy (e.g., a
+Caesar salad) compared to something similar (a different flavour of instant
+noodles). An actor who is dissatisfied with being typecast as a villain may seek
+out roles as heroes as opposed to playing other antagonistic characters. A more
+compelling example is seen in recent evidence by \cite{askin2017} who found that
+new songs that were more different to their peers were generally more popular
+than new songs that were similar to others. It appears that once there is the
+motivation to generate something new, there is an associated motivation to
+generate something \emph{different}. 
+
+Although implicitly assumed in some work, this constraint has been
 overlooked in previous research: To our knowledge, there has not been any
 systematic investigation addressing how generated categories {\em differ} from
 what is already known. Although the idea of category contrast is ubiquitous
@@ -588,7 +601,7 @@ $\mu_0,\Sigma_0,\kappa,\nu$. Mathematically,
 \end{align}
 
 In our simulations, we set the prior mean $\mu_0$ to the center of the stimulus
-space the prior variance to be isotropic ($\Sigma_0 = \lambda \mathbf{I}$ where
+space and the prior variance to be isotropic ($\Sigma_0 = \lambda \mathbf{I}$ where
 $\lambda$ is a free parameter and $\mathbf{I}$ is a $d$-by-$d$ identity matrix
 with $d$ representing the number of dimensions or features in the domain). The
 $\kappa$ and $\nu$ parameters are freely estimated within the constraints
@@ -2002,7 +2015,7 @@ artificial domain motivates future work exploring the nature of category
 contrast within a more naturalistic setting.
 
 The broader study of creativity currently involves a wide breadth of different
-approaches,\citep[for a review see][]{kozbelt2010theories}, such as those based
+approaches\citep[for a review see][]{kozbelt2010theories}, such as those based
 on free association \citep{mednick1962associative} and conceptual combination
 \citep{estes2002emergence,murphy1988comprehending}. In addition, recent work in
 the machine learning literature has explored using neural networks to address
@@ -2061,7 +2074,7 @@ category contrast has not yet been attempted in the unsupervised categorization
 literature. 
 
 Interestingly, the unidimensional sort bias that is commonly observed in
-unsupervised cateogorization
+unsupervised categorization
 \citep{imai1965discriminability,milton2004influence,ahn1992two}, where
 participants sort unlabelled family resemblance category exemplars by focusing
 on a single feature, was not consistently observed in our tasks. In our
@@ -2104,7 +2117,7 @@ based on exemplar similarity instead of a multivariate Gaussian
 likelihood.\footnote{An analogous implementation of the representativeness
   mechanism to PACKER results in both $\theta_c$ and $\theta_t$ adding to
   constant value that is independent of the similarity to contrast and target
-  exemplars respectively. Consequently, it becomes equivalent to a
+  exemplars respectively. Consequently, it is formally equivalent to a
   copy-and-tweak model with representativeness.}
 
 How well does a representativeness model that uses exemplar similarity to
@@ -2185,6 +2198,43 @@ integrate the core principles of either model of contrast into other
 categorization models
 \citep[e.g.,][]{love2004sustain,kurtz2007divergent,smith2000thirty}.
 
+The present work focuses on the influence of contrast on categorization,
+primarily by exploring two different conceptualizations of contrast. However,
+throughout this paper we have only explored one type of category generation
+problem, that is the generation of new categories of squares that vary only in
+size and shade. It is possible that the strength of the influence of contrast on
+category generation decisions varies depending on the nature of the category
+generation problem, for instance, in situations where the boundaries of the
+domain are not clearly defined. To provide some intuition for this, consider the
+following example: an entomologist is asked to draw a new type of insect that
+they have never seen. Clearly, features of the new insect will be constrained by
+the definition of an insect: it will be an arthropod with six legs and a
+relatively hard exoskeleton. However, there are no strict limitations on other
+features such as how large the insect needs to be, or if the insect should have
+a particular type of pattern on its body. In this scenario, it is plausible that
+the entomologist will draw an insect that is fairly similar to insects that
+currently exist (e.g., small in size with a camouflage pattern that matches its
+environment) as opposed to something completely different (e.g., a horse-sized
+beetle with roman numerals on its back), indicating that contrast plays only a
+minor role in the decision making process. In this situation it appears that
+there is a combination of clearly defined constraints on the domain boundary
+that are imposed by the external environment (insects must be arthropods with
+six legs) but also ill-defined constraints that are imposed by the observer
+(insects are probably small and have patterns on their body that suit the
+environment). However, the relation of these contraints (and the interactions
+between them) to the role of contrast is not currently well understood.
+
+The definition of the domain boundary is only one possible factor that could
+influence the effect of contrast on categorization. It is also plausible that
+other conditions such as the nature of the instruction (``Generate a new
+category that is Not Alpha'' vs ``Generate a new category that is Beta'') and
+the boundedness of the features (using features such as hue and orientation that
+do have have strict minima or maxima) can affect the extent to which contrast
+influences categorization. Though our current contrast models can allow the
+influence of contrast to vary, they do not make any predictions regarding the
+specific conditions under which contrast can vary. Consequently,
+addressing this issue would be an immensely promising avenue for future
+research.
 
 \section{Conclusions}
 
