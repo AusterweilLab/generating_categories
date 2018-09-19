@@ -25,6 +25,7 @@ latex_out/
 *.fdb_latexmk
 *.synctex.gz
 
+
 Modules/tests/
 Manuscripts/cog-psych/review_materials/
 

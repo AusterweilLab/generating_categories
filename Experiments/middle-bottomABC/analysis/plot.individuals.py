@@ -38,5 +38,7 @@ for i, row in info.iterrows():
     funcs.plotclasses(ax, stimuli, palphas, pbetas, betastr=betastr,betacol = betacol)
     
     fname = os.path.join(savedir,condition + '-' + gentypeStr_p + '-' + str(pid) + '.png')
+    ax.text(.9,1.25,str(pid))
     f.savefig(fname, bbox_inches='tight', transparent=False)
     plt.cla()
+
