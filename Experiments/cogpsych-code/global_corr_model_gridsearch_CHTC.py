@@ -11,11 +11,13 @@ from Modules.Classes import CopyTweak
 from Modules.Classes import Packer
 from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
+from Modules.Classes import PackerRep
+from Modules.Classes import PackerEuc
 import get_corr as gc
 WT_THETA = 1.5
 #Toggle 
 pearson = True #fit correlations using pearson r. Uses spearman rho if false.
-include150 = True #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
+ll150 = 'lo' #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
 
 
 participant_def = 'all'
@@ -56,17 +58,26 @@ stats = pd.read_sql_query("SELECT * from betastats", con)
 con.close()
     
 
-if include150:
-    with open(pickledir+'include150.p','rb') as f:
+if ll150 is 'hi':
+    with open(pickledir+'ll150hi.p','rb') as f:
         includes = pickle.load(f)
     incCatAss = includes['includeCatAssign']
     incMidBot = includes['includeMidBot']
     info = info.loc[info.participant.isin(incCatAss)]
     assignment = assignment.loc[assignment.participant.isin(incCatAss)]
     stats = stats.loc[stats.participant.isin(incMidBot)]
-    include150str = 'inc150'
+    ll150str = 'll150hi'
+elif ll150 is 'lo':
+    with open(pickledir+'ll150lo.p','rb') as f:
+        includes = pickle.load(f)
+    incCatAss = includes['includeCatAssign']
+    incMidBot = includes['includeMidBot']
+    info = info.loc[info.participant.isin(incCatAss)]
+    assignment = assignment.loc[assignment.participant.isin(incCatAss)]
+    stats = stats.loc[stats.participant.isin(incMidBot)]
+    ll150str = 'll150lo'
 else:
-    include150str = ''
+    ll150str = ''
 #execfile('validate_data.py')
 
 
@@ -75,7 +86,7 @@ else:
 # with open(pickledir+src, "rb" ) as f:
 #     trials = pickle.load( f )
 
-dataname = 'corr'+include150str
+dataname = 'corr'+ll150str
 filename = dataname
 dst = 'best_params_{}.p'.format(filename)
 print 'Grid Searching Correlation with Data: ' + dataname
@@ -96,7 +107,7 @@ options = dict(
 results = dict()
 pptdata,tso = funcs.prep_corrvar(info,assignment,stimuli,stats,WT_THETA)
 #Run grid search
-for model_obj in [ConjugateJK13, RepresentJK13, CopyTweakRep, CopyTweak, Packer]:
+for model_obj in [Packer,PackerEuc,RepresentJK13]:#[ConjugateJK13, RepresentJK13, CopyTweakRep, CopyTweak, Packer]:
     #Prepare list of grid search start points
     #Create base array
     nparms = len(model_obj.parameter_names)

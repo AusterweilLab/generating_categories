@@ -278,7 +278,8 @@ class Exemplar(Model):
     def _sum_similarity(self, X, Y, 
         param = 1.0,    
         wts  = None, 
-        c = None ):
+        c = None,
+         p = 1):
         """ 
         function to compute summed similarity along rows of 
         X across all items in Y. Resulting array will have one element 
@@ -286,12 +287,18 @@ class Exemplar(Model):
 
         the "param" argument acts as a multiplier for similarities prior to summation
         "c" and "wts" can be arbitrary if supplied, or based on the model attribute if not
+
+        p indicates the p-norm for calculating distance in pdist. If p == 1, that's city-block distance. 
+        p == 2 indicates Euclidean distance. But really p can take any real positive.
         """
 
         # set weights and c
         if wts is None: wts = self.wts
         if c is None: c = self.specificity
-        distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts)
+        if p == 1:
+            distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts)
+        else:
+            distance   = Funcs.pdist_gen(np.atleast_2d(X), np.atleast_2d(Y), w = wts, p = p)
         similarity = np.exp(-float(c) * distance)
         similarity = similarity * float(param)
         return np.sum(similarity, axis = 1)

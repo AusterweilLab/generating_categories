@@ -24,11 +24,13 @@ latex_out/
 *.toc
 *.fdb_latexmk
 *.synctex.gz
+*.gz
 
 
 Modules/tests/
 Manuscripts/cog-psych/review_materials/
 
+chtc_code/
 private/
 Archive/
 *~

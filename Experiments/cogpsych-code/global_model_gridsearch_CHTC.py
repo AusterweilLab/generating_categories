@@ -12,10 +12,11 @@ from Modules.Classes import ConjugateJK13
 from Modules.Classes import RepresentJK13
 from Modules.Classes import CopyTweakRep
 from Modules.Classes import PackerRep
+from Modules.Classes import PackerEuc
 #Toggle 
 fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
 fiterror = False #Toggle if fitting error
-include150 = True #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
+ll150 = 'lo' #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
 
 # Specify default dataname
 datasets = ['midbot']#['pooled','pooled-no1st']
@@ -59,18 +60,24 @@ if not os.path.isdir(outputdir):
     os.system('mkdir ' + outputdir)
 
 
-if include150:
-    with open(pickledir+'include150.p','rb') as f:
+if ll150 is 'hi':
+    with open(pickledir+'ll150hi.p','rb') as f:
         includes = pickle.load(f)
     include = includes['includeMidBot']
     participant = include
-    include150str = 'inc150'
+    ll150str = 'll150hi'
+elif ll150 is 'lo':
+    with open(pickledir+'ll150lo.p','rb') as f:
+        includes = pickle.load(f)
+    include = includes['includeMidBot']
+    participant = include
+    ll150str = 'll150lo'
 else:
-    include150str = ''
+    ll150str = ''
 
 for dataname in datasets:
     execfile('validate_data.py')
-    dst = dst[0:-2] + include150str + dst[-2:]
+    dst = dst[0:-2] + ll150str + dst[-2:]
     
     print 'Grid Searching Data: ' + dataname
     
@@ -111,7 +118,7 @@ for dataname in datasets:
     #Run grid search
     results = dict()
 
-    for model_obj in [CopyTweakRep,ConjugateJK13, RepresentJK13, CopyTweak, Packer, PackerRep]:
+    for model_obj in [Packer,PackerEuc,RepresentJK13]:#[ConjugateJK13, RepresentJK13, CopyTweakRep, CopyTweak, Packer]:
         #Prepare list of grid search start points
         #Create base array
         nparms = len(model_obj.parameter_names)
