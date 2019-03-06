@@ -23,7 +23,7 @@ con.close()
 stats = pd.merge(stats, info, on = 'participant')
 
 print stats[['condition','yrange']]
-lll
+#lll
 
 fh, axes = plt.subplots(1,3,figsize = (7.5,2.5))
 
@@ -50,10 +50,10 @@ for i, col in enumerate(['xrange','yrange','correlation']):
 	ax.xaxis.grid(False)
 
 fh.subplots_adjust(wspace=0.4)
-fh.savefig('statsboxes.png', bbox_inches = 'tight')
+#fh.savefig('statsboxes.png', bbox_inches = 'tight')
 
-path = '../../../Manuscripts/cog-psych/figs/e2-statsboxes.pgf'
-funcs.save_as_pgf(fh, path)
+#path = '../../../Manuscripts/cog-psych/figs/e2-statsboxes.pgf'
+#funcs.save_as_pgf(fh, path)
 
 # hypothesis tests
 from scipy.stats import ttest_ind, ttest_rel, ttest_1samp, wilcoxon, ranksums

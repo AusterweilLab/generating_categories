@@ -16,10 +16,10 @@ execfile('build_chtc.py')
 os.chdir('../../..')
 #upload the new batch
 print 'Uploading latest working batch to {}.'.format(send2dir)
-os.system('scp -i ~/Dropbox/.ssh/chtc working.tar.gz liew2@submit-5.chtc.wisc.edu:{}'.format(send2dir))
+os.system('scp -i ~/Dropbox/.ssh/chtc working.tar.gz liew2@submit-1.chtc.wisc.edu:{}'.format(send2dir))
 
 #remotely remove the old files and submit
 print 'Running rm and submit scripts on CHTC server...'
-os.system('ssh -i ~/Dropbox/.ssh/chtc -t liew2@submit-5.chtc.wisc.edu \'{}\' '.format(rmsubmit))
+os.system('ssh -i ~/Dropbox/.ssh/chtc -t liew2@submit-1.chtc.wisc.edu \'{}\' '.format(rmsubmit))
 #os.system('ssh -i ~/Dropbox/.ssh/chtc liew2@submit-5.chtc.wisc.edu')
 

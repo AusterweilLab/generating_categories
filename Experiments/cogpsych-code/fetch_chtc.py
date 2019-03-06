@@ -13,8 +13,8 @@ suffix = fetchdir[len(fetchdirbase):]
 tz = 'cd {};tar -cvzf allpickles{}.tar.gz pickles*'.format(fetchdir,suffix) #compress files
 datestr = datetime.now().strftime("%d%m%y")
 
-os.system('ssh -i ~/Dropbox/.ssh/chtc -t liew2@submit-5.chtc.wisc.edu \'{}\' '.format(tz))
-os.system('scp -i ~/Dropbox/.ssh/chtc liew2@submit-5.chtc.wisc.edu:{}/allpickles{}.tar.gz ./chtctar/private/allpickles{}{}.tar.gz'.format(fetchdir,suffix,suffix,datestr))
+os.system('ssh -i ~/Dropbox/.ssh/chtc -t liew2@submit-1.chtc.wisc.edu \'{}\' '.format(tz))
+os.system('scp -i ~/Dropbox/.ssh/chtc liew2@submit-1.chtc.wisc.edu:{}/allpickles{}.tar.gz ./chtctar/private/allpickles{}{}.tar.gz'.format(fetchdir,suffix,suffix,datestr))
 
 #Run chtc analysis
 print('Extracting chtc pickles...')

@@ -15,9 +15,10 @@ from Modules.Classes import PackerRep
 #Toggle 
 fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
 fiterror = False #Toggle if fitting error
+include150 = True #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
 
 # Specify default dataname
-datasets = ['pooled','pooled-no1st']
+datasets = ['midbot']#['pooled','pooled-no1st']
 #dataname_def = 'nosofsky1986'
 participant_def = 'all'
 unique_trials_def = 'all'
@@ -51,15 +52,25 @@ else:
     
 #datasets = ['pooled','pooled-no1st','xcr','midbot','catassign','nosofsky1986','nosofsky1989','NGPMG1994']        
 
-
 #Check that output directory exists, otherwise create it
 pickledir = 'pickles/'
 outputdir = pickledir + 'newpickles/'
 if not os.path.isdir(outputdir):
     os.system('mkdir ' + outputdir)
 
+
+if include150:
+    with open(pickledir+'include150.p','rb') as f:
+        includes = pickle.load(f)
+    include = includes['includeMidBot']
+    participant = include
+    include150str = 'inc150'
+else:
+    include150str = ''
+
 for dataname in datasets:
     execfile('validate_data.py')
+    dst = dst[0:-2] + include150str + dst[-2:]
     
     print 'Grid Searching Data: ' + dataname
     
@@ -88,7 +99,6 @@ for dataname in datasets:
     
     #print trials
     trials = Simulation.extractPptData(trials,participant,unique_trials)
-    
 
     # options for the optimization routine
     options = dict(

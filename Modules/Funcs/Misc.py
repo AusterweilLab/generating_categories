@@ -1,37 +1,78 @@
 import numpy as np
 import sqlite3
+import itertools
 from scipy.spatial import ConvexHull
 
-def stats_battery(betas, alphas = None):
+def stats_battery(betaSet, alphas = None):
     """
-    Compute a battery of category stats, return it all in a dict
+    Compute a battery of category stats, return it as dict.     
+    If there is more than one betaSet (i.e., if it is input as a list of beta categories), then the mean statistics across categories are returned.
     """
-    res = dict()
-
-    # feature distributions
-    res['xrange'], res['yrange'] = np.ptp(betas,axis=0)
-    res['drange'] = res['xrange'] - res['yrange']
-    res['xstd'],   res['ystd']   = np.std(betas, axis=0)
-
-    # feature correlation
-    res['correlation'] = np.corrcoef(betas, rowvar = False)[0][1]
-    if np.isnan(res['correlation']):
-        res['correlation'] = 0.0
-
-    # total area of convex hull
-    # Only do this if enough data for simplex
-    if betas.shape[0]>betas.shape[1]:
-        res['area'] = ConvexHull(jitterize(betas, sd = 0.0001)).volume
+    #If betaSet is a list, treat each element as a separate category.
+    #Otherwise, treat entire betaSet as one category
+    if isinstance(betaSet,list):
+        betaSetRun = betaSet
     else:
-        res['area'] = np.nan
+        betaSetRun = []
+        betaSetRun.append(betaSet)
+        
+    resSet = []    
+    for idx, betas in enumerate(betaSetRun):
+        res = dict()
+        # feature distributions
+        res['xrange'], res['yrange'] = np.ptp(betas,axis=0)
+        res['drange'] = res['xrange'] - res['yrange']
+        res['xstd'],   res['ystd']   = np.std(betas, axis=0)
+        #res['catIdx'] = str(idx)
+        # feature correlation
+        res['correlation'] = np.corrcoef(betas, rowvar = False)[0][1]
+        if np.isnan(res['correlation']):
+            res['correlation'] = 0.0
 
-    # distances 
-    within_mat = pdist(betas, betas)
-    res['within'] = np.mean(within_mat[np.triu(within_mat)>0])
-    if alphas is not None:
-        res['between'] = np.mean(pdist(alphas, betas))
+        # total area of convex hull
+        # Only do this if enough data for simplex
+        if betas.shape[0]>betas.shape[1]:
+            res['area'] = ConvexHull(jitterize(betas, sd = 0.0001)).volume
+        else:
+            res['area'] = np.nan
+
+        # distances 
+        within_mat = pdist(betas, betas)
+        res['within'] = np.mean(within_mat[np.triu(within_mat)>0])
+        betweendist = [np.mean(pdist(betas,betatemp)) for idxtemp,betatemp in enumerate(betaSetRun) if idx != idxtemp]
+        if alphas is not None:
+            betweendist.append(np.mean(pdist(alphas, betas)))
+        res['between'] = np.mean(betweendist)        
+        resSet.append(res)
+    resmean = {}
+    for key in res.keys():
+        statlist = []
+        for tempres in resSet:
+            statlist.append(tempres[key])        
+        resmean[key] = np.mean(statlist)
+    #I was toying with this other idea of calculating between cat distances but leaving it for now
+    # nbetas = len(betaSetRun)
+    # if nbetas>1:
+    #     #find way to do pairwise comparison between each beta only once
+    #     #generate comparison indices        
+    #     compind = [i for i in itertools.product(range(nbetas),range(nbetas)) if i[0] != i[1] and i[1]>i[0]]
+    #     betweendist = []
+    #     for bidx in compind:
+    #         beta0 = betaSetRun[bidx[0]]
+    #         beta1 = betaSetRun[bidx[1]]
+    #         betweendist.append = np.mean(pdist(beta0,beta1))
+    #     #Don't forget alphas
+    #     if alphas is not None:
+    #         for i in range(nbetas):
+    #             betweendist.append = np.mean(pdist(alphas,betaSetRun[i]))
+    #     res['between'] = np.mean(betweendist)
+    # else:
+    #     #save res as dict (not list) for legacy
+    #     resSet = resSet[0]
+    #     if alphas is not None:
+    #         resSet['between'] = np.mean(pdist(alphas, betaSetRun[0]))
     
-    return res
+    return resmean
 
 
 def ndspace(n, d, low = -1.0, high = 1.0):

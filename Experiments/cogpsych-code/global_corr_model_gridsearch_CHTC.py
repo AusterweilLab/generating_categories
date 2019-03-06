@@ -15,6 +15,8 @@ import get_corr as gc
 WT_THETA = 1.5
 #Toggle 
 pearson = True #fit correlations using pearson r. Uses spearman rho if false.
+include150 = True #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
+
 
 participant_def = 'all'
 unique_trials_def = 'all'
@@ -54,6 +56,17 @@ stats = pd.read_sql_query("SELECT * from betastats", con)
 con.close()
     
 
+if include150:
+    with open(pickledir+'include150.p','rb') as f:
+        includes = pickle.load(f)
+    incCatAss = includes['includeCatAssign']
+    incMidBot = includes['includeMidBot']
+    info = info.loc[info.participant.isin(incCatAss)]
+    assignment = assignment.loc[assignment.participant.isin(incCatAss)]
+    stats = stats.loc[stats.participant.isin(incMidBot)]
+    include150str = 'inc150'
+else:
+    include150str = ''
 #execfile('validate_data.py')
 
 
@@ -62,7 +75,7 @@ con.close()
 # with open(pickledir+src, "rb" ) as f:
 #     trials = pickle.load( f )
 
-dataname = 'corr'
+dataname = 'corr'+include150str
 filename = dataname
 dst = 'best_params_{}.p'.format(filename)
 print 'Grid Searching Correlation with Data: ' + dataname

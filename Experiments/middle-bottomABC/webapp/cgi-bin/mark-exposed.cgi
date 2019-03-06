@@ -1,4 +1,4 @@
-#! /bin/python
+#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python
 print "Content-Type: text/html"	# html is following
 print 													# blank line, end of headers
 

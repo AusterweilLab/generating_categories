@@ -119,8 +119,16 @@ betastats = []
 for pid, rows in generation.groupby('participant'):
 
     condition = participants.loc[participants.participant == pid, 'condition']
-    betas = rows.stimulus
-    betas = stimuli.as_matrix()[betas,:]
+    gentype = participants.loc[participants.participant == pid, 'gentype']
+    betacats = rows.category.unique()
+    nbetacats = len(betacats)
+    betas = []
+    for b in betacats:
+        betastemp = rows.loc[rows.category == b,'stimulus']
+        betas.append(stimuli.as_matrix()[betastemp,:])
+
+    # betas = rows.stimulus
+    # betas = stimuli.as_matrix()[betas,:]
     p_alphas = alphas[condition].as_matrix()[:,0]
     p_alphas = stimuli.as_matrix()[p_alphas,:]
 

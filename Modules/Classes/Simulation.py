@@ -669,8 +669,8 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                     extractIdx = np.array(pptcats==np.array(round(i)))
                     responsecats = np.array(responsecats)
                     pptcats = np.array(pptcats)
-                    respList = responsecats[extractIdx]
-                    pptList = pptcats[extractIdx]
+                    respList = np.append(respList,responsecats[extractIdx])
+                    pptList = np.append(pptList,pptcats[extractIdx])
                         
         elif trial_obj.task is 'assign' or trial_obj.task is 'error':
             #iterate over categories of responses        
@@ -691,8 +691,8 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
         else:
             raise ValueError('trialset.task not specified. Please specify this as \'generate\' or \'assign\' in your script.')
                                 
-        output_obj.Set[ti]['response'] = respList
-        output_obj.Set[ti]['participant'] = pptList
+        output_obj.Set[ti]['response'] = respList.astype(int)
+        output_obj.Set[ti]['participant'] = pptList.astype(int)
     #Clean up
     #cleanIdx = np.ones(len(output_obj.Set),dtype=bool)
     output_objTemp = cp.deepcopy(output_obj.Set)
