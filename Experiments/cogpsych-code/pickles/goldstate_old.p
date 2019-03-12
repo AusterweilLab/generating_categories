@@ -20,7 +20,7 @@ NNNI-1
 I-1
 I0
 tp8
-bS'\xdf\xcf\x8d\xd7ca\xaa@'
+bS'\x88\x13\xd2\x0b_|\xaa@'
 p9
 tp10
 Rp11
@@ -28,7 +28,7 @@ sS'Copy and Tweak'
 p12
 g2
 (g6
-S'\xa1\xad\x93\r\xe0\xd8\xab@'
+S'\xca\xca?n\xbb\xf5\xab@'
 p13
 tp14
 Rp15
@@ -36,7 +36,7 @@ sS'Hierarchical Sampling With Representativeness'
 p16
 g2
 (g6
-S'T\x19\xcb\x1a9\xac\xa9@'
+S"'\xc8\t\xda\xfc1\xaa@"
 p17
 tp18
 Rp19
@@ -44,7 +44,7 @@ sS'Hierarchical Sampling'
 p20
 g2
 (g6
-S'\xb38\x1b\xabX\x19\xac@'
+S'\x90\x1a\xad[~7\xac@'
 p21
 tp22
 Rp23
