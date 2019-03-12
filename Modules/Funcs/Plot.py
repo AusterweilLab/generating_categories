@@ -101,7 +101,6 @@ def plotgradient(h, G, alphas, betas,
     beta_col = checkcolors(beta_col,coords.shape[0])
     for j in range(coords.shape[0]):
         h.text(coords[j,0],coords[j,1], 'B', color = beta_col[j], **textsettings)
-
     h.set_yticks([])
     h.set_xticks([])
     h.set_aspect('equal', adjustable='box')
@@ -120,9 +119,10 @@ def checkcolors(colvector,length):
             colvector_t = colvector[:] #clone list
             cv0 = colvector_t[0]
             colvector = [cv0 for i in range(length)]
-        else: 
-            cv0 = colvector #clone 
-            colvector = [cv0 for i in range(length)]
+        #else: 
+            #cv0 = colvector #clone 
+            #colvector = [cv0 for i in range(length)]
+
     if isinstance(colvector,str):
         colvector = [colvector for i in range(length)]
     return colvector

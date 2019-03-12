@@ -624,7 +624,7 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
     import copy as cp
     if ppt != 'all' and type(ppt) is not list:
         ppt = [ppt]        
-
+    output_obj = cp.deepcopy(trial_obj)
     if unique_trials is not 'all':
         #check for the type of input
         if not hasattr(unique_trials,'__len__'):
@@ -644,17 +644,15 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
         #Remove all unique trials except the selected one
         if isinstance(idx,list):
             temp_obj = [chunk for i,chunk in enumerate(trial_obj.Set) if i in idx]
-            trial_obj.Set = []
-            trial_obj.Set = [chunk for chunk in temp_obj]
+            output_obj.Set = []
+            output_obj.Set = [chunk for chunk in temp_obj]
         else:
             temp_obj = trial_obj.Set[idx]                        
-            trial_obj.Set = []
-            trial_obj.Set.append(temp_obj)
+            output_obj.Set = []
+            output_obj.Set.append(temp_obj)
                 
-                
-    output_obj = cp.deepcopy(trial_obj)
-    ncategories = len(trial_obj.Set[0]['categories'])
-    for ti,trialchunk in enumerate(trial_obj.Set):
+    ncategories = len(output_obj.Set[0]['categories'])
+    for ti,trialchunk in enumerate(output_obj.Set):
         responsecats = trialchunk['response']
         pptcats = trialchunk['participant']
         respList = np.array([])

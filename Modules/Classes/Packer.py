@@ -109,9 +109,9 @@ class PackerEuc(Exemplar):
     The three-parameter PACKER Model with Euclidean distance
     """
 
-    model = 'PACKER'
-    modelshort = 'PACKER'
-    modelprint = 'PACKER'
+    model = 'PACKEREuc'
+    modelshort = 'PACKEREuc'
+    modelprint = 'PACKEREuc'
     #parameter_names = ['specificity', 'tradeoff', 'determinism', 'baselinesim']
     #parameter_names = ['specificity', 'tradeoff', 'determinism']
     parameter_names = ['specificity', 'theta_cntrst', 'theta_target'] 
