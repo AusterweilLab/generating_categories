@@ -16,7 +16,7 @@ from Modules.Classes import PackerEuc
 #Toggle 
 fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
 fiterror = False #Toggle if fitting error
-ll150 = 'lo' #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
+ll150 = 'hi' #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
 
 # Specify default dataname
 datasets = ['midbot']#['pooled','pooled-no1st']

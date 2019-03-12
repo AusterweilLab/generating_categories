@@ -17,7 +17,7 @@ import get_corr as gc
 WT_THETA = 1.5
 #Toggle 
 pearson = True #fit correlations using pearson r. Uses spearman rho if false.
-ll150 = 'lo' #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
+ll150 = 'hi' #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
 
 
 participant_def = 'all'
