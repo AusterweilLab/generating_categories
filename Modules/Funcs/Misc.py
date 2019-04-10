@@ -2,36 +2,56 @@ import numpy as np
 import sqlite3
 from scipy.spatial import ConvexHull
 
-def stats_battery(betas, alphas = None):
+def stats_battery(betaSet, alphas = None):
     """
-    Compute a battery of category stats, return it all in a dict
+    Compute a battery of category stats, return it all in a dict.
+    If there is more tha one betaSet (i.e., if it is input as a list of beta categories), then the
+    mean statistics across categories are returned.
     """
-    res = dict()
-
-    # feature distributions
-    res['xrange'], res['yrange'] = np.ptp(betas,axis=0)
-    res['drange'] = res['xrange'] - res['yrange']
-    res['xstd'],   res['ystd']   = np.std(betas, axis=0)
-
-    # feature correlation
-    res['correlation'] = np.corrcoef(betas, rowvar = False)[0][1]
-    if np.isnan(res['correlation']):
-        res['correlation'] = 0.0
-
-    # total area of convex hull
-    # Only do this if enough data for simplex
-    if betas.shape[0]>betas.shape[1]:
-        res['area'] = ConvexHull(jitterize(betas, sd = 0.0001)).volume
+    #If betaSet is a list, treat each element as a separate category.
+    # Otherwise, treat entire betasSet as one category.
+    if isinstance(betaSet,list):
+        betaSetRun = betaSet
     else:
-        res['area'] = np.nan
+        betaSetRun = []
+        betaSetRun.append(betaSetRun)
 
-    # distances 
-    within_mat = pdist(betas, betas)
-    res['within'] = np.mean(within_mat[np.triu(within_mat)>0])
-    if alphas is not None:
-        res['between'] = np.mean(pdist(alphas, betas))
+    resSet = []
+    for idx, betas in enumerate(betaSetRun):
+        res = dict()
+        # feature distributions
+        res['xrange'], res['yrange'] = np.ptp(betas,axis=0)
+        res['drange'] = res['xrange'] - res['yrange']
+        res['xstd'],   res['ystd']   = np.std(betas, axis=0)
+
+        # feature correlation
+        res['correlation'] = np.corrcoef(betas, rowvar = False)[0][1]
+        if np.isnan(res['correlation']):
+            res['correlation'] = 0.0
+
+        # total area of convex hull
+        # Only do this if enough data for simplex
+        if betas.shape[0]>betas.shape[1]:
+            res['area'] = ConvexHull(jitterize(betas, sd = 0.0001)).volume
+        else:
+            res['area'] = np.nan
+
+        # distances 
+        within_mat = pdist(betas, betas)
+        res['within'] = np.mean(within_mat[np.triu(within_mat)>0])
+        betweendist = [np.mean(pdist(betas,betatemp)) for idxtemp,betatemp in enumerate (betaSetRun) if idx != idxtemp]
+        if alphas is not None:
+            betweendist.append(np.mean(pdist(alphas,betas)))
+        res['between'] = np.mean(betweendist)
+        resSet.append(res)
+    resmean = {}
+    for key in res.keys():
+        statlist = []
+        for tempres in resSet:
+            statlist.append(tempres[key])
+        resmean[key] = np.mean(statlist)
     
-    return res
+    return resmean
 
 
 def ndspace(n, d, low = -1.0, high = 1.0):

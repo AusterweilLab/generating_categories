@@ -1,0 +1,23 @@
+<div id='instructions'>
+
+<p>
+In this part of the experiment, you will observe more geometric figures.&nbsp;&nbsp; Examples will appear one at a time,
+and your job is to decide whether each example belongs to the <span id='cattext'></span> category.&nbsp;&nbsp; There
+will be about 80 examples.&nbsp;&nbsp; You will not receive feedback on your responses.
+</p>
+
+<a href='#' onclick='generalize()'>Continue.</a>
+
+</div>
+
+<script type="text/javascript">
+	var cattext = document.getElementById('cattext')
+	if (data.info.gentype==0){
+		cattext.innerHTML = 'Alpha or NOT Alpha'
+	} else if (data.info.gentype==1){
+		cattext.innerHTML = 'Alpha or Beta'
+	} else if (data.info.gentype==2){
+		cattext.innerHTML = 'Alpha, Beta, or Gamma'
+	}
+
+</script>

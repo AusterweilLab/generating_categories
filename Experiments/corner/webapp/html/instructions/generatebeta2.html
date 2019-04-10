@@ -1,0 +1,31 @@
+<div id='instructions'>
+
+<p>
+Nice work! At this point, we would like you to generate <span id='ntrials'></span> examples of
+the <span class='category'></span> category once more. Don't worry if you can't remember what you generated earlier -
+this is not meant to be a test of memory. Instead, follow the instructions as provided earlier. Specifically, there is
+another category of geometric figures called <span class='category'></span> and we would like to know what you think is likely to be in the <span class='category'></span> category. 
+</p>
+
+<p>
+As before, you will now be given the chance to create examples of any size or color in order to show what you expect about the <span class='category'></span> category.&nbsp;&nbsp;
+Each example needs to be unique, but the computer will let you know if you accidentally create a repeat.
+</p>
+
+<a href='#' onclick='generate()'>Continue.</a>
+
+</div>
+
+<script type="text/javascript">
+  //get category type
+  if (session.condition=='bc'){
+  generation.ntrials = generation.ntrialsbase
+  } else {
+  generation.ntrials = generation.ntrialsbase*2
+  }
+  document.getElementById('ntrials').innerHTML = generation.ntrials;
+  var cats = document.getElementsByClassName('category')
+  for (var i = 0; i < cats.length; ++i) {
+  cats[i].innerHTML = generation.bcnames[generation.countbc];
+  }
+</script>

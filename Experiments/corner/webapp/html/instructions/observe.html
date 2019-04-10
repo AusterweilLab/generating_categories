@@ -1,0 +1,64 @@
+<div id='instructions'>
+
+<p>In this experiment, you will observe geometric figures like the ones below:</p>
+
+<div class = 'samples'>
+	<div class = "stimsample" id = "sample1"></div>
+	<div class = "stimsample" id = "sample2"></div>
+	<div class = "stimsample" id = "sample3"></div>
+	<div class = "stimsample" id = "sample4"></div>
+</div>
+<p>
+We will show you some examples like these, all belonging to a common category called "Alpha".&nbsp;&nbsp;
+Examples of the Alpha category will appear one at a time, and your job is to learn as much as you can about the category.&nbsp;&nbsp;
+Afterwards, we will ask you a series of questions about what you have learned.
+</p>
+
+<p>
+<i>Note: do not refresh the page during the experiment. You will be unable to resume your place.</i>
+</p>
+
+<a href='#' onclick='observe()'>Continue.</a>
+</div>
+
+
+<!-- show some samples -->
+<script type="text/javascript">
+	(function () {
+		var side = stimuli.side
+		var nstim = stimuli.nstimuli
+		// var adj = 0 Math.ceil(side/10) //Adjust each dimension by this much
+		// var nums = [ 0            + adj + adj*side,					 
+		// 			 side - 1     - adj + adj*side,					  
+		// 			 nstim - side + adj - adj*side, 
+		// 			 nstim - 1    - adj - adj*side
+		// ] //These are the corners. For the corner condition I probably don't want to show this from the start, thus the adjustment. 
+		var nums = [ 0,
+					 Math.round(nstim/2)   - 1,
+					 Math.round(nstim*3/4) - 1,
+					 Math.round(nstim*3/4) - Math.round(side/2) - 1
+				   ] //Use instead of corners (one corner, one middle, two offsets
+		
+		var stim = stimuli.ilookup(nums);
+		var divs = ['sample1', 'sample2', 'sample3', 'sample4'];
+
+		for (var i = 0; i < 4; i++) {
+			stim[i].draw(document.getElementById(divs[i]))
+		}
+
+		}
+	) ();
+</script>
+
+<!-- stlying for samples -->
+<style type="text/css">
+	.stimsample {
+		display: inline-block;
+	}
+
+	.samples {
+		width: 115%;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+</style>

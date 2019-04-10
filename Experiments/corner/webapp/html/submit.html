@@ -1,0 +1,212 @@
+
+<div id='instructions' style="text-align:center">
+  <p>You are almost done!<br>
+    Kindly fill in these details below, then click the submit button to submit your responses.  Thank you for participating in our experiment!</p>
+  
+</div>
+
+<center>
+  <form id = 'submitHIT' method = 'POST'>
+    <!--<input type="submit" class = 'classifybutton' style="width:150px" value="Submit">-->
+  </form> 
+  <div class='feedback' id = 'feedbackAge'></div>
+  <div class='feedback' id = 'feedbackSex'></div>
+</center>
+
+
+<script type="text/javascript">
+	//var demdiv = document.getElementById('demographics');
+	
+  // set form action
+  form = document.getElementById("submitHIT");
+  form.action = worker.turkSubmitTo + "/mturk/externalSubmit";
+  
+  // Ask for demographic info on page
+  form.insertAdjacentHTML('beforeEnd','Age:<br>') //insert form questions
+  ageInput = document.createElement('input');
+  ageInput.type = 'text';
+  ageInput.name = 'age';
+  ageInput.maxLength = '3';
+  ageInput.style = 'width:50px';
+  ageInput.onkeypress = function(event){return isNumber(event)};//Prevent entry of non-numerical characters
+  form.appendChild(ageInput);//append element
+  form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+  
+  form.insertAdjacentHTML('beforeEnd','Gender:<br>') //insert form questions
+  sexInput = document.createElement('input');
+  sexInput.type = 'text';
+  sexInput.style = 'width:100px';
+  sexInput.maxLength = '20';
+  sexInput.name = 'gender';
+  form.appendChild(sexInput);
+  form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+  
+  // form.insertAdjacentHTML('beforeEnd','Country:<br>') //insert form questions
+  // countrySelect = document.createElement('select');
+  // countrySelect.className = 'drop-menu';
+  // countrySelect.name = 'country';
+  // countrySelect.id = 'country';
+  
+  // //demdiv.appendChild(countrySelect);
+  
+  // //Create and append the options
+  // for (var i = 0; i < countries.length; i++) {
+  //     var option = document.createElement("option");
+  //     option.value = countries[i];
+  //     option.text = countries[i];
+  //     countrySelect.appendChild(option);
+  // }
+  // form.appendChild(countrySelect);
+  // form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+  
+  form.insertAdjacentHTML('beforeEnd','Comments:<br>') //insert form questions
+  commentArea = document.createElement('textarea');
+  commentArea.id = 'commentArea';
+  commentArea.name = 'comment';
+  commentArea.placeholder = 'Let us know what you think about the experiment here!';
+  commentArea.maxlength = 1000;
+  commentArea.style = 'width:500px; height:150px; padding:10px;';
+  form.appendChild(commentArea);
+  form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+  
+  //Invisible inputs for assignmentID and completion info
+  // add assignment ID
+  assignmentInput = document.createElement('input');
+  assignmentInput.type = 'hidden';
+  assignmentInput.name = "assignmentId";
+  assignmentInput.value = worker.assignmentId;
+  form.appendChild(assignmentInput);
+  
+  // add message
+  message = document.createElement('input');
+  message.type = 'hidden';
+  message.name = "code";
+  message.value = 'Finished';
+  form.appendChild(message);
+  
+  // add matchedppt
+  matchppt = document.createElement('input');
+  matchppt.type = 'hidden';
+  matchppt.name = "matchppt";
+  matchppt.value = data.info.pptmatch;
+  form.appendChild(matchppt);
+  
+  // add time take
+  var timeTaken = Date.now() - data.info.start
+  timet = document.createElement('input');
+  timet.type = 'hidden';
+  timet.name = "timetaken";
+  timet.value = timeTaken;
+  form.appendChild(timet);
+  
+  //Add submission button
+  submitButton = document.createElement('input');
+  submitButton.type = 'submit';
+  submitButton.style = 'width:150px';
+  submitButton.value = 'Submit';
+  submitButton.className = 'classifybutton';
+  submitButton.disabled = true; //enable only if go = true
+  form.appendChild(submitButton);
+  form.insertAdjacentHTML('beforeEnd','<br><br>') //insert line break
+  
+  
+  //Validate inputs
+  ageInput.onblur = function(){checkAll(0)}
+  sexInput.onblur = function(){checkAll(1)}
+  var checkInputs = [ageInput,sexInput];
+  //Get all feedback divs
+  var feedbackdivs = document.getElementsByClassName('feedback');
+  for (var i=0; i<feedbackdivs.length; i++){
+	  //i = 1:Age; 1 = 2:Sex
+	  var feedbackdiv = feedbackdivs[i];// = document.getElementById('feedbackAge')
+	  //Get dim of input so feedback can be aligned
+	  var inputDim = checkInputs[i].getBoundingClientRect();
+	  feedbackdiv.style.top = inputDim.y + 'px';
+	  feedbackdiv.style.left = inputDim.x + inputDim.width + 10 + 'px'
+  };
+  var feedbackSex = document.getElementById('feedbackSex')
+  var go = false;
+  
+  var visits = [false,false]; //check to see if participant has visited the age and sex inputs
+  
+  function checkAge(){
+	  var checkVal = ageInput.value;
+	  var ageGo = false
+	  var generic = 'Please enter an appropriate age. ';
+	  var elaborations = ['If you are truly over 110 years old, leave your age as 110.','If you are under 18 years old, you are not eligible for participation in this task.']
+	  var feedbackAge = feedbackdivs[0];
+	  visits[0] = true;
+	  if (checkVal.length<1){
+		  feedbackAge.innerHTML = generic;
+	  } else if (checkVal>110){
+		  feedbackAge.innerHTML = generic+elaborations[0]
+	  } else if (checkVal<18){
+		  feedbackAge.innerHTML = generic+elaborations[1]
+	  } else {
+		  feedbackAge.innerHTML = '';
+		  ageGo = true;
+	  }
+	  return ageGo
+  }
+  function checkSex(){
+	  var checkVal = sexInput.value;
+	  var sexGo = false;
+	  var generic = 'Please enter something for your gender. If you would rather not provide this information, simply enter \'Undisclosed\' in the box.';
+	  visits[1] = true;
+	  var feedbackSex = feedbackdivs[1];
+	  if (checkVal.length<1){
+		  feedbackSex.innerHTML = generic;
+	  } else {
+		  feedbackSex.innerHTML = '';
+		  sexGo = true;
+	  }
+	  return sexGo
+  }
+  
+  function checkAll(input){    
+	  var ageGo = false
+	  var sexGo = false
+	  
+	  if (input==1){
+		  sexGo = checkSex();
+		  if (visits[0]){ // also check the other one if it's been visited
+			  ageGo = checkAge();
+		  }
+	  }
+	  if (input==0){
+		  ageGo = checkAge();    
+		  if (visits[1]){ // also check the other one if it's been visited
+			  sexGo = checkSex();
+		  }
+	  }
+	  
+	  if (sexGo && ageGo){
+		  submitButton.disabled = false;
+	  } else {
+		  submitButton.disabled = true;
+	  }
+  }
+  
+  //Upon form submission, stop timer and save the data in the server data folder
+  $(submitButton).on("click",
+	  function(event){
+		  event.preventDefault(); // prevent default submit for firefox
+
+		  //code goes here
+		  data.submit.timeTotal = timeTaken;
+		  data.submit.age = ageInput.value;
+		  data.submit.sex = sexInput.value;
+		  data.submit.comments = commentArea.value;
+		  savedata(data,false) //set asynchronous to false for this last save
+
+		  //Submit form
+		  // setTimeout(function(){
+		  // 	  $(form).submit();
+		  // },1)
+		  $(form).submit();
+		  //$(this).unbind('submit').submit(); // continue the submit unbind preventDefault
+
+	  }
+  )
+  
+</script>

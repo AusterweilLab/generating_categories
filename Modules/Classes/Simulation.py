@@ -78,9 +78,9 @@ class Trialset(object):
             self.nunique += 1            
             if responseType == 1:
                 self.Set.append(dict(
-                    response = [response], 
+                    response = np.array([response]), 
                     categories = categories,
-                    participant = [participant])
+                    participant = np.array([participant]))
                 )
             elif responseType == 2:
                 ncat = len(categories)                             

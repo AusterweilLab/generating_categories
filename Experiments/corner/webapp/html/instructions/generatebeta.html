@@ -1,0 +1,34 @@
+<div id='instructions'>
+
+<p>
+There is another category of geometric figures called "<span class='category'></span>".&nbsp;&nbsp;
+Instead of showing you examples of the <span class='category'></span> category, we would like to know what you think the
+ <span class='category'></span> category is. 
+</p>
+
+<p>
+You will now be given the chance to create examples of any <span id='dim1nameInst'></span> or size in order to show what you expect about the <span class='category'></span> category.&nbsp;&nbsp;
+You will be asked to produce <span id='ntrials'></span> <span class='category'></span> examples - they can be quite similar or quite different to each other, depending on what you think makes the most sense for the category.&nbsp;&nbsp;
+Each example needs to be unique, but the computer will let you know if you accidentally create a repeat.
+</p>
+
+<a href='#' onclick='generate()'>Continue.</a>
+
+</div>
+
+<script type="text/javascript">
+	//get category type
+	//if (data.info.gentype==2){
+  // generation.ntrials = generation.ntrialsbase
+  // } else {
+  // generation.ntrials = generation.ntrialsbase*2
+  // }
+
+  generation.ntrials = generation.ntrialsbase //NOTE unlike the ABC experiment there's no *2 here
+  document.getElementById('ntrials').innerHTML = generation.ntrials;
+  document.getElementById('dim1nameInst').innerHTML = stimuli.dim1name;
+  var cats = document.getElementsByClassName('category')
+  for (var i = 0; i < cats.length; ++i) {
+	  cats[i].innerHTML = generation.bcnames[generation.countbc];
+  }
+</script>
