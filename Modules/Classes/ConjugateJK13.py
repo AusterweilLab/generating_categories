@@ -95,8 +95,7 @@ class ConjugateJK13(Model):
 
         return (mu,Sigma)
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
-
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax = None):
         # random response if there are no target members.
         target_is_populated = any(self.assignments == category)
         if not target_is_populated:
@@ -112,7 +111,45 @@ class ConjugateJK13(Model):
         else:
             target_dist = multivariate_normal(mean = mu, cov = Sigma)
             density = target_dist.pdf(stimuli)
-                        
+            if not wrap_ax is None:
+                if not type(wrap_ax) is list:
+                    wrap_ax = [wrap_ax]
+                for ax in wrap_ax:
+                    density_ratio_cap = 1e5                
+                    maxit = 50
+                    #Keep taking one set of stimuli above and below the perceived space until ratio is large enough
+                    stim_ax = stimuli[:,ax]
+                    stim_diff = np.max(stim_ax) - np.min(stim_ax)
+                    stim_up = stimuli.copy()
+                    stim_dn = stimuli.copy()
+                    #Note that this isn't complete if we are wrapping more than 1 axis
+                    itct = 0
+                    density_ratio = 1
+                    maxden = np.max(density)
+                    while density_ratio < density_ratio_cap:
+                        stim_up[:,ax] += stim_diff
+                        density_up = target_dist.pdf(stim_up)
+                        maxden = np.max([maxden,np.max(density_up)])
+                        minden = np.min(density_up)
+                        density_ratio = maxden/minden
+                        density = density + density_up
+                        itct += 1
+                        if itct >= maxit:
+                            print('Max wrapped axis reached.')
+                            continue
+                    itct = 0
+                    density_ratio = 1
+                    while density_ratio < density_ratio_cap:
+                        stim_dn[:,ax] -= stim_diff
+                        density_dn = target_dist.pdf(stim_dn)
+                        maxden = np.max([maxden,np.max(density_dn)])
+                        minden = np.min(density_dn)
+                        density_ratio = maxden/minden
+                        density = density + density_dn
+                        itct += 1
+                        if itct >= maxit:
+                            print('Max wrapped axis reached.')
+                            continue
         if task is 'generate': 
             # NaN out known members - only for task=generate            
             known_members = Funcs.intersect2d(stimuli, self.categories[category])
@@ -261,6 +298,8 @@ class RepresentJK13(Model):
             # #270418 Implementing representational draws
             target_dist_beta = multivariate_normal(mean = mu, cov = Sigma)
             likelihood_beta = target_dist_beta.pdf(stimuli)
+
+            #160519 -- !!!work in progress, trying to implement wrap_ax
 
             #Get parameters for category beta (alternative hypothesis)
             mu_alpha, Sigma_alpha = self.get_musig(stimuli, 1-category)

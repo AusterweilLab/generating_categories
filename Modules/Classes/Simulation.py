@@ -42,7 +42,7 @@ class Trialset(object):
         self.nunique = len(self.Set)
         self.nresponses = sum([len(i['response']) for i in self.Set])
 
-    def add(self, response, categories = [], participant = []):
+    def add(self, response, categories = [], participant = [], wrap_ax = None):
         """Add a single trial to the trial lists
                 
         If response variable is a scalar, then add response to only one
@@ -50,7 +50,7 @@ class Trialset(object):
         value of the first element to the category specified by the
         second element.
         
-        Also add participant information (if available)
+        Also add participant information and if axis needs to be wrapped(if available)
         
         """
         
@@ -63,13 +63,14 @@ class Trialset(object):
                 add2cat = response[1]
                 responseType = 2
                 response = response[0]                                
-                
             else:
                 raise ValueError('The "response" variable needs',\
                                  'to be either a single number,',\
                                  'or a a list containing',\
                                  'only 2 elements.')
-            
+
+        if np.isnan(wrap_ax):
+            wrap_ax = None
         # sort category lists, do a lookup
         categories = [np.sort(i) for i in categories]
         idx = self._lookup(categories)
@@ -80,20 +81,24 @@ class Trialset(object):
                 self.Set.append(dict(
                     response = np.array([response]), 
                     categories = categories,
-                    participant = np.array([participant]))
+                    participant = np.array([participant]),
+                    wrap_ax = wrap_ax)
                 )
             elif responseType == 2:
                 ncat = len(categories)                             
                 respList =  [[] for _ in xrange(len(categories))]
                 #respList[add2cat] = np.append(respList[add2cat],(response))
                 pList = [[] for _ in xrange(len(categories))]
+                wrapList = [[] for _ in xrange(len(categories))]
                 respList[add2cat].append(response)
                 pList[add2cat].append(participant)
-                                
+                wrapList[add2cat].append(wrap_ax)
+                
                 self.Set.append(dict(
                     response = respList,
                     categories = categories,
-                    participant = pList)
+                    participant = pList,
+                    wrap_ax = wrapList)
                 )
         # if there is an index, just add the response
         else:
@@ -102,9 +107,12 @@ class Trialset(object):
                     self.Set[idx]['response'], response)
                 self.Set[idx]['participant'] = np.append(
                     self.Set[idx]['participant'], participant)
+                self.Set[idx]['wrap_ax'] = np.append(
+                    self.Set[idx]['wrap_ax'], wrap_ax)
             elif responseType == 2:
                 self.Set[idx]['response'][add2cat].append(response)
                 self.Set[idx]['participant'][add2cat].append(participant)
+                self.Set[idx]['wrap_ax'][add2cat].append(wrap_ax)
                 #self.Set[idx]['response'][add2cat] = np.append(
                 #        self.Set[idx]['response'][add2cat],response)
                 #Hmm, why can't I just use self.Set[idx]['response']...
@@ -163,10 +171,15 @@ class Trialset(object):
         if task == 'generate':
             for pid, rows in generation.groupby('participant'):
                 for num, row in rows.groupby('trial'):
-                    Bs = rows.loc[rows.trial<num, 'stimulus'].as_matrix()
+                    Bs = rows.loc[rows.trial<num, 'stimulus'].values
                     categories = row.categories.item() + [Bs]
                     stimulus = row.stimulus.item()
-                    self.add(stimulus, categories = categories,participant = row.participant.item())
+                    if not 'wrap_ax' in row.columns:
+                        wrap_ax = None
+                    else:
+                        wrap_ax = row.wrap_ax.item()
+                        
+                    self.add(stimulus, categories = categories,participant = row.participant.item(),wrap_ax = wrap_ax)
 
         elif task == 'assign' or task == 'error':
             # So the response trials added here can be from any
@@ -181,7 +194,12 @@ class Trialset(object):
                     target = row.stimulus.item()
                     add2cat = row.assignment.item()
                     stimulus = [target,add2cat]
-                    self.add(stimulus, categories = categories,participant = row.participant.item())
+                    if not 'wrap_ax' in row.columns:
+                        wrap_ax = None
+                    else:
+                        wrap_ax = row.wrap_ax.item()
+
+                    self.add(stimulus, categories = categories,participant = row.participant.item(),wrap_ax=wrap_ax)
         else:
             raise ValueError('Oh no, it looks like you have specified an illegal value for the task argument!')
 
@@ -221,105 +239,113 @@ class Trialset(object):
             #Lists with [0] should be recognised as valid categories, and not empty
             #categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
             categories = [self.stimuli[i,:] for i in trial['categories'] if len(i)>0]
-            # if it's an assignment task, also compute probabilities for other category (cat0)
-            # ps0 = np.zeros(ps1.shape)
-            if task == 'generate':                                
-                # compute probabilities of generating exemplar in cat 1
-                ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
-                ps_add = ps[trial['response']]
-            elif task=='assign':
-                #Compute probabilities of assigning exemplar to cat 0
-                ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
-                #Compute probabilities of assigning exemplar to cat 1
-                ps1 = model(categories, params,
-                            self.stimrange).get_generation_ps(self.stimuli,
-                                                              1,self.task,seedrng = seedrng)
+            #Identify if any axis needs wrapping
+            if not 'wrap_ax' in trial.keys():
+                #Legacy support. If trialset doesn't have wrap_ax, then no wrapping is required.
+                trial['wrap_x'] = np.array([None for i in range(len(trial['response']))])
+            wraps = np.unique(trial['wrap_ax'])
+
+            #Iterate over axes wrappings
+            for wrap in wraps:
+                # if it's an assignment task, also compute probabilities for other category (cat0)
+                # ps0 = np.zeros(ps1.shape)
+                if task == 'generate':                                
+                    # compute probabilities of generating exemplar in cat 1
+                    ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
+                    ps_add = ps[trial['response'][trial['wrap_ax']==wrap]]
+                elif task=='assign':
+                    #Compute probabilities of assigning exemplar to cat 0
+                    ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
+                    #Compute probabilities of assigning exemplar to cat 1
+                    ps1 = model(categories, params,
+                                self.stimrange).get_generation_ps(self.stimuli,
+                                                                  1,self.task,seedrng = seedrng,wrap_ax=wrap)
 
 
-                idc0 = trial['response'][0]
-                idc1 = trial['response'][1]
+                    idc0 = trial['response'][0][trial['wrap_ax']==wrap] #category 0
+                    idc1 = trial['response'][1][trial['wrap_ax']==wrap] #category 1
 
-                #ps_add = ps0[idc0]
-                ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
-                #How about using binomial likelihoods instead?
-                #200218 SX: aahh, it gives the same values. Cool
-                # ps = []
-                # for i,ps_el in enumerate(ps0):
-                #         #find total assignments to category 0
-                #         ct0 = sum(np.array(idc0) == i)
-                #         #find total assignments to category 1
-                #         ct1 = sum(np.array(idc1) == i)
-                #         #total assignments overall
-                #         ctmax = ct0+ct1
-                
-                #         ps += [ss.binom.pmf(ct0, ctmax,ps_el)]
-                
-            elif task=='error':
-                #For prediction of error probabilities, simply
-                #find the probability of classifying a
-                #stimulus as the wrong category
-                #There's something really wrong with how I'm doing things here.
-                
-                #The old way (prior to 010618) was to simply treat cat 0 as
-                #correct and cat 1 as incorrect, since that's the way that the
-                #only error dataset NGPMG1994 has been set up. This is quite
-                #pointless, and I've generalised the code here so that it really
-                #looks at errors in categorising.
-                #ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
-                #idc_err = trial['response'][0]
-                #Compute probabilities of assigning exemplar to cat 0
-                ps0 = model(categories, params,
-                            self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
-                #Compute probabilities of assigning exemplar to cat 1
-                ps1 = model(categories, params,
-                            self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
-                idc0 = trial['response'][0] 
-                idc1 = trial['response'][1] 
-                ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
- 
-                #190618 after much thought, error should be exactly the same as assign though...
-                #Actual category exemplars
-                correctcat = trial['categories']
+                    #ps_add = ps0[idc0]
+                    ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
+                    #How about using binomial likelihoods instead?
+                    #200218 SX: aahh, it gives the same values. Cool
+                    # ps = []
+                    # for i,ps_el in enumerate(ps0):
+                    #         #find total assignments to category 0
+                    #         ct0 = sum(np.array(idc0) == i)
+                    #         #find total assignments to category 1
+                    #         ct1 = sum(np.array(idc1) == i)
+                    #         #total assignments overall
+                    #         ctmax = ct0+ct1
 
-                correctps = []
-                wrongps   = []
-                #Iterate over each category
-                for i in range(len(correctcat)):
-                    #Get right and wrong responses
-                    correctresp = np.array([exemplar for exemplar in
-                                              trial['response'][i] if exemplar in
-                                              correctcat[i]])
-                    wrongresp = np.array([exemplar for exemplar in
-                                              trial['response'][i] if not exemplar in
-                                              correctcat[i]])
+                    #         ps += [ss.binom.pmf(ct0, ctmax,ps_el)]
 
-                    #Get entire probability space
-                    ps = model(categories, params,
-                               self.stimrange).get_generation_ps(self.stimuli,
-                                                                 i,self.task,seedrng = seedrng)
-                    if len(correctresp)>0:
-                        correctps = np.concatenate([correctps,ps[correctresp]])
-                    if len(wrongresp)>0:
-                        wrongps   = np.concatenate([wrongps,ps[wrongresp]])
-                        
+                elif task=='error':
+                    #For prediction of error probabilities, simply
+                    #find the probability of classifying a
+                    #stimulus as the wrong category
+                    #There's something really wrong with how I'm doing things here.
 
-                #ps_add = np.concatenate([correctps,wrongps])
+                    #The old way (prior to 010618) was to simply treat cat 0 as
+                    #correct and cat 1 as incorrect, since that's the way that the
+                    #only error dataset NGPMG1994 has been set up. This is quite
+                    #pointless, and I've generalised the code here so that it really
+                    #looks at errors in categorising.
+                    #ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task)
+                    #idc_err = trial['response'][0]
+                    #Compute probabilities of assigning exemplar to cat 0
+                    ps0 = model(categories, params,
+                                self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
+                    #Compute probabilities of assigning exemplar to cat 1
+                    ps1 = model(categories, params,
+                                self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
+                    idc0 = trial['response'][0][trial['wrap_ax']==wrap]
+                    idc1 = trial['response'][1][trial['wrap_ax']==wrap]
+                    ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
 
-                                
-            # check for nans and zeros
-            if np.any(np.isnan(ps_add)):
-                ps_add = np.zeros(ps_add.shape)
-                # print categories
-                # print params
-                # print ps_add
-                # S = model.model  + ' returned NAN probabilities.'
-                # raise Exception(S)
-            ps_add[ps_add<1e-308] = 1e-308
+                    #190618 after much thought, error should be exactly the same as assign though...
+                    #Actual category exemplars
+                    correctcat = trial['categories']
 
-            if whole_array:
-                ps_list = np.append(ps_list,ps_add)
-            else:
-                loglike += np.sum(np.log(ps_add))                        
+                    correctps = []
+                    wrongps   = []
+                    #Iterate over each category
+                    for i in range(len(correctcat)):
+                        #Get right and wrong responses
+                        correctresp = np.array([exemplar for exemplar in
+                                                  trial['response'][i] if exemplar in
+                                                  correctcat[i]])
+                        wrongresp = np.array([exemplar for exemplar in
+                                                  trial['response'][i] if not exemplar in
+                                                  correctcat[i]])
+
+                        #Get entire probability space
+                        ps = model(categories, params,
+                                   self.stimrange).get_generation_ps(self.stimuli,
+                                                                     i,self.task,seedrng = seedrng,wrap_ax=wrap)
+                        if len(correctresp)>0:
+                            correctps = np.concatenate([correctps,ps[correctresp]])
+                        if len(wrongresp)>0:
+                            wrongps   = np.concatenate([wrongps,ps[wrongresp]])
+
+
+                    #ps_add = np.concatenate([correctps,wrongps])
+
+
+                # check for nans and zeros
+                if np.any(np.isnan(ps_add)):
+                    ps_add = np.zeros(ps_add.shape)
+                    # print categories
+                    # print params
+                    # print ps_add
+                    # S = model.model  + ' returned NAN probabilities.'
+                    # raise Exception(S)
+                ps_add[ps_add<1e-308] = 1e-308
+
+                if whole_array:
+                    ps_list = np.append(ps_list,ps_add)
+                else:
+                    loglike += np.sum(np.log(ps_add))                        
 
         if whole_array:
             return -1.0 * np.log(ps_list)

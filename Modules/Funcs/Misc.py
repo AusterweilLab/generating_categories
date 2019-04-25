@@ -14,7 +14,7 @@ def stats_battery(betaSet, alphas = None):
         betaSetRun = betaSet
     else:
         betaSetRun = []
-        betaSetRun.append(betaSetRun)
+        betaSetRun.append(betaSet)
 
     resSet = []
     for idx, betas in enumerate(betaSetRun):
@@ -169,7 +169,7 @@ def gradientroll(G, op):
         return np.flipud(np.reshape(G, (side, side, ngradients) ))
 
 
-def pdist(X, Y, w = np.array([])):
+def pdist(X, Y, w = np.array([]), wrap_ax = None, ax_max = 2):
     """
     Calculate weighted city-block distance between two ND arrays
     
@@ -184,7 +184,10 @@ def pdist(X, Y, w = np.array([])):
         If w is not provided, all weights are set at 1/ncols
     Returns an nX-by-nY array of weighted city-block distance.
     
-    Examples
+    wrap_ax indicates which axis is boundless (i.e., take the shortest of either the distance or max-distance)
+
+    ax_max is the limits of both axes
+Examples
     --------
     >>> X = np.array([[0,0],[0,1]])
     >>> Y = np.array([[1,0],[1,1]])
@@ -210,10 +213,20 @@ def pdist(X, Y, w = np.array([])):
     w = w[None,:,None]
     # compute distance
     difference = X - Y
+    #If any axis is boundless, take its minimum of either d or max-d
+    if not wrap_ax is None:
+        if not type(wrap_ax) is list:
+            wrap_ax = [wrap_ax]
+        for ax in wrap_ax:
+            diff_ax = difference[:,ax].copy()
+            diff_alt = ax_max-diff_ax
+            diff_min = np.min([diff_ax,diff_alt],axis=0)
+            difference[:,ax] = diff_min
+            
     weighted_distance = np.multiply(difference, w)
     return np.sum( np.abs(weighted_distance), axis = 1 )
 
-def pdist_gen(X, Y, w = np.array([]), p = 2):
+def pdist_gen(X, Y, w = np.array([]), p = 2,wrap_ax = None,ax_max = 2):
     """
     Calculate generalised weighted distance between two ND arrays.
     
@@ -231,6 +244,11 @@ def pdist_gen(X, Y, w = np.array([]), p = 2):
         p == 2 is Euclidean
 
     Returns an nX-by-nY array of weighted distance.
+
+    bdlass_ax indicates which axis is boundless (i.e., take the shortest of either the distance or max-distance)
+
+    ax_max is the limits of both axes
+    
     
     Examples
     --------
@@ -258,6 +276,16 @@ def pdist_gen(X, Y, w = np.array([]), p = 2):
     w = w[None,:,None]
     # compute distance
     difference = X - Y
+    #If any axis is boundless, take its minimum of either d or max-d
+    if not wrap_ax is None:
+        if not type(wrap_ax) is list:
+            wrap_ax = [wrap_ax]
+        for ax in wrap_ax:
+            diff_ax = difference[:,ax].copy()
+            diff_alt = ax_max-diff_ax
+            diff_min = np.min([diff_ax,diff_alt],axis=0)
+            difference[:,ax] = diff_min
+
     weighted_distance = np.multiply(difference, w)
     return np.power(np.sum( weighted_distance**p, axis = 1 ),1./p) #Euclidean, so sqrt the summed sq distance
 

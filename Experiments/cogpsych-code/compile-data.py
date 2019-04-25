@@ -8,7 +8,7 @@ pd.set_option('display.width', 200, 'precision', 2)
 
 
 databases = [ '../xor-cluster-row/data/experiment.db',
-                            '../middle-bottom/data/experiment.db', 
+                            '../middle-bottom/data/experiment.db'
                         ]
 
 # KEEP:

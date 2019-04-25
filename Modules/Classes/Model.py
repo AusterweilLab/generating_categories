@@ -279,7 +279,9 @@ class Exemplar(Model):
         param = 1.0,    
         wts  = None, 
         c = None,
-         p = 1):
+        p = 1,
+        wrap_ax = None,
+        ax_max = 2):
         """ 
         function to compute summed similarity along rows of 
         X across all items in Y. Resulting array will have one element 
@@ -290,15 +292,19 @@ class Exemplar(Model):
 
         p indicates the p-norm for calculating distance in pdist. If p == 1, that's city-block distance. 
         p == 2 indicates Euclidean distance. But really p can take any real positive.
+
+        bdlass_ax indicates which axis is boundless (i.e., take the shortest of either the distance or max-distance)
+
+        ax_max is the limits of both axes
         """
 
         # set weights and c
         if wts is None: wts = self.wts
         if c is None: c = self.specificity
         if p == 1:
-            distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts)
+            distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts, wrap_ax = wrap_ax, ax_max = ax_max)
         else:
-            distance   = Funcs.pdist_gen(np.atleast_2d(X), np.atleast_2d(Y), w = wts, p = p)
+            distance   = Funcs.pdist_gen(np.atleast_2d(X), np.atleast_2d(Y), w = wts, p = p, wrap_ax = wrap_ax, ax_max = ax_max)
         similarity = np.exp(-float(c) * distance)
         similarity = similarity * float(param)
         return np.sum(similarity, axis = 1)

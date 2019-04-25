@@ -36,14 +36,14 @@ class Packer(Exemplar):
         ] 
 
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False, wrap_ax = None):
         # compute contrast sum similarity
         #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
         contrast_examples   = self.exemplars[self.assignments != category]
-        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
+        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst,wrap_ax=wrap_ax)
         # compute target sum similarity
         target_examples = self.exemplars[self.assignments == category]
-        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target)
+        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target,wrap_ax=wrap_ax)
         #End new attempt 110418
                 
         # # compute contrast sum similarity

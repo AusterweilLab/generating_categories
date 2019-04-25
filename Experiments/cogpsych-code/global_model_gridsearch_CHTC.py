@@ -16,10 +16,10 @@ from Modules.Classes import PackerEuc
 #Toggle 
 fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
 fiterror = False #Toggle if fitting error
-ll150 = 'hi' #Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
+ll150 = '' #either 'hi' or 'lo'. Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
 
 # Specify default dataname
-datasets = ['midbot']#['pooled','pooled-no1st']
+datasets = ['5con','5con_s','corner','corner_s','corner_c']#['pooled','pooled-no1st']
 #dataname_def = 'nosofsky1986'
 participant_def = 'all'
 unique_trials_def = 'all'
@@ -28,20 +28,6 @@ nchunks = 1000 #number of CHTC instances to run
 narg = len(sys.argv)
 
 if __name__ == "__main__" and narg>1:
-
-    # if len(sys.argv)<4:
-    #         unique_trials = unique_trials_def
-    # else:
-    #         unique_trials = int(sys.argv[3])
-    # if len(sys.argv)<3:
-    #         participant = participant_def
-    # else:
-    #         participant = int(sys.argv[2])
-    # if len(sys.argv)<2:
-    #         dataname = dataname_def
-    # else:
-    #         dataname = sys.argv[1]
-    #dataname = dataname_def
     participant = participant_def
     unique_trials = unique_trials_def
     runchunk = int(sys.argv[1]) #first arg from terminal is chunk idx
@@ -118,7 +104,7 @@ for dataname in datasets:
     #Run grid search
     results = dict()
 
-    for model_obj in [Packer,PackerEuc,RepresentJK13]:#[ConjugateJK13, RepresentJK13, CopyTweakRep, CopyTweak, Packer]:
+    for model_obj in [Packer,CopyTweak,ConjugateJK13,RepresentJK13]:#[ConjugateJK13, RepresentJK13, CopyTweakRep, CopyTweak, Packer]:
         #Prepare list of grid search start points
         #Create base array
         nparms = len(model_obj.parameter_names)

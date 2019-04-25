@@ -23,7 +23,7 @@ from scipy.ndimage.filters import gaussian_filter
 
 clim = (0.0, 0.10)
 
-f, ax = plt.subplots(3,3, figsize = (5,4))
+f, ax = plt.subplots(1,2, figsize = (12,4))
 for i, (K, rows) in enumerate(infodf.groupby('condition')):
     for gentype,rowss in rows.groupby('gentype'):
         pids = rowss.participant
@@ -38,7 +38,7 @@ for i, (K, rows) in enumerate(infodf.groupby('condition')):
         print(g)
         print(K, np.max(g))
         
-        h = ax[i,gentype]
+        h = ax[i]
         im = funcs.plotgradient(h, g, stimuli[alphas[K],:], [], clim = clim)
         h.set_title(K, fontsize = 12)
         

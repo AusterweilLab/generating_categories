@@ -14,7 +14,7 @@ con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT * from participants", con)
 df = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).values
 stats = pd.read_sql_query("SELECT * from betastats", con)
 con.close()
 
@@ -33,7 +33,7 @@ for i, row in info.iterrows():
     gentypeStr_p = gentypeStr[gentype]
 
     palphas = alphas[condition]
-    #pbetas_all = df.stimulus[df.participant == pid]
+    pbetas_all = df.stimulus[df.participant == pid]
     if gentype==2:
         pdf = df.loc[df.participant==pid]
         betastr = [gentypeStrDisp[1] if pdf_row.category=='Beta' else gentypeStrDisp[2] for ii,pdf_row in pdf.iterrows() ]

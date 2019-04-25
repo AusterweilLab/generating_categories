@@ -13,8 +13,8 @@ sns.set_palette(colors)
 
 
 #count only first 4 trials?
-testconds = ['gentype']#['condition','gentype','condcomb']
-trialsplit = 'splitgamma' #first4 splitgamma splitall
+testconds = ['condition']#['condition','gentype','condcomb']
+trialsplit = '' #first4 splitgamma splitall
 first4str = ''
 savestr = ''
 plot_alpha = False #plot alpha scatterplots
@@ -38,7 +38,7 @@ info = pd.read_sql_query("SELECT participant, condition, gentype from participan
 stats = pd.read_sql_query("SELECT * from betastats", con)
 df = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).values
 
 con.close()
 
@@ -120,10 +120,10 @@ stats['condcomb'] = condcomb
 #print stats[['condcomb','yrange','correlation']]
 
 order = {}
-order['condition'] = ['Cluster','Row','XOR']
+order['condition'] = ['Corner_S','Corner_C']
 order['gentype'] = gentypebase
-order['condcomb'] = ['CN','CB','CC','RN','RB','RC','XN','XB','XC']
-conditionticks = ['Cluster','Row','Diagonal'] #Special ticks for the alpha conditions
+#order['condcomb'] = ['CN','CB','CC','RN','RB','RC','XN','XB','XC']
+conditionticks = ['Corner_S','Corner_C'] #Special ticks for the alpha conditions
 #Get alpha stats for comparison
 stats_alpha = []
 for condition in order['condition']:
@@ -140,7 +140,7 @@ for i, col in enumerate(['xrange','yrange','correlation','area']):
             ax = axes[ii,i]
         else:
             ax = axes.flat[i]
-        hs = sns.factorplot(x = conditions, y = col, data= stats, ax = ax, kind = 'box',
+        hs = sns.catplot(x = conditions, y = col, data= stats, ax = ax, kind = 'box',
                         order = order[conditions])
         ax.set_title(col, fontsize = 12)
         ax.set_ylabel('')
@@ -180,8 +180,8 @@ for i, col in enumerate(['xrange','yrange','correlation','area']):
 fh.subplots_adjust(wspace=0.4)
 fh.savefig('stats/statsboxes_{}{}.pdf'.format(savestr,first4str), bbox_inches = 'tight')
 savetext = 'stats/report_{}{}.txt'.format(savestr,first4str)
-#path = '../../../Manuscripts/cog-psych/figs/e2-statsboxes.pgf'
-#funcs.save_as_pgf(fh, path)
+# path = '../../../Manuscripts/cog-psych/figs/e2-statsboxes.pgf'
+# funcs.save_as_pgf(fh, path)
 
 # hypothesis tests
 from scipy.stats import ttest_ind, ttest_rel, ttest_1samp, wilcoxon, ranksums, f_oneway
@@ -203,37 +203,22 @@ def print_ttest(g1, g2, fun):
     with open(savetext,'a') as f:
         f.write(S+'\n')
     
-pstr = '\n---- XOR X vs. Y:'
+pstr = '\n---- Corner_S X vs. Y:'
 print pstr
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
-g1 = stats.loc[stats.condition == 'XOR', 'xrange']
-g2 = stats.loc[stats.condition == 'XOR', 'yrange']
+g1 = stats.loc[stats.condition == 'Corner_S', 'xrange']
+g2 = stats.loc[stats.condition == 'Corner_S', 'yrange']
 print_ttest(g1,g2, ttest_rel)
 
-pstr =  '\n---- Cluster X vs. Y:'
+pstr =  '\n---- Corner_C X vs. Y:'
 print pstr
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
-g1 = stats.loc[stats.condition == 'Cluster', 'xrange']
-g2 = stats.loc[stats.condition == 'Cluster', 'yrange']
+g1 = stats.loc[stats.condition == 'Corner_C', 'xrange']
+g2 = stats.loc[stats.condition == 'Corner_C', 'yrange']
 print_ttest(g1,g2, ttest_rel)
 
-pstr =  '\n---- Row X vs. Y:'
-print pstr
-with open(savetext,'a') as f:
-    f.write(pstr+'\n')
-g1 = stats.loc[stats.condition == 'Row', 'xrange']
-g2 = stats.loc[stats.condition == 'Row', 'yrange']
-print_ttest(g1,g2, ttest_rel)
-
-pstr = '\n---- XOR positive correlation?'
-print pstr
-with open(savetext,'a') as f:
-    f.write(pstr+'\n')
-g1 = stats.loc[stats.condition == 'XOR', 'correlation']
-print ttest_1samp(g1, 0).pvalue
-print wilcoxon(g1).pvalue
 
 pstr = '\n---- within vs. between?'
 print pstr
@@ -246,23 +231,23 @@ for n, rows in stats.groupby('condcomb'):
     print_ttest(g1,g2, ttest_rel)
 
 # between conditions
-stats_interests = [stats.condition,stats.gentype]
+stats_interests = [stats.condition]
 for stats_interest in stats_interests:
     pstr = '\n---- Between conditions-{}'.format(stats_interest.name)
     print pstr
     with open(savetext,'a') as f:
         f.write(pstr+'\n')
     for j in ['xrange','yrange','correlation','area']:
-        pstr = 'Variable: ' + j + '\n' + 'Omnibus test'
-        print pstr
-        with open(savetext,'a') as f:
-            f.write(pstr+'\n')
-        d = [stats.loc[stats_interest==statsi,j] for statsi in pd.unique(stats_interest)]
-        f,p = f_oneway(d[0],d[1],d[2])#Note this needs to account for number of levels, not fix it at 3. 
-        pstr =  'F = {}, p = {}'.format(f,p)
-        print pstr
-        with open(savetext,'a') as f:
-            f.write(pstr+'\n')
+        # pstr = 'Variable: ' + j + '\n' + 'Omnibus test'
+        # print pstr
+        # with open(savetext,'a') as f:
+        #     f.write(pstr+'\n')
+        # d = [stats.loc[stats_interest==statsi,j] for statsi in pd.unique(stats_interest)]
+        # f,p = f_oneway(d[0],d[1],d[2])#Note this needs to account for number of levels, not fix it at 3. 
+        # pstr =  'F = {}, p = {}'.format(f,p)
+        # print pstr
+        # with open(savetext,'a') as f:
+        #     f.write(pstr+'\n')
         res = tukey(stats[j],stats_interest)
         pvals = psturng(np.abs(res.meandiffs / res.std_pairs), len(res.groupsunique), res.df_total)
 
