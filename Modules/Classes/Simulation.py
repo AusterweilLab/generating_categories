@@ -69,8 +69,13 @@ class Trialset(object):
                                  'or a a list containing',\
                                  'only 2 elements.')
 
-        if np.isnan(wrap_ax):
-            wrap_ax = None
+            
+        #Force wrap_ax to be int or None
+        if not wrap_ax is None:
+            if np.isnan(wrap_ax):
+                wrap_ax = None
+            else:
+                wrap_ax = int(wrap_ax)
         # sort category lists, do a lookup
         categories = [np.sort(i) for i in categories]
         idx = self._lookup(categories)
@@ -178,7 +183,7 @@ class Trialset(object):
                         wrap_ax = None
                     else:
                         wrap_ax = row.wrap_ax.item()
-                        
+
                     self.add(stimulus, categories = categories,participant = row.participant.item(),wrap_ax = wrap_ax)
 
         elif task == 'assign' or task == 'error':
@@ -207,7 +212,7 @@ class Trialset(object):
         return self
                 
 
-    def loglike(self, params, model, fixedparams = None, whole_array=False, parmxform = True,seedrng = False):
+    def loglike(self, params, model, fixedparams = None, whole_array=False, parmxform = True,seedrng = False, wrap_ax=None):
         """
         Evaluate a model object's log-likelihood on the
         trial set based on the provided parameters.
@@ -242,17 +247,22 @@ class Trialset(object):
             #Identify if any axis needs wrapping
             if not 'wrap_ax' in trial.keys():
                 #Legacy support. If trialset doesn't have wrap_ax, then no wrapping is required.
-                trial['wrap_x'] = np.array([None for i in range(len(trial['response']))])
+                trial['wrap_ax'] = np.array([None for i in range(len(trial['response']))])
+                
             wraps = np.unique(trial['wrap_ax'])
-
+            
             #Iterate over axes wrappings
             for wrap in wraps:
                 # if it's an assignment task, also compute probabilities for other category (cat0)
                 # ps0 = np.zeros(ps1.shape)
-                if task == 'generate':                                
+                if task == 'generate':
                     # compute probabilities of generating exemplar in cat 1
                     ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
-                    ps_add = ps[trial['response'][trial['wrap_ax']==wrap]]
+                    ps_idx = np.where(trial['wrap_ax']==wrap)[0]
+                    #If it's a scalar, take it out of the array
+                    if len(ps_idx)==1:
+                        ps_idx = ps_idx[0]
+                    ps_add = [ps[trial['response'][ps_idx]]]
                 elif task=='assign':
                     #Compute probabilities of assigning exemplar to cat 0
                     ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
@@ -262,8 +272,8 @@ class Trialset(object):
                                                                   1,self.task,seedrng = seedrng,wrap_ax=wrap)
 
 
-                    idc0 = trial['response'][0][trial['wrap_ax']==wrap] #category 0
-                    idc1 = trial['response'][1][trial['wrap_ax']==wrap] #category 1
+                    idc0 = trial['response'][0][np.where(trial['wrap_ax']==wrap)] #category 0
+                    idc1 = trial['response'][1][np.where(trial['wrap_ax']==wrap)] #category 1
 
                     #ps_add = ps0[idc0]
                     ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
@@ -341,7 +351,7 @@ class Trialset(object):
                     # S = model.model  + ' returned NAN probabilities.'
                     # raise Exception(S)
                 ps_add[ps_add<1e-308] = 1e-308
-
+                
                 if whole_array:
                     ps_list = np.append(ps_list,ps_add)
                 else:
@@ -381,7 +391,7 @@ class Trialset(object):
         correlation = ss.pearsonr(ppt_err_rate,ll)
 
         
-def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None, results = True,callbackstyle='none'):
+def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None, results = True,callbackstyle='none', seed=None):
     """
     Run an optimization routine.
 
@@ -404,8 +414,9 @@ def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None
     callback = callbackstyle
     global itcount
     global fitLL
-    global seedrng
+    global seedrng    
     fitLL = True
+    seedrng = seed
     # set initial params
     if inits is None:    
         inits = model_obj.rvs(fmt = list) #returns random parameters as list
@@ -686,8 +697,8 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
         if trial_obj.task is 'generate':
             #convert pptcat and responsecat to array for easier indexing
             if ppt == 'all':
-                respList = responsecats
-                pptList = pptcats
+                respList = np.array(responsecats)
+                pptList = np.array(pptcats)
             else:
                 for i in ppt:
                     extractIdx = np.array(pptcats==np.array(round(i)))
@@ -714,7 +725,7 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                         pptList[pi] = np.append(pptList[pi],pptcat[extractIdx])
         else:
             raise ValueError('trialset.task not specified. Please specify this as \'generate\' or \'assign\' in your script.')
-                                
+        
         output_obj.Set[ti]['response'] = respList.astype(int)
         output_obj.Set[ti]['participant'] = pptList.astype(int)
     #Clean up

@@ -126,7 +126,7 @@ class Model(object):
         
 
     @abc.abstractmethod
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False): pass
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax=None): pass
 
     def __init__(self, categories, params, stimrange=[{'min':-1,'max':1},{'min':-1,'max':1}]):
         """
@@ -308,3 +308,61 @@ class Exemplar(Model):
         similarity = np.exp(-float(c) * distance)
         similarity = similarity * float(param)
         return np.sum(similarity, axis = 1)
+
+class HierSamp(Model):
+    """        
+    Abstract base class for hierarchical sampling/Bayesian models (e.g. ConjugateJK13, RepresentJK13). Basically this is used to add 
+    a function computing wrapped densities for boundless features.
+    """
+    __metaclass__ = abc.ABCMeta
+
+    def _wrapped_density(self, target_dist, stimuli, wrap_ax,
+                         density_ratio_cap = 1e5,
+                         maxit = 50):
+        """ 
+        Function to compute the density on a wrapped space along some axis (like on a torus, sphere, cylinder). 
+        Only works along one axis at a time for now, though.
+
+        Wrapping stops after the minimum density in one direction is smaller than the maximum density by the ratio
+        defined in density_ratio_cap, or after maxit iterations.
+
+        """                                                             
+        density = target_dist.pdf(stimuli) #Base density
+        if not type(wrap_ax) is list:
+            wrap_ax = [wrap_ax]
+        for ax in wrap_ax:
+            #Force wrap_ax to be int (sometimes it's passed as float?!)
+            ax = int(ax)
+            #Keep taking one set of stimuli above and below the perceived space until ratio is large enough
+            stim_ax = stimuli[:,ax]
+            stim_diff = np.max(stim_ax) - np.min(stim_ax)
+            stim_up = stimuli.copy()
+            stim_dn = stimuli.copy()
+            #Note that this isn't complete if we are wrapping more than 1 axis
+            itct = 0
+            density_ratio = 1
+            maxden = np.max(density)
+            while density_ratio < density_ratio_cap and itct < maxit:
+                stim_up[:,ax] += stim_diff
+                density_up = target_dist.pdf(stim_up)
+                maxden = np.max([maxden,np.max(density_up)])
+                minden = np.min(density_up)
+                density_ratio = maxden/minden
+                density += density_up
+                itct += 1
+                # if itct >= maxit:
+                #     print('Max wrapped axis reached.')
+                #     continue
+            #print('itct = ' + str(itct))
+            itct = 0
+            density_ratio = 1
+            while density_ratio < density_ratio_cap and itct < maxit:
+                stim_dn[:,ax] -= stim_diff
+                density_dn = target_dist.pdf(stim_dn)
+                maxden = np.max([maxden,np.max(density_dn)])
+                minden = np.min(density_dn)
+                density_ratio = maxden/minden
+                density += density_dn
+                itct += 1
+            #print('itct = ' + str(itct))
+        return density

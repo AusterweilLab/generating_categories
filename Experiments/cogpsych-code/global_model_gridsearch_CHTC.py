@@ -19,7 +19,7 @@ fiterror = False #Toggle if fitting error
 ll150 = '' #either 'hi' or 'lo'. Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
 
 # Specify default dataname
-datasets = ['5con','5con_s','corner','corner_s','corner_c']#['pooled','pooled-no1st']
+datasets = ['corner','corner_s','corner_c','5con','5con_s']#['pooled','pooled-no1st']
 #dataname_def = 'nosofsky1986'
 participant_def = 'all'
 unique_trials_def = 'all'
@@ -176,7 +176,7 @@ for dataname in datasets:
             inits = startp[i,:]
             res = Simulation.hillclimber(model_obj, trials, options,
                                          inits=inits, results = False,
-                                         callbackstyle='none')
+                                         callbackstyle='none') #can use 'iter','none','.'
             final_parms = res.x
             final_ll = res.fun
             final_aic =  funcs.aic(final_ll,nparms)

@@ -19,7 +19,7 @@ if __name__ == "__main__" and narg>1:
     if narg>2:
         compilation = sys.argv[2] #idx 2 must be Boolean and indicates if experiment db is a compilation of multiple exps
 else:
-    expName = 'corner' #default experiment name
+    expName = '' #default experiment name
     compilation = False
 
 #Toggle construction of trialset pickle without first trial?

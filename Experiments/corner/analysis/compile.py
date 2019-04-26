@@ -213,7 +213,9 @@ for st in stimtypes:
         participants_st = participants.copy()
         generation_st = generation.copy()
         generalization_st = generalization.copy()
-    print(db_dst)    
+    print(db_dst)
+    #Try to force wrap_ax column to be object instead of floats
+    generation_st.wrap_ax = generation_st.wrap_ax.astype(object)
     c = sqlite3.connect(db_dst)
     participants_st.to_sql('participants', c, index = False, if_exists = 'replace', dtype ={'finish':'INTEGER'})
     generation_st.to_sql('generation', c, index = False, if_exists = 'replace')
@@ -223,5 +225,5 @@ for st in stimtypes:
     counterbalance.to_sql('counterbalance', c, index = False, if_exists = 'replace')
     betastats_st.to_sql('betastats', c, if_exists = 'replace', index = False)
     c.close()
-
+    #There's a weird bug where the wrap_ax columns isn't consistently read out as int(0) and None, but 0.0 and NaN instead..?
 

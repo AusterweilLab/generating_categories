@@ -40,10 +40,10 @@ class Packer(Exemplar):
         # compute contrast sum similarity
         #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
         contrast_examples   = self.exemplars[self.assignments != category]
-        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst,wrap_ax=wrap_ax)
+        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst,wrap_ax=None)
         # compute target sum similarity
         target_examples = self.exemplars[self.assignments == category]
-        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target,wrap_ax=wrap_ax)
+        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target,wrap_ax=None)
         #End new attempt 110418
                 
         # # compute contrast sum similarity
@@ -70,11 +70,13 @@ class Packer(Exemplar):
             contrast_examples_flip = target_examples
             contrast_ss_flip = self._sum_similarity(stimuli,
                                                     contrast_examples_flip,
-                                                    param = -1.0 * self.theta_cntrst)
+                                                    param = -1.0 * self.theta_cntrst,
+            wrap_ax=wrap_ax)
             target_examples_flip = contrast_examples
             target_ss_flip   = self._sum_similarity(stimuli,
                                                     target_examples_flip,
-                                                    param = self.theta_target)
+                                                    param = self.theta_target,
+            wrap_ax=wrap_ax)
             #End test 110418
 
             # #compute contrast and target ss if stimuli is assigned
@@ -135,14 +137,14 @@ class PackerEuc(Exemplar):
         ] 
 
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False, wrap_ax=None):
         # compute contrast sum similarity
         #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
         contrast_examples   = self.exemplars[self.assignments != category]
-        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst,p=2)
+        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst,p=2,wrap_ax=wrap_ax)
         # compute target sum similarity
         target_examples = self.exemplars[self.assignments == category]
-        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target,p=2)
+        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target,p=2,wrap_ax=wrap_ax)
         #End new attempt 110418
                 
         # # compute contrast sum similarity
@@ -169,11 +171,11 @@ class PackerEuc(Exemplar):
             contrast_examples_flip = target_examples
             contrast_ss_flip = self._sum_similarity(stimuli,
                                                     contrast_examples_flip,
-                                                    param = -1.0 * self.theta_cntrst,p=2)
+                                                    param = -1.0 * self.theta_cntrst,p=2,wrap_ax=wrap_ax)
             target_examples_flip = contrast_examples
             target_ss_flip   = self._sum_similarity(stimuli,
                                                     target_examples_flip,
-                                                    param = self.theta_target,p=2)
+                                                    param = self.theta_target,p=2,wrap_ax=wrap_ax)
             #End test 110418
 
             # #compute contrast and target ss if stimuli is assigned
@@ -227,7 +229,7 @@ class CopyTweak(Exemplar):
                 np.random.uniform(0.1, 6.0), # determinism
                 #np.random.uniform(0.1, 6.0)   # baselinesim
         ]
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax=None):
                 
         # return uniform probabilities if there are no exemplars
         target_is_populated = any(self.assignments == category)
@@ -236,7 +238,7 @@ class CopyTweak(Exemplar):
             return np.ones(ncandidates) / float(ncandidates)
 
         # get pairwise similarities with target category
-        similarity = self._sum_similarity(stimuli, self.categories[category])
+        similarity = self._sum_similarity(stimuli, self.categories[category],wrap_ax=wrap_ax)
         # add baseline similarity
         #similarity = similarity + self.baselinesim
         if task == 'generate': 
@@ -247,7 +249,7 @@ class CopyTweak(Exemplar):
             ps = Funcs.softmax(similarity, theta = self.determinism)
         elif task == 'assign' or task == 'error':
             # get pairwise similarities with contrast category
-            similarity_flip = self._sum_similarity(stimuli, self.categories[1-category])
+            similarity_flip = self._sum_similarity(stimuli, self.categories[1-category],wrap_ax=wrap_ax)
             # add baseline similarity
             #similarity_flip = similarity_flip + self.baselinesim
             
@@ -286,7 +288,7 @@ class CopyTweakRep(Exemplar):
                 np.random.uniform(0.1, 6.0), # determinism
                 #np.random.uniform(0.1, 6.0)   # baselinesim
         ]
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax=None):
                 
         # return uniform probabilities if there are no exemplars
         target_is_populated = any(self.assignments == category)
@@ -295,9 +297,9 @@ class CopyTweakRep(Exemplar):
             return np.ones(ncandidates) / float(ncandidates)
 
         # get pairwise similarities with target category
-        similarity_target = self._sum_similarity(stimuli, self.categories[category])
+        similarity_target = self._sum_similarity(stimuli, self.categories[category],wrap_ax=wrap_ax)
         #Treat similarity as density estimate (i.e., the likelihoods in representativeness)
-        similarity_contrast = self._sum_similarity(stimuli, self.categories[1-category])
+        similarity_contrast = self._sum_similarity(stimuli, self.categories[1-category],wrap_ax=wrap_ax)
         #print [i*self.determinism for i in similarity_contrast]
         # since number of alternative hypotheses is always 1 if there are a total of 2 categories, p(h') will always be 1, right?
         #prior = 1            
@@ -357,7 +359,7 @@ class PackerRep(Exemplar):
         ] 
 
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):        
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax=None):        
         # compute target representativeness
         target_examples = self.exemplars[self.assignments == category]
         contrast_examples   = self.exemplars[self.assignments != category]
@@ -367,8 +369,8 @@ class PackerRep(Exemplar):
             ncandidates = stimuli.shape[0]
             return np.ones(ncandidates) / float(ncandidates)
 
-        similarity_target   = self._sum_similarity(stimuli, target_examples)
-        similarity_contrast = self._sum_similarity(stimuli, contrast_examples)
+        similarity_target   = self._sum_similarity(stimuli, target_examples,wrap_ax=wrap_ax)
+        similarity_contrast = self._sum_similarity(stimuli, contrast_examples,wrap_ax=wrap_ax)
         #print similarity_contrast
         representativeness_target = np.log(similarity_target/similarity_contrast) * self.theta_target
         representativeness_contrast = np.log(similarity_contrast/similarity_target) * -1.0 * self.theta_cntrst
