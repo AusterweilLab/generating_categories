@@ -258,11 +258,11 @@ class Trialset(object):
                 if task == 'generate':
                     # compute probabilities of generating exemplar in cat 1
                     ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
-                    ps_idx = np.where(trial['wrap_ax']==wrap)[0]
+                    ps_idx = np.where(trial['wrap_ax']==wrap)[0]                    
                     #If it's a scalar, take it out of the array
                     if len(ps_idx)==1:
                         ps_idx = ps_idx[0]
-                    ps_add = [ps[trial['response'][ps_idx]]]
+                    ps_add = np.array(ps[trial['response'][ps_idx]])
                 elif task=='assign':
                     #Compute probabilities of assigning exemplar to cat 0
                     ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
@@ -338,10 +338,6 @@ class Trialset(object):
                         if len(wrongresp)>0:
                             wrongps   = np.concatenate([wrongps,ps[wrongresp]])
 
-
-                    #ps_add = np.concatenate([correctps,wrongps])
-
-
                 # check for nans and zeros
                 if np.any(np.isnan(ps_add)):
                     ps_add = np.zeros(ps_add.shape)
@@ -351,7 +347,6 @@ class Trialset(object):
                     # S = model.model  + ' returned NAN probabilities.'
                     # raise Exception(S)
                 ps_add[ps_add<1e-308] = 1e-308
-                
                 if whole_array:
                     ps_list = np.append(ps_list,ps_add)
                 else:
