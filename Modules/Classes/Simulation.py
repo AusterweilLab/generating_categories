@@ -87,7 +87,8 @@ class Trialset(object):
                     response = np.array([response]), 
                     categories = categories,
                     participant = np.array([participant]),
-                    wrap_ax = wrap_ax)
+                    wrap_ax = np.array([wrap_ax])
+                )
                 )
             elif responseType == 2:
                 ncat = len(categories)                             
@@ -687,42 +688,52 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
     for ti,trialchunk in enumerate(output_obj.Set):
         responsecats = trialchunk['response']
         pptcats = trialchunk['participant']
+        wrapaxcats = trialchunk['wrap_ax']
         respList = np.array([])
         pptList = np.array([])
+        wrapaxList = np.array([])
         if trial_obj.task is 'generate':
             #convert pptcat and responsecat to array for easier indexing
             if ppt == 'all':
                 respList = np.array(responsecats)
                 pptList = np.array(pptcats)
+                wrapaxList = np.array(wrapaxcats)
             else:
                 for i in ppt:
                     extractIdx = np.array(pptcats==np.array(round(i)))
                     responsecats = np.array(responsecats)
                     pptcats = np.array(pptcats)
+                    wrapaxcats = np.array(wrapaxcats)
                     respList = np.append(respList,responsecats[extractIdx])
                     pptList = np.append(pptList,pptcats[extractIdx])
+                    wrapaxList = np.append(wrapaxList,wrapaxcats[extractIdx])
                         
         elif trial_obj.task is 'assign' or trial_obj.task is 'error':
             #iterate over categories of responses        
             respList = [np.array([], dtype = int) for _ in xrange(ncategories)]
-            pptList = [np.array([], dtype = int) for _ in xrange(ncategories)]        
+            pptList = [np.array([], dtype = int) for _ in xrange(ncategories)]
+            wrapaxList = [np.array([], dtype = int) for _ in xrange(ncategories)]        
             for pi,pptcat in enumerate(pptcats):
                 #convert pptcat and responsecat to array for easier indexing
                 responsecat = np.array(responsecats[pi])
                 pptcat = np.array(pptcat)
+                wrapaxcat = np.array(wrapaxcat)
                 if ppt == 'all':
                     respList[pi] = np.append(respList[pi],responsecat)
                     pptList[pi] = np.append(pptList[pi],pptcat)
+                    wrapaxList[pi] = np.append(wrapaxList[pi],wrapaxcat)
                 else:
                     for i in ppt:
                         extractIdx = pptcat==round(i)
                         respList[pi] = np.append(respList[pi],responsecat[extractIdx])
                         pptList[pi] = np.append(pptList[pi],pptcat[extractIdx])
+                        wrapaxList[pi] = np.append(wrapaxList[pi],wrapaxcat[extractIdx])
         else:
             raise ValueError('trialset.task not specified. Please specify this as \'generate\' or \'assign\' in your script.')
         
         output_obj.Set[ti]['response'] = respList.astype(int)
         output_obj.Set[ti]['participant'] = pptList.astype(int)
+        output_obj.Set[ti]['wrap_ax'] = wrapaxList
     #Clean up
     #cleanIdx = np.ones(len(output_obj.Set),dtype=bool)
     output_objTemp = cp.deepcopy(output_obj.Set)

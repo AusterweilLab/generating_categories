@@ -84,7 +84,7 @@ generation.drop(['rt'], axis = 1, inplace=True)
 betastats.drop(['bottom_only','bottom_used','top_and_bottom','top_only','top_used'],
     axis = 1, inplace=True)
 
-dbfile = 'experiments.db'
+dbfile = 'experiments-pooled.db'
 con = sqlite3.connect(dbfile)
 experiments.to_sql(   'experiments',   con, index = False, if_exists = 'replace')
 original_pids.to_sql( 'original_pids', con, index = False, if_exists = 'replace')
