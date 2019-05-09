@@ -1,6 +1,7 @@
 .DS_Store
 readme.html
 design-sheet.html
+python.tar.gz #large file
 
 # sublime text
 *.sublime-workspace
