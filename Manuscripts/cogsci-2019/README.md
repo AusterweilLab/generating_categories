@@ -1,3 +1,5 @@
+## Here lies files relevant to our submission for Cog Sci 2019. Everything should be written in accordance with the new requirements as listed below.
+
 # Template files for submissions to the Annual Conference of the Cognitive Science Society
 
 This repository contains new LaTeX and Microsoft Word template files

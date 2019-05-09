@@ -44,7 +44,6 @@ for di,databases in enumerate(databases_Set):
         with sqlite3.connect(dbpath) as con:
             data = dict((T, pd.read_sql('SELECT * FROM ' + T, con)) for T in keep_tables)
 
-
         # get the stimuli df, init the alphas
         if num == 0: 
             stimuli = data['stimuli']
@@ -81,8 +80,8 @@ for di,databases in enumerate(databases_Set):
             generation   = data['generation']
         else:
             participants = pd.concat([participants,data['participants']], ignore_index = True)
-            betastats    = pd.concat([betastats,data['betastats']], ignore_index = True)
-            generation   = pd.concat([generation,data['generation']], ignore_index = True)
+            betastats    = pd.concat([betastats,data['betastats']], ignore_index = True,sort=True)
+            generation   = pd.concat([generation,data['generation']], ignore_index = True,sort=True)
 
     # convert experiment num to integer
     experiments['experiment'] = experiments['experiment'].astype(int)

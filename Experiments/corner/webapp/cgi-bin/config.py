@@ -8,7 +8,7 @@ print                                                             # blank line, 
 # - - - - - - - - - - - - - - - - - - - - - - - -
 # USER SHOULD SET THESE PARAMETERS
 # This is where all the data is stored (X.json and workers.db) 
-destination = "/var/services/homes/xian/CloudStation/data/corner"
+destination = "../../datatemp"
 assignmentdb = destination + "/assignments.db"
 
 # what are the conditions?

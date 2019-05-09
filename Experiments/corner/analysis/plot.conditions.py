@@ -27,8 +27,6 @@ for i, k  in enumerate(list(alphas)):
     h.axis(np.array([-1, 1, -1, 1])*1.25)
     # h.text(-1.1, 1.1, k, ha = 'left', va = 'top')
     title = k
-    if title=='XOR':
-        title = 'Diagonal'
     h.set_title(lab + ' ' + title)
     [i.set_linewidth(0.5) for i in h.spines.itervalues()]
 
@@ -47,7 +45,7 @@ sizmax, sizmin = 5.8, 3.0
 squares[:,1] = squares[:,1] * (sizmax-sizmin) + sizmin # size
 squares[:,1] *= 3.5
 
-for i in [0, 49, 2450, 2499]:
+for i in [0,8,72,80]:#[0, 49, 2450, 2499]:
     col, siz = squares[i,:]
     x, y  = stimuli[i,:]
     h.plot(x, y, 's', ls = '-', mec = 'k', mew = 0.5,

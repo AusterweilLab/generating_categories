@@ -9,12 +9,14 @@ import Modules.Funcs as funcs
 
 pd.set_option('precision', 2)
 
+makeplots = True #Do plots?
+
 # import data
 con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT * from participants", con)
 df = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).values
 stats = pd.read_sql_query("SELECT * from betastats", con)
 con.close()
 
@@ -22,18 +24,21 @@ savedir = 'individuals'
 gentypeStr = ['N','B','C'] #not alpha, only beta, beta-gamma
 gentypeStrDisp = ['A\'','B','C'] #not alpha, only beta, beta-gamma
 gentypeCols = [[.3,0,.5],[0,0,.5],[0,.5,0]]
-f, ax= plt.subplots(1,1, figsize=(1.6, 1.6))
+
 
 var_thresh = .25
 cor_thresh = .7
+drat = 5 #dimension ratio for col vs row
 groupcount = {'Positive':0,'Negative':0,'Cluster':0,'Dispersed':0,'Row':0,'Column':0}
 data_arr = []
+
+
 for i, row in info.iterrows():
     pid, condition, gentype = int(row.participant), row.condition, row.gentype
     gentypeStr_p = gentypeStr[gentype]
 
     palphas = alphas[condition]
-    #pbetas_all = df.stimulus[df.participant == pid]
+    pbetas_all = df.stimulus[df.participant == pid]
     if gentype==2:
         pdf = df.loc[df.participant==pid]
         betastr = [gentypeStrDisp[1] if pdf_row.category=='Beta' else gentypeStrDisp[2] for ii,pdf_row in pdf.iterrows() ]
@@ -54,9 +59,9 @@ for i, row in info.iterrows():
         cov  = stats.correlation[stats.participant==pid].values[0]
         group = ''
 
-        if varx > vary*5:
+        if varx > vary*drat:
             group = 'Row'
-        elif vary > varx*5:
+        elif vary > varx*drat:
             group = 'Column'
         elif cov > cor_thresh:
             group = 'Positive'
@@ -68,17 +73,20 @@ for i, row in info.iterrows():
             group = 'Dispersed'
         # else:
         #     group = 'Irregular'
-        print('{} {} {} {} {} {}'.format(pid,gentypeStr[ii+1], varx, vary, cov, group))
+        if makeplots:
+            print('{} {} {} {} {} {}'.format(pid,gentypeStr[ii+1], varx, vary, cov, group))
         printstr += gentypeStr[ii+1] + ' ' + group + '\n'
         groupcount[group] += 1
 
-    funcs.plotclasses(ax, stimuli, palphas, pbetas_all, betastr=betastr,betacol = betacol)
     data_arr += [[pid, group]] #not quite accurate for gammas?
-    fname = os.path.join(savedir,condition + '-' + gentypeStr_p + '-' + str(pid) + '.png')
-    ax.text(.9,1.25,str(pid))
-    ax.text(-.9,1.0,printstr)
-    f.savefig(fname, bbox_inches='tight', transparent=False)
-    plt.cla()
+    if makeplots:
+        f, ax= plt.subplots(1,1, figsize=(1.6, 1.6))
+        funcs.plotclasses(ax, stimuli, palphas, pbetas_all, betastr=betastr,betacol = betacol)    
+        fname = os.path.join(savedir,condition + '-' + gentypeStr_p + '-' + str(pid) + '.png')
+        ax.text(.9,1.25,str(pid))
+        ax.text(-.9,1.0,printstr)
+        f.savefig(fname, bbox_inches='tight', transparent=False)
+        plt.cla()
 
 print(groupcount)
 data = pd.DataFrame(columns=('participant','betagroup'),data = data_arr)

@@ -283,6 +283,11 @@ class RepresentJK13(HierSamp):
             #prior = 1
 
             density = np.log(likelihood_beta/likelihood_alpha)
+            # print(self.Domain)
+            # print(np.flipud(np.round(np.reshape(likelihood_alpha,(9,9)),3)))
+            # print(np.flipud(np.round(np.reshape(likelihood_beta,(9,9)),3)))
+            # print(np.flipud(np.round(np.reshape(density,(9,9)),3)))
+            #lll
             #The general equation is density = likelihood_beta/sum(likelihood_alpha*prior), where the sum is over all non-beta categories, but I'm leaving out the prior since it's just 1
             #As a quick hack to revert ConjugateJK13 to how it was in the manuscript prior to April 2018, uncomment the line below
             #density = target_dist_beta.pdf(stimuli)
@@ -330,7 +335,7 @@ class RepresentJK13(HierSamp):
                 density_element = np.array([density[i],
                                             density_flip[i]])
                 ps_element = Funcs.softmax(density_element, theta = self.determinism)
-                ps = np.append(ps,ps_element[0])                        
+                ps = np.append(ps,ps_element[0])
         return ps
 
 

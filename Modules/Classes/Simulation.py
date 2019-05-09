@@ -213,7 +213,7 @@ class Trialset(object):
         return self
                 
 
-    def loglike(self, params, model, fixedparams = None, whole_array=False, parmxform = True,seedrng = False, wrap_ax=None):
+    def loglike(self, params, model, fixedparams = None, whole_array=False, parmxform = True,seedrng = False):
         """
         Evaluate a model object's log-likelihood on the
         trial set based on the provided parameters.
@@ -254,12 +254,13 @@ class Trialset(object):
             
             #Iterate over axes wrappings
             for wrap in wraps:
+                #print(wrap)
                 # if it's an assignment task, also compute probabilities for other category (cat0)
                 # ps0 = np.zeros(ps1.shape)
                 if task == 'generate':
                     # compute probabilities of generating exemplar in cat 1
                     ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
-                    ps_idx = np.where(trial['wrap_ax']==wrap)[0]                    
+                    ps_idx = np.where(trial['wrap_ax']==wrap)[0]
                     #If it's a scalar, take it out of the array
                     if len(ps_idx)==1:
                         ps_idx = ps_idx[0]

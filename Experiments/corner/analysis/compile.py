@@ -130,13 +130,14 @@ for pid, rows in generation.groupby('participant'):
     ppt = participants.loc[participants.participant == pid]
     cb = ppt.counterbalance.values[0]
     stimtype = ppt.stimtype.values[0]
+    if stimtype=='Circles':
+        generation.loc[generation.participant == pid,'wrap_ax'] = 1 #Wrap along axis 1
     if cb>=4 and stimtype=='Circles':
         new_stims = []
         for ri,row in rows.iterrows():
             old_stim = row.stimulus
             new_stims += [stimmap[stimmap[:,0]==old_stim,1][0]]
         generation.loc[generation.participant == pid,'stimulus'] = new_stims
-        generation.loc[generation.participant == pid,'wrap_ax'] = 0 #Wrap along axis 0
 
 for pid, rows in generalization.groupby('participant'):
     ppt = participants.loc[participants.participant == pid]
@@ -167,20 +168,23 @@ for st in stimtypes:
         condition = ppt.condition
         gentype = ppt.gentype #participants.loc[participants.participant == pid, 'gentype']
         betacats = rows.category.unique()
+        wrap_ax = rows.wrap_ax.values[0]
         nbetacats = len(betacats)
         betas = []
         print(pid)
         for b in betacats:
             betastemp = rows.loc[rows.category == b,'stimulus']
-            betas.append(stimuli.as_matrix()[betastemp,:])
+            betas.append(stimuli.values[betastemp,:])
 
         # betas = rows.stimulus
         # betas = stimuli.as_matrix()[betas,:]
-        p_alphas = alphas[condition].as_matrix()[:,0]
-        p_alphas = stimuli.as_matrix()[p_alphas,:]
+        p_alphas = alphas[condition].values[:,0]
+        p_alphas = stimuli.values[p_alphas,:]
 
         # stats battery
-        stats = funcs.stats_battery(betas, alphas = p_alphas)
+        stats = funcs.stats_battery(betas, alphas = p_alphas, wrap_ax=wrap_ax,ax_range=2,ax_step=.25)
+        if condition.values[0][-1]=='C':
+            pass#lll
 
         # compute top and bottom stats
         nums = rows.stimulus
@@ -214,6 +218,7 @@ for st in stimtypes:
         generation_st = generation.copy()
         generalization_st = generalization.copy()
     print(db_dst)
+
     #Try to force wrap_ax column to be object instead of floats
     generation_st.wrap_ax = generation_st.wrap_ax.astype(object)
     c = sqlite3.connect(db_dst)

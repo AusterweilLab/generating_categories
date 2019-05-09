@@ -7,8 +7,9 @@ from BF import BFtt #bayes factor from bayesian t-test
 from statsmodels.stats.multicomp import pairwise_tukeyhsd as tukey
 from statsmodels.stats.libqsturng import psturng
 sns.set_style("whitegrid")
-colors = ["#34495e", "#e74c3c"]
-sns.set_palette(colors)
+#colors = ["#000000", "#222222"]#["#34495e", "#e74c3c"]
+#sns.set_palette('binary')
+#Colormap is now set to grayscale and is determined once the number of conditions per plot is known
 
 
 
@@ -38,7 +39,7 @@ info = pd.read_sql_query("SELECT participant, condition, gentype from participan
 stats = pd.read_sql_query("SELECT * from betastats", con)
 df = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).values
 
 con.close()
 
@@ -136,11 +137,17 @@ fh, axes = plt.subplots(len(testconds),4,figsize = (12,3*len(testconds)))
 #fh, axes = plt.subplots(2,2,figsize = (12,12))
 for i, col in enumerate(['xrange','yrange','correlation','area']):
     for ii,conditions in enumerate(testconds):
+        #Set colormap
+        csteps = len(order[conditions])
+        palette = [[1-float(rc)/csteps for rrc in range(3)] for rc in range(csteps)]
+        sns.set_palette(palette)
+        #print(sns.color_palette())
+
         if len(testconds)>1:#len(axes.shape)>1:
             ax = axes[ii,i]
         else:
             ax = axes.flat[i]
-        hs = sns.factorplot(x = conditions, y = col, data= stats, ax = ax, kind = 'box',
+        hs = sns.catplot(x = conditions, y = col, data= stats, ax = ax, kind = 'box',
                         order = order[conditions])
         ax.set_title(col, fontsize = 12)
         ax.set_ylabel('')

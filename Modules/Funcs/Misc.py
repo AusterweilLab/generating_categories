@@ -2,7 +2,7 @@ import numpy as np
 import sqlite3
 from scipy.spatial import ConvexHull
 
-def stats_battery(betaSet, alphas = None):
+def stats_battery(betaSet, alphas = None, wrap_ax=None, ax_range=2, ax_step=.25):
     """
     Compute a battery of category stats, return it all in a dict.
     If there is more tha one betaSet (i.e., if it is input as a list of beta categories), then the
@@ -21,6 +21,26 @@ def stats_battery(betaSet, alphas = None):
         res = dict()
         # feature distributions
         res['xrange'], res['yrange'] = np.ptp(betas,axis=0)
+        if not wrap_ax is None:
+            if not type(wrap_ax) is list:
+                wrap_ax = [wrap_ax]            
+            for ax in wrap_ax:
+                betax = betas[:,ax]
+                raw_range = np.max(betax) - np.min(betax)
+                #Note formula is different to pdist function, as pdist
+                #is only concerned about dist between 2 points. Here, we
+                # subtract the largest unoccupied space from the range for
+                # the alternate range to compare
+                blank_range = np.max(np.diff(np.sort(betax)))
+                alt_range = ax_range-blank_range + ax_step
+                wrapped_range = np.min([alt_range,raw_range])
+                if ax==0:
+                    res['xrange'] = wrapped_range
+                elif ax==1:
+                    res['yrange'] = wrapped_range
+                else:
+                    raise ValueError('stats_battery function not defined for wrapping third (or higher-dimension) features/axes.')
+        
         res['drange'] = res['xrange'] - res['yrange']
         res['xstd'],   res['ystd']   = np.std(betas, axis=0)
 
@@ -169,7 +189,7 @@ def gradientroll(G, op):
         return np.flipud(np.reshape(G, (side, side, ngradients) ))
 
 
-def pdist(X, Y, w = np.array([]), wrap_ax = None, ax_max = 2):
+def pdist(X, Y, w = np.array([]), wrap_ax = None, ax_range = 2, ax_step = .25):
     """
     Calculate weighted city-block distance between two ND arrays
     
@@ -186,7 +206,10 @@ def pdist(X, Y, w = np.array([]), wrap_ax = None, ax_max = 2):
     
     wrap_ax indicates which axis is boundless (i.e., take the shortest of either the distance or max-distance)
 
-    ax_max is the limits of both axes
+    ax_range is the limits of both axes
+
+    ax_step is the unit-size of each step (assumed to be same across all axes)
+
 Examples
     --------
     >>> X = np.array([[0,0],[0,1]])
@@ -217,16 +240,20 @@ Examples
     if not wrap_ax is None:
         if not type(wrap_ax) is list:
             wrap_ax = [wrap_ax]
+        #print('Old diff: {}'.format(difference[:,1]))
         for ax in wrap_ax:
-            diff_ax = difference[:,ax].copy()
-            diff_alt = ax_max-diff_ax
+            #Ensure ax is int of some sort
+            ax = int(ax)
+            diff_ax = np.abs(difference[:,ax].copy())
+            diff_alt = ax_range-diff_ax + ax_step
             diff_min = np.min([diff_ax,diff_alt],axis=0)
             difference[:,ax] = diff_min
-            
+        #print('New diff: {}'.format(difference[:,ax]))
+
     weighted_distance = np.multiply(difference, w)
     return np.sum( np.abs(weighted_distance), axis = 1 )
 
-def pdist_gen(X, Y, w = np.array([]), p = 2,wrap_ax = None,ax_max = 2):
+def pdist_gen(X, Y, w = np.array([]), p = 2,wrap_ax = None,ax_range = 2,ax_step = .25):
     """
     Calculate generalised weighted distance between two ND arrays.
     
@@ -245,10 +272,11 @@ def pdist_gen(X, Y, w = np.array([]), p = 2,wrap_ax = None,ax_max = 2):
 
     Returns an nX-by-nY array of weighted distance.
 
-    bdlass_ax indicates which axis is boundless (i.e., take the shortest of either the distance or max-distance)
+    wrap_ax indicates which axis is boundless (i.e., take the shortest of either the distance or max-distance)
 
-    ax_max is the limits of both axes
+    ax_range is the limits of both axes (assumed to be same across all axes)
     
+    ax_step is the unit-size of each step (assumed to be same across all axes)
     
     Examples
     --------
@@ -281,8 +309,10 @@ def pdist_gen(X, Y, w = np.array([]), p = 2,wrap_ax = None,ax_max = 2):
         if not type(wrap_ax) is list:
             wrap_ax = [wrap_ax]
         for ax in wrap_ax:
-            diff_ax = difference[:,ax].copy()
-            diff_alt = ax_max-diff_ax
+            #Ensure ax is int of some sort
+            ax = int(ax)
+            diff_ax = np.abs(difference[:,ax].copy())
+            diff_alt = ax_range-diff_ax + ax_step
             diff_min = np.min([diff_ax,diff_alt],axis=0)
             difference[:,ax] = diff_min
 

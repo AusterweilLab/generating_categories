@@ -1,4 +1,4 @@
-#! /bin/python
+#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python
 
 #  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # This script assigns a participant number, experiment condition

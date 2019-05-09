@@ -281,7 +281,8 @@ class Exemplar(Model):
         c = None,
         p = 1,
         wrap_ax = None,
-        ax_max = 2):
+                        ax_range = 2,
+                        ax_step = .25):
         """ 
         function to compute summed similarity along rows of 
         X across all items in Y. Resulting array will have one element 
@@ -295,16 +296,18 @@ class Exemplar(Model):
 
         bdlass_ax indicates which axis is boundless (i.e., take the shortest of either the distance or max-distance)
 
-        ax_max is the limits of both axes
+        ax_range is the limits of both axes
+
+        ax_step is the minimum distance of each step on the axis (relevant only when wrapping)
         """
 
         # set weights and c
         if wts is None: wts = self.wts
         if c is None: c = self.specificity
         if p == 1:
-            distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts, wrap_ax = wrap_ax, ax_max = ax_max)
+            distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts, wrap_ax = wrap_ax, ax_range = ax_range, ax_step=ax_step)
         else:
-            distance   = Funcs.pdist_gen(np.atleast_2d(X), np.atleast_2d(Y), w = wts, p = p, wrap_ax = wrap_ax, ax_max = ax_max)
+            distance   = Funcs.pdist_gen(np.atleast_2d(X), np.atleast_2d(Y), w = wts, p = p, wrap_ax = wrap_ax, ax_range = ax_range, ax_step = ax_step)
         similarity = np.exp(-float(c) * distance)
         similarity = similarity * float(param)
         return np.sum(similarity, axis = 1)
@@ -335,7 +338,9 @@ class HierSamp(Model):
             ax = int(ax)
             #Keep taking one set of stimuli above and below the perceived space until ratio is large enough
             stim_ax = stimuli[:,ax]
-            stim_diff = np.max(stim_ax) - np.min(stim_ax)
+            stim_unique = np.unique(stim_ax)
+            stim_step = np.abs(stim_unique[0]-stim_unique[1])
+            stim_diff = np.max(stim_ax) - np.min(stim_ax) + stim_step
             stim_up = stimuli.copy()
             stim_dn = stimuli.copy()
             #Note that this isn't complete if we are wrapping more than 1 axis
@@ -350,8 +355,9 @@ class HierSamp(Model):
                 density_ratio = maxden/minden
                 density += density_up
                 itct += 1
-                # if itct >= maxit:
-                #     print('Max wrapped axis reached.')
+                #print('U'+str(itct))
+                if itct >= maxit:
+                    print('Max wrapped axis reached.')
                 #     continue
             #print('itct = ' + str(itct))
             itct = 0
@@ -364,5 +370,9 @@ class HierSamp(Model):
                 density_ratio = maxden/minden
                 density += density_dn
                 itct += 1
+                #print('L'+str(itct))
+                if itct >= maxit:
+                    print('Max wrapped axis reached.')
+
             #print('itct = ' + str(itct))
         return density
