@@ -16,14 +16,14 @@ con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT participant, condition, gentype from participants", con)
 generation = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).values
 stats = pd.read_sql_query("SELECT * from betastats", con)
 con.close()
 
 stats = pd.merge(stats, info, on = 'participant')
 generation = pd.merge(generation, info, on = 'participant')
 
-gentypeStr = ['N','B','C'] #not alpha, only beta, beta-gamma
+#gentypeStr = ['N','B','C'] #not alpha, only beta, beta-gamma
 
 ngenerations = pd.DataFrame(dict(
     condition = [],
@@ -33,28 +33,28 @@ ngenerations = pd.DataFrame(dict(
 
 
 for c in pd.unique(info.condition):
-    for g in pd.unique(info.gentype):
-        gstr = gentypeStr[g]
-        for i in range(stimuli.shape[0]):
-            count = sum((generation.condition == c) & (generation.stimulus ==i) & (generation.gentype == g))
-            row = dict(condition = c+gstr, stimulus = i, count = count)
-            ngenerations = ngenerations.append(row, ignore_index = True)
+    for i in range(stimuli.shape[0]):
+        count = sum((generation.condition == c) & (generation.stimulus ==i))
+        row = dict(condition = c, stimulus = i, count = count)
+        ngenerations = ngenerations.append(row, ignore_index = True)
 
 
 # fh, ax = plt.subplots(1,2,figsize = (6,2.7))
 fh, ax = plt.subplots(2,1,figsize = (2.7,6))
 
 
-styles = dict(XORN = '-or', XORB = '-og', XORC = '-ob',
-              ClusterN = '-sr', ClusterB = '-sg', ClusterC = '-sb',
-              RowN = '-+r', RowB = '-+g', RowC = '-+b',)
+styles = dict(Corner_S = '-sr', Corner_C = '-og')#dict(XORN = '-or', XORB = '-og', XORC = '-ob',
+#ClusterN = '-sr', ClusterB = '-sg', ClusterC = '-sb',
+#              RowN = '-+r', RowB = '-+g', RowC = '-+b',)
 main_font = 13
 sub_font = 11
 small_font = 8
 h = ax[0]
+
+
 for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
-    alphacond = c[:-1]
-    gentype = c[-1]
+    alphacond = c#[:-1]
+    #gentype = c[-1]
     As = stimuli[alphas[alphacond],:]
     D = funcs.pdist(stimuli, As)
     D = np.mean(D, axis = 1)
@@ -63,20 +63,21 @@ for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
     for j in x:
         nums = np.where(D == j)[0]
         curr_rows = rows.loc[rows.stimulus.isin(nums)]
-        counts = curr_rows['count'].as_matrix()
+        counts = curr_rows['count'].values
         y.append(np.mean(counts))
-    #print y
+        #print y
 
     x = x - min(x)
     x = x / max(x)
     h.plot(x, y, styles[c], alpha = 1, label = c)
 
+
 h.xaxis.grid(False)
 h.set_xticks([])
 h.legend(loc = 'upper left', frameon = True, framealpha = 1, fontsize = sub_font)
-styles = dict(XORN = '-or', XORB = '-og', XORC = '-ob',
-              ClusterN = '-sr', ClusterB = '-sg', ClusterC = '-sb',
-              RowN = '-+r', RowB = '-+g', RowC = '-+b',)
+styles = dict(Corner_S = '-sr', Corner_C = '-og')#dict(XORN = '-or', XORB = '-og', XORC = '-ob',
+         #     ClusterN = '-sr', ClusterB = '-sg', ClusterC = '-sb',
+         #     RowN = '-+r', RowB = '-+g', RowC = '-+b',)
 
 
 xax = h.axis()
@@ -94,12 +95,12 @@ h = ax[1]
 diagline = ''
 h.plot([0,2],[0,2], '--', color = 'gray', linewidth = 0.5, label = diagline)
 
-for c, rows in stats.groupby(['condition','gentype']):
-    cond = c[0]+str(c[1])    
-    condStr = c[0]+gentypeStr[c[1]]
-    marker = styles[condStr][0]
-    color = styles[condStr][1]
-    h.plot(rows.within, rows.between,marker = marker, color = color,linestyle='',alpha = 0.5, label = condStr)
+for c, rows in stats.groupby(['condition']):
+    cond = c#+str(c[1])    
+    #condStr = c[0]#+gentypeStr[c[1]]
+    marker = styles[cond][1]
+    color = styles[cond][2]
+    h.plot(rows.within, rows.between,marker = marker, color = color,linestyle='',alpha = 0.5, label = cond)
     #Add means?
     marker = 'd'
     xmean = rows.within.mean()

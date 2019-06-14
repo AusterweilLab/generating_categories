@@ -123,7 +123,7 @@ order = {}
 order['condition'] = ['Corner_S','Corner_C']
 order['gentype'] = gentypebase
 #order['condcomb'] = ['CN','CB','CC','RN','RB','RC','XN','XB','XC']
-conditionticks = ['Corner_S','Corner_C'] #Special ticks for the alpha conditions
+conditionticks = ['Squares','Circles'] #Special ticks for the alpha conditions
 #Get alpha stats for comparison
 stats_alpha = []
 for condition in order['condition']:
@@ -234,10 +234,14 @@ for n, rows in stats.groupby('condcomb'):
 stats_interests = [stats.condition]
 for stats_interest in stats_interests:
     pstr = '\n---- Between conditions-{}'.format(stats_interest.name)
-    print pstr
+    print(pstr)
     with open(savetext,'a') as f:
         f.write(pstr+'\n')
     for j in ['xrange','yrange','correlation','area']:
+        pstr = '\n{}'.format(j)
+        print(pstr)
+        with open(savetext,'a') as f:
+            f.write(pstr+'\n')
         # pstr = 'Variable: ' + j + '\n' + 'Omnibus test'
         # print pstr
         # with open(savetext,'a') as f:
@@ -270,7 +274,9 @@ for stats_interest in stats_interests:
             
         resstr = str(res)
         #add p-values and Bayes Factors to print
-        resstr = resstr.replace('reject', 'reject   p     t(df)    BF01   BF10') 
+        resstr = resstr.replace('reject', 'reject   p     t(df)    BF01   BF10')
+        if type(pvals) is not list:
+            pvals = [pvals]
         for ri in range(len(pvals)):
             if 'True \n' in resstr:
                 idxt = resstr.index('True \n')
@@ -281,9 +287,9 @@ for stats_interest in stats_interests:
             else:
                 idxf = len(resstr)+1
             if idxt < idxf:
-                resstr = resstr.replace('True \n', 'True {0:.4f} {1:.2f}({2:d}) {3:.2E} {4:.2E} \n'.format(pvals[ri],ts[ri],dfs[ri],BF01s[ri],1/BF01s[ri]),1)
+                resstr = resstr.replace('True \n', 'True {0:.4f} {1:.2f}({2:d}) {3:.2E} {4:.2E} \n'.format(float(pvals[ri]),float(ts[ri]),dfs[ri],BF01s[ri],1/BF01s[ri]),1)
             else:
-                resstr = resstr.replace('False \n', 'False {0:.4f} {1:.2f}({2:d}) {3:.2E} {4:.2E} \n'.format(pvals[ri],ts[ri],dfs[ri],BF01s[ri],1/BF01s[ri]),1)
+                resstr = resstr.replace('False \n', 'False {0:.4f} {1:.2f}({2:d}) {3:.2E} {4:.2E} \n'.format(float(pvals[ri]),float(ts[ri]),dfs[ri],BF01s[ri],1/BF01s[ri]),1)
 
         pstr = resstr + '\n p = ' + str(pvals) + '\n ---------------------------------------------'
         print pstr

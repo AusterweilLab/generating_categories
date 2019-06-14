@@ -336,6 +336,7 @@ class RepresentJK13(HierSamp):
                                             density_flip[i]])
                 ps_element = Funcs.softmax(density_element, theta = self.determinism)
                 ps = np.append(ps,ps_element[0])
+        #return (ps,likelihood_alpha,likelihood_beta,Sigma,Sigma_alpha)
         return ps
 
 

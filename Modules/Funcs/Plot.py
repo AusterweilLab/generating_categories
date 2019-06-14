@@ -66,7 +66,7 @@ def plotgradient(h, G, alphas, betas,
      - alphas/betas are the [-1 +1] coordinates of category memebers
      - clim (optional) defines the limits of the colormap.
      - cmap (optional) deinfes the colormap
-     - [alpha/beta]_col: color of alpha and beta markers
+     - [alpha/beta]_col: color of alpha and beta markers     
     """
 
     # generate clims if not provided
@@ -95,12 +95,13 @@ def plotgradient(h, G, alphas, betas,
     for j in range(coords.shape[0]):        
         h.text(coords[j,0],coords[j,1], 'A',color = alpha_col[j], **textsettings)
 
-    coords = gradientspace(betas, G.shape[0])
-    #If number of elements in beta_col doesn't match numel B,
-    #take the first element and expand it to fit B
-    beta_col = checkcolors(beta_col,coords.shape[0])
-    for j in range(coords.shape[0]):
-        h.text(coords[j,0],coords[j,1], 'B', color = beta_col[j], **textsettings)
+    if len(betas)>0:
+        coords = gradientspace(betas, G.shape[0])
+        #If number of elements in beta_col doesn't match numel B,
+        #take the first element and expand it to fit B
+        beta_col = checkcolors(beta_col,coords.shape[0])
+        for j in range(coords.shape[0]):
+            h.text(coords[j,0],coords[j,1], 'B', color = beta_col[j], **textsettings)
     h.set_yticks([])
     h.set_xticks([])
     h.set_aspect('equal', adjustable='box')

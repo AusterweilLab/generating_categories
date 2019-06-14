@@ -231,7 +231,7 @@ class Model(object):
         self._update_()
         
 
-    def simulate_generation(self, stimuli, category, nexemplars = None):
+    def simulate_generation(self, stimuli, category, nexemplars = None,wrap_ax = None):
         """
         Simulate the generation of n-exemplars, sourced from stimuli, into a category.
         The resulting category will be added to the model's memory, and the identity 
@@ -249,7 +249,7 @@ class Model(object):
         for i in range(nexemplars):
 
             # compute probabilities, then pick an item
-            ps = self.get_generation_ps(stimuli, category)
+            ps = self.get_generation_ps(stimuli, category, wrap_ax=wrap_ax)
                         #print sum(ps)-1
             num = Funcs.wpick(ps)
             values = np.atleast_2d(stimuli[num,:])
