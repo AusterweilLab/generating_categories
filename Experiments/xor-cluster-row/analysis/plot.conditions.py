@@ -62,7 +62,7 @@ h.set_yticks([])
 h.set_aspect('equal', adjustable='box')
 [i.set_linewidth(0.5) for i in h.spines.itervalues()]
 
-f.savefig('conditions.png', bbox_inches='tight', transparent=False)
+f.savefig('conditions.pdf', bbox_inches='tight', transparent=False)
 
-path = '../../../Manuscripts/cog-psych/figs/e1-conditions.pgf'
-funcs.save_as_pgf(f, path)
+#path = '../../../Manuscripts/cog-psych/figs/e1-conditions.pgf'
+#funcs.save_as_pgf(f, path)
