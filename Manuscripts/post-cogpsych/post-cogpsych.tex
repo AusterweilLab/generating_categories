@@ -74,8 +74,8 @@ cognitive processes and representations underlying concept generation. In this
 paper, we study the generation of new categories using the computational and
 behavioral toolkit of traditional artificial category learning. Previous work in
 this domain has focused on how the statistical structure of known categories
-generalizes to generated categories, overlooking whether (and if so, how) contrast
-between the known and generated categories is a factor. We report three
+generalizes to generated categories, overlooking whether (and if so, how)
+contrast between the known and generated categories is a factor. We report three
 experiments demonstrating that contrast between what is known and what is
 created is of fundamental importance for categorization. We propose two novel
 approaches to modeling category contrast: one focused on exemplar dissimilarity
@@ -378,6 +378,11 @@ model's generation is based exclusively on similarity to known members of the
 {\em target} category; when there are no members of the target category,
 generation is presumably random.
 
+To our knowledge, no prior literature has yet explicitly discussed any empirical
+effects of contrast in category generation. However, some evidence of contrast
+can be seen in the data from Experiment 3 of cite{jern2013probabilistic}. We
+leave a detailed analysis of this data to the supplemental materials.
+
 \subsection{Contrast as exemplar dissimilarity: The PACKER Model}
 
 \label{section:PACKER-definition}
@@ -650,8 +655,7 @@ this illustrated in Figure \ref{fig:representative-examples}, where the
 representativeness model displays a strong preference for generating exemplars
 from target category 'B' that are further away from the contrast category 'A'.
 Exceptions to this pattern can occur (i.e., the generation of novel exemplars
-similar to known category exemplars) when the known category distribution is
-especially large on all features -- we explore this in more detail in Section
+similar to known category exemplars) -- we explore this in more detail in Section
 \ref{section:diffcon} where we highlight an important condition demonstrating
 how PACKER and the representativeness model can make qualitatively different
 predictions.
@@ -956,7 +960,8 @@ our proposal that contrast is a fundamental principle in categorization.
 
 
 \subsection{Discussion} In Experiment 1 we evaluated the influence of category
-contrast on category generation, given qualitatively different types of categories. We found strong evidence for effects of category contrast in each
+contrast on category generation, given qualitatively different types of
+categories. We found strong evidence for effects of category contrast in each
 condition: Participants were more likely to generate stimuli that are more
 distant from (i.e., less similar to) members of a previously-learned category,
 and members of participant-generated categories tended to be more similar to one
@@ -1698,7 +1703,19 @@ Compared to stimuli with two bounded features, PACKER makes a similar prediction
 the Alpha exemplars is half of the full range of the feature -- for an Alpha
 exemplar oriented at 0 radians, the furthest another exemplar can be situated is $\pi$ radians within the full range of orientation is $2\pi$ radians. 
 
-For the representativeness model, adding an unbounded feature changes the probability distribution for the underlying Bayesian model. Whereas it is still Gaussian in one feature, the other feature is toroidal, meaning that it wraps back to $0$ radians once it reaches $2\pi$ (we have conducted a change of variables where $y \rightarrow y \mod 2\pi $, where $\mod$ is the modulus operator). As we cross $2\pi$ and reach $0$ again, the remaining probability density also gets wrapped around, meaning that the probability density assigned by the Gaussian distribution on the toroidal dimension at $2\pi$ is actually assigned to $0$ (and $2\pi + \epsilon$ to $\epsilon$ so on). This is called the {\em wrapped} Gaussian distribution \citep{mardia1972}. Note that the often used distribution for circular dimensions, the Von Mises distribution is an approximation to the wrapped Gaussian distribution. See Appendix B for implementational details.
+For the representativeness model, adding an unbounded feature changes the
+probability distribution for the underlying Bayesian model. Whereas it is still
+Gaussian in one feature, the other feature is toroidal, meaning that it wraps
+back to $0$ radians once it reaches $2\pi$ (we have conducted a change of
+variables where $y \rightarrow y \mod 2\pi $, where $\mod$ is the modulus
+operator). As we cross $2\pi$ and reach $0$ again, the remaining probability
+density also gets wrapped around, meaning that the probability density assigned
+by the Gaussian distribution on the toroidal dimension at $2\pi$ is actually
+assigned to $0$ (and $2\pi + \epsilon$ to $\epsilon$, and so on). This is called the
+{\em wrapped} Gaussian distribution \citep{mardia1972}. Note that the often used
+distribution for circular dimensions, the Von Mises distribution, is an
+approximation to the wrapped Gaussian distribution. See Appendix B for
+implementational details of the representativeness model in toroidal space.
 
 For the representativeness model, the single unbounded feature essentially
 prevents the formation of edge effects along that feature. Consequently, this results in higher probabilities of the generating the first Beta exemplars along the edges of the bounded feature (Figure \ref{fig:e3-circles}c). As this
@@ -1718,12 +1735,18 @@ representativeness model (which prefers generating exemplars at the boundaries) 
 
 \subsection{Participants, Materials, and Procedure}
 
-We recruited 89 participants from Amazon Mechanical Turk who were randomly assigned to the bounded, square stimuli ($N=46$), or to the toroidal, circle stimuli ($N=43$). The square stimuli were exactly the same as in Experiments 1 and 2. The circle stimuli were made up of unfilled circles with a radial line extending from its center to its edge. These stimuli varied along two features -- their
-diameter ranging from 3.0--5.8 cm, and their orientation ranging from
-0--$2\pi$ radians. The orientation of each circle stimuli was fixed at a
-randomly selected angle for all participants. Similar to Experiments 1 and 2,
-participants first observed a training phase where four Alpha exemplars were
-presented across three blocks followed by the generation phase. The training condition was the Corner category for all participants.
+We recruited 89 participants from Amazon Mechanical Turk who were randomly
+assigned to the bounded, square stimuli ($N=46$), or to the toroidal, circle
+stimuli ($N=43$). The square stimuli were exactly the same as in Experiments 1
+and 2. The circle stimuli were made up of unfilled circles with a radial line
+extending from its center to its edge. These stimuli varied along two features
+-- their diameter ranging from 3.0--5.8 cm, and their orientation ranging from
+$2.587$--$2\pi + 2.587$ radians, with $0$ radians indicating a completely
+horizontal line. The line widths of the circles and radial line were set to 0.05
+cm. Similar to Experiments 1 and 2, participants first observed a training phase
+where four Alpha exemplars were presented across three blocks followed by the
+generation phase. The training condition was the Corner category for all
+participants.
 
 \subsection{Results and Discussion}
 
@@ -1747,7 +1770,11 @@ feature. Otherwise, there were no significant differences between the distributi
 generated category between square and circle stimuli (Figure
 \ref{fig:e3-statsboxes})
 
-The contrast models were fit by optimizing their fit to all experiments in this article (Experiments 1 through 3). Fit statistics and parameter values are presented in Table \ref{table:corner-model-fits}. Overall,
+The contrast models were fit by optimizing their fit to all experiments in this
+article (Experiments 1 through 3). Fit statistics and parameter values are
+presented in Table \ref{table:corner-model-fits}. Although not our main focus in
+this section, we also provide the statistics for the classical models --
+unsurprisingly, they do not perform as well as the contrast models. Overall,
 the representativeness model emerges as the best-fitting model in aggregate, although by a much smaller amount than Experiments 1 and 2. However, analyzing data in aggregate can be misleading.
 
 %by a much smaller lead compared to fits to only Experiments 1 and 2. At an individual level, 67\% of participants in Experiment 3 were better
@@ -1781,13 +1808,14 @@ representativeness model (53\% of the former, 49\% probability of the latter). T
     for number of parameters.)}
 \label{table:corner-model-fits}
 
-\begin{tabular}{ l l} \\ \textbf{PACKER} & \textbf{Representativeness} \\
-  \hline $AIC = 12052$ & $AIC = 11991$ \\ 
-  $L = -6023$          & $L = -5991$ \\ 
-  $c = 0.60$           & $\kappa = 5.91$  \\ 
-  $\theta_c = 2.78$    & $\nu = 1.00$ \\
-  $\theta_t = 3.17$    & $\lambda = 1.45$ \\
-                       &$\theta = 1.86$ \\
+\begin{tabular}{ l l l l} \\ \\ \textbf{PACKER} & \textbf{Copy \& Tweak} &
+\textbf{Representativeness} & \textbf{Hierarchical Bayesian} \\ 
+  \hline $AIC = 12023$ &$AIC = 12779$ &$AIC = 11982$  &$AIC = 12976$\\ 
+  $L = -6008$          &$L = -6388$   &$L = -5987$    &$L = -6484$\\ 
+  $c = 0.51$           &$c = 3.24$    &$\kappa = 6.73$&$\kappa = 0.00$  \\ 
+  $\theta_c = 3.03$    &$\theta_c = 0$ (fixed)  &$\nu = 1.00$ &$\nu = 3.27$\\
+  $\theta_t = 3.46$    &$\theta_t = 2.90$       &$\lambda = 1.90$ &$\lambda = 0.07$\\
+                       &              &$\theta = 2.45$ &$\theta = 3.15$\\
 \end{tabular}
 \end{table}
 
@@ -1857,15 +1885,23 @@ considered, indicating that human learners do not generate novel concepts
 exclusively on the basis of within-category similarity or between
 class-contrast. This finding mirrors our behavioral results and demonstrates
 that both constraints influence generation when explained with an exemplar
-model. Ultimately, our category generation data were best explained by the
-representativeness model. The exact nature of its superiority over the other
-models is still not yet clear, although we find evidence that it only barely
-surpasses PACKER when considering known categories with extreme exemplars.
-As we explore in a later section, it is likely that the
-representativeness mechanism itself (i.e., independent of the hierarchical
-Bayesian foundation) captures a core aspect of both category generation and
-category learning.
+model. 
 
+While we found that the representativeness model was found to be a better fit to
+data from Experiments 1 and 2, both contrast models essentially made
+qualitatively similar predictions across all conditions in those experiments. In
+Experiment 3, we collected behavioral data on a category generation condition
+that qualitatively distinguished the two contrast models. Specifically, in this
+condition where exemplars were located at the corners of the stimulus space,
+PACKER predicted the initial generation of centrally-located novel exemplars
+while the representativeness model predicted novel exemplars similarly located
+at the corners. Interestingly, data from this experiment was better fit,
+qualitatively and quantitatively, by PACKER than the representativeness model.
+
+% Ultimately, our category generation data were best explained by the
+% representativeness model. The exact nature of its superiority over the other
+% models is still not yet clear, although we find evidence that it only barely
+% surpasses PACKER when considering known categories with extreme exemplars.
 
 \subsection{Similarity and Contrast in Cognition}
 We propose that category contrast as a primary constraint in categorization. For categories to be useful, they should not all be identical, or in other words, they should be different. Thus, a newly generated category should be different than pre-existing categories. Beyond its role
@@ -2036,8 +2072,11 @@ demanding version of a sort task might also reduce the bias.
 \subsection{Exemplar Dissimilarity and Representativeness in Categorization} 
 Although both PACKER and the representativeness model perform better than the
 classical models, they appear to be capturing fundamentally different aspects of
-contrast in categorization. Specifically, the representativeness model
-excelled in predicting categories generated by participants in Experiments 1 and 2. Conversely, PACKER was the best-fitting model in accounting for categories generated from the Corner category type, especially when the stimuli had a toroidal feature.
+contrast in categorization. Specifically, the representativeness model excelled
+in predicting categories generated by participants in Experiments 1 and 2.
+Conversely, PACKER was the best-fitting model in accounting for categories
+generated from the Corner category type, especially when the stimuli had a
+toroidal feature.
 
 % Given the history of their development, this is perhaps not entirely
 % surprising. PACKER is implemented as an extension of the GCM, which was
@@ -2068,32 +2107,28 @@ likelihood.\footnote{An analogous implementation of the representativeness
 
 How well does a representativeness model that uses exemplar similarity to
 represent the category’s density over features explain our experimental results?
-We find that this model substantially outperforms its classical counterpart, but
-not to the extent of PACKER or the representativeness model. Specifically,
-fitting this model to the category generation data yielded $L = -4815$ and
+We find that for data across all experiments, this model substantially
+outperforms its classical counterpart, but not to the extent of PACKER or the
+representativeness model. Specifically, the model fits yielded $L = -4815$ and
 $AIC=9633$ for the entire set of data from Experiments 1 and 2, and $L = -3474$,
-$AIC=6953$ for data excluding the first trials. When used to predict the error
-rates of participants in the category learning task (Experiment 3), the
-performance of the copy-and-tweak with representativeness model correlated with
-participant error with $r=.56, p < .001$. These results suggest that the
-predictive advantages to including the representativeness mechanism is not
-limited to a hierarchical Bayesian model, but can also be found when applied to
-an exemplar model. Although its performance is not as strong as either of the
-fully-developed contrast models, there is a benefit to the representativeness
-mechanism that is independent from any interaction with a hierarchical Bayesian
-framework.
+$AIC=6953$ for the same data excluding the first trials. When we fit the model
+to data from Experiments 1,2 and 3, we find that $L = -6301$, $AIC = 12606$.
+These results suggest that the predictive advantages to including the
+representativeness mechanism is not limited to a hierarchical Bayesian model,
+but can also be found when applied to an exemplar model. Although its
+performance is not as strong as either of the fully-developed contrast models,
+there is a benefit to the representativeness mechanism that is independent from
+any interaction with a hierarchical Bayesian framework.
 
-Ultimately, the source of the discrepancy between the performance of the two
-contrast mechanisms in category generation is still not entirely clear. Our
-results could be an indication of a fundamental difference between the processes
-involved where exemplar dissimilarity is a larger factor under certain category
-configurations while representativeness exerts more influence in others.
-Alternatively, it is possible they are both approximating some factor that we
-still have not fully identified. While a thorough investigation is beyond the
-scope of the current article, the preliminary results of this section indicate
-that further work to disentangle these two mechanisms would be promising. In the
-following section, we explore some other limitations of the current work and
-provide more recommendations for future research.
+Ultimately, it appears that there is no single model that can capture the
+entirety of our empirical data. While the representativeness model, and indeed
+the representativeness mechanism itself, offers a predictive advantage in
+category generation across all out models, PACKER performs better when
+accounting for data from the Corner conditions. While we have established that contrast
+mechanisms are essential in modeling category generation, there is no conclusive
+evidence that one form of contrast is superior to the other across all
+conditions. 
+%Xian: Consider rewriting paragraph if there's time.
 
 \subsection{Limitations and Future Directions} 
 
@@ -2290,143 +2325,40 @@ Normal}(y_i; \mu, \Sigma) \right \} }
 where $\theta$ is a response determinism parameter and ${\rm Normal}(y; \mu,
 \Sigma)$ denotes a multivariate Normal density evaluated at $y$.
 
+\newpage
+\section{Representativeness Model in Toroidal Space.}
+\label{ap:wrapgauss}
+
+Assuming a single bounded feature, we can easily represent the probability
+density of a function at any point $x$ on a line as $f(x)$. With a single
+unbounded feature, the points $x$ are mapped onto a unit circle with the
+corresponding $f(x)$ ``wrapped'' around the circle. More formally, we can
+represent the probability density along a wrapped axis $f'(x)$ as:
+\begin{align}
+f'(x) &= ... + f(x-4\pi) + f(x-2\pi) + f(x) + f(x+2\pi) + f(x+4\pi) + ...\\
+     &= \sum_{i=-\infty}^{\infty} f(x + 2\pi i)
+\end{align}
+
+We implement the wrapped axis in the representativeness model when
+calculating the multivariate Gaussian components of the representativeness equation
+$R(x,h)$ (Equation \ref{eq:representativeness} of the main text.) Specifically,
+the probability density of the Gaussian component along a single wrapped axis can be computed as:
+\begin{align}
+p'(x|h) = \sum_{i=-\infty}^{\infty} p(x + 2\pi i|h)
+\end{align}
+where $p(.|h)$ represents the probability density of the Gaussian component $h$
+on a line (i.e., not wrapped around a unit circle.)
+
+In practice, we can approximate the infinite summation by constraining $i$
+within a limited range (e.g., $[-50,50]$). For increased efficiency, we can also
+approximate $p'(x|h)$ by stopping the summation once the ratio of the maximum
+and minimum values of $p(x + 2\pi i|h)$ computed thus far is large enough (e.g.,
+10,000.) For our modeling exercises here we impose both contraints, although the
+first constraint shows some redundancy since we find that $i$ rarely, if ever,
+exceeds a value of 4. Given the unimodal nature of the Gaussian distribution,
+this procedure allows for comparatively efficient approximation of the wrapped
+distribution without needing to compute the infinite sum.
+
 
 \end{document}
 
-\subsection{Finding Contrast Effects in Prior Work}
-
-Although existing accounts of category generation broadly overlook the role of
-category contrast in determining what is novel versus familiar, it was
-implicitly assumed that learners in previous experiments were {\em successful}
-in creating new categories. Thus, if contrast plays a robust role in category
-genration, its effects should be discernable within the experimental results of
-these studies. To provide a test of the influence of category contrast within
-existing data, we conducted a novel analysis of Experiment 3 from
-\cite{jern2013probabilistic}.\footnote{Although \cite{jern2013probabilistic}
-	reported four experiments, we focus on Experiment 3 because their first two
-	experiments tested generation of items into known categories, and their fourth
-	experiment was identical to Experiment 3 but with a restricted generation
-	space.}
-
-Participants in their experiment were exposed to members of two
-experimenter-defined categories of `crystals' varying in hue, saturation, and
-size. Each category possessed a unique hue, but varied in saturation and size:
-In the `Positive' condition, there was a positive correlation between these
-features (i.e., larger sized crystals were more saturated), and in the
-`Negative' condition this relation was reversed. In the `Neutral' condition,
-there was no correlation between saturation and size. After learning about the
-categories from each condition, participants were asked to generate six
-exemplars belonging to a novel class. As noted above,
-\cite{jern2013probabilistic} found that the generated categories tended to
-follow the distributional properties of the experimenter-defined categories:
-Generated categories were tightly distributed along the hue feature, and
-possessed the same saturation-size correlations as in the learned categories.
-\cite{jern2013probabilistic}, however, did not analyze or discuss how the
-generated categories {\em differed} from the experimenter-defined categories.
-
-Because each experimenter-defined category in the \cite{jern2013probabilistic}
-experiment possessed a distinct hue shared by all members of the category, it is
-sensible that participants might generate a category with a hue distinct from
-the experimenter-provided categories. If category generation were influenced by
-category contrast in this way, the hues of generated categories should be
-systematically different from those of the experimenter-defined categories.
-Unfortunately, stimulus hue was encoded and presented in the
-Hue-Saturation-Value (HSV) color space, which is device-dependent and not
-perceptually normed such that perceived color similarity corresponds to
-proximity in the color space (as opposed to a color space such as CIELAB that is
-device-independent and equidistant sets of points correspond to pairs of colors
-that have the same perceptual similarity; \citealp{wyszecki1967}). Further, they
-did not calibrate their monitor, and so we cannot know the precise colors
-presented to participants. As \cite{jern2013probabilistic} were interested in
-relations between the saturation and length of examples in generated into novel
-categories, these issues do not undercut their analyses and results. However,
-these issues pose a significant challenge to evaluating contrast between the
-experimenter-defined and participant-generated categories along the hue
-dimension. It is plausible that two uncalibrated monitors could display the same
-HSV color and the colors be perceived in different color categories (especially
-for color boundaries that vary over lightness, such as the yellow-brown
-boundary).
-
-Although we cannot know the precise colors that were displayed or perceived, we
-can still analyze their results from a coarse perspective to see whether there
-is preliminary support for contrast. To do so, we binned all possible hues into
-one of eight uniformly-spaced color groups: \{{\em Red}: $0-0.063$, $0.938-1$,
-{\em Yellow}: $0.063-0.188$, {\em Yellow-Green}: $0.188-0.313$, {\em
-	Green-Teal}: $0.313-0.438$, {\em Teal}: $0.438-0.563$, {\em Teal-Blue}:
-$0.563-0.688$, {\em Purple}: $0.688-0.813$, {\em Pink}: $0.813-0.938$\}. In the
-\cite{jern2013probabilistic} experiment, the hue of each experimenter-defined
-category was selected from one of six possible values, each of which falls into
-one of the color groups above (two color groups were not used as a possible hue
-for the experimenter-defined categories). By categorizing the
-participant-generated crystals likewise, we can obtain a broad measure of
-category contrast by determining the proportion of participant-generated
-crystals that fall into the same groups as the experimenter-defined categories:
-If contrast influences the hues of the generated categories, we should observe
-minimal overlap between in the color groupings.
-
-
-
-\begin{figure}
-	\begin{center} \inputpgf{figs/}{jk13-huecontrast.pgf}
-		\caption{Analysis of data from \cite{jern2013probabilistic}, Experiment
-			3. Plotted is the number of generated items that share a color group with one of
-			the experimenter-defined classes. The ``Expected'' data follows a Binomial
-			distribution with $p = 2/8 = 1/4$, given there were two experimenter-defined
-			classes, and eight color groups.}
-		\label{fig:jk13-huecontrast}
-	\end{center}
-\end{figure}
-
-These data, shown in Figure \ref{fig:jk13-huecontrast}, reveal a clear pattern:
-The majority of participants in each condition ($n = 22$) generated categories
-possessing entirely distinct hues; with 0/6 exemplars sharing a hue with the
-experimenter-defined categories. These results can be compared to the
-predictions of a Binomial model, which proposes that participants generate hues
-at random. That is, if hue selection is not systematic, the probability that any
-given example will lie in the same color group as an experimenter-defined
-category is given by a Binomial distribution with $p = 2/8=1/4$, as there were
-two experimenter-defined categories and eight possible color groups. Chi-square
-goodness-of-fit tests reveal that the observed distribution in each condition is
-highly inconsistent with the hues being chosen at random, all
-$\chi^2(6,N=22)>200$, $p < .001$. Participants tended to generate items that were
-perceptually distinct from the categories they had learned, and were less likely
-to generate hues possessed by members of the experimenter-defined categories.
-
-It is possible, however, that this data can be explained by a process that does
-not involve contrast. Specifically, since participants were trained on exemplars
-that share the same hue within a category, it is plausible that they generate
-exemplars that all share a common hue. If this were the case, given a $6/8 = .75$
-probability that a hue distinct from the experimenter-defined categories is
-selected, there is a corresponding $.75$ probability (or about 17 out of 22
-participants) that the generated category will have no exemplars that share a
-hue with any  of the experimenter-defined categories. In addition, that there is
-a $2/8 = .25$ probability (about 6 out of 22 participants) that the generated
-category will have all six exemplars that share a hue with any of the
-experimenter-defined categories. This prediction of regularity across categories
-is much closer to the data than the prediction from a Binomial model and does
-not require any mechanism of category contrast.
-
-However, upon analyzing the consistency of hues in the generated categories, it
-is clear that participants do not generally produce categories with entirely
-similar hues across all exemplars. Specifically, only 55\%  of all generated
-categories comprised exemplars with a common hue. Consequently, the assumption
-of regularity across categories may be inappropriate for this data set, leaving
-the contrast-based explanation as the most plausible for our purposes.
-
-Re-analyzing the results from \cite{jern2013probabilistic} provides some
-corroborating support for contrast playing a role in category generation. Taken
-alongside the analyses reported by \cite{jern2013probabilistic}, our analysis
-suggests that generated categories tend to be distinct from {\em and}
-distributionally similar to what is already known. However, it is worth noting
-that our analysis is still limited: The color groups defined above are
-imprecise, and it is not clear that our color grouping is consistent with the
-psychological color boundaries perceived by participants. While we did obtain
-similar results using a variety of alternative groupings, the hue dimension used
-in the \cite{jern2013probabilistic} study does not lend itself straightforwardly
-to the computation of similarities, and thus we cannot be certain of whether our
-coding accurately approximates the psychological space of the stimuli. This
-precludes traditional applications of categorization models to their data as it
-is usually necessary to encode objects in psychological space in order to
-accurately determine the similarity between objects. By consequence, although
-these results likely indicate that contrast exerts {\em some} influence, they do
-not precisely describe the nature of that influence. 
