@@ -38,8 +38,8 @@ samples = dict(
     # ]
 )
 
-fh, ax = plt.subplots(2,3, figsize = [4, 3])#plt.subplots(2,4, figsize = [3.2, 1.6])
-#fh, ax = plt.subplots(1,6, figsize = [8, 4])#plt.subplots(2,4, figsize = [3.2, 1.6])
+#fh, ax = plt.subplots(2,3, figsize = [4, 3])#plt.subplots(2,4, figsize = [3.2, 1.6])
+fh, ax = plt.subplots(1,6, figsize = [8, 4])#plt.subplots(2,4, figsize = [3.2, 1.6])
 #fh, ax = plt.subplots(1,8, figsize = [8.1, 1])
 
 ax = ax.flat
@@ -56,7 +56,7 @@ for k, v in samples.items():
          
 
 plt.tight_layout(pad=-0.0, w_pad=-0.0)
-fh.savefig('beta.samples.pdf', bbox_inches = 'tight', transparent = True)
+fh.savefig('beta.samples_16.pdf', bbox_inches = 'tight', transparent = True)
 #fh.savefig('beta.samples.png', bbox_inches = 'tight', transparent = True)
 
 # path = '../../../Manuscripts/cogsci-2017/figs/beta.samples.pgf'

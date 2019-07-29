@@ -9,7 +9,53 @@ headheight=15pt]{geometry} \usepackage{amsmath, listings}
 \section{The PACKER Model: Producing Alike or Contrasting Knowledge with
 Exemplar Representations}
 
+This model assumes that people represent categories as exemplars in a
+multidimensional space, and that generation is constrained by both similarity to
+members of the category being generated \textit{and} dissimilarity to members of
+other categories. The model assumes people generate categories that are
+dissimilar to known categories and have strong within-class similarity.
 
+The similarity between exemplars $x_i$ and $x_j$ is computed using Shepard's
+law:
+
+\begin{equation} s\left(x_i,x_j\right) = \exp \left\{ -c \left[\sum_{k}{ w_k
+\left| x_{ik} - x_{jk} \right|^r }\right]^{1/r} \right\}
+\label{eq:similarity}
+\end{equation}
+
+When prompted to make a generation decision, participants are thought to
+consider both similarity to examples from other categories as well as similarity
+to examples in the target category. More formally, the aggregated similarity $a$
+between candidate $y$ and the model's stored exemplars $x$ can be computed as:
+
+\begin{equation} a(y, x) = \sum_j{f(x_j) s(y, x_j)}
+\end{equation}
+
+Where $f(x_j)$ is a function specifying each stored example's degree of
+contribution toward generation. Although $f(x_j)$ may be set arbitrarily, in
+PACKER it is set according to class assignment. For known members of the target
+category, $f(x_j) = \theta_t$. For members of contrast categories, $f(x_j) =
+-\theta_c$. $\theta_t$ and $\theta_c$ are free parameters ($0 \leq \theta_c, \theta_t$)
+respectively controlling the within-class similarity and between-class
+dissimilarity: $\theta_t > 0, \theta_c = 0$ produces exclusive consideration of same-category
+members, and $\theta_t = 0, \theta_c > 0$ produces exclusive consideration of opposite-category
+members. When both $\theta_t = \theta_c$, the similarity to contrast categories is
+effectively subtracted from the similarity to the target category.
+
+The probability that a given item $y$ will be generated given the model's memory
+$x$ is computed using relative summed similarity values across all generation
+candidates $y_i$:
+
+\begin{equation} p(y) = \dfrac { \exp \left \{ \cdot a \left( y, x
+\right) \right \} } { \sum_i{ \exp \left \{  \cdot a \left( y_i, x \right)
+\right\} } }
+\label{eq:packer-choice}
+\end{equation}
+
+
+
+
+\subsection{An Older Version of PACKER: Didn't make it to any of the revisions, but was briefly considered}
 This model assumes that people represent categories as exemplars in a
 multidimensional space, and that generation is constrained by both similarity to
 members of the category being generated \textit{and} dissimilarity to members of

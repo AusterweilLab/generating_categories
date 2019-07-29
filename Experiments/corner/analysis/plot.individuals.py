@@ -7,6 +7,8 @@ import pickle
 execfile('Imports.py')
 import Modules.Funcs as funcs
 
+savefig = False
+
 pd.set_option('precision', 2)
 
 # import data
@@ -22,7 +24,8 @@ savedir = 'individuals'
 gentypeStr = ['N','B','C'] #not alpha, only beta, beta-gamma
 gentypeStrDisp = ['A\'','B','C'] #not alpha, only beta, beta-gamma
 gentypeCols = [[.3,0,.5],[0,0,.5],[0,.5,0]]
-f, ax= plt.subplots(1,1, figsize=(1.6, 1.6))
+if savefig:
+    f, ax= plt.subplots(1,1, figsize=(1.6, 1.6))
 
 var_thresh = .25
 cor_thresh = .7
@@ -72,15 +75,18 @@ for i, row in info.iterrows():
         printstr += gentypeStr[ii+1] + ' ' + group + '\n'
         groupcount[group] += 1
 
-    funcs.plotclasses(ax, stimuli, palphas, pbetas_all, betastr=betastr,betacol = betacol)
+
     data_arr += [[pid, group]] #not quite accurate for gammas?
-    fname = os.path.join(savedir,condition + '-' + gentypeStr_p + '-' + str(pid) + '.png')
-    ax.text(.9,1.25,str(pid))
-    ax.text(-.9,1.0,printstr)
-    f.savefig(fname, bbox_inches='tight', transparent=False)
-    plt.cla()
+    if savefig:
+        funcs.plotclasses(ax, stimuli, palphas, pbetas_all, betastr=betastr,betacol = betacol)
+        fname = os.path.join(savedir,condition + '-' + gentypeStr_p + '-' + str(pid) + '.png')
+        ax.text(.9,1.25,str(pid))
+        ax.text(-.9,1.0,printstr)    
+        f.savefig(fname, bbox_inches='tight', transparent=False)
+        plt.cla()
 
 print(groupcount)
 data = pd.DataFrame(columns=('participant','betagroup'),data = data_arr)
+#print(data)
 with open('individual_group_counts.p','wb') as f:
     pickle.dump(data,f)

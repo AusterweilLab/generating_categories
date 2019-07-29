@@ -114,7 +114,6 @@ class ConjugateJK13(HierSamp):
                 density = self._wrapped_density(target_dist,stimuli,wrap_ax)
             else:
                 density = target_dist.pdf(stimuli)
-
                 
         if task is 'generate': 
             # NaN out known members - only for task=generate            
@@ -215,7 +214,7 @@ class RepresentJK13(HierSamp):
         self.prior_variance[inds] *= self.wts
         self.prior_variance *= self.domain_variance_bias
 
-    def get_musig(self, stimuli, category):
+    def get_musig(self, stimuli, category,wrap_ax=None):
         # random response if there are no target members.
         target_is_populated = any(self.assignments == category)
 
@@ -229,27 +228,61 @@ class RepresentJK13(HierSamp):
 
             mu = self.category_mean_bias * self.category_prior_mean #isn't this more correct?
             Sigma = self.Domain * self.category_variance_bias
-        else:            
-            # get target category stats
-            xbar = np.mean(self.categories[category], axis = 0)
+        else:
             n = self.nexemplars[category]
+            # get target category stats
+            if not wrap_ax is None:
+                wrap_ax = int(wrap_ax)
+                ax_max = np.max(stimuli,axis=0)[wrap_ax]
+                ax_min = np.min(stimuli,axis=0)[wrap_ax]
+                ax_range = ax_max-ax_min
+                ax_steps = stimuli[1]-stimuli[0]
+                ax_step = abs(ax_steps[ax_steps>0][0]) #Kind of hacky but will work if each step of stimuli increment is the same, which is fairly safe to assume I hope??
+                #ax_range += ax_step #Min diff is at least one step
+                cat = self.categories[category].copy()
+                stim_range = np.max(cat[:,wrap_ax]) - np.min(cat[:,wrap_ax])
+                if stim_range>(ax_range/2):                    
+                    #Stimuli outside half the range get adjusted up to the first wrap
+                    new_exm = cat[cat[:,wrap_ax]>=0,:]
+                    shift_exm = cat[cat[:,wrap_ax]<0,:]
+                    #Adj the wrap_axis of shifted exm
+                    shift_exm[:,wrap_ax] = shift_exm[:,wrap_ax] + ax_range + ax_step
+                    new_exm = np.concatenate([new_exm,shift_exm],axis=0)
+                    xbar = np.mean(new_exm,axis=0)
+                    #Place mean in the current range of stimuli
+                    xbar[wrap_ax] = xbar[wrap_ax] - ax_range
+                else:
+                    new_exm = cat
+                    xbar = np.mean(cat, axis=0)
+                    
+                #Now deal with sigma
+                if n < 2:
+                    C = np.zeros((self.nfeatures,self.nfeatures))
+                else:
+                    C = np.cov(new_exm,rowvar=False)
+            else:                                                        
+                xbar = np.mean(self.categories[category], axis = 0)
+
+                if n < 2:
+                    C = np.zeros((self.nfeatures, self.nfeatures))
+                else:
+                    C = np.cov(self.categories[category], rowvar = False)                
 
             # compute mu for target category
             mu =  self.category_mean_bias * self.category_prior_mean
             mu += n * xbar
             mu /= self.category_mean_bias + n
 
-            if n < 2:
-                C = np.zeros((self.nfeatures, self.nfeatures))
-            else:
-                C = np.cov(self.categories[category], rowvar = False)
-
             # compute target category Sigma
             ratio = (self.category_mean_bias * n) / (self.category_mean_bias + n)
             Sigma = ratio * np.outer(xbar - mu, xbar - mu)
             Sigma += self.Domain * self.category_variance_bias + C
             Sigma /= self.category_variance_bias + n
-
+            print(ratio) #same
+            print(C) #same
+            print(self.Domain)
+            print(self.category_variance_bias)
+            print(Sigma)
         return (mu,Sigma)
 
     def get_generation_ps(self, stimuli, category, task='generate', seedrng = False, wrap_ax = None):
@@ -257,7 +290,7 @@ class RepresentJK13(HierSamp):
             np.random.seed(234983) #some arbitrary seed value here
 
         target_is_populated = any(self.assignments == category)                
-        mu,Sigma = self.get_musig(stimuli, category)
+        mu,Sigma = self.get_musig(stimuli, category,wrap_ax)
                 
         # get relative densities
         if np.isnan(Sigma).any() or np.isinf(Sigma).any():
@@ -272,7 +305,7 @@ class RepresentJK13(HierSamp):
                 likelihood_beta = target_dist_beta.pdf(stimuli)
 
             #Get parameters for category beta (alternative hypothesis)
-            mu_alpha, Sigma_alpha = self.get_musig(stimuli, 1-category)
+            mu_alpha, Sigma_alpha = self.get_musig(stimuli, 1-category,wrap_ax)
             target_dist_alpha = multivariate_normal(mean = mu_alpha, cov = Sigma_alpha)
             if not wrap_ax is None:
                 likelihood_alpha = self._wrapped_density(target_dist_alpha,stimuli,wrap_ax)
@@ -291,7 +324,9 @@ class RepresentJK13(HierSamp):
             #The general equation is density = likelihood_beta/sum(likelihood_alpha*prior), where the sum is over all non-beta categories, but I'm leaving out the prior since it's just 1
             #As a quick hack to revert ConjugateJK13 to how it was in the manuscript prior to April 2018, uncomment the line below
             #density = target_dist_beta.pdf(stimuli)
-            
+        print(mu_alpha)
+        print(Sigma_alpha)
+        print(np.round(np.reshape(likelihood_alpha,(9,9)),3))
         if task is 'generate': 
             # NaN out known members - only for task=generate
             if target_is_populated:
@@ -342,4 +377,144 @@ class RepresentJK13(HierSamp):
 
 
 
+
+class NegatedSpace(HierSamp):
+    """
+    'Dumb' implementation of a negated-space model
+    """
+
+    model = "Negated Space"
+    modelshort = "Neg. Sp."
+    modelprint = "Neg. Sp."
+    num_features = 2 #hard code on first init, then update whenever trials come in
+    parameter_names = ['determinism' ]
+    parameter_rules = dict(
+            determinism = dict(min = 0),
+        )
+
+
+    @staticmethod
+    def _make_rvs():
+        """ Return random parameters """
+        nf = NegatedSpace.num_features
+        return [
+            np.random.uniform(0.1, 6.0) # determinism
+        ]
+    
+
+    def _update_(self):
+        """
+        This model additionally requires setting of the domain 
+        parameters and priors    on update.
+        """
+
+        # standard update procedure
+        super(NegatedSpace, self)._update_()
+
+        # # Get observed learned category covariance
+        # C = []
+        # for y in range(self.ncategories):
+        #     if self.nexemplars[y] < 2:
+        #         # If less than 2 trained exemplars, no covariance matrix
+        #         C += None
+        #     C += np.cov(self.categories[y],rowvar=False)
+
+        # # set prior mean.
+        # self.category_prior_mean = np.zeros(self.nfeatures)
+
+        # # infer domain Sigma
+        # self.Domain = np.array(self.prior_variance, copy=True)
+        # for y in range(self.ncategories):
+        #     if self.nexemplars[y] < 2: continue
+        #     C = np.cov(self.categories[y], rowvar = False)
+        #     self.Domain += C
+
+        #update number of features
+        self.num_features = self.nfeatures
+
+    # def _wts_handler_(self):
+    #     """
+    #         Converts wts into a covaraince matrix.
+    #         Weights are implemented as differences in the assumed [prior]
+    #         Domain covariance.
+    #     """
+    #     super(ConjugateJK13, self)._wts_handler_()
+    #     self.prior_variance = np.eye(self.nfeatures) * self.nfeatures
+    #     inds = np.diag_indices(self.nfeatures)
+    #     self.prior_variance[inds] *= self.wts
+    #     self.prior_variance *= self.domain_variance_bias
+
+    def get_musig(self, stimuli, category):
+        # get target category stats
+        mu = np.mean(self.categories[category], axis = 0)
+        n = self.nexemplars[category]
+        if n < 2:
+            Sigma = np.zeros((self.nfeatures, self.nfeatures))
+        else:
+            Sigma = np.cov(self.categories[category], rowvar = False)
+
+        # compute mu for target category
+        # mu =  self.category_mean_bias * self.category_prior_mean
+        # mu += n * xbar
+        # mu /= self.category_mean_bias + n
+
+        # compute target category Sigma
+        # ratio = (self.category_mean_bias * n) / (self.category_mean_bias + n)
+        # Sigma = ratio * np.outer(xbar - mu, xbar - mu)
+        # Sigma += self.Domain * self.category_variance_bias + C
+        # Sigma /= self.category_variance_bias + n
+
+        return (mu,Sigma)
+
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax = None):
+        # random response if there are no target members.
+        target_is_populated = any(self.assignments == category)
+        if not target_is_populated:
+            ncandidates = stimuli.shape[0]
+            return np.ones(ncandidates) / float(ncandidates)
+        mus = []
+        Sigmas = []
+        for ci in range(self.ncategories):
+            mu,Sigma = self.get_musig(stimuli, ci)
+            # get relative densities
+            if np.isnan(Sigma).any() or np.isinf(Sigma).any():
+                #target_dist = np.ones(mu.shape) * np.nan
+                density = np.ones(len(stimuli)) * np.nan
+            else:
+                target_dist = multivariate_normal(mean = mu, cov = Sigma)
+                if not wrap_ax is None:
+                    density = self._wrapped_density(target_dist,stimuli,wrap_ax)
+                else:
+                    density = target_dist.pdf(stimuli)
+                    #Continue implementing dumb model...Xian 150719
+            mus += mu
+            Sigmas += Sigma
+                
+
+                
+        if task is 'generate': 
+            # NaN out known members - only for task=generate            
+            known_members = Funcs.intersect2d(stimuli, self.categories[category])
+            density[known_members] = np.nan
+            ps = Funcs.softmax(density, theta = self.determinism)
+        elif task is 'assign' or task is 'error':
+            # get relative densities
+            mu_flip, Sigma_flip = self.get_musig(stimuli,1-category)
+            if np.isnan(Sigma_flip).any() or np.isinf(Sigma_flip).any():
+                #target_dist_flip = np.ones(mu_flip.shape) * np.nan
+                density_flip = np.ones(len(stimuli)) * np.nan
+            else:
+                target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)
+                if not wrap_ax is None:
+                    density_flip = self._wrapped_density(target_dist_flip,stimuli,wrap_ax)
+                else:
+                    density_flip = target_dist_flip.pdf(stimuli)
+
+            ps = []
+            for i in range(len(density)):
+                density_element = np.array([density[i],
+                                            density_flip[i]])
+                ps_element = Funcs.softmax(density_element, theta = self.determinism)
+                ps = np.append(ps,ps_element[0])                        
+        return ps
 
