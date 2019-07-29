@@ -128,7 +128,7 @@ class Model(object):
     @abc.abstractmethod
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax=None): pass
 
-    def __init__(self, categories, params, stimrange=[{'min':-1,'max':1},{'min':-1,'max':1}]):
+    def __init__(self, categories, params, stimrange=[{'min':-1,'max':1},{'min':-1,'max':1}],stimstep = [.25,.25],wrap_ax=None):
         """
         Initialize the model. "categories" should be a list of numpy
         arrays with the same number of columns (features). Items in 
@@ -142,6 +142,8 @@ class Model(object):
         the stimrange attribute of a constructed Trialset object. It should
         be a list with length = nfeatures, each element of the list describing
         the min and max of that feature.
+        
+        'stimstep' is also option and is the increment of each discrete unit on each feature.
                 
         """
         
@@ -157,7 +159,9 @@ class Model(object):
         self.nfeatures = self.categories[0].shape[1]
         self.params = params
         self.stimrange = stimrange
-                
+        self.wrap_ax = wrap_ax
+        self.stimstep = stimstep
+        
         # setup functions
         self._param_handler_()
         self._wts_handler_()

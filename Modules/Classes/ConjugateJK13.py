@@ -189,15 +189,24 @@ class RepresentJK13(HierSamp):
         # standard update procedure
         super(RepresentJK13, self)._update_()
 
-        # set prior mean.
-        self.category_prior_mean = np.zeros(self.nfeatures)
-
+        #Check if stimuli and wrap_ax info already exists as an attribute of the model
+        #Otherwise, use defaults
+        
         # infer domain Sigma
         self.Domain = np.array(self.prior_variance, copy=True)
-        for y in range(self.ncategories):
-            if self.nexemplars[y] < 2: continue
-            C = np.cov(self.categories[y], rowvar = False)
+        for y in range(self.ncategories):            
+            #if self.nexemplars[y] < 2: continue
+            #C = np.cov(self.categories[y], rowvar = False)
+            (xbar,C) = self.catStats(y)
             self.Domain += C
+
+        # set prior mean.
+        #If an axis is wrapped, however, set the prior mean to be center of the first populated category
+        if self.wrap_ax is None:
+            self.category_prior_mean = np.zeros(self.nfeatures) 
+        else:
+            self.category_prior_mean = xbar
+        
 
         #Update num features for correct parm rules
         self.num_features = self.nfeatures
@@ -214,10 +223,51 @@ class RepresentJK13(HierSamp):
         self.prior_variance[inds] *= self.wts
         self.prior_variance *= self.domain_variance_bias
 
+
+    def catStats(self,category):
+        # get target category stats
+        #stimuli = self.stimuli
+        wrap_ax = self.wrap_ax
+        n = self.nexemplars[category]
+        if not wrap_ax is None:
+            wrap_ax = int(wrap_ax)
+            ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+            ax_step = self.stimstep[0]
+            cat = self.categories[category].copy()
+            stim_range = np.max(cat[:,wrap_ax]) - np.min(cat[:,wrap_ax])
+            if stim_range>(ax_range/2):                    
+                #Stimuli outside half the range get adjusted up to the first wrap
+                new_exm = cat[cat[:,wrap_ax]>=0,:]
+                shift_exm = cat[cat[:,wrap_ax]<0,:]
+                #Adj the wrap_axis of shifted exm
+                shift_exm[:,wrap_ax] = shift_exm[:,wrap_ax] + ax_range + ax_step
+                new_exm = np.concatenate([new_exm,shift_exm],axis=0)
+                xbar = np.mean(new_exm,axis=0)
+                #Place mean in the current range of stimuli
+                xbar[wrap_ax] = xbar[wrap_ax] - ax_range - ax_step
+            else:
+                new_exm = cat
+                xbar = np.mean(cat, axis=0)
+            #Now deal with sigma
+            if n < 2:
+                C = np.zeros((self.nfeatures,self.nfeatures))
+            else:
+                C = np.cov(new_exm,rowvar=False)
+        else:                                                        
+            xbar = np.mean(self.categories[category], axis = 0)
+
+            if n < 2:
+                C = np.zeros((self.nfeatures, self.nfeatures))
+            else:
+                C = np.cov(self.categories[category], rowvar = False)                
+
+        return (xbar,C)
+    
     def get_musig(self, stimuli, category,wrap_ax=None):
+        self.stimuli = stimuli
+        self.wrap_ax = wrap_ax
         # random response if there are no target members.
         target_is_populated = any(self.assignments == category)
-
         if not target_is_populated:
             mu = []
             #randomly sample mu from uniform                        
@@ -230,44 +280,7 @@ class RepresentJK13(HierSamp):
             Sigma = self.Domain * self.category_variance_bias
         else:
             n = self.nexemplars[category]
-            # get target category stats
-            if not wrap_ax is None:
-                wrap_ax = int(wrap_ax)
-                ax_max = np.max(stimuli,axis=0)[wrap_ax]
-                ax_min = np.min(stimuli,axis=0)[wrap_ax]
-                ax_range = ax_max-ax_min
-                ax_steps = stimuli[1]-stimuli[0]
-                ax_step = abs(ax_steps[ax_steps>0][0]) #Kind of hacky but will work if each step of stimuli increment is the same, which is fairly safe to assume I hope??
-                #ax_range += ax_step #Min diff is at least one step
-                cat = self.categories[category].copy()
-                stim_range = np.max(cat[:,wrap_ax]) - np.min(cat[:,wrap_ax])
-                if stim_range>(ax_range/2):                    
-                    #Stimuli outside half the range get adjusted up to the first wrap
-                    new_exm = cat[cat[:,wrap_ax]>=0,:]
-                    shift_exm = cat[cat[:,wrap_ax]<0,:]
-                    #Adj the wrap_axis of shifted exm
-                    shift_exm[:,wrap_ax] = shift_exm[:,wrap_ax] + ax_range + ax_step
-                    new_exm = np.concatenate([new_exm,shift_exm],axis=0)
-                    xbar = np.mean(new_exm,axis=0)
-                    #Place mean in the current range of stimuli
-                    xbar[wrap_ax] = xbar[wrap_ax] - ax_range
-                else:
-                    new_exm = cat
-                    xbar = np.mean(cat, axis=0)
-                    
-                #Now deal with sigma
-                if n < 2:
-                    C = np.zeros((self.nfeatures,self.nfeatures))
-                else:
-                    C = np.cov(new_exm,rowvar=False)
-            else:                                                        
-                xbar = np.mean(self.categories[category], axis = 0)
-
-                if n < 2:
-                    C = np.zeros((self.nfeatures, self.nfeatures))
-                else:
-                    C = np.cov(self.categories[category], rowvar = False)                
-
+            (xbar,C) = self.catStats(category)            
             # compute mu for target category
             mu =  self.category_mean_bias * self.category_prior_mean
             mu += n * xbar
@@ -278,11 +291,6 @@ class RepresentJK13(HierSamp):
             Sigma = ratio * np.outer(xbar - mu, xbar - mu)
             Sigma += self.Domain * self.category_variance_bias + C
             Sigma /= self.category_variance_bias + n
-            print(ratio) #same
-            print(C) #same
-            print(self.Domain)
-            print(self.category_variance_bias)
-            print(Sigma)
         return (mu,Sigma)
 
     def get_generation_ps(self, stimuli, category, task='generate', seedrng = False, wrap_ax = None):

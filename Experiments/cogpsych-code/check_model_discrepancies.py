@@ -37,11 +37,20 @@ modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]
 ll = dict()
 if saveGold:
     #Save current state as gold standard
-    #First, generate loglikelihoods
-    for model in modelList:
-        ll[model.model] =  trials.loglike(best_params[model.model],model,parmxform=False,seedrng=True)
-    with open(goldfile,'wb') as f:
-        pickle.dump(ll,f)
+    promptstr = ('About to overwrite gold state. Continue? (y/n)\n')
+    import platform
+    v = platform.python_version()
+    if int(v[0])==2:
+        r = raw_input(promptstr)
+    elif int(v[0])==3:
+        r = input(promptstr)
+    if r == 'y':
+        print('\nWriting new gold state...')
+        #First, generate loglikelihoods
+        for model in modelList:
+            ll[model.model] =  trials.loglike(best_params[model.model],model,parmxform=False,seedrng=True)
+        with open(goldfile,'wb') as f:
+            pickle.dump(ll,f)
         
 #Load gold state and compare
 with open(goldfile,'rb') as f:

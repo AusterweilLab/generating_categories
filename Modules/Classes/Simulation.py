@@ -259,7 +259,7 @@ class Trialset(object):
                 # ps0 = np.zeros(ps1.shape)
                 if task == 'generate':
                     # compute probabilities of generating exemplar in cat 1
-                    ps = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
+                    ps = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
                     ps_idx = np.where(trial['wrap_ax']==wrap)[0]
                     #If it's a scalar, take it out of the array
                     if len(ps_idx)==1:
@@ -267,10 +267,10 @@ class Trialset(object):
                     ps_add = np.array(ps[trial['response'][ps_idx]])
                 elif task=='assign':
                     #Compute probabilities of assigning exemplar to cat 0
-                    ps0 = model(categories, params, self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
+                    ps0 = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
                     #Compute probabilities of assigning exemplar to cat 1
                     ps1 = model(categories, params,
-                                self.stimrange).get_generation_ps(self.stimuli,
+                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli,
                                                                   1,self.task,seedrng = seedrng,wrap_ax=wrap)
 
 
@@ -307,10 +307,10 @@ class Trialset(object):
                     #idc_err = trial['response'][0]
                     #Compute probabilities of assigning exemplar to cat 0
                     ps0 = model(categories, params,
-                                self.stimrange).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
+                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
                     #Compute probabilities of assigning exemplar to cat 1
                     ps1 = model(categories, params,
-                                self.stimrange).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
+                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
                     idc0 = trial['response'][0][trial['wrap_ax']==wrap]
                     idc1 = trial['response'][1][trial['wrap_ax']==wrap]
                     ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
@@ -333,7 +333,7 @@ class Trialset(object):
 
                         #Get entire probability space
                         ps = model(categories, params,
-                                   self.stimrange).get_generation_ps(self.stimuli,
+                                   self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli,
                                                                      i,self.task,seedrng = seedrng,wrap_ax=wrap)
                         if len(correctresp)>0:
                             correctps = np.concatenate([correctps,ps[correctresp]])
