@@ -186,13 +186,9 @@ class RepresentJK13(HierSamp):
         This model additionally requires setting of the domain 
         parameters and priors    on update.
         """
-
         # standard update procedure
         super(RepresentJK13, self)._update_()
 
-        #Check if stimuli and wrap_ax info already exists as an attribute of the model
-        #Otherwise, use defaults
-        
         # infer domain Sigma
         self.Domain = np.array(self.prior_variance, copy=True)
         for y in range(self.ncategories):            
@@ -207,8 +203,6 @@ class RepresentJK13(HierSamp):
             self.category_prior_mean = np.zeros(self.nfeatures) 
         else:
             self.category_prior_mean = xbar
-        
-
         #Update num features for correct parm rules
         self.num_features = self.nfeatures
 
@@ -226,8 +220,7 @@ class RepresentJK13(HierSamp):
 
 
     def catStats(self,category):
-        # get target category stats
-        #stimuli = self.stimuli
+        # Get empirical mean and cov
         wrap_ax = self.wrap_ax
         n = self.nexemplars[category]
         if not wrap_ax is None:
@@ -249,18 +242,15 @@ class RepresentJK13(HierSamp):
             else:
                 new_exm = cat
                 xbar = np.mean(cat, axis=0)
-            #Now deal with sigma
-            if n < 2:
-                C = np.zeros((self.nfeatures,self.nfeatures))
-            else:
-                C = np.cov(new_exm,rowvar=False)
         else:                                                        
             xbar = np.mean(self.categories[category], axis = 0)
-
-            if n < 2:
-                C = np.zeros((self.nfeatures, self.nfeatures))
-            else:
-                C = np.cov(self.categories[category], rowvar = False)                
+            new_exm = self.categories[category]
+            
+        #Now deal with sigma
+        if n < 2:
+            C = np.zeros((self.nfeatures, self.nfeatures))
+        else:
+            C = np.cov(new_exm, rowvar = False)                
 
         return (xbar,C)
     
@@ -340,11 +330,9 @@ class RepresentJK13(HierSamp):
                 prior = [1]
                 
             denom = 0
-            #denom2 = 0
             for ci in range(len(prior)):
                 if len(likelihood_alt)>0:
                     denom += likelihood_alt[ci] * prior[ci]
-                    #denom2 += likelihood_alt[ci] * prior_dens[ci]
                 else:
                     #If for whatever reason there is no alternative category
                     denom = 1
@@ -359,14 +347,9 @@ class RepresentJK13(HierSamp):
         elif task is 'assign' or task is 'error':
             # get relative densities
             if np.isnan(Sigma).any() or np.isinf(Sigma).any():
-                #target_dist_flip = np.ones(mu_flip.shape) * np.nan
                 density_flip = np.ones(len(stimuli)) * np.nan
             else:
-                #target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)
-                #density_flip = target_dist_flip.pdf(stimuli)                                
                 density_flip = np.log(likelihood_alt/likelihood_target)
-                
-                
             ps = []
             for i in range(len(density)):
                 density_element = np.array([density[i],
