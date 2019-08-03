@@ -906,3 +906,34 @@ def compress_chtc_parms(best_params_t):
             best_params[modelname][parmname] = parmval[i]
 
     return best_params
+
+def mvgamma(p,a):
+    #Multivariate Gamma function
+    from scipy.special import gamma
+    import numpy as np
+    if p == 1:
+        out = gamma(a)
+    elif p > 1:
+        out = (np.pi**((p-1)/2.)) * gamma(a) * mvgamma(p-1,a-(1/2.))
+    return out
+
+        
+def invwishartpdf(X,scale,nu):
+    #Weirdly, it looks like the default scipy.stats invwishart doesn't like the df (nu) being less than the number of dimensions p, even though wikipedia says that's ok as long as it's more than p-1? This is my attempt at producing invwishart pdfs without that constraint. Really basic stuff though - doesn't currently do any checks that the scale or psi are positive definite etc.
+    from numpy.linalg import det
+    import numpy as np
+    p = scale.shape[0]
+    if nu<p-1:
+        raise ValueError('The value of nu (%.3f) cannot be lower than the number of dimensions of scale matrix (%d) minus one.' % (nu,p))
+    numerator = det(scale)**(nu/2.)
+    denom = (2**(nu*p/2.)) * mvgamma(p,nu/2.)
+    x_co = det(X) ** (-(nu+p+1.)/2.)
+    #x_co_inv = det(X) ** ((nu+p+1.)/2)
+    #denom = (2**(nu*p/2)) * mvgamma(p,nu/2)
+    xinv = np.linalg.inv(X)
+    e_co = np.exp(-1/2. * np.trace(np.matmul(scale,xinv)))
+    tr = np.trace(np.matmul(scale,xinv))
+    
+    out = numerator/denom * x_co * e_co #numerator/denom/x_co * e_co #numerator/denom * x_co * e_co
+    return out
+

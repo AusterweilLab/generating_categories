@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from scipy.stats import multivariate_normal
+from scipy.stats import invwishart
 
 # imports from module
 import Modules.Funcs as Funcs
@@ -63,7 +64,7 @@ class ConjugateJK13(HierSamp):
 
     def _wts_handler_(self):
         """
-            Converts wts into a covaraince matrix.
+            Converts wts into a covariance matrix.
             Weights are implemented as differences in the assumed [prior]
             Domain covariance.
         """
@@ -275,8 +276,10 @@ class RepresentJK13(HierSamp):
             #     mu += [np.random.uniform(self.stimrange[nf]['min'],
             #                              self.stimrange[nf]['max'])]
             # mu = np.array(mu)
+            #mu = self.category_mean_bias * self.category_prior_mean #isn't this more correct?
+            mu = self.category_prior_mean #isn't this more correct?
+            # Need to think about how to handle the influence of the prior mean... -- implications on whether it's appropriate for ConjugateJK13 to be a uniform random sample without any members
 
-            mu = self.category_mean_bias * self.category_prior_mean #isn't this more correct?
             Sigma = self.Domain * self.category_variance_bias
         else:
             n = self.nexemplars[category]
@@ -306,35 +309,47 @@ class RepresentJK13(HierSamp):
             density = np.ones(len(stimuli)) * np.nan
         else:
             # #270418 Implementing representational draws
-            target_dist_beta = multivariate_normal(mean = mu, cov = Sigma)
+            target_dist_target = multivariate_normal(mean = mu, cov = Sigma)
             if not wrap_ax is None:
-                likelihood_beta = self._wrapped_density(target_dist_beta,stimuli,wrap_ax)
+                likelihood_target = self._wrapped_density(target_dist_target,stimuli,wrap_ax)
             else:
-                likelihood_beta = target_dist_beta.pdf(stimuli)
+                likelihood_target = target_dist_target.pdf(stimuli)
 
-            #Get parameters for category beta (alternative hypothesis)
-            mu_alpha, Sigma_alpha = self.get_musig(stimuli, 1-category,wrap_ax)
-            target_dist_alpha = multivariate_normal(mean = mu_alpha, cov = Sigma_alpha)
-            if not wrap_ax is None:
-                likelihood_alpha = self._wrapped_density(target_dist_alpha,stimuli,wrap_ax)
+            likelihood_alt = []
+            prior_dens = []
+            #Get parameters for all alt categories (alternative hypothesis)
+            for c_alt in range(self.ncategories):
+                if not c_alt == category: #Continue (pass) if c_alt is target category                    
+                    mu_alt, Sigma_alt = self.get_musig(stimuli, c_alt,wrap_ax)
+                    target_dist_alt = multivariate_normal(mean = mu_alt, cov = Sigma_alt)
+                    if not wrap_ax is None:
+                        likelihood_alt += [self._wrapped_density(target_dist_alt,stimuli,wrap_ax)]
+                    else:
+                        likelihood_alt += [target_dist_alt.pdf(stimuli)]
+
+                    if self.ncategories > 2:
+                        #Specify priors
+                        prior_dist_n = multivariate_normal(mean=self.category_prior_mean,cov = Sigma_alt/self.category_mean_bias) #got the sigma_alt/cat_mean_bias from wikipedia
+                        #Use custom invwishart pdf because scipy's doesn't like p-1<df<p
+                        invw_pdf = Funcs.invwishartpdf(Sigma_alt,scale=self.Domain,nu=self.category_variance_bias)
+                        prior_dens += [prior_dist_n.pdf(mu_alt) * invw_pdf]#[prior_dist_n.pdf(mu_alt) * prior_dist_iw.pdf(Sigma_alt)]
+
+            if self.ncategories > 2:
+                prior = Funcs.softmax(np.array(prior_dens), theta=1,toggle=False)
             else:
-                likelihood_alpha = target_dist_alpha.pdf(stimuli)
-
-            # since number of alternative hypotheses is always 1 if there are a total of 2 categories, p(h') will always be 1, right?
-            #prior = 1
-
-            density = np.log(likelihood_beta/likelihood_alpha)
-            # print(self.Domain)
-            # print(np.flipud(np.round(np.reshape(likelihood_alpha,(9,9)),3)))
-            # print(np.flipud(np.round(np.reshape(likelihood_beta,(9,9)),3)))
-            # print(np.flipud(np.round(np.reshape(density,(9,9)),3)))
-            #lll
-            #The general equation is density = likelihood_beta/sum(likelihood_alpha*prior), where the sum is over all non-beta categories, but I'm leaving out the prior since it's just 1
-            #As a quick hack to revert ConjugateJK13 to how it was in the manuscript prior to April 2018, uncomment the line below
-            #density = target_dist_beta.pdf(stimuli)
-        print(mu_alpha)
-        print(Sigma_alpha)
-        print(np.round(np.reshape(likelihood_alpha,(9,9)),3))
+                prior = [1]
+                
+            denom = 0
+            #denom2 = 0
+            for ci in range(len(prior)):
+                if len(likelihood_alt)>0:
+                    denom += likelihood_alt[ci] * prior[ci]
+                    #denom2 += likelihood_alt[ci] * prior_dens[ci]
+                else:
+                    #If for whatever reason there is no alternative category
+                    denom = 1
+            
+            density = np.log(likelihood_target/denom)
         if task is 'generate': 
             # NaN out known members - only for task=generate
             if target_is_populated:
@@ -342,27 +357,6 @@ class RepresentJK13(HierSamp):
                 density[known_members] = np.nan                                
             ps = Funcs.softmax(density, theta = self.determinism)                
         elif task is 'assign' or task is 'error':
-            ## Do the same for the contrast categor
-            # # get target category stats
-            # xbar_flip = np.mean(self.categories[1-category], axis = 0)
-            # n_flip = self.nexemplars[1-category]
-            # if n_flip < 2:
-            #         C_flip = np.zeros((self.nfeatures, self.nfeatures))
-            # else:
-            #         C_flip = np.cov(self.categories[1-category], rowvar = False)
-            
-            # # compute mu for target category
-            # mu_flip =  self.category_mean_bias * self.category_prior_mean
-            # mu_flip += n_flip * xbar_flip
-            # mu_flip /= self.category_mean_bias + n_flip
-            
-            # # compute target category Sigma
-            # ratio_flip = (self.category_mean_bias * n_flip) / (self.category_mean_bias + n_flip)
-            # Sigma_flip = ratio_flip * np.outer(xbar_flip - mu_flip, xbar_flip - mu_flip)
-            # Sigma_flip += self.Domain * self.category_variance_bias + C_flip
-            # Sigma_flip /= self.category_variance_bias + n_flip
-            
-            #mu_flip, Sigma_flip = self.get_musig(stimuli,1-category)
             # get relative densities
             if np.isnan(Sigma).any() or np.isinf(Sigma).any():
                 #target_dist_flip = np.ones(mu_flip.shape) * np.nan
@@ -370,7 +364,7 @@ class RepresentJK13(HierSamp):
             else:
                 #target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)
                 #density_flip = target_dist_flip.pdf(stimuli)                                
-                density_flip = np.log(likelihood_alpha/likelihood_beta)
+                density_flip = np.log(likelihood_alt/likelihood_target)
                 
                 
             ps = []
@@ -379,7 +373,7 @@ class RepresentJK13(HierSamp):
                                             density_flip[i]])
                 ps_element = Funcs.softmax(density_element, theta = self.determinism)
                 ps = np.append(ps,ps_element[0])
-        #return (ps,likelihood_alpha,likelihood_beta,Sigma,Sigma_alpha)
+        #return (ps,likelihood_alt,likelihood_target,Sigma,Sigma_alt)
         return ps
 
 

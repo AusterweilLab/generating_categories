@@ -4,7 +4,7 @@
 #best fits) with some gold standard of predictions to see if there is any
 #discrepancy.
 
-import pickle
+import pickle,sys
 execfile('Imports.py')
 import Modules.Funcs as funcs
 from Modules.Classes import Simulation
@@ -15,11 +15,14 @@ from Modules.Classes import RepresentJK13
 from Modules.Classes import CopyTweakRep
 from Modules.Classes import PackerRep
 
+dataname = '5con'
+narg = len(sys.argv)
+if __name__ == "__main__" and narg>1:
+    dataname = sys.argv[1]
+
 saveGold = False
 
-goldfile = 'pickles/goldstate.p'
-
-dataname = 'pooled-no1st'
+goldfile = 'pickles/goldstate_%s.p' % dataname
 
 execfile('validate_data.py')
 #Hey, it might be worth implementing validate_data as a function?
@@ -35,9 +38,10 @@ best_params = funcs.compress_chtc_parms(best_params_t)
 
 modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]
 ll = dict()
+print('Reading from goldstate data \'%s\'' % dataname)
 if saveGold:
     #Save current state as gold standard
-    promptstr = ('About to overwrite gold state. Continue? (y/n)\n')
+    promptstr = ('About to overwrite gold state for data \'%s\'. Continue? (y/n)\n' % dataname)
     import platform
     v = platform.python_version()
     if int(v[0])==2:

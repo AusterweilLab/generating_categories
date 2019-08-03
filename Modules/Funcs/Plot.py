@@ -58,7 +58,8 @@ def plotgradient(h, G, alphas, betas,
                                 clim = (), 
                                 cmap = 'Blues',
                                 alpha_col = 'red',
-                                beta_col = 'black'):
+                                beta_col = 'black',
+                 gammas=None):
     """
     Plot a gradient using matplotlib.
      - h is the handle to the axis
@@ -67,6 +68,7 @@ def plotgradient(h, G, alphas, betas,
      - clim (optional) defines the limits of the colormap.
      - cmap (optional) deinfes the colormap
      - [alpha/beta]_col: color of alpha and beta markers     
+     - gammas are [-1 +1] coordinates of gamma cat members
     """
 
     # generate clims if not provided
@@ -102,6 +104,12 @@ def plotgradient(h, G, alphas, betas,
         beta_col = checkcolors(beta_col,coords.shape[0])
         for j in range(coords.shape[0]):
             h.text(coords[j,0],coords[j,1], 'B', color = beta_col[j], **textsettings)
+
+    if len(gammas)>0:
+        coords = gradientspace(gammas, G.shape[0])
+        for j in range(coords.shape[0]):
+            h.text(coords[j,0],coords[j,1], 'C', color = 'orange', **textsettings)
+
     h.set_yticks([])
     h.set_xticks([])
     h.set_aspect('equal', adjustable='box')
