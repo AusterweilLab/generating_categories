@@ -41,17 +41,18 @@ class Trialset(object):
     def _update(self):
         self.nunique = len(self.Set)
         self.nresponses = sum([len(i['response']) for i in self.Set])
-
+ 
     def add(self, response, categories = [], participant = [], wrap_ax = None):
         """Add a single trial to the trial lists
                 
-        If response variable is a scalar, then add response to only one
-        category. If response variable is a 2-element list, then add the
+        If response variable is a scalar (responseType=1), then add response to only one
+        category. If response variable is a 2-element list (responseType=2), then add the
         value of the first element to the category specified by the
         second element.
         
         Also add participant information and if axis needs to be wrapped(if available)
         
+        030819 Gonna phase out type 1 responseTypes, since type 2 is more general.
         """
         
         if type(response) is not list:
@@ -99,6 +100,7 @@ class Trialset(object):
                 respList[add2cat].append(response)
                 pList[add2cat].append(participant)
                 wrapList[add2cat].append(wrap_ax)
+
                 
                 self.Set.append(dict(
                     response = respList,
@@ -161,6 +163,14 @@ class Trialset(object):
         return None
 
 
+    def cat2ind(catlabel):
+        category_list = ['Alpha','Beta','Gamma','Delta']
+        catlabel = int(catlabel)
+        if catlabel is None: #Legacy support
+            out = 0
+        else:
+            out = category_list.index(catlabel)                
+
     def add_frame(self, generation, task = 'generate'):
         """
         Add trials from a dataframe
@@ -179,7 +189,9 @@ class Trialset(object):
                 for num, row in rows.groupby('trial'):
                     Bs = rows.loc[rows.trial<num, 'stimulus'].values
                     categories = row.categories.item() + [Bs]
-                    stimulus = row.stimulus.item()
+                    genstim = row.stimulus.item()
+                    add2cat = self.cat2ind(row.category.item())
+                    stimulus = [genstim,add2cat]
                     if not 'wrap_ax' in row.columns:
                         wrap_ax = None
                     else:
@@ -212,7 +224,7 @@ class Trialset(object):
                 
         return self
                 
-
+    
     def loglike(self, params, model, fixedparams = None, whole_array=False, parmxform = True,seedrng = False):
         """
         Evaluate a model object's log-likelihood on the
@@ -254,12 +266,10 @@ class Trialset(object):
             
             #Iterate over axes wrappings
             for wrap in wraps:
-                #print(wrap)
-                # if it's an assignment task, also compute probabilities for other category (cat0)
-                # ps0 = np.zeros(ps1.shape)
                 if task == 'generate':
-                    # compute probabilities of generating exemplar in cat 1
-                    ps = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
+                    # compute probabilities of generating exemplar in target cat
+                    ##TO DO 030819 -- Correctly get the generations ps for each desired category (think add2cat)
+                    ps = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
                     ps_idx = np.where(trial['wrap_ax']==wrap)[0]
                     #If it's a scalar, take it out of the array
                     if len(ps_idx)==1:
@@ -267,11 +277,11 @@ class Trialset(object):
                     ps_add = np.array(ps[trial['response'][ps_idx]])
                 elif task=='assign':
                     #Compute probabilities of assigning exemplar to cat 0
-                    ps0 = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
+                    ps0 = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
                     #Compute probabilities of assigning exemplar to cat 1
                     ps1 = model(categories, params,
                                 self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli,
-                                                                  1,self.task,seedrng = seedrng,wrap_ax=wrap)
+                                                                  1,self.task,seedrng = seedrng)
 
 
                     idc0 = trial['response'][0][np.where(trial['wrap_ax']==wrap)] #category 0
@@ -307,10 +317,10 @@ class Trialset(object):
                     #idc_err = trial['response'][0]
                     #Compute probabilities of assigning exemplar to cat 0
                     ps0 = model(categories, params,
-                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng,wrap_ax=wrap)
+                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
                     #Compute probabilities of assigning exemplar to cat 1
                     ps1 = model(categories, params,
-                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng,wrap_ax=wrap)
+                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
                     idc0 = trial['response'][0][trial['wrap_ax']==wrap]
                     idc1 = trial['response'][1][trial['wrap_ax']==wrap]
                     ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
@@ -334,7 +344,7 @@ class Trialset(object):
                         #Get entire probability space
                         ps = model(categories, params,
                                    self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli,
-                                                                     i,self.task,seedrng = seedrng,wrap_ax=wrap)
+                                                                     i,self.task,seedrng = seedrng)
                         if len(correctresp)>0:
                             correctps = np.concatenate([correctps,ps[correctresp]])
                         if len(wrongresp)>0:

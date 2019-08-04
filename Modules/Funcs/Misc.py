@@ -242,12 +242,13 @@ Examples
             wrap_ax = [wrap_ax]
         #print('Old diff: {}'.format(difference[:,1]))
         for ax in wrap_ax:
-            #Ensure ax is int of some sort
-            ax = int(ax)
-            diff_ax = np.abs(difference[:,ax].copy())
-            diff_alt = ax_range-diff_ax + ax_step
-            diff_min = np.min([diff_ax,diff_alt],axis=0)
-            difference[:,ax] = diff_min
+            #Ensure ax is int of some sortif not None
+            if not ax is None:
+                ax = int(ax)
+                diff_ax = np.abs(difference[:,ax].copy())
+                diff_alt = ax_range-diff_ax + ax_step
+                diff_min = np.min([diff_ax,diff_alt],axis=0)
+                difference[:,ax] = diff_min
         #print('New diff: {}'.format(difference[:,ax]))
 
     weighted_distance = np.multiply(difference, w)

@@ -36,29 +36,30 @@ class Packer(Exemplar):
         ] 
 
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False, wrap_ax = None):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
         #Get feature ranges for (if) wrapped_axis
         #If no wrap_ax, then it doesn't matter anyway
-        ax_range = 2
-        ax_step = .25
-        if not wrap_ax is None:
-            ax_ranges = np.ptp(stimuli,axis=0)
-            if not ax_ranges[0]==ax_ranges[1]:
-                raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
-            else:
-                ax_range = ax_ranges[0]
-            ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
+        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+        ax_step = self.stimstep[0]
+
+        # if not wrap_ax is None:
+        #     ax_ranges = np.ptp(stimuli,axis=0)
+        #     if not ax_ranges[0]==ax_ranges[1]:
+        #         raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
+        #     else:
+        #         ax_range = ax_ranges[0]
+        #     ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
         # compute contrast sum similarity
         #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
         contrast_examples   = self.exemplars[self.assignments != category]
-        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst,wrap_ax=wrap_ax,ax_range=ax_range, ax_step=ax_step)
+        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst,ax_range=ax_range, ax_step=ax_step)
         # compute target sum similarity
         target_examples = self.exemplars[self.assignments == category]
-        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target,wrap_ax=wrap_ax,ax_range=ax_range, ax_step=ax_step)
+        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target,ax_range=ax_range, ax_step=ax_step)
         #End new attempt 110418
         
         temp_examples = np.array([[-1., -1.,],[1., -1.],[-1,-.75,],[1,-.75]])
-        temp_ss   = self._sum_similarity(stimuli, temp_examples, param = -1.0 * self.theta_cntrst,wrap_ax=wrap_ax,ax_range=ax_range, ax_step=ax_step)
+        temp_ss   = self._sum_similarity(stimuli, temp_examples, param = -1.0 * self.theta_cntrst,ax_range=ax_range, ax_step=ax_step)
 
 
         # # compute contrast sum similarity
@@ -86,13 +87,11 @@ class Packer(Exemplar):
             contrast_ss_flip = self._sum_similarity(stimuli,
                                                     contrast_examples_flip,
                                                     param = -1.0 * self.theta_cntrst,
-                                                    wrap_ax=wrap_ax,
                                                     ax_range=ax_range, ax_step=ax_step)
             target_examples_flip = contrast_examples
             target_ss_flip   = self._sum_similarity(stimuli,
                                                     target_examples_flip,
                                                     param = self.theta_target,
-                                                    wrap_ax=wrap_ax,
                                                     ax_range=ax_range, ax_step=ax_step)
             #End test 110418
 
@@ -154,26 +153,29 @@ class PackerEuc(Exemplar):
         ] 
 
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False, wrap_ax=None):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
         #Get feature ranges for (if) wrapped_axis
         #If no wrap_ax, then it doesn't matter anyway
-        ax_range = 2
-        ax_step = .25
-        if not wrap_ax is None:
-            ax_ranges = np.ptp(stimuli,axis=0)
-            if not ax_ranges[0]==ax_ranges[1]:
-                raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
-            else:
-                ax_range = ax_ranges[0]
-            ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
+        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+        ax_step = self.stimstep[0]
+
+        # ax_range = 2
+        # ax_step = .25
+        # if not wrap_ax is None:
+        #     ax_ranges = np.ptp(stimuli,axis=0)
+        #     if not ax_ranges[0]==ax_ranges[1]:
+        #         raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
+        #     else:
+        #         ax_range = ax_ranges[0]
+        #     ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
 
         # compute contrast sum similarity
         #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
         contrast_examples   = self.exemplars[self.assignments != category]
-        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst,p=2,wrap_ax=wrap_ax,ax_range=ax_range, ax_step=ax_step)
+        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst,p=2,ax_range=ax_range, ax_step=ax_step)
         # compute target sum similarity
         target_examples = self.exemplars[self.assignments == category]
-        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target,p=2,wrap_ax=wrap_ax,ax_range=ax_range, ax_step=ax_step)
+        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target,p=2,ax_range=ax_range, ax_step=ax_step)
         #End new attempt 110418
                 
         # # compute contrast sum similarity
@@ -202,14 +204,12 @@ class PackerEuc(Exemplar):
                                                     contrast_examples_flip,
                                                     param = -1.0 * self.theta_cntrst,
                                                     p=2,
-                                                    wrap_ax=wrap_ax,
                                                     ax_range=ax_range, ax_step=ax_step)
             target_examples_flip = contrast_examples
             target_ss_flip   = self._sum_similarity(stimuli,
                                                     target_examples_flip,
                                                     param = self.theta_target,
                                                     p=2,
-                                                    wrap_ax=wrap_ax,
                                                     ax_range=ax_range, ax_step=ax_step)
             #End test 110418
 
@@ -264,18 +264,21 @@ class CopyTweak(Exemplar):
                 np.random.uniform(0.1, 6.0), # determinism
                 #np.random.uniform(0.1, 6.0)   # baselinesim
         ]
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax=None):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
         #Get feature ranges for (if) wrapped_axis
         #If no wrap_ax, then it doesn't matter anyway
-        ax_range = 2
-        ax_step = .25
-        if not wrap_ax is None:
-            ax_ranges = np.ptp(stimuli,axis=0)
-            if not ax_ranges[0]==ax_ranges[1]:
-                raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
-            else:
-                ax_range = ax_ranges[0]
-            ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
+        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+        ax_step = self.stimstep[0]
+
+        # ax_range = 2
+        # ax_step = .25
+        # if not wrap_ax is None:
+        #     ax_ranges = np.ptp(stimuli,axis=0)
+        #     if not ax_ranges[0]==ax_ranges[1]:
+        #         raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
+        #     else:
+        #         ax_range = ax_ranges[0]
+        #     ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
         
         # return uniform probabilities if there are no exemplars
         target_is_populated = any(self.assignments == category)
@@ -284,7 +287,7 @@ class CopyTweak(Exemplar):
             return np.ones(ncandidates) / float(ncandidates)
 
         # get pairwise similarities with target category
-        similarity = self._sum_similarity(stimuli, self.categories[category],wrap_ax=wrap_ax,ax_range=ax_range, ax_step=ax_step)
+        similarity = self._sum_similarity(stimuli, self.categories[category],ax_range=ax_range, ax_step=ax_step)
         # add baseline similarity
         #similarity = similarity + self.baselinesim
         if task == 'generate': 
@@ -295,7 +298,7 @@ class CopyTweak(Exemplar):
             ps = Funcs.softmax(similarity, theta = self.determinism)
         elif task == 'assign' or task == 'error':
             # get pairwise similarities with contrast category
-            similarity_flip = self._sum_similarity(stimuli, self.categories[1-category],wrap_ax=wrap_ax,ax_range=ax_range, ax_step=ax_step)
+            similarity_flip = self._sum_similarity(stimuli, self.categories[1-category],ax_range=ax_range, ax_step=ax_step)
             # add baseline similarity
             #similarity_flip = similarity_flip + self.baselinesim
             
@@ -334,18 +337,21 @@ class CopyTweakRep(Exemplar):
                 np.random.uniform(0.1, 6.0), # determinism
                 #np.random.uniform(0.1, 6.0)   # baselinesim
         ]
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax=None):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
         #Get feature ranges for (if) wrapped_axis
         #If no wrap_ax, then it doesn't matter anyway
-        ax_range = 2
-        ax_step = .25
-        if not wrap_ax is None:
-            ax_ranges = np.ptp(stimuli,axis=0)
-            if not ax_ranges[0]==ax_ranges[1]:
-                raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
-            else:
-                ax_range = ax_ranges[0]
-            ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
+        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+        ax_step = self.stimstep[0]
+
+        # ax_range = 2
+        # ax_step = .25
+        # if not wrap_ax is None:
+        #     ax_ranges = np.ptp(stimuli,axis=0)
+        #     if not ax_ranges[0]==ax_ranges[1]:
+        #         raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
+        #     else:
+        #         ax_range = ax_ranges[0]
+        #     ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
         
         # return uniform probabilities if there are no exemplars
         target_is_populated = any(self.assignments == category)
@@ -354,9 +360,9 @@ class CopyTweakRep(Exemplar):
             return np.ones(ncandidates) / float(ncandidates)
 
         # get pairwise similarities with target category
-        similarity_target = self._sum_similarity(stimuli, self.categories[category],wrap_ax=wrap_ax,ax_range=ax_range, ax_step=ax_step)
+        similarity_target = self._sum_similarity(stimuli, self.categories[category],ax_range=ax_range, ax_step=ax_step)
         #Treat similarity as density estimate (i.e., the likelihoods in representativeness)
-        similarity_contrast = self._sum_similarity(stimuli, self.categories[1-category],wrap_ax=wrap_ax,ax_range=ax_range, ax_step=ax_step)
+        similarity_contrast = self._sum_similarity(stimuli, self.categories[1-category],ax_range=ax_range, ax_step=ax_step)
         #print [i*self.determinism for i in similarity_contrast]
         # since number of alternative hypotheses is always 1 if there are a total of 2 categories, p(h') will always be 1, right?
         #prior = 1            
@@ -416,18 +422,21 @@ class PackerRep(Exemplar):
         ] 
 
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax=None):        
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):        
         #Get feature ranges for (if) wrapped_axis
         #If no wrap_ax, then it doesn't matter anyway
-        ax_range = 2
-        ax_step = .25
-        if not wrap_ax is None:
-            ax_ranges = np.ptp(stimuli,axis=0)
-            if not ax_ranges[0]==ax_ranges[1]:
-                raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
-            else:
-                ax_range = ax_ranges[0]
-            ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
+        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+        ax_step = self.stimstep[0]
+
+        # ax_range = 2
+        # ax_step = .25
+        # if not wrap_ax is None:
+        #     ax_ranges = np.ptp(stimuli,axis=0)
+        #     if not ax_ranges[0]==ax_ranges[1]:
+        #         raise ValueError('Range of x-axis ({}) does not match range of y-axis({})'.format(ax_ranges[0],ax_ranges[1]))
+        #     else:
+        #         ax_range = ax_ranges[0]
+        #     ax_step = abs(stimuli[1,0]-stimuli[0,0]) #assume consistent steps -- dangerous if not the case though
 
         # compute target representativeness
         target_examples = self.exemplars[self.assignments == category]

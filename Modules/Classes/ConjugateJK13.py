@@ -96,7 +96,7 @@ class ConjugateJK13(HierSamp):
 
         return (mu,Sigma)
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax = None):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
         # random response if there are no target members.
         target_is_populated = any(self.assignments == category)
         if not target_is_populated:
@@ -111,8 +111,8 @@ class ConjugateJK13(HierSamp):
             density = np.ones(len(stimuli)) * np.nan
         else:
             target_dist = multivariate_normal(mean = mu, cov = Sigma)
-            if not wrap_ax is None:
-                density = self._wrapped_density(target_dist,stimuli,wrap_ax)
+            if not self.wrap_ax is None:
+                density = self._wrapped_density(target_dist,stimuli)
             else:
                 density = target_dist.pdf(stimuli)
                 
@@ -129,8 +129,8 @@ class ConjugateJK13(HierSamp):
                 density_flip = np.ones(len(stimuli)) * np.nan
             else:
                 target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)
-                if not wrap_ax is None:
-                    density_flip = self._wrapped_density(target_dist_flip,stimuli,wrap_ax)
+                if not self.wrap_ax is None:
+                    density_flip = self._wrapped_density(target_dist_flip,stimuli)
                 else:
                     density_flip = target_dist_flip.pdf(stimuli)
 
@@ -224,7 +224,10 @@ class RepresentJK13(HierSamp):
         wrap_ax = self.wrap_ax
         n = self.nexemplars[category]
         if not wrap_ax is None:
-            wrap_ax = int(wrap_ax)
+            if len(wrap_ax)>1:
+                raise Exception('Conjugate Model cannot handle multiple wrapped axes yet.')
+            
+            wrap_ax = int(wrap_ax[0])
             ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
             ax_step = self.stimstep[0]
             cat = self.categories[category].copy()
@@ -254,9 +257,7 @@ class RepresentJK13(HierSamp):
 
         return (xbar,C)
     
-    def get_musig(self, stimuli, category,wrap_ax=None):
-        self.stimuli = stimuli
-        self.wrap_ax = wrap_ax
+    def get_musig(self, stimuli, category):
         # random response if there are no target members.
         target_is_populated = any(self.assignments == category)
         if not target_is_populated:
@@ -286,12 +287,12 @@ class RepresentJK13(HierSamp):
             Sigma /= self.category_variance_bias + n
         return (mu,Sigma)
 
-    def get_generation_ps(self, stimuli, category, task='generate', seedrng = False, wrap_ax = None):
+    def get_generation_ps(self, stimuli, category, task='generate', seedrng = False):
         if seedrng:
             np.random.seed(234983) #some arbitrary seed value here
 
         target_is_populated = any(self.assignments == category)                
-        mu,Sigma = self.get_musig(stimuli, category,wrap_ax)
+        mu,Sigma = self.get_musig(stimuli, category)
                 
         # get relative densities
         if np.isnan(Sigma).any() or np.isinf(Sigma).any():
@@ -300,8 +301,8 @@ class RepresentJK13(HierSamp):
         else:
             # #270418 Implementing representational draws
             target_dist_target = multivariate_normal(mean = mu, cov = Sigma)
-            if not wrap_ax is None:
-                likelihood_target = self._wrapped_density(target_dist_target,stimuli,wrap_ax)
+            if not self.wrap_ax is None:
+                likelihood_target = self._wrapped_density(target_dist_target,stimuli)
             else:
                 likelihood_target = target_dist_target.pdf(stimuli)
 
@@ -310,10 +311,10 @@ class RepresentJK13(HierSamp):
             #Get parameters for all alt categories (alternative hypothesis)
             for c_alt in range(self.ncategories):
                 if not c_alt == category: #Continue (pass) if c_alt is target category                    
-                    mu_alt, Sigma_alt = self.get_musig(stimuli, c_alt,wrap_ax)
+                    mu_alt, Sigma_alt = self.get_musig(stimuli, c_alt)
                     target_dist_alt = multivariate_normal(mean = mu_alt, cov = Sigma_alt)
-                    if not wrap_ax is None:
-                        likelihood_alt += [self._wrapped_density(target_dist_alt,stimuli,wrap_ax)]
+                    if not self.wrap_ax is None:
+                        likelihood_alt += [self._wrapped_density(target_dist_alt,stimuli)]
                     else:
                         likelihood_alt += [target_dist_alt.pdf(stimuli)]
 
@@ -451,7 +452,7 @@ class NegatedSpace(HierSamp):
 
         return (mu,Sigma)
 
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax = None):
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
         # random response if there are no target members.
         target_is_populated = any(self.assignments == category)
         if not target_is_populated:
@@ -467,8 +468,8 @@ class NegatedSpace(HierSamp):
                 density = np.ones(len(stimuli)) * np.nan
             else:
                 target_dist = multivariate_normal(mean = mu, cov = Sigma)
-                if not wrap_ax is None:
-                    density = self._wrapped_density(target_dist,stimuli,wrap_ax)
+                if not self.wrap_ax is None:
+                    density = self._wrapped_density(target_dist,stimuli)
                 else:
                     density = target_dist.pdf(stimuli)
                     #Continue implementing dumb model...Xian 150719
@@ -490,8 +491,8 @@ class NegatedSpace(HierSamp):
                 density_flip = np.ones(len(stimuli)) * np.nan
             else:
                 target_dist_flip = multivariate_normal(mean = mu_flip, cov = Sigma_flip)
-                if not wrap_ax is None:
-                    density_flip = self._wrapped_density(target_dist_flip,stimuli,wrap_ax)
+                if not self.wrap_ax is None:
+                    density_flip = self._wrapped_density(target_dist_flip,stimuli)
                 else:
                     density_flip = target_dist_flip.pdf(stimuli)
 

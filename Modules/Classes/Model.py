@@ -126,7 +126,7 @@ class Model(object):
         
 
     @abc.abstractmethod
-    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False,wrap_ax=None): pass
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False): pass
 
     def __init__(self, categories, params, stimrange=[{'min':-1,'max':1},{'min':-1,'max':1}],stimstep = [.25,.25],wrap_ax=None):
         """
@@ -164,6 +164,7 @@ class Model(object):
         
         # setup functions
         self._param_handler_()
+        self._wrap_ax_handler_()
         self._wts_handler_()
         self._update_()
 
@@ -188,6 +189,18 @@ class Model(object):
             else: 
                 setattr(self, k, self.params[k])
 
+    def _wrap_ax_handler_(self):
+        """
+        Ensures wrap_ax is a list of integers or None
+        """
+        if not self.wrap_ax is None:
+            if not type(self.wrap_ax) is list:
+                self.wrap_ax = [self.wrap_ax]
+
+            for wi,wa in enumerate(self.wrap_ax):
+                if not type(wa) == int and not wa is None:
+                    self.wrap_ax[wi] = int(wa)
+                    
     def _wts_handler_(self):
         """
             Sets feature weight parameters for models.
@@ -235,7 +248,7 @@ class Model(object):
         self._update_()
         
 
-    def simulate_generation(self, stimuli, category, nexemplars = None,wrap_ax = None):
+    def simulate_generation(self, stimuli, category, nexemplars = None):
         """
         Simulate the generation of n-exemplars, sourced from stimuli, into a category.
         The resulting category will be added to the model's memory, and the identity 
@@ -253,7 +266,7 @@ class Model(object):
         for i in range(nexemplars):
 
             # compute probabilities, then pick an item
-            ps = self.get_generation_ps(stimuli, category, wrap_ax=wrap_ax)
+            ps = self.get_generation_ps(stimuli, category)
                         #print sum(ps)-1
             num = Funcs.wpick(ps)
             values = np.atleast_2d(stimuli[num,:])
@@ -284,9 +297,8 @@ class Exemplar(Model):
         wts  = None, 
         c = None,
         p = 1,
-        wrap_ax = None,
-                        ax_range = 2,
-                        ax_step = .25):
+        ax_range = 2,
+        ax_step = .25):
         """ 
         function to compute summed similarity along rows of 
         X across all items in Y. Resulting array will have one element 
@@ -304,14 +316,13 @@ class Exemplar(Model):
 
         ax_step is the minimum distance of each step on the axis (relevant only when wrapping)
         """
-
-        # set weights and c
+        # set weights and c        
         if wts is None: wts = self.wts
         if c is None: c = self.specificity
         if p == 1:
-            distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts, wrap_ax = wrap_ax, ax_range = ax_range, ax_step=ax_step)
+            distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts, wrap_ax = self.wrap_ax, ax_range = ax_range, ax_step=ax_step)
         else:
-            distance   = Funcs.pdist_gen(np.atleast_2d(X), np.atleast_2d(Y), w = wts, p = p, wrap_ax = wrap_ax, ax_range = ax_range, ax_step = ax_step)
+            distance   = Funcs.pdist_gen(np.atleast_2d(X), np.atleast_2d(Y), w = wts, p = p, wrap_ax = self.wrap_ax, ax_range = ax_range, ax_step = ax_step)
         similarity = np.exp(-float(c) * distance)
         similarity = similarity * float(param)
         return np.sum(similarity, axis = 1)
@@ -323,7 +334,7 @@ class HierSamp(Model):
     """
     __metaclass__ = abc.ABCMeta
 
-    def _wrapped_density(self, target_dist, stimuli, wrap_ax,
+    def _wrapped_density(self, target_dist, stimuli,
                          density_ratio_cap = 1e5,
                          maxit = 50):
         """ 
@@ -334,6 +345,7 @@ class HierSamp(Model):
         defined in density_ratio_cap, or after maxit iterations.
 
         """                                                             
+        wrap_ax = self.wrap_ax
         density = target_dist.pdf(stimuli) #Base density
         if not type(wrap_ax) is list:
             wrap_ax = [wrap_ax]
