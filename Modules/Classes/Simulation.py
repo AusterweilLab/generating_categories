@@ -92,15 +92,16 @@ class Trialset(object):
                 )
                 )
             elif responseType == 2:
-                ncat = len(categories)                             
-                respList =  [[] for _ in xrange(len(categories))]
-                #respList[add2cat] = np.append(respList[add2cat],(response))
-                pList = [[] for _ in xrange(len(categories))]
-                wrapList = [[] for _ in xrange(len(categories))]
-                respList[add2cat].append(response)
-                pList[add2cat].append(participant)
-                wrapList[add2cat].append(wrap_ax)
-
+                ncat = len(categories)
+                if add2cat==ncat:
+                    ncat +=1
+                    categories += [np.array([])]
+                respList =  [np.array([],dtype=int) for _ in xrange(ncat)]
+                pList = [np.array([],dtype=int) for _ in xrange(ncat)]
+                wrapList = [np.array([],dtype=int) for _ in xrange(ncat)]
+                respList[add2cat] = np.append(respList[add2cat],response)
+                pList[add2cat] = np.append(pList,participant)
+                wrapList[add2cat] = np.append(wrapList,wrap_ax)
                 
                 self.Set.append(dict(
                     response = respList,
@@ -108,6 +109,7 @@ class Trialset(object):
                     participant = pList,
                     wrap_ax = wrapList)
                 )
+
         # if there is an index, just add the response
         else:
             if responseType == 1:
@@ -118,9 +120,21 @@ class Trialset(object):
                 self.Set[idx]['wrap_ax'] = np.append(
                     self.Set[idx]['wrap_ax'], wrap_ax)
             elif responseType == 2:
-                self.Set[idx]['response'][add2cat].append(response)
-                self.Set[idx]['participant'][add2cat].append(participant)
-                self.Set[idx]['wrap_ax'][add2cat].append(wrap_ax)
+                #ncat = len(categories)
+                #if add2cat==ncat:                
+                if add2cat==len(self.Set[idx]['response']):
+                    categories += [np.array([])]
+                    self.Set[idx]['response'] += [np.array([])]
+                    self.Set[idx]['participant'] += [np.array([])]
+                    self.Set[idx]['wrap_ax'] += [np.array([])]
+
+                self.Set[idx]['response'][add2cat] = np.append(
+                    self.Set[idx]['response'][add2cat],response)
+                self.Set[idx]['participant'][add2cat] = np.append(
+                    self.Set[idx]['participant'][add2cat],participant)
+                self.Set[idx]['wrap_ax'][add2cat] = np.append(
+                    self.Set[idx]['wrap_ax'][add2cat],wrap_ax)
+
                 #self.Set[idx]['response'][add2cat] = np.append(
                 #        self.Set[idx]['response'][add2cat],response)
                 #Hmm, why can't I just use self.Set[idx]['response']...
@@ -150,7 +164,7 @@ class Trialset(object):
 
             # if the categories are not the same size, then they are 
             # not equal...
-            if len(categories) != len(trial['categories']): continue
+            #if len(categories) != len(trial['categories']): continue
 
             # check equality of all pairs of categories
             equals =[np.array_equal(*arrs) 
@@ -163,14 +177,15 @@ class Trialset(object):
         return None
 
 
-    def cat2ind(catlabel):
+    def cat2ind(self,catlabel):
         category_list = ['Alpha','Beta','Gamma','Delta']
-        catlabel = int(catlabel)
-        if catlabel is None: #Legacy support
-            out = 0
+        treatAsBetas = [None,'Not-Alpha','Alpha']  #Legacy support        
+        if catlabel in treatAsBetas:
+            out = 1
         else:
             out = category_list.index(catlabel)                
-
+        return out
+    
     def add_frame(self, generation, task = 'generate'):
         """
         Add trials from a dataframe
@@ -183,12 +198,18 @@ class Trialset(object):
 
         Where categories is a embedded list of known categories
         PRIOR to trial = 0.               
-        """ 
+        """        
         if task == 'generate':
             for pid, rows in generation.groupby('participant'):
                 for num, row in rows.groupby('trial'):
-                    Bs = rows.loc[rows.trial<num, 'stimulus'].values
-                    categories = row.categories.item() + [Bs]
+                    categories = row.categories.item()[:] #gotta copy the list with [:]                    
+                    gen_exemplars = np.array(rows.loc[rows.trial<num, 'stimulus'].values)
+                    gen_cats = rows.loc[rows.trial<num, 'category'].values
+                    for gen_cat in np.unique(gen_cats):
+                        gen_idc = np.array([gi for gi, gc in enumerate(gen_cats) if gc == gen_cat])
+                        categories += [gen_exemplars[gen_idc]]
+                    
+                    #categories = row.categories.item() + [gen_exemplars]
                     genstim = row.stimulus.item()
                     add2cat = self.cat2ind(row.category.item())
                     stimulus = [genstim,add2cat]
@@ -196,7 +217,6 @@ class Trialset(object):
                         wrap_ax = None
                     else:
                         wrap_ax = row.wrap_ax.item()
-
                     self.add(stimulus, categories = categories,participant = row.participant.item(),wrap_ax = wrap_ax)
 
         elif task == 'assign' or task == 'error':
@@ -257,25 +277,58 @@ class Trialset(object):
             #Lists with [0] should be recognised as valid categories, and not empty
             #categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
             categories = [self.stimuli[i,:] for i in trial['categories'] if len(i)>0]
-            #Identify if any axis needs wrapping
-            if not 'wrap_ax' in trial.keys():
-                #Legacy support. If trialset doesn't have wrap_ax, then no wrapping is required.
-                trial['wrap_ax'] = np.array([None for i in range(len(trial['response']))])
-                
-            wraps = np.unique(trial['wrap_ax'])
-            
+            # Check if responseType is 1 (each element of response is strictly a new Beta) or 2 (elements of response correspond to categories)
+            if hasattr(trial['response'][0], "__len__"):
+                responseType = 2
+                #Identify if any axis needs wrapping
+                if not 'wrap_ax' in trial.keys():
+                    #Legacy support. If trialset doesn't have wrap_ax, then no wrapping is required.
+                    #This shouldn't really happen, but just in case
+                    trial['wrap_ax'] = []
+                    for category in range(len(trial['response'])):
+                        trial['wrap_ax'] += [np.array([None for i in range(len(trial['response'][category]))])]
+                    wraps = [None]
+                else:
+                    subwraps = np.array([])
+                    for wrap in trial['wrap_ax']:
+                        subwraps = np.append(subwraps,wrap)
+                    wraps = np.unique(subwraps)
+            else:
+                responseType = 1
+                #Identify if any axis needs wrapping
+                if not 'wrap_ax' in trial.keys():
+                    #Legacy support. If trialset doesn't have wrap_ax, then no wrapping is required.
+                    trial['wrap_ax'] = np.array([None for i in range(len(trial['response']))])
+                    wraps = [None]
+                else:
+                    wraps = np.unique(trial['wrap_ax'])
             #Iterate over axes wrappings
             for wrap in wraps:
                 if task == 'generate':
                     # compute probabilities of generating exemplar in target cat
                     ##TO DO 030819 -- Correctly get the generations ps for each desired category (think add2cat)
-                    ps = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
-                    ps_idx = np.where(trial['wrap_ax']==wrap)[0]
-                    #If it's a scalar, take it out of the array
-                    if len(ps_idx)==1:
-                        ps_idx = ps_idx[0]
-                    ps_add = np.array(ps[trial['response'][ps_idx]])
+                    if responseType == 1:
+                        ps = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
+                        ps_idx = np.where(trial['wrap_ax']==wrap)[0]
+                        #If it's a scalar, take it out of the array
+                        if len(ps_idx)==1:
+                            ps_idx = ps_idx[0]
+                        ps_add = np.array(ps[trial['response'][ps_idx]])
+                    elif responseType == 2:
+                        ps_add = np.array([])
+                        for category,resp in enumerate(trial['response']):
+                            if len(resp)>0:
+                                ps_idx = np.where(trial['wrap_ax'][category]==wrap)[0]
+                                if len(ps_idx)>0: #Only bother where the desired wrap is relevant
+                                    ps = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, category,self.task,seedrng = seedrng)
+                                    #If it's a scalar, take it out of the array
+                                    if len(ps_idx)==1:
+                                        ps_idx = ps_idx[0]
+                                    ps_add = np.append(ps_add,ps[resp[ps_idx]])
+                            
                 elif task=='assign':
+                    if responseType==2 and len(trial['response'])>2:
+                        raise Exception('Cannot handle assignment of multiple categories at this point.')
                     #Compute probabilities of assigning exemplar to cat 0
                     ps0 = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
                     #Compute probabilities of assigning exemplar to cat 1
@@ -303,6 +356,8 @@ class Trialset(object):
                     #         ps += [ss.binom.pmf(ct0, ctmax,ps_el)]
 
                 elif task=='error':
+                    if responseType==2 and len(trial['response'])>2:
+                        raise Exception('Cannot handle error prediction of multiple categories at this point.')
                     #For prediction of error probabilities, simply
                     #find the probability of classifying a
                     #stimulus as the wrong category
@@ -694,9 +749,13 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
             temp_obj = trial_obj.Set[idx]                        
             output_obj.Set = []
             output_obj.Set.append(temp_obj)
-                
-    ncategories = len(output_obj.Set[0]['categories'])
-    for ti,trialchunk in enumerate(output_obj.Set):
+    #Check responseType
+    if hasattr(output_obj.Set[0]['response'][0], "__len__"):
+        responseType = 2
+    else:
+        responseType = 1
+        
+    for ti,trialchunk in enumerate(output_obj.Set):        
         responsecats = trialchunk['response']
         pptcats = trialchunk['participant']
         wrapaxcats = trialchunk['wrap_ax']
@@ -704,21 +763,43 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
         pptList = np.array([])
         wrapaxList = np.array([])
         if trial_obj.task is 'generate':
-            #convert pptcat and responsecat to array for easier indexing
-            if ppt == 'all':
-                respList = np.array(responsecats)
-                pptList = np.array(pptcats)
-                wrapaxList = np.array(wrapaxcats)
-            else:
-                for i in ppt:
-                    extractIdx = np.array(pptcats==np.array(round(i)))
-                    responsecats = np.array(responsecats)
-                    pptcats = np.array(pptcats)
-                    wrapaxcats = np.array(wrapaxcats)
-                    respList = np.append(respList,responsecats[extractIdx])
-                    pptList = np.append(pptList,pptcats[extractIdx])
-                    wrapaxList = np.append(wrapaxList,wrapaxcats[extractIdx])
-                        
+            if responseType==1:
+                #convert pptcat and responsecat to array for easier indexing
+                if ppt == 'all':
+                    respList = np.array(responsecats)
+                    pptList = np.array(pptcats)
+                    wrapaxList = np.array(wrapaxcats)
+                else:
+                    for i in ppt:
+                        extractIdx = np.array(pptcats==np.array(round(i)))
+                        responsecats = np.array(responsecats)
+                        pptcats = np.array(pptcats)
+                        wrapaxcats = np.array(wrapaxcats)
+                        respList = np.append(respList,responsecats[extractIdx])
+                        pptList = np.append(pptList,pptcats[extractIdx])
+                        wrapaxList = np.append(wrapaxList,wrapaxcats[extractIdx])
+            elif responseType==2:
+                ncategories = len(trialchunk['categories'])
+                #iterate over categories of responses        
+                respList = [np.array([], dtype = int) for _ in xrange(ncategories)]
+                pptList = [np.array([], dtype = int) for _ in xrange(ncategories)]
+                wrapaxList = [np.array([], dtype = int) for _ in xrange(ncategories)]        
+                for pi,pptcat in enumerate(pptcats):
+                    #convert pptcat and responsecat to array for easier indexing
+                    responsecat = np.array(responsecats[pi])
+                    pptcat = np.array(pptcats[pi])
+                    wrapaxcat = np.array(wrapaxcats[pi])
+                    if ppt == 'all':
+                        respList[pi] = np.append(respList[pi],responsecat)
+                        pptList[pi] = np.append(pptList[pi],pptcat)
+                        wrapaxList[pi] = np.append(wrapaxList[pi],wrapaxcat)
+                    else:
+                        for i in ppt:
+                            extractIdx = pptcat==round(i)
+                            respList[pi] = np.append(respList[pi],responsecat[extractIdx])
+                            pptList[pi] = np.append(pptList[pi],pptcat[extractIdx])
+                            wrapaxList[pi] = np.append(wrapaxList[pi],wrapaxcat[extractIdx])
+                
         elif trial_obj.task is 'assign' or trial_obj.task is 'error':
             #iterate over categories of responses        
             respList = [np.array([], dtype = int) for _ in xrange(ncategories)]
@@ -727,8 +808,8 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
             for pi,pptcat in enumerate(pptcats):
                 #convert pptcat and responsecat to array for easier indexing
                 responsecat = np.array(responsecats[pi])
-                pptcat = np.array(pptcat)
-                wrapaxcat = np.array(wrapaxcat)
+                pptcat = np.array(pptcats[pi])
+                wrapaxcat = np.array(wrapaxcats[pi])
                 if ppt == 'all':
                     respList[pi] = np.append(respList[pi],responsecat)
                     pptList[pi] = np.append(pptList[pi],pptcat)
@@ -742,8 +823,8 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
         else:
             raise ValueError('trialset.task not specified. Please specify this as \'generate\' or \'assign\' in your script.')
         
-        output_obj.Set[ti]['response'] = respList.astype(int)
-        output_obj.Set[ti]['participant'] = pptList.astype(int)
+        output_obj.Set[ti]['response'] = respList
+        output_obj.Set[ti]['participant'] = pptList
         output_obj.Set[ti]['wrap_ax'] = wrapaxList
     #Clean up
     #cleanIdx = np.ones(len(output_obj.Set),dtype=bool)
@@ -751,9 +832,18 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
     output_obj.Set = []
     for ti,trialchunk in enumerate(output_objTemp):
         if trial_obj.task is 'generate':
-            if len(trialchunk['participant'])>0:                        
-                #cleanIdx[ti] = False
-                output_obj.Set.append(trialchunk)
+            if responseType==1:
+                if len(trialchunk['participant'])>0:                        
+                    #cleanIdx[ti] = False
+                    output_obj.Set.append(trialchunk)
+            elif responseType==2:
+                size = 0
+                for trialppt in trialchunk['participant']:
+                    size += len(trialppt)
+                if size>0:                        
+                    #cleanIdx[ti] = False
+                    output_obj.Set.append(trialchunk)
+                    
         elif trial_obj.task is 'assign' or trial_obj.task is 'error':
             if len(trialchunk['participant'][0])>0:                        
                 #cleanIdx[ti] = False

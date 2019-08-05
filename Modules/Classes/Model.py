@@ -296,9 +296,7 @@ class Exemplar(Model):
         param = 1.0,    
         wts  = None, 
         c = None,
-        p = 1,
-        ax_range = 2,
-        ax_step = .25):
+        p = 1):
         """ 
         function to compute summed similarity along rows of 
         X across all items in Y. Resulting array will have one element 
@@ -310,13 +308,10 @@ class Exemplar(Model):
         p indicates the p-norm for calculating distance in pdist. If p == 1, that's city-block distance. 
         p == 2 indicates Euclidean distance. But really p can take any real positive.
 
-        bdlass_ax indicates which axis is boundless (i.e., take the shortest of either the distance or max-distance)
-
-        ax_range is the limits of both axes
-
-        ax_step is the minimum distance of each step on the axis (relevant only when wrapping)
         """
-        # set weights and c        
+        # set weights and c
+        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+        ax_step = self.stimstep[0]
         if wts is None: wts = self.wts
         if c is None: c = self.specificity
         if p == 1:
@@ -338,7 +333,7 @@ class HierSamp(Model):
                          density_ratio_cap = 1e5,
                          maxit = 50):
         """ 
-        Function to compute the density on a wrapped space along some axis (like on a torus, sphere, cylinder). 
+        Function to compute the density on a wrapped space along some axis (like on the surfance of a torus, sphere, cylinder). 
         Only works along one axis at a time for now, though.
 
         Wrapping stops after the minimum density in one direction is smaller than the maximum density by the ratio

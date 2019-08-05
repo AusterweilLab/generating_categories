@@ -63,7 +63,6 @@ generation = pd.merge(generation, participants, on='participant')
 generation = pd.merge(generation, mapping, on='condition')
 
 
-
 # create trial set object
 trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(generation)

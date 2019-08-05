@@ -3,6 +3,7 @@
 #! /bin/python
 #When running on Xian's local machine (for testing etc)
 #!/Library/Frameworks/Python.framework/Versions/2.7/bin/python
+#Update 040819 -- found a good way to handle different python location installations. #Always direct to #!/usr/bin/env python
 import os
 import re
 # from os import listdir
@@ -26,8 +27,8 @@ else:
     headerchange = headerchangedef; #default
 
 #Define possible headers
-headerserver = '#! /bin/python';
-headerlocal  = '#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python'; 
+headerserver = '#!/usr/bin/env python' #'#! /bin/python';
+headerlocal  = '#!/usr/bin/env python' #'#!/Library/Frameworks/Python.framework/Versions/2.7/bin/python'; 
 
 #Define possible data locations
 datadirserver = 'destination = "/var/services/homes/xian/CloudStation/data/middle-bottomABC"';

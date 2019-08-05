@@ -1,5 +1,5 @@
 (dp0
-S'PACKER'
+S'Copy and Tweak'
 p1
 cnumpy.core.multiarray
 scalar
@@ -20,23 +20,23 @@ NNNI-1
 I-1
 I0
 tp8
-bS'5g\xe0\x95\x95x\xb7@'
+bS'\xf7\x9bT[\x99\xf3\xb8@'
 p9
 tp10
 Rp11
-sS'Copy and Tweak'
+sS'Hierarchical Sampling With Representativeness'
 p12
 g2
 (g6
-S'\xf7\x9bT[\x99\xf3\xb8@'
+S'\x0f+\xeb\x85\xbbT\xb7@'
 p13
 tp14
 Rp15
-sS'Hierarchical Sampling With Representativeness'
+sS'PACKER'
 p16
 g2
 (g6
-S'\x0f+\xeb\x85\xbbT\xb7@'
+S'5g\xe0\x95\x95x\xb7@'
 p17
 tp18
 Rp19
@@ -48,4 +48,20 @@ S'M\xe9\xecmjT\xb9@'
 p21
 tp22
 Rp23
+sS'PACKER Rep'
+p24
+g2
+(g6
+S'9\xf7\xaa\xb3\x90\x9f\xd9@'
+p25
+tp26
+Rp27
+sS'Copy and Tweak Rep'
+p28
+g2
+(g6
+S'Or\xc0\xd4\x03\x9d\xb8@'
+p29
+tp30
+Rp31
 s.

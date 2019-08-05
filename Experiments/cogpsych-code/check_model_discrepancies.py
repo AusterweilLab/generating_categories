@@ -36,7 +36,7 @@ with open(pickledir+bestparmchtc,'rb') as f:
     best_params_t = pickle.load(f)
 best_params = funcs.compress_chtc_parms(best_params_t)
 
-modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13]
+modelList = [Packer,CopyTweak,ConjugateJK13,RepresentJK13,CopyTweakRep,PackerRep]
 ll = dict()
 print('Reading from goldstate data \'%s\'' % dataname)
 if saveGold:
