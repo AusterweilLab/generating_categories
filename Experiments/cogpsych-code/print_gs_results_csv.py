@@ -12,7 +12,7 @@ import numpy as np
 pickledir = 'pickles/'
 writefile = 'globalfits'
 prefix = 'chtc_gs_best_params'
-printdata = ['xcrABC']#'all'
+printdata = ['5con','corner','xcrABC']#'all'
 if not printdata is 'all':
     gsfiles = []
     data_names = []

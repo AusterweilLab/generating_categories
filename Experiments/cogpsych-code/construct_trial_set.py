@@ -25,6 +25,7 @@ else:
 #This list of exps are known to be compilations:
 if expName in ['pooled','5con','5con_s']:
     compilation = True
+
 #Toggle construction of trialset pickle without first trial?
 # This is in addition to the usual.
 # Regular full set of trials is always constructed.
@@ -67,7 +68,15 @@ generation = pd.merge(generation, mapping, on='condition')
 trials = Simulation.Trialset(stimuli)
 trials = trials.add_frame(generation)
 
-with open('pickles/{}.p'.format(expName),'wb') as f:
+if expName == 'pooled':
+    #Special cases where expname is not what used to be saved as pickles
+    saveName = 'all_data_e1_e2'
+elif expName == 'pooled-no1st':
+    saveName = 'trials_2-4_e1_e2'
+else:
+    saveName = expName
+    
+with open('pickles/{}.p'.format(saveName),'wb') as f:
     pickle.dump(trials, f)
 
 if no1st:
@@ -75,6 +84,6 @@ if no1st:
     trials.Set = [i for i in trials.Set if len(i['categories'][1])>0]
     trials._update()
 
-    with open('pickles/{}-no1st.p'.format(expName),'wb') as f:
+    with open('pickles/{}-no1st.p'.format(saveName),'wb') as f:
         pickle.dump(trials, f)
 

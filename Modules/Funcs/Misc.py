@@ -692,14 +692,24 @@ def printProg(i,print_ct = 0, steps = 1, breakline = 40, breakby = 'char'):
 def getrange(stimuli):
     '''
     Get the min and max for each stimulus feature. To be used when initialising models.
+    Also return the steps of each dimension
     '''
     stimrange = []
     for i in range(len(stimuli[0])):
         stimrange += [{'min': stimuli[:,i].min(),
                        'max': stimuli[:,i].max()}]
-    return stimrange
+        
+    ndim = stimuli.shape[1]
+    stimstep = []
+    for di in range(ndim):
+        uniques = np.unique(stimuli[:,di])
+        st = uniques[1]-uniques[0]
+        stimstep += [st]
+
+    return stimrange,stimstep
         
 
+    
 def getModelName(modelname,fetch='short'):
     '''
     Fetches the specified model name. FETCH can be 'short',long','class'.

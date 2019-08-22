@@ -32,10 +32,6 @@ class Packer(Exemplar):
 
 
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
-        #Get feature ranges for (if) wrapped_axis
-        #If no wrap_ax, then it doesn't matter anyway
-        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
-        ax_step = self.stimstep[0]
 
         # if not wrap_ax is None:
         #     ax_ranges = np.ptp(stimuli,axis=0)
@@ -115,11 +111,6 @@ class PackerEuc(Exemplar):
 
 
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
-        #Get feature ranges for (if) wrapped_axis
-        #If no wrap_ax, then it doesn't matter anyway
-        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
-        ax_step = self.stimstep[0]
-
 
         # compute contrast sum similarity
         #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
@@ -190,10 +181,6 @@ class CopyTweak(Exemplar):
                 np.random.uniform(0.1, 6.0), # determinism
         ]
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
-        #Get feature ranges for (if) wrapped_axis
-        #If no wrap_ax, then it doesn't matter anyway
-        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
-        ax_step = self.stimstep[0]
 
         # return uniform probabilities if there are no exemplars
         target_is_populated = any(self.assignments == category)
@@ -250,11 +237,6 @@ class CopyTweakRep(Exemplar):
                 np.random.uniform(0.1, 6.0), # determinism
         ]
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
-        #Get feature ranges for (if) wrapped_axis
-        #If no wrap_ax, then it doesn't matter anyway
-        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
-        ax_step = self.stimstep[0]
-        
         # return uniform probabilities if there are no exemplars
         target_is_populated = any(self.assignments == category)
         if not target_is_populated:
@@ -344,10 +326,6 @@ class PackerRep(Exemplar):
 
 
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):        
-        #Get feature ranges for (if) wrapped_axis
-        #If no wrap_ax, then it doesn't matter anyway
-        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
-        ax_step = self.stimstep[0]
 
         #040819 Hmm I'm not sure this is the right way to model PACKER-rep after all. Shouldn't we treat the likelihoods in rep as the aggregated sim?
         #Corrected version appears below this commented bit
@@ -446,11 +424,6 @@ class NPacker(Exemplar):
 
 
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
-        #Get feature ranges for (if) wrapped_axis
-        #If no wrap_ax, then it doesn't matter anyway
-        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
-        ax_step = self.stimstep[0]
-
         #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
         contrast_examples   = self.exemplars[self.assignments != category]
         contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
@@ -546,10 +519,6 @@ class NCopyTweak(Exemplar):
                 np.random.uniform(0.01, 10.0) # negwt                
         ]
     def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
-        #Get feature ranges for (if) wrapped_axis
-        #If no wrap_ax, then it doesn't matter anyway
-        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
-        ax_step = self.stimstep[0]
 
         # return uniform probabilities if there are no exemplars
         target_is_populated = any(self.assignments == category)

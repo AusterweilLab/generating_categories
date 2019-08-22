@@ -21,7 +21,7 @@ class Trialset(object):
         
         # figure out what the stimulus domain is        
         self.stimuli = stimuli
-        self.stimrange = funcs.getrange(stimuli)
+        self.stimrange,self.stimstep = funcs.getrange(stimuli)
                 
         # initialize trials list
         self.Set = [] # compact set
@@ -207,14 +207,17 @@ class Trialset(object):
                 for num, row in rows.groupby('trial'):
                     categories = row.categories.item()[:] #gotta copy the list with [:]                    
                     gen_exemplars = np.array(rows.loc[rows.trial<num, 'stimulus'].values)
-                    gen_cats = rows.loc[rows.trial<num, 'category'].values
-                    for gen_cat in np.unique(gen_cats):
-                        gen_idc = np.array([gi for gi, gc in enumerate(gen_cats) if gc == gen_cat])
-                        categories += [gen_exemplars[gen_idc]]
-                    
-                    #categories = row.categories.item() + [gen_exemplars]
+                    if 'category' in rows.columns:                    
+                        gen_cats = rows.loc[rows.trial<num, 'category'].values
+                        for gen_cat in np.unique(gen_cats):
+                            gen_idc = np.array([gi for gi, gc in enumerate(gen_cats) if gc == gen_cat])
+                            categories += [gen_exemplars[gen_idc]]
+                        add2cat = self.cat2ind(row.category.item())
+                    else:
+                        categories = row.categories.item() + [gen_exemplars]
+                        add2cat = 1
+
                     genstim = row.stimulus.item()
-                    add2cat = self.cat2ind(row.category.item())
                     stimulus = [genstim,add2cat]
                     if not 'wrap_ax' in row.columns:
                         wrap_ax = None
@@ -267,7 +270,16 @@ class Trialset(object):
             params = model.params2dict(params)
             for parmname in fixedparams.keys():
                 params[parmname] = fixedparams[parmname]
-        
+        #Get stimsteps, if it doesn't exist, compute and add as property
+        if hasattr(self,'stimstep'):
+            stimstep = self.stimstep
+        else:
+            ndim = self.stimuli.shape[1]
+            stimstep = []
+            for di in range(ndim):
+                uniques = np.unique(self.stimuli[:,di])
+                st = uniques[1]-uniques[0]
+                stimstep += [st]
         # iterate over trials
         loglike = 0
         ps_list = np.array([])
@@ -311,7 +323,7 @@ class Trialset(object):
                     # compute probabilities of generating exemplar in target cat
                     ##TO DO 030819 -- Correctly get the generations ps for each desired category (think add2cat)
                     if responseType == 1:
-                        ps = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
+                        ps = model(categories, params, self.stimrange,stimstep=stimstep,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
                         ps_idx = np.where(trial['wrap_ax']==wrap)[0]
                         #If it's a scalar, take it out of the array
                         if len(ps_idx)==1:
@@ -323,7 +335,7 @@ class Trialset(object):
                             if len(resp)>0:
                                 ps_idx = np.where(trial['wrap_ax'][category]==wrap)[0]
                                 if len(ps_idx)>0: #Only bother where the desired wrap is relevant
-                                    ps = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, category,self.task,seedrng = seedrng)
+                                    ps = model(categories, params, self.stimrange,stimstep=stimstep,wrap_ax=wrap).get_generation_ps(self.stimuli, category,self.task,seedrng = seedrng)
                                     #If it's a scalar, take it out of the array
                                     if len(ps_idx)==1:
                                         ps_idx = ps_idx[0]
@@ -334,10 +346,10 @@ class Trialset(object):
                     if responseType==2 and len(trial['response'])>2:
                         raise Exception('Cannot handle assignment of multiple categories at this point.')
                     #Compute probabilities of assigning exemplar to cat 0
-                    ps0 = model(categories, params, self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
+                    ps0 = model(categories, params, self.stimrange,stimstep=stimstep,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
                     #Compute probabilities of assigning exemplar to cat 1
                     ps1 = model(categories, params,
-                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli,
+                                self.stimrange,stimstep=stimstep,wrap_ax=wrap).get_generation_ps(self.stimuli,
                                                                   1,self.task,seedrng = seedrng)
 
 
@@ -376,10 +388,10 @@ class Trialset(object):
                     #idc_err = trial['response'][0]
                     #Compute probabilities of assigning exemplar to cat 0
                     ps0 = model(categories, params,
-                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
+                                self.stimrange,stimstep=stimstep,wrap_ax=wrap).get_generation_ps(self.stimuli, 0,self.task,seedrng = seedrng)
                     #Compute probabilities of assigning exemplar to cat 1
                     ps1 = model(categories, params,
-                                self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
+                                self.stimrange,stimstep=stimstep,wrap_ax=wrap).get_generation_ps(self.stimuli, 1,self.task,seedrng = seedrng)
                     idc0 = trial['response'][0][trial['wrap_ax']==wrap]
                     idc1 = trial['response'][1][trial['wrap_ax']==wrap]
                     ps_add = np.concatenate([ps0[idc0],ps1[idc1]])
@@ -402,7 +414,7 @@ class Trialset(object):
 
                         #Get entire probability space
                         ps = model(categories, params,
-                                   self.stimrange,wrap_ax=wrap).get_generation_ps(self.stimuli,
+                                   self.stimrange,stimstep=stimstep,wrap_ax=wrap).get_generation_ps(self.stimuli,
                                                                      i,self.task,seedrng = seedrng)
                         if len(correctresp)>0:
                             correctps = np.concatenate([correctps,ps[correctresp]])

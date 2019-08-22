@@ -326,51 +326,6 @@ class Model(object):
         return (xbar,C)
     
 
-
-class Exemplar(Model):
-    """        
-    Abstract base class for Exemplar models. Basically this is used to add 
-    a function computing summed similarity.
-    """
-    __metaclass__ = abc.ABCMeta
-
-    def _sum_similarity(self, X, Y, 
-        param = 1.0,    
-        wts  = None, 
-        c = None,
-        p = 1):
-        """ 
-        function to compute summed similarity along rows of 
-        X across all items in Y. Resulting array will have one element 
-        per row of X.
-
-        the "param" argument acts as a multiplier for similarities prior to summation
-        "c" and "wts" can be arbitrary if supplied, or based on the model attribute if not
-
-        p indicates the p-norm for calculating distance in pdist. If p == 1, that's city-block distance. 
-        p == 2 indicates Euclidean distance. But really p can take any real positive.
-
-        """
-        # set weights and c
-        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
-        ax_step = self.stimstep[0]
-        if wts is None: wts = self.wts
-        if c is None: c = self.specificity
-        if p == 1:
-            distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts, wrap_ax = self.wrap_ax, ax_range = ax_range, ax_step=ax_step)
-        else:
-            distance   = Funcs.pdist_gen(np.atleast_2d(X), np.atleast_2d(Y), w = wts, p = p, wrap_ax = self.wrap_ax, ax_range = ax_range, ax_step = ax_step)
-        similarity = np.exp(-float(c) * distance)
-        similarity = similarity * float(param)
-        return np.sum(similarity, axis = 1)
-
-class HierSamp(Model):
-    """        
-    Abstract base class for hierarchical sampling/Bayesian models (e.g. ConjugateJK13, RepresentJK13). Basically this is used to add 
-    a function computing wrapped densities for boundless features.
-    """
-    __metaclass__ = abc.ABCMeta
-
     def _wrapped_density(self, target_dist, stimuli,
                          density_ratio_cap = 1e5,
                          maxit = 50):
@@ -429,6 +384,51 @@ class HierSamp(Model):
 
             #print('itct = ' + str(itct))
         return density
+
+
+class Exemplar(Model):
+    """        
+    Abstract base class for Exemplar models. Basically this is used to add 
+    a function computing summed similarity.
+    """
+    __metaclass__ = abc.ABCMeta
+
+    def _sum_similarity(self, X, Y, 
+        param = 1.0,    
+        wts  = None, 
+        c = None,
+        p = 1):
+        """ 
+        function to compute summed similarity along rows of 
+        X across all items in Y. Resulting array will have one element 
+        per row of X.
+
+        the "param" argument acts as a multiplier for similarities prior to summation
+        "c" and "wts" can be arbitrary if supplied, or based on the model attribute if not
+
+        p indicates the p-norm for calculating distance in pdist. If p == 1, that's city-block distance. 
+        p == 2 indicates Euclidean distance. But really p can take any real positive.
+
+        """
+        # set weights and c
+        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+        ax_step = self.stimstep[0]
+        if wts is None: wts = self.wts
+        if c is None: c = self.specificity
+        if p == 1:
+            distance   = Funcs.pdist(np.atleast_2d(X), np.atleast_2d(Y), w = wts, wrap_ax = self.wrap_ax, ax_range = ax_range, ax_step=ax_step)
+        else:
+            distance   = Funcs.pdist_gen(np.atleast_2d(X), np.atleast_2d(Y), w = wts, p = p, wrap_ax = self.wrap_ax, ax_range = ax_range, ax_step = ax_step)
+        similarity = np.exp(-float(c) * distance)
+        similarity = similarity * float(param)
+        return np.sum(similarity, axis = 1)
+
+class HierSamp(Model):
+    """        
+    Abstract base class for hierarchical sampling/Bayesian models (e.g. ConjugateJK13, RepresentJK13). Basically this is used to add 
+    a function computing wrapped densities for boundless features.
+    """
+    __metaclass__ = abc.ABCMeta
 
     def get_musig(self, stimuli, category):
         # random response if there are no target members.
