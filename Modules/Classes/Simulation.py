@@ -72,6 +72,9 @@ class Trialset(object):
 
             
         #Force wrap_ax to be int or None
+        if hasattr(wrap_ax,'__len__'):
+            if len(wrap_ax)==0:
+                wrap_ax = None
         if not wrap_ax is None:
             if np.isnan(wrap_ax):
                 wrap_ax = None
@@ -276,7 +279,7 @@ class Trialset(object):
             #170818 - uh oh, looks like this line doesn't correctly account for lists with [0]
             #Lists with [0] should be recognised as valid categories, and not empty
             #categories = [self.stimuli[i,:] for i in trial['categories'] if any(i)]
-            categories = [self.stimuli[i,:] for i in trial['categories'] if len(i)>0]
+            categories = [self.stimuli[np.array(i,dtype=int),:] for i in trial['categories'] if len(i)>0] #Might want to find a faster way, avoiding the np.array dtype=int
             # Check if responseType is 1 (each element of response is strictly a new Beta) or 2 (elements of response correspond to categories)
             if hasattr(trial['response'][0], "__len__"):
                 responseType = 2
@@ -324,7 +327,8 @@ class Trialset(object):
                                     #If it's a scalar, take it out of the array
                                     if len(ps_idx)==1:
                                         ps_idx = ps_idx[0]
-                                    ps_add = np.append(ps_add,ps[resp[ps_idx]])
+                                    respidx = np.array(resp[ps_idx],dtype=int)
+                                    ps_add = np.append(ps_add,ps[respidx])
                             
                 elif task=='assign':
                     if responseType==2 and len(trial['response'])>2:
@@ -779,7 +783,7 @@ def extractPptData(trial_obj, ppt = 'all', unique_trials = 'all'):
                         pptList = np.append(pptList,pptcats[extractIdx])
                         wrapaxList = np.append(wrapaxList,wrapaxcats[extractIdx])
             elif responseType==2:
-                ncategories = len(trialchunk['categories'])
+                ncategories = len(trialchunk['participant'])
                 #iterate over categories of responses        
                 respList = [np.array([], dtype = int) for _ in xrange(ncategories)]
                 pptList = [np.array([], dtype = int) for _ in xrange(ncategories)]

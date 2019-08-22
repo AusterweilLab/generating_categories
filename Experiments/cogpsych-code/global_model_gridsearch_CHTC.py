@@ -13,14 +13,20 @@ from Modules.Classes import RepresentJK13
 from Modules.Classes import CopyTweakRep
 from Modules.Classes import PackerRep
 from Modules.Classes import PackerEuc
+from Modules.Classes import NegatedSpace
+from Modules.Classes import NConjugateJK13
+from Modules.Classes import NRepresentJK13
+from Modules.Classes import NPacker
+from Modules.Classes import NCopyTweak
 #Toggle 
 fit_weights = False #This is a little difficult to do at this stage. I'll keep the application of weights to after the global fits have been done.010618
 fiterror = False #Toggle if fitting error
 ll150 = '' #either 'hi' or 'lo'. Include only the participants with Packer negLL more than 150 when fit to full data (see slack conversation between Joe and Xian on 260219 for more context)
 
 # Specify default dataname
-datasets = ['corner','corner_s','corner_c','5con','5con_s']#['pooled','pooled-no1st']
-#dataname_def = 'nosofsky1986'
+datasets  = ['5con','5con_s','corner','corner_s','corner_c']#['corner','corner_s','corner_c','5con','5con_s']#['pooled','pooled-no1st']#xcrABC
+modelList = [NPacker,NCopyTweak,NConjugateJK13,NRepresentJK13,Packer,CopyTweak,ConjugateJK13,RepresentJK13]#[ConjugateJK13, RepresentJK13, CopyTweakRep, CopyTweak, Packer]
+ #dataname_def = 'nosofsky1986'
 participant_def = 'all'
 unique_trials_def = 'all'
 nchunks = 1000 #number of CHTC instances to run
@@ -104,7 +110,7 @@ for dataname in datasets:
     #Run grid search
     results = dict()
 
-    for model_obj in [PackerRep,CopyTweakRep,ConjugateJK13,RepresentJK13,Packer,CopyTweak]:#[ConjugateJK13, RepresentJK13, CopyTweakRep, CopyTweak, Packer]:
+    for model_obj in modelList:
         #Prepare list of grid search start points
         #Create base array
         nparms = len(model_obj.parameter_names)
@@ -176,7 +182,7 @@ for dataname in datasets:
             inits = startp[i,:]
             res = Simulation.hillclimber(model_obj, trials, options,
                                          inits=inits, results = False,
-                                         callbackstyle='none') #can use 'iter','none','.'
+                                         callbackstyle='iter') #can use 'iter','none','.'
             final_parms = res.x
             final_ll = res.fun
             final_aic =  funcs.aic(final_ll,nparms)

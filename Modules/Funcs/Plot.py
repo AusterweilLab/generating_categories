@@ -59,7 +59,7 @@ def plotgradient(h, G, alphas, betas,
                                 cmap = 'Blues',
                                 alpha_col = 'red',
                                 beta_col = 'black',
-                 gammas=None):
+                 gammas=[]):
     """
     Plot a gradient using matplotlib.
      - h is the handle to the axis

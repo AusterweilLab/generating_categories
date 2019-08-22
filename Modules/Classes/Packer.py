@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import multivariate_normal
 
 # imports from module
 import Modules.Funcs as Funcs
@@ -417,3 +418,196 @@ class PackerRep(Exemplar):
                     
         return ps
 
+class NPacker(Exemplar):
+    """
+    The negated three-parameter PACKER Model
+    """
+
+    model = 'Negated PACKER'
+    modelshort = 'N. PACKER'
+    modelprint = 'N. PACKER'
+    parameter_names = ['specificity', 'theta_cntrst', 'theta_target','negwt'] 
+    parameter_rules = dict(
+        specificity = dict(min = 1e-10),
+        theta_cntrst = dict(min = 0.0),
+        theta_target = dict(min = 0.0),
+        negwt = dict(min=0),
+        )
+
+    @staticmethod
+    def _make_rvs():
+        """ Return random parameters """
+        return [
+            np.random.uniform(0.1, 6.0),  # specificity
+            np.random.uniform(0.1, 6.0),  # theta_cntrst
+            np.random.uniform(0.1, 6.0),  # theta_target
+            np.random.uniform(0.01, 10.0) # negwt            
+        ] 
+
+
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
+        #Get feature ranges for (if) wrapped_axis
+        #If no wrap_ax, then it doesn't matter anyway
+        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+        ax_step = self.stimstep[0]
+
+        #New attempt 110418. Updated 170418 - theta_cntrst is for contrast, theta_target is tradeoff for target
+        contrast_examples   = self.exemplars[self.assignments != category]
+        contrast_ss   = self._sum_similarity(stimuli, contrast_examples, param = -1.0 * self.theta_cntrst)
+        # compute target sum similarity
+        target_examples = self.exemplars[self.assignments == category]
+        target_ss   = self._sum_similarity(stimuli, target_examples, param = self.theta_target)
+        #End new attempt 110418
+
+        negation = np.zeros(len(stimuli))
+        unit_var = 0.001
+        #Handle additional empty category
+        if category==self.ncategories:
+            self.ncategories += 1
+        for ci in range(self.ncategories):
+            #Only add non-target categories
+            if not ci == category:                
+                mu,Sigma = self.catStats(ci)
+                if self.nexemplars[ci]<2:
+                    Sigma = np.eye(self.num_features) * unit_var
+                checkzero = np.diagonal(Sigma)==0
+                if any(checkzero):
+                    #idc = np.diag_indices(self.num_features)
+                    replace = checkzero.nonzero()[0]
+                    for r in replace:
+                        Sigma[r,r] = unit_var
+                if np.isnan(Sigma).any() or np.isinf(Sigma).any():
+                    #target_dist = np.ones(mu.shape) * np.nan
+                    negation = np.ones(len(stimuli)) * np.nan
+                else:
+                    target_dist = multivariate_normal(mean = mu, cov = Sigma,allow_singular=True) #allowing singular shouldn't be an issue as long as gammas are all created after betas, but might want to tackle this properly someday 120819
+                    #target_dist = multivariate_normal(mean = mu, cov = Sigma)
+                    if not self.wrap_ax is None:
+                        negation += self._wrapped_density(target_dist,stimuli)
+                    else:
+                        negation += target_dist.pdf(stimuli)
+        
+        # aggregate target and contrast similarity
+        aggregate = contrast_ss + target_ss + (negation * -self.negwt)
+        # add baseline similarity
+        if task == 'generate': 
+            # NaN out known members - only for task=generate
+            known_members = Funcs.intersect2d(stimuli, target_examples)
+            aggregate[known_members] = np.nan
+            ps = Funcs.softmax(aggregate, theta = 1.0)                       
+            #ps = Funcs.softmax(aggregate, theta = self.determinism)                        
+        elif task == 'assign' or task == 'error':
+            #New test 110418
+            #compute contrast and target ss if stimuli is assigned
+            #to other cateogry
+            contrast_examples_flip = target_examples
+            contrast_ss_flip = self._sum_similarity(stimuli,
+                                                    contrast_examples_flip,
+                                                    param = -1.0 * self.theta_cntrst)
+            target_examples_flip = contrast_examples
+            target_ss_flip   = self._sum_similarity(stimuli,
+                                                    target_examples_flip,
+                                                    param = self.theta_target)
+            #End test 110418
+
+            aggregate_flip = target_ss_flip + contrast_ss_flip
+
+            #Go through each stimulus and calculate their ps
+            ps = np.array([])
+            for i in range(len(aggregate)):
+                    agg_element = np.array([aggregate[i],aggregate_flip[i]])
+                    #ps_element = Funcs.softmax(agg_element, theta = self.determinism)
+                    ps_element = Funcs.softmax(agg_element, theta = 1.0)
+                    ps = np.append(ps,ps_element[0])
+                    
+        return ps
+
+
+class NCopyTweak(Exemplar):
+    """
+    Negated Continuous implementation of the copy-and-tweak model.
+    """
+
+    model = 'Negated Copy and Tweak'
+    modelshort = 'NCopyTweak'
+    modelprint = "NCopy & Tweak"
+    parameter_names = ['specificity', 'determinism','negwt']        
+    parameter_rules = dict(
+        specificity = dict(min = 0.01),
+        determinism = dict(min = 0.01),
+        negwt = dict(min = 0),
+        )
+
+    @staticmethod
+    def _make_rvs(fmt = dict):
+        """ Return random parameters """
+        return [np.random.uniform(0.1, 6.0), # specificity
+                np.random.uniform(0.1, 6.0), # determinism
+                np.random.uniform(0.01, 10.0) # negwt                
+        ]
+    def get_generation_ps(self, stimuli, category, task='generate',seedrng=False):
+        #Get feature ranges for (if) wrapped_axis
+        #If no wrap_ax, then it doesn't matter anyway
+        ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+        ax_step = self.stimstep[0]
+
+        # return uniform probabilities if there are no exemplars
+        target_is_populated = any(self.assignments == category)
+        if not target_is_populated:
+            ncandidates = stimuli.shape[0]
+            return np.ones(ncandidates) / float(ncandidates)
+
+        # get pairwise similarities with target category
+        target_examples = self.exemplars[self.assignments == category]
+        similarity = self._sum_similarity(stimuli, target_examples)
+
+        negation = np.zeros(len(stimuli))
+        unit_var = 0.001
+        #Handle additional empty category
+        if category==self.ncategories:
+            self.ncategories += 1
+        for ci in range(self.ncategories):
+            #Only add non-target categories
+            if not ci == category:                
+                mu,Sigma = self.catStats(ci)
+                if self.nexemplars[ci]<2:
+                    Sigma = np.eye(self.num_features) * unit_var
+                checkzero = np.diagonal(Sigma)==0
+                if any(checkzero):
+                    #idc = np.diag_indices(self.num_features)
+                    replace = checkzero.nonzero()[0]
+                    for r in replace:
+                        Sigma[r,r] = unit_var
+                if np.isnan(Sigma).any() or np.isinf(Sigma).any():
+                    negation = np.ones(len(stimuli)) * np.nan
+                else:
+                    target_dist = multivariate_normal(mean = mu, cov = Sigma,allow_singular=True) #allowing singular shouldn't be an issue as long as gammas are all created after betas, but might want to tackle this properly someday 120819
+                    if not self.wrap_ax is None:
+                        negation += self._wrapped_density(target_dist,stimuli)
+                    else:
+                        negation += target_dist.pdf(stimuli)
+        
+        similarity = similarity + (negation * -self.negwt)
+        if task == 'generate': 
+            # NaN out known members - only for task=generate
+            known_members = Funcs.intersect2d(stimuli, self.categories[category])
+            similarity[known_members] = np.nan
+            # get generation probabilities given each source
+            ps = Funcs.softmax(similarity, theta = self.determinism)
+        elif task == 'assign' or task == 'error':
+            # get pairwise similarities with contrast category
+            contrast_examples   = self.exemplars[self.assignments != category]
+            similarity_flip = self._sum_similarity(stimuli, contrast_examples)
+            # add baseline similarity
+            
+            ps = []
+            for i in range(len(similarity)):
+                similarity_element = np.array([similarity[i],
+                                               similarity_flip[i]])
+                ps_element = Funcs.softmax(similarity_element, theta = self.determinism)
+                ps = np.append(ps,ps_element[0])
+
+
+                #self.determinism = max(1e-308,self.determinism)
+                
+        return ps

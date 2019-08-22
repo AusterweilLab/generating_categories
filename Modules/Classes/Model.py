@@ -11,7 +11,7 @@ class Model(object):
     """
     
     __metaclass__ = abc.ABCMeta
-
+    num_features = 2 #hard code on first init, then update whenever trials come in
     @abc.abstractproperty
     def model(): pass
 
@@ -193,6 +193,10 @@ class Model(object):
         """
         Ensures wrap_ax is a list of integers or None
         """
+        if hasattr(self.wrap_ax,'__len__'):
+            if len(self.wrap_ax)==0:
+                self.wrap_ax = None
+
         if not self.wrap_ax is None:
             if not type(self.wrap_ax) is list:
                 self.wrap_ax = [self.wrap_ax]
@@ -282,7 +286,45 @@ class Model(object):
             self._update_()
 
         return generated_examples
+    
+    def catStats(self,category):
+        # Get empirical mean and cov
+        wrap_ax = self.wrap_ax
+        n = self.nexemplars[category]
+        if not wrap_ax is None:
+            if len(wrap_ax)>1:
+                raise Exception('Models cannot handle multiple wrapped axes yet.')
+            
+            wrap_ax = int(wrap_ax[0])
+            ax_range = self.stimrange[0]['max'] - self.stimrange[0]['min']
+            ax_step = self.stimstep[0]
+            cat = self.categories[category].copy()
+            stim_range = np.max(cat[:,wrap_ax]) - np.min(cat[:,wrap_ax])
+            if stim_range>(ax_range/2):                    
+                #Stimuli outside half the range get adjusted up to the first wrap
+                new_exm = cat[cat[:,wrap_ax]>=0,:]
+                shift_exm = cat[cat[:,wrap_ax]<0,:]
+                #Adj the wrap_axis of shifted exm
+                shift_exm[:,wrap_ax] = shift_exm[:,wrap_ax] + ax_range + ax_step
+                new_exm = np.concatenate([new_exm,shift_exm],axis=0)
+                xbar = np.mean(new_exm,axis=0)
+                #Place mean in the current range of stimuli
+                xbar[wrap_ax] = xbar[wrap_ax] - ax_range - ax_step
+            else:
+                new_exm = cat
+                xbar = np.mean(cat, axis=0)
+        else:                                                        
+            xbar = np.mean(self.categories[category], axis = 0)
+            new_exm = self.categories[category]
+            
+        #Now deal with sigma
+        if n < 2:
+            C = np.zeros((self.nfeatures, self.nfeatures))
+        else:
+            C = np.cov(new_exm, rowvar = False)                
 
+        return (xbar,C)
+    
 
 
 class Exemplar(Model):
@@ -387,3 +429,34 @@ class HierSamp(Model):
 
             #print('itct = ' + str(itct))
         return density
+
+    def get_musig(self, stimuli, category):
+        # random response if there are no target members.
+        target_is_populated = any(self.assignments == category)
+        if not target_is_populated:
+            mu = []
+            #randomly sample mu from uniform                        
+            # for nf in range(self.nfeatures):
+            #     mu += [np.random.uniform(self.stimrange[nf]['min'],
+            #                              self.stimrange[nf]['max'])]
+            # mu = np.array(mu)
+            #mu = self.category_mean_bias * self.category_prior_mean #isn't this more correct?
+            mu = self.category_prior_mean #isn't this more correct?
+            # Need to think about how to handle the influence of the prior mean... -- implications on whether it's appropriate for ConjugateJK13 to be a uniform random sample without any members
+
+            Sigma = self.Domain * self.category_variance_bias
+        else:
+            n = self.nexemplars[category]
+            (xbar,C) = self.catStats(category)            
+            # compute mu for target category
+            mu =  self.category_mean_bias * self.category_prior_mean
+            mu += n * xbar
+            mu /= self.category_mean_bias + n
+
+            # compute target category Sigma
+            ratio = (self.category_mean_bias * n) / (self.category_mean_bias + n)
+            Sigma = ratio * np.outer(xbar - mu, xbar - mu)
+            Sigma += self.Domain * self.category_variance_bias + C
+            Sigma /= self.category_variance_bias + n
+        return (mu,Sigma)
+

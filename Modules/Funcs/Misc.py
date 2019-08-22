@@ -711,9 +711,18 @@ def getModelName(modelname,fetch='short'):
     from Modules.Classes import RepresentJK13
     from Modules.Classes import CopyTweakRep
     from Modules.Classes import PackerRep
+    from Modules.Classes import PackerEuc
+    from Modules.Classes import NegatedSpace
+    from Modules.Classes import NConjugateJK13
+    from Modules.Classes import NRepresentJK13
+    from Modules.Classes import NPacker
+    from Modules.Classes import NCopyTweak
+
+            
     model_keywords = dict()
     modelnames = dict()
-    models = [Packer,CopyTweak,ConjugateJK13,RepresentJK13,CopyTweakRep,PackerRep]
+    models = [Packer,CopyTweak,ConjugateJK13,RepresentJK13,CopyTweakRep,PackerRep,PackerEuc,
+              NegatedSpace,NConjugateJK13,NRepresentJK13,NPacker,NCopyTweak]
     #Set everything to lowercase
     modelname = modelname.lower()
     #First, add default names
@@ -938,3 +947,133 @@ def invwishartpdf(X,scale,nu):
     out = numerator/denom * x_co * e_co #numerator/denom/x_co * e_co #numerator/denom * x_co * e_co
     return out
 
+## A bunch of convex hull-related functions follow
+class Line(object):
+    #Get the equation of the line crossing pointA and pointB
+    #Assuming 2-dimensions for simplicity
+    #First argument can also be nparray or list containing the two points
+    def __init__(self,pointA,pointB=None):
+        if pointB is None and len(pointA)==2:
+            pointB = pointA[1]
+            pointA = pointA[0]
+        self.points = np.array([pointA,pointB])
+        self.eq = self.mc(self.points)
+        self.xs = np.array([pointA[0],pointB[0]])
+        self.ys = np.array([pointA[1],pointB[1]])
+    def mc(self,points):
+        A = np.array(points[0],dtype=float)
+        B = np.array(points[1],dtype=float)
+        diff = A-B
+        if diff[0]==0:
+            m = np.inf
+            c = None
+        else:
+            m = diff[1]/diff[0]
+            c = A[1] - m*A[0]
+        return (m,c)
+    
+    def checkxy(self,x,y,line2):
+        #Check that x- and y-value of intercept lies within ranges of lines 
+        yr1 = self.ys
+        yr2 = line2.ys
+        yrs = [yr1,yr2]
+        for yr in yrs:
+            if y<min(yr)or y>max(yr):
+                return False
+        
+        xr1 = self.xs
+        xr2 = line2.xs
+        xrs = [xr1,xr2]
+        for xr in xrs:
+            if x<min(xr)or x>max(xr):
+                return False
+        #If all good, return True
+        return True
+
+def intersect(line1,line2):
+    #Get the intersect between two lines
+    #If it doesn't exist within the ranges of the lines, return None
+    #line1 and line2 are line Objects created with Line(pointA,pointB)    
+    m1,c1 = line1.eq
+    m2,c2 = line2.eq 
+    #if m's are equal, they're parallel and will never intersect
+    if m1==m2:
+        return(None,None)
+    #Handle straight verticals
+    if np.isinf(m1) and np.isinf(m2):
+        return(None,None)
+    elif np.isinf(m1):
+        x = line1.xs[0]
+        y = m2*x + c2
+        if line1.checkxy(x,y,line2):  
+            return np.array((x,y))
+        else:
+            return (None,None)        
+    elif np.isinf(m2):
+        x = line2.xs[0]
+        y = m1*x + c1
+        if line2.checkxy(x,y,line1):  
+            return np.array((x,y))
+        else:
+            return (None,None) 
+    
+    #Otherwise, derive x and y accordingly
+    x = (c2-c1)/(m1-m2)  
+    y = m1*x + c1
+    if line1.checkxy(x,y,line2):  
+        return np.array((x,y))
+    else:
+        return (None,None)
+    
+def isinhull(hull,point):
+    #Check if point is within the hull
+    #If point changes the vertices of the hull, return false
+    points = hull.points
+    newpoints = np.concatenate([points,[point]])
+    newhull = ConvexHull(newpoints)
+    pold = points[hull.vertices]
+    pnew = newpoints[newhull.vertices]
+    if not len(pold) == len(pnew):
+        return False
+    else: 
+        #If same length, test for equivalence across all elements
+        if np.all(pold == pnew):
+            return True
+        else:
+            return False
+
+def overlapArea(cat1,cat2):
+    hull1 = ConvexHull(cat1)
+    hull2 = ConvexHull(cat2)
+
+    verts1 = np.concatenate((cat1[hull1.vertices],[cat1[hull1.vertices[0]]]),axis=0)
+    lines1 = [Line(pt,verts1[pi+1]) for pi,pt in enumerate(verts1) if pi<len(verts1)-1]
+
+    verts2 = np.concatenate((cat2[hull2.vertices],[cat2[hull2.vertices[0]]]),axis=0)
+    lines2 = [Line(pt,verts2[pi+1]) for pi,pt in enumerate(verts2) if pi<len(verts2)-1]
+
+    #Get intersections
+    ints = []
+    for l1 in lines1:
+        for l2 in lines2:
+            (x,y) = intersect(l1,l2)
+            if not x is None:
+                ints += [intersect(l1,l2)]
+
+    #For each vertex, check if it's contained within the other hull
+    inVerts = []
+    for p in cat1[hull1.vertices]:
+        if isinhull(hull2,p):
+            inVerts += [p]
+
+    for p in cat2[hull2.vertices]:
+        if isinhull(hull1,p):
+            inVerts += [p]
+
+    overVerts = ints+inVerts
+    
+    if len(overVerts)>0:
+        hullOver = ConvexHull(overVerts)
+        return hullOver.volume
+    else:
+        return 0

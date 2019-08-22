@@ -44,7 +44,7 @@ sS'Hierarchical Sampling'
 p20
 g2
 (g6
-S'M\xe9\xecmjT\xb9@'
+S'\xeb\xc2\x85\xc4oT\xb9@'
 p21
 tp22
 Rp23

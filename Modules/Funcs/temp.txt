@@ -1,0 +1,37 @@
+def overlapArea(cat1,cat2):
+    hull1 = ConvexHull(cat1)
+    hull2 = ConvexHull(cat2)
+
+    verts1 = np.concatenate((points[hull1.vertices],[points[hull1.vertices[0]]]),axis=0)
+    lines1 = [Line(pt,verts1[pi+1]) for pi,pt in enumerate(verts1) if pi<len(verts1)-1]
+
+    verts2 = np.concatenate((points2[hull2.vertices],[points2[hull2.vertices[0]]]),axis=0)
+    lines2 = [Line(pt,verts2[pi+1]) for pi,pt in enumerate(verts2) if pi<len(verts2)-1]
+
+    #Get intersections
+    ints = []
+    for l1 in lines1:
+        for l2 in lines2:
+            (x,y) = intersect(l1,l2)
+            if not x is None:
+                ints += [intersect(l1,l2)]
+
+    #For each vertex, check if it's contained within the other hull
+    inVerts = []
+    for p in points[hull1.vertices]:
+        if isinhull(hull2,p):
+            inVerts += [p]
+
+    for p in points2[hull2.vertices]:
+        if isinhull(hull1,p):
+            inVerts += [p]
+
+    overVerts = ints+inVerts
+    
+    if len(overVerts)>0:
+        pvts = np.array(overVerts)
+        plt.plot(pvts[:,0],pvts[:,1],'d',markersize=15)    
+        hullOver = ConvexHull(overVerts)
+        return hullOver.volume
+    else:
+        return None
