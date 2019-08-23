@@ -365,7 +365,7 @@ class Model(object):
                 itct += 1
                 #print('U'+str(itct))
                 if itct >= maxit:
-                    print('Max wrapped axis reached.')
+                    print('Max wrapped axis reached. Up density ratio = %.5f' % density_ratio)
                 #     continue
             #print('itct = ' + str(itct))
             itct = 0
@@ -380,7 +380,7 @@ class Model(object):
                 itct += 1
                 #print('L'+str(itct))
                 if itct >= maxit:
-                    print('Max wrapped axis reached.')
+                    print('Max wrapped axis reached. Down density ratio = %.5f' % density_ratio)
 
             #print('itct = ' + str(itct))
         return density
@@ -443,7 +443,6 @@ class HierSamp(Model):
             #mu = self.category_mean_bias * self.category_prior_mean #isn't this more correct?
             mu = self.category_prior_mean #isn't this more correct?
             # Need to think about how to handle the influence of the prior mean... -- implications on whether it's appropriate for ConjugateJK13 to be a uniform random sample without any members
-
             Sigma = self.Domain * self.category_variance_bias
         else:
             n = self.nexemplars[category]

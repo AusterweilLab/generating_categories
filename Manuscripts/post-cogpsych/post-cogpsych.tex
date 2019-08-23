@@ -1676,18 +1676,24 @@ maximally different from the Alpha exemplars (Figure \ref{fig:e3-squares}c.)
     \end{center}
 \end{figure}
 
-Another factor we examine with this category structure is the effect of boundaries. The represenativeness model prefers to generate categories located
+Another factor we examine with this category structure is the effect of
+boundaries. The representativeness model prefers to generate categories located
 at the boundaries of the stimulus features. If at least one of these boundaries
-is removed by utilizing a toroidal feature (one with no boundaries), such as the rotation of a line. The represenativeness model will strongly prefer to generate categories on the non-toroidal or bounded feature as it still has a boundary. Experiment 3 manipulates the stimulus space. One condition uses the same stimuli as before, squares varying in lightness and size, both of which are bounded features. The other condition use a new set of stimuli:
-circles that vary in size (a bounded feature) and orientation (an
-unbounded feature; Figure \ref{fig:e3-circles}a). Before describing the
-details of the experiment, we examine each model's
-predictions with stimuli that comprise one bounded and one unbounded feature.
+is removed by utilizing a toroidal feature (one with no boundaries), such as the
+rotation of a line.[Note to Xian: Something weird going on here, remember to edit.] The representativeness model will strongly prefer to
+generate categories on the non-toroidal or bounded feature as it still has a
+boundary. Experiment 3 manipulates the stimulus space. One condition uses the
+same stimuli as before, squares varying in lightness and size, both of which are
+bounded features. The other condition use a new set of stimuli: circles that
+vary in size (a bounded feature) and orientation (an unbounded feature; Figure
+\ref{fig:e3-circles}a). Before describing the details of the experiment, we
+examine each model's predictions with stimuli that comprise one bounded and one
+unbounded feature.
 
 
 \begin{figure}[p]
     \begin{center} 
-      \includegraphics[width=.8\textwidth]{figs/e3-circles.pdf}
+      \includegraphics[width=.8\textwidth]{figs/e3-circles.png}
       \caption{Circle stimulus domain (a) and predictions from contrast models
         PACKER (b) and the representativeness model (c). The unbounded feature
         (orientation) is represented on the y-axis, while the bounded feature
@@ -1699,9 +1705,15 @@ predictions with stimuli that comprise one bounded and one unbounded feature.
 \end{figure}
 
 
-Compared to stimuli with two bounded features, PACKER makes a similar prediction in generating the first Beta exemplar when one feature is unbounded, with the curious exception that the highest density regions appear compressed along the y-axis (for simplicity, we always assign the y-axis as the toroidal feature in the text and figures). Due to the unbounded nature of orientation, the maximum distance from
-the Alpha exemplars is half of the full range of the feature -- for an Alpha
-exemplar oriented at 0 radians, the furthest another exemplar can be situated is $\pi$ radians within the full range of orientation is $2\pi$ radians. 
+Compared to stimuli with two bounded features, PACKER makes a similar prediction
+in generating the first Beta exemplar when one feature is unbounded, with the
+curious exception that the highest density regions appear compressed along the
+y-axis (for simplicity, we always assign the y-axis as the toroidal feature in
+the text and figures). Due to the unbounded nature of orientation, the maximum
+distance from the Alpha exemplars is half of the full range of the feature --
+for an Alpha exemplar oriented at 0 radians, the furthest another exemplar can
+be situated is $\pi$ radians within the full range of orientation is $2\pi$
+radians. 
 
 For the representativeness model, adding an unbounded feature changes the
 probability distribution for the underlying Bayesian model. Whereas it is still
@@ -1717,10 +1729,43 @@ distribution for circular dimensions, the Von Mises distribution, is an
 approximation to the wrapped Gaussian distribution. See Appendix B for
 implementational details of the representativeness model in toroidal space.
 
-The single unbounded feature prevents ... While the representativeness model
-more closely resembles PACKER under this condition, note that the former still
-more strongly predicts the generation of the first Betas exemplars at the
-bounded edges compared to PACKER (Figure \ref{fig:e3-circles}c.) 
+The consequence of employing a wrapped Gaussian is presented in Figure
+\ref{fig:e3-circles}c. Edge effects along the unbounded feature (displayed as
+the vertical axis) are no longer present since the edges themselves no longer
+exist. Instead, the probability of generating the first Beta exemplar is
+bimodally distributed at the edges of the bounded feature (displayed as the
+horizontal axis.) Essentially, as with stimuli possessing only bounded features,
+the representativeness model still struggles to generate the first Beta
+exemplars in the center of the feature space. 
+
+It may be argued that our expectation that the representativeness model should
+\emph{always} tend to produce first-Betas at the edges may be too strong.
+Specifically, this prediction is based on the model that is optimized to data
+from Experiments 1 and 2, and it is conceivable that the model may make
+drastically different predictions (such as some favoring the initial generation
+of centrally-located Betas more than Betas at the edges) in the current
+experiment when it is actually fit to empirical data from this experiment.
+However, we contend that this prediction of the representativeness model is a
+fundamental property of the model due to its assumption of unimodal category
+distributions. At the very least, the maximum probability of generating a
+centrally located first Beta should almost never be higher than the maximum
+probability of generating a first Beta at an edge.
+
+It is also worth noting that since the representativeness model does not explicitly
+recognize similarities as distances within the feature space (unlike PACKER),
+there is no compression in density regions along the unbounded feature axis.
+This provides us with an additional qualitative marker distinguishing the
+representativeness model from PACKER -- if the range of the entire Beta category
+along the unbounded feature is observed to be shorter than that of the bounded
+feature, this would be stronger evidence for PACKER rather than the
+representativeness model.
+
+
+% In the following
+% section, we explore -- using both qualitative comparisons and quantitative fits
+% -- whether PACKER or the representativeness model is a better account of
+% behavioral data in this Corner experiment.
+
 % For the representativeness model, the single unbounded feature essentially
 % prevents the formation of edge effects along that feature. Consequently, this results in higher probabilities of the generating the first Beta exemplars along the edges of the bounded feature (Figure \ref{fig:e3-circles}c). As this
 % model does not explicitly recognize similarities as distances along the feature
@@ -1749,13 +1794,30 @@ $2.587$--$2\pi + 2.587$ radians, with $0$ radians indicating a completely
 horizontal line. The line widths of the circles and radial line were set to 0.05
 cm. Similar to Experiments 1 and 2, participants first observed a training phase
 where four Alpha exemplars were presented across three blocks followed by the
-generation phase. The training condition was the Corner category for all
+generation phase, and the features values are divided into 9 discrete steps. The training condition was the Corner category for all
 participants.
 
 \subsection{Results and Discussion}
 
 %Repeat hypotheses
+Unlike the previous experiments, Experiment 3 allows us to distinguish between
+PACKER and the representativeness model beyond their quantitative fits by
+identifying specific qualitatively diagnostic markers. Specifically, if PACKER
+is a better account of the data, we would expect a relative decrease in the
+range of the entire Beta category along the unbounded feature compared to the
+bounded feature, as well as a preference for first-generated Beta exemplars away
+from the edges of the feature space. These predictions are correspondingly
+reversed if the representativeness model offers a better account of the data.
+For our analyses, we define the edge to be the 1-tile wide border of each 9-by-9
+large feature space. 
 
+Figure \ref{fig:e3-statsboxes} presents the distributional statistics for both
+square and circle stimuli. Participants produced circle stimuli with
+significantly lower Y-range (lower for the unbounded feature) as compared to 
+the square stimuli ($t(87) = 4.94$, $p = .001$), providing early support for PACKER.
+There are no significant differences between the distributional statistics of
+each generated category between square and circle stimuli (Figure
+\ref{fig:e3-statsboxes})
 
 \begin{figure}
     \begin{center}
@@ -1769,29 +1831,99 @@ the X Range represents size.}
     \end{center}
 \end{figure}
 
-Participants produced circle stimuli with significantly lower Y-range (lower for the unbounded feature) as compared with the square stimuli ($t(87) = 4.94$, $p = .001$).  This
-provides preliminary support for PACKER, which predicts generating exemplars
-within a shorter range along the unbounded feature compared to a bounded
-feature. Otherwise, there were no significant differences between the distributional statistics of each
-generated category between square and circle stimuli (Figure
-\ref{fig:e3-statsboxes})
+An inspection of the distributions of generated first-Betas (Figure
+\ref{fig:e3-behave}) does not immediately indicate support for either model. The
+square condition reveals first Betas generated at the corners as well as the
+center of the feature space, while the circle condition shows greater
+frequencies at the center. However, we also found that 65\% and 87\% of
+participants generated their first squares and first circles, respectively, away
+from the edge of the feature space.\footnote{Strictly speaking, the circle
+  stimuli do not have edges along its orientation feature, However, for ease of
+  comparison we will continue to refer to these comparable regions between
+  stimuli as edges.} Further, the maximum proportion of first-Betas generated
+off the edges (.13) is higher than that of the maximum proportion in an edge
+(.04) for the circle stimuli, although the maximum proportions are the same for
+squares (.06 for both edge and off-edge.) This preference for generating
+first-Betas away from the edge is in line with our hypothesis
+supporting PACKER.
 
-The contrast models were fit by optimizing their fit to all experiments in this
-article (Experiments 1 through 3). Fit statistics and parameter values are
-presented in Table \ref{table:corner-model-fits}. Although not our main focus in
-this section, we also provide the statistics for the classical models --
-unsurprisingly, they do not perform as well as the contrast models. Overall,
-the representativeness model emerges as the best-fitting model in aggregate, although by a much smaller amount than Experiments 1 and 2. However, analyzing data in aggregate can be misleading.
 
-%by a much smaller lead compared to fits to only Experiments 1 and 2. At an individual level, 67\% of participants in Experiment 3 were better
-%fit by PACKER than the representativeness model. 
+\begin{figure}
+    \begin{center}
+      \includegraphics[width=.6\textwidth]{figs/e3-behave.pdf}
+    \caption{Heatmaps indicating the relative frequencies of generating the
+      first Beta exemplar in the Corner condition.}
+    \label{fig:e3-behave}
+    \end{center}
+\end{figure}
 
-Table \ref{table:corner_counts} presents frequencies of the best-fitting model for participants in each condition. Overall the representativeness model was significantly worse at capturing the results of Experiment 3 (it fit 29 out of the 89 participants better than PACKER; two-tailed Binomial test $p < 0.005$). Further, this is mostly due to representativeness model capturing participants in the unbounded circle condition worse than  PACKER (11 of 43 better fit by representativeness; two-tailed Binomial test, $p<0.005$). The representativeness model only trended towards fitting participants in the bounded, Square condition better (18 out of 46; two-tailed Binomial test $p = 0.18$). Further, 35\% of participants in the bounded condition generated their first Beta exemplars along the
-edges of the feature space, but only 12\% of participants in the toroidal, circle condition generated their first Beta exemplars along the edges of
-the feature space. These proportions more closely match the predictions of
-PACKER (33\% probability of generating first Beta exemplars at the edges for
-squares, and 24\% probability at edges for circles) compared to the
-representativeness model (53\% of the former, 49\% probability of the latter). Thus, the representativeness model's success at capturing Experiments 1 and 2 is in part due to the nature of the stimulus features, as well as the structure of contrasting category.
+After fitting the models to data from Experiment 3, there appears to be no major
+qualitative deviations in the distribution of first-Betas for the square stimuli
+(Figures \ref{fig:e3-firstbetas}a and b) from previous expectations (i.e., as
+seen in Figure \ref{fig:e3-squares}), however this is not the case for the
+circle stimuli (Figures \ref{fig:e3-firstbetas}c and d compared to Figure
+\ref{fig:e3-circles})). Specifically, we see greater variance along the
+unbounded feature for PACKER, and most strikingly, that the representativeness
+model is able to expand the distribution of generating first-Betas into more
+centrally located regions \ref{fig:e3-firstbetas} for circle stimuli. However as
+predicted, even with this distribution, the maximum probability of the
+representativeness model generating at an edge (.0438) is higher than generating
+off-edge (.0394), indicating a preference for producing first-Betas at the edge.
+This is in contrast to both PACKER and the empirical data, which both show a
+general preference for centrally-located first-Betas.
+
+% These proportions more closely match the predictions of PACKER
+% (34\% probability of generating first Beta exemplars at the edges for squares,
+% and 24\% probability at edges for circles) compared to the representativeness
+% model (53\% of the former, 49\% probability of the latter). Thus, the
+% representativeness model's success at capturing Experiments 1 and 2 is in part
+% due to the nature of the stimulus features, as well as the structure of
+% contrasting category.
+
+\begin{figure}
+    \begin{center}
+      \includegraphics[width=.6\textwidth]{figs/e3-firstbetas.pdf}
+      \caption{Heatmaps indicating the probabilities of each contrast model
+        generating the first Beta exemplar in the Corner condition for both
+        square and circle stimuli. Models have been fit to data from Experiment 3.}
+    \label{fig:e3-firstbetas}
+    \end{center}
+\end{figure}
+
+The contrast models were fit by optimizing their fit to only Experiment 3. Fit
+statistics and parameter values are presented in Table
+\ref{table:corner-model-fits}. Although not our main focus in this section, we
+also provide the statistics for the classical models -- unsurprisingly, they do
+not perform as well as the contrast models. In line with our qualitative
+observations, PACKER emerges as the best-fitting model in aggregate.
+
+\begin{table} \centering
+  \caption{Results of model-fitting to the combined datasets from Experiments 1,
+    2 and 3. Smaller AIC values correspond to better model fits (adjusted
+    for number of parameters.)}
+\label{table:corner-model-fits}
+
+\begin{tabular}{ l l l l} \\ \\ \textbf{PACKER} & \textbf{Copy \& Tweak} &
+\textbf{Representativeness} & \textbf{Hierarchical Bayesian} \\ 
+  \hline $AIC = 2954$ &$AIC = 2963$ &$AIC = 2971$  &$AIC = 3025$\\ 
+  $L = -1474$          &$L = -1479$   &$L = -1481$    &$L = -1508$\\ 
+  $c = 2.08$           &$c = 3.73$    &$\kappa = 0.00$&$\kappa = 0.29$  \\ 
+  $\theta_c = 0.87$    &$\theta_c = 0$ (fixed)  &$\nu = 4.07 \times 10^20$ &$\nu
+                                                                             = 1.00$\\
+  $\theta_t = 2.18$    &$\theta_t = 2.57$       &$\lambda = 0.14$ &$\lambda = 0.00$\\
+                       &              &$\theta = 0.73$ &$\theta = 7.50$\\
+\end{tabular}
+\end{table}
+
+Table \ref{table:corner_counts} presents frequencies of the best-fitting model
+for participants in each condition. Overall the representativeness model was
+significantly worse at capturing the results of Experiment 3 (it fit 26 out of
+the 89 participants better than PACKER; two-tailed Binomial test $p < 0.001$).
+Further, this is mostly due to the representativeness model capturing participants
+in the unbounded circle condition worse than PACKER (8 of 43 better fit by
+representativeness; two-tailed Binomial test, $p<0.001$). The representativeness
+model only trended towards fitting participants in the bounded, Square condition
+better (18 out of 46; two-tailed Binomial test $p = 0.18$). 
 %In addition, these results agree with our prediction that the representativeness model would be poorer in predicting data from circle stimuli (26\% of participants observing circle stimuli) compared to square stimuli (39\% participants observing square stimuli). 
 
 
@@ -1803,39 +1935,18 @@ representativeness model (53\% of the former, 49\% probability of the latter). T
 \begin{tabular}{ l l l l l} \\ Stimulus Type & \textbf{PACKER} &
                                                                \textbf{Representativeness}& Total & Two-tailed Binomial test $p$-value \\
   \hline 
-  Squares & 28 & 18 & 46 & $p < 0.005$\\
-  Circles & 32 & 11 & 43 & $p \approx 0.18$\\
-  Total   & 60 & 29 & 89 & $p < 0.005$\\
-\end{tabular}
-\end{table}
-\begin{table} \centering
-  \caption{Results of model-fitting to the combined datasets from Experiments 1,
-    2 and 3. Smaller AIC values correspond to better model fits (adjusted
-    for number of parameters.)}
-\label{table:corner-model-fits}
-
-\begin{tabular}{ l l l l} \\ \\ \textbf{PACKER} & \textbf{Copy \& Tweak} &
-\textbf{Representativeness} & \textbf{Hierarchical Bayesian} \\ 
-  \hline $AIC = 12023$ &$AIC = 12779$ &$AIC = 11982$  &$AIC = 12976$\\ 
-  $L = -6008$          &$L = -6388$   &$L = -5987$    &$L = -6484$\\ 
-  $c = 0.51$           &$c = 3.24$    &$\kappa = 6.73$&$\kappa = 0.00$  \\ 
-  $\theta_c = 3.03$    &$\theta_c = 0$ (fixed)  &$\nu = 1.00$ &$\nu = 3.27$\\
-  $\theta_t = 3.46$    &$\theta_t = 2.90$       &$\lambda = 1.90$ &$\lambda = 0.07$\\
-                       &              &$\theta = 2.45$ &$\theta = 3.15$\\
+  Squares & 28 & 18 & 46 & $p \approx 0.18$\\
+  Circles & 35 &  8 & 43 & $p < 0.001$\\
+  Total   & 60 & 26 & 89 & $p < 0.001$\\
 \end{tabular}
 \end{table}
 
-
-
-%Ultimately, these results suggest that PACKER's exemplar dissimilarity account
-%of contrast, as opposed to the representativeness account, is more appropriate
-%for the Corner category type. On almost every measure of analysis in this
-%section, PACKER outperformed the representativeness model. Although the
-%representativeness model best fit the data from Experiments 1 and 2, it
-%struggled when the learned category occupied the extreme corners of the stimulus
-%space -- both in cases where the stimuli possess bounded and unbounded features.
-%
-%[Work on transition time permitting]
+Ultimately, these results suggest that PACKER's exemplar dissimilarity account
+of contrast, as opposed to the representativeness account, offers a better
+explanation of category generation for the Corner category type. On almost every
+measure of analysis in this section, PACKER outperformed the representativeness
+model, indicating that the better fit of the latter model demonstrated in
+Experiments 1 and 2 is not general to all conditions.
 
 \section{General Discussion}
 The sensory impression of every stimulus and event is unique. Grouping distinct
@@ -2169,7 +2280,7 @@ of distributional structure. However, as noted in the introduction, the
 incorporation of category contrast is antithetical to the core principles of a
 traditional, semi-conjugate Bayesian approach. This suggests that category
 generation is a fundamentally different computational-level problem
-\citep[different from those posed by][]{jern2013probabilistic,kemp2014taxonomy}, which is supported by the represenativeness form of their model performing much better.
+\citep[different from those posed by][]{jern2013probabilistic,kemp2014taxonomy}, which is supported by the representativeness form of their model performing much better.
 
 Characterizing that problem and conducting a rational analysis is an important
 direction for future research. To that aim, we plan to explore the connection

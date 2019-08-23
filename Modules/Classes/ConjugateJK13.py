@@ -203,7 +203,6 @@ class RepresentJK13(HierSamp):
 
         target_is_populated = any(self.assignments == category)                
         mu,Sigma = self.get_musig(stimuli, category)
-                
         # get relative densities
         if np.isnan(Sigma).any() or np.isinf(Sigma).any():
             #target_dist = np.ones(mu.shape) * np.nan
@@ -211,8 +210,8 @@ class RepresentJK13(HierSamp):
         else:
             # #270418 Implementing representational draws
             target_dist_target = multivariate_normal(mean = mu, cov = Sigma)
-            if not self.wrap_ax is None:
-                likelihood_target = self._wrapped_density(target_dist_target,stimuli)
+            if not self.wrap_ax is None:                
+                likelihood_target = self._wrapped_density(target_dist_target,stimuli)                
             else:
                 likelihood_target = target_dist_target.pdf(stimuli)
 
