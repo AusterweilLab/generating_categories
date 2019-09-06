@@ -44,13 +44,14 @@ Similarity, Contrast, and Representativeness in Categorization
 
 
 \vfill
-Joseph L. Austerweil\textsuperscript{1}
-Nolan Conaway\textsuperscript{1}, 
-Shi Xian Liew\textsuperscript{1},
-and Kenneth J. Kurtz\textsuperscript{2}
+Joseph L. Austerweil\textsuperscript{1+}
+Shi Xian Liew\textsuperscript{1+},
+Nolan Conaway\textsuperscript{2}, 
+and Kenneth J. Kurtz\textsuperscript{3}
 \\[\baselineskip]
-\textsuperscript{1}Department of Psychology, University of Wisconsin-Madison, Madison, WI, USA
-\textsuperscript{2}Department of Psychology, Binghamton University, Binghamton, NY, USA
+\textsuperscript{1}Department of Psychology, University of Wisconsin-Madison, Madison, WI, USA\\
+\textsuperscript{2}Shutterstock, New York, NY, USA\\
+\textsuperscript{3}Department of Psychology, Binghamton University, Binghamton, NY, USA
 \\[1in]
 
 \vfill
@@ -58,8 +59,10 @@ and Kenneth J. Kurtz\textsuperscript{2}
 Author Note
 
 Correspondence concerning this article should be addressed to: 
-Joseph L. Austerweil, 1202 West Johnson Street, Madison, WI 53706.
-E-mail: austerweil@wisc.edu
+Shi Xian Liew, 1202 West Johnson Street, Madison, WI 53706.
+E-mail: shixianliew@gmail.com
+
+\textsuperscript{+}These authors share equal contribution to this work.
 
 \end{center}
 \clearpage
@@ -156,14 +159,14 @@ work. Intuitively, the influence of contrast may be expected in a number of
 real-life scenarios involving the generation of new categories. For instance, a
 college student who has been eating instant noodles for a week may be more
 inclined to seek out something healthier and less carbohydrate-heavy (e.g., a
-Caesar salad) compared to something similar (a different flavour of instant
+Caesar salad) compared to something similar (a different flavor of instant
 noodles). An actor who is dissatisfied with being typecast as a villain may seek
 out roles as heroes as opposed to playing other antagonistic characters. An
-especially compelling example can be seen in \cite{askin2017} who found that
-new songs that were more different to their peers were generally more popular
-than new songs that were similar to others. It appears that once there is the
+especially compelling example can be seen in \cite{askin2017} who found that new
+songs that were more different to their peers were generally more popular than
+new songs that were similar to others. It appears that once there is the
 motivation to generate something new, there is an associated motivation to
-generate something \emph{different}. 
+generate and observe something \emph{different}.
 
 Although implicitly assumed in some work, this constraint has been
 overlooked in previous research: To our knowledge, there has not been any
@@ -186,28 +189,28 @@ embodies the exemplar dissimilarity principle by incorporating a factor that
 repulses members of opposite categories from one another.
 
 The second hypothesis for how contrast might affect categorization is contrast
-as {\em representativeness}. The representativeness heuristic \citep{kahneman1972subjective}
-states that people make judgments regarding an outcome based on how
-representative it is of the evidence given in the current context. The heuristic
-is a powerful theoretical construct that has been used to capture a range of
-complex patterns of human judgments \citep{kahneman73,tversky74,tversky83},
-especially those that deviate from normative theory (as given by a
-straightforward application of Bayes' rule). For example, the coinflip sequence
-TTHTH is perceived to be more random (due to it being representative of a
-coinflip sequence) than TTTTT (despite both having the same probability of
-having been generated from a fair coin). Although there is a healthy debate as
-to whether perceived randomness {\em really} deviates from normative theory
-\citep{griffiths18,hahn09}, the representativeness heuristic remains one of the
-main explanations of human judgments \citep{reimers18}. To formalize the
-hypothesis that people expect a new category to be representative of the
-opposite of the current category, or contrast as {\em representativeness}, we
-use the Bayesian formulation of representativeness \citep{tenenbaum01}, which
-has been used successfully to capture human performance in color categorization
-\citep{abbott16}, image category learning \citep{abbott11}, and language grammar
-learning \citep{rafferty10}. We do so by extending the state-of-the-art category
-generation model \citep{jern2013probabilistic} and find that human category
-generation is best captured as generating representative, rather than probable,
-samples.
+as {\em representativeness}. The representativeness heuristic
+\citep{kahneman1972subjective} states that people make judgments regarding an
+outcome based on how representative it is of the evidence given in the current
+context. The heuristic is a powerful theoretical construct that has been used to
+capture a range of complex patterns of human judgments
+\citep{kahneman73,tversky74,tversky83}, especially those that deviate from
+normative theory (as given by a straightforward application of Bayes' rule). For
+example, the coinflip sequence TTHTH is perceived to be more random (due to it
+being representative of a coinflip sequence) than TTTTT (despite both having the
+same probability of having been generated from a fair coin). Although there is a
+healthy debate as to whether perceived randomness {\em really} deviates from
+normative theory \citep{griffiths18,hahn09}, the representativeness heuristic
+remains one of the main explanations of human judgments \citep{reimers18}. To
+formalize the hypothesis that people expect a new category to be representative
+of the opposite of the current category, or contrast as {\em
+  representativeness}, we use the Bayesian formulation of representativeness
+\citep{tenenbaum01}, which has been used successfully to capture human
+performance in color categorization \citep{abbott16}, image category learning
+\citep{abbott11}, and language grammar learning \citep{rafferty10}. We do so by
+extending the state-of-the-art category generation model
+\citep{jern2013probabilistic} and find that human category generation can
+also be captured as generating representative, rather than probable, samples.
 
 The outline of the article is as follows. First we describe previous
 computational formalizations of theories of category generation and empirical
@@ -255,8 +258,7 @@ generating a new species of animal, people retrieve from memory a known
 subcategory of animals (e.g., {\em bird}, {\em dog}, {\em horse}), and simply
 change some of the features to make something new. People are thought to change
 only features that are not characteristic of the retrieved category (e.g., if
-{\em bird} was retrieved, the presence of {\em wings} would not change, but {\em
-  color} might). This theory incorporates elements of the highly influential
+{\em bird} was retrieved, the presence of {\em wings} would not change, but {\em color} might). This theory incorporates elements of the highly influential
 basic-level categories framework \citep{rosch1975cognitive,rosch1976basic}, as
 well as the exemplar view \citep{medin1978context,brooks1978nonanalytic}. While
 this work has been incredibly useful in providing a conceptual sketch of
@@ -367,14 +369,14 @@ model can do at capturing contrast is to assume that the new category is placed
 uniformly at random over feature space. But, this defeats the purpose of a
 hierarchy as it is ignored when determining a new category location!\footnote{It
   is plausible that some hierarchical Bayesian models could be created that
-  generates categories different from each other. However, this model would not
+  generate categories different from each other. However, this model would not
   be a standard application or extension of most pre-existing hierarchical
   Bayesian models. The generative process would need to include a component that
   presumes contrast, which is precisely the factor of study in this article.} Note that this does not mean location information and
 contrast cannot be captured using hierarchical Bayesian models. In fact, a model
 instantiating contrast as representativeness is a hierarchical Bayesian model.
 But, it requires an additional factor, which in our case is having a different
-goal than predicting the next category.
+goal than predicting exemplars from a new category.
 
 The copy-and-tweak model tested by \cite{jern2013probabilistic} also claims
 little about how generated categories should contrast with what is already
@@ -413,7 +415,7 @@ Although, as an exemplar model, one of PACKER's proposals is people represent
 categories in terms of a collection of stored exemplars, we did not pick it
 assuming it is the correct model of human categorization. The choice to develop
 PACKER within an exemplar framework reflects the facts that exemplar models have
-been throughly evaluated, are strongly theoretically motivated, and dominate
+been thoroughly evaluated, are strongly theoretically motivated, and dominate
 much of the theoretical and empirical work in categorization. The focus of our
 work with PACKER concerns how contrast may be captured through the dual constraints of within- and between-class
 similarity; it is not difficult to imagine how such constraints may be
@@ -511,22 +513,13 @@ of $a(y,x)$ are more likely to be generated than candidates with smaller values:
 \right\} } }
 \label{eq:packer-choice}
 \end{equation}
-% 
-%where $\theta$ ($\theta \geq 0$) is a free parameter controlling response
-%determinism.
+
+Note, because $\theta_t$ and $\theta_c$ are unconstrained, their size plays the
+role of the response determinism parameter for the exponentiated Luce choice
+rule.
 
 \subsubsection{Relation Between PACKER and Copy-And-Tweak}
 \label{section:copytweak-packer}
-%: Both models are
-%exemplar-based, and both models generate new items according to their similarity
-%to known members of the target class. However, PACKER diverges from the
-%copy-and-tweak model by including a contrast mechanism, enabling generation
-%according to dissimilarity to members of opposing categories. As a consequence,
-%copy-and-tweak can be realized as a parameterization of the PACKER model that is
-%insensitive to category contrast. Specifically, when $\theta_c = 0$ and
-%$\theta_t > 0$ (see Figure \ref{fig:packer-examples}, panel B), $f(x_j) = 0$ for
-%$x_j$ belonging to contrast categories; thus, PACKER is not influenced by these
-%items, and is mathematically equivalent to a copy-and-tweak approach.
 
 It is worth noting that PACKER is only one possible exemplar-based account of
 category generation within our proposed framework. That is, PACKER places
@@ -562,7 +555,7 @@ representativeness -- exemplars are generated such that they resemble the target
 category and are thus more distinct from and less similar to other categories.
 The general idea of representativeness is not new in categorization. For
 instance, the literature on the \emph{graded structure} of categories explores
-how some exemplars are better representations of their categories
+how some exemplars are better exemplars of their categories
 \citep{palmeri2001central,barsalou1985ideals}. In this article we adopt the
 specific formalization of representativeness given by \cite{tenenbaum01}, where
 the representativeness $R(y,h)$ of an item $y$ (or in our case, an exemplar) is
@@ -574,9 +567,10 @@ $\mathcal{H}^c=\mathcal{H} \setminus \{h\}$:
 \label{eq:representativeness}
 \end{equation}
 In Equation \ref{eq:representativeness}, $p(h')$ is the prior probability
-distribution on the hypothesis space that excludes $h$. Note that when there are
-only two hypotheses (e.g. two categories) involved in the domain, this prior
-takes the value of $1$ since there is ever only one alternative hypothesis. 
+distribution on the hypothesis space that excludes $h$ (i.e., we effectively set
+$p(h)$ to 0 and then renormalize the priors). Note that when there are only two
+hypotheses (e.g. two categories) involved in the domain, this prior takes the
+value of $1$ since there is ever only one alternative hypothesis.
 
 The Bayesian formalization of representativeness makes it straightforward to
 extend the existing hierarchical Bayesian model of category generation
@@ -649,6 +643,14 @@ choice rule \citep{luce1977choice}:
 \end{equation}
 where $\theta$ is a freely estimated response determinism parameter (constrained
 such that $\theta \geq 0$).
+
+Here, we implement the representativeness mechanism at the level of
+distributions over category exemplars. However, with a hierarchical model, it is
+also possible to apply the representativeness mechanism at other levels, such as
+the level of the distribution of category statistics (i.e., their means and
+covariances). For simplicity, we focus only on one type of representativeness
+model (i.e., where the mechanism is implemented at the level of distribution
+over category exemplars).
 
 Despite both the original hierarchical Bayesian model and our representativeness
 model sharing identical hierarchical structures, their distinct response
@@ -794,7 +796,7 @@ Cluster condition, 61 were assigned to the Row condition, and 58 were assigned
 to the XOR condition (sample sizes differ due to random assignment). Stimuli
 were squares varying in color (grayscale 9.8\%--90.2\%) and side length
 (3.0--5.8cm), see Figure \ref{fig:e1-conditions}. The assignment of perceptual
-features (color, size) to axes of the conceptual space (x, y)  and the
+features (color, size) to axes of the conceptual space (X, Y)  and the
 direction of variation along each axis (e.g., $dark \rightarrow light$ or $light
 \rightarrow dark$) were counterbalanced across participants.
 
@@ -910,16 +912,18 @@ of the participant-generated categories.}
 
 A secondary goal of this experiment was to examine whether we replicate the
 classic result that generated categories often possess the same distributional
-properties as previously-known categories. Given the increased importance of replication within psychology \citep{zwaan2018making}, it is important as it serves as a conceptual replication of \citet{jern2013probabilistic}. For each generated category, we
-computed the category range along each axis (X, Y), as well as the correlation
-between features. These data, shown in Figure \ref{fig:e1-statsboxes}, reveal
-broad individual differences: Within each condition, participants generated
-categories spanning the entire X- and Y- axis as well as categories that spanned
-very little along each. Likewise, in each condition participants generated
-categories possessing strongly positive, neutral, and strongly negative
-correlations between the dimensions. Comparing the distributional statistics
-between conditions yields a broad yet, as we will see, misleading replication of
-the classic effect.
+properties as previously-known categories. Given the increased importance of
+replication within psychology \citep{zwaan2018making}, it is important as it
+serves as a conceptual replication of \citet{jern2013probabilistic}. For each
+generated category, we computed the category range along each axis (X, Y), as
+well as the correlation between features. These data, shown in Figure
+\ref{fig:e1-statsboxes}, reveal broad individual differences: Within each
+condition, some participants generated categories spanning the entire X- and Y-
+axis whereas other participants categories that spanned very little along each.
+Likewise, in each condition participants generated categories possessing
+strongly positive, neutral, and strongly negative correlations between the
+dimensions. Comparing the distributional statistics between conditions yields a
+broad yet, as we will see, misleading replication of the classic effect.
 
 With respect to ranges along each axis (X, Y), the generated categories from
 each condition tend to reflect the ranges of the experimenter-defined
@@ -1142,17 +1146,17 @@ the Y-axis. T-Tests comparing the conditions on the distributional statistics,
 however, reveal few between-group differences: the conditions do not differ with
 respect to X-axis range, Y-axis range, or feature correlations ($ps>0.17$).
 
-However, our ability to detect differences in Y-Axis range using a standard
+However, our ability to detect differences in Y-axis range using a standard
 $t$-test between the conditions is, in this case, diminished due to the
 non-normality of the data (Shapiro-Wilk normality test $W=0.77, p < .001$ for
-the Middle condition and $W=0.85, p < .001$ for the Bottom condition). Figure \ref{fig:e2-yranges} depicts the Y-Axis range and Y-Axis position of exemplars generated by each participant. The categories are sorted by overall range, and then colored by training condition. These data reveal that there were nearly as many
+the Middle condition and $W=0.85, p < .001$ for the Bottom condition). Figure \ref{fig:e2-yranges} depicts the Y-axis range and Y-axis position of exemplars generated by each participant. The categories are sorted by overall range, and then colored by training condition. These data reveal that there were nearly as many
 participants who generated categories spanning the entire Y-axis as those who
-generated categories spanning almost none of the Y-axis. Indeed, the median produced Y-Axis range is much smaller in the Bottom than Middle condition, whereas they are essentially identical in X-Axis range. The non-normality of the Y-axis range distributions thus requires that we use a different analytic approach to
+generated categories spanning almost none of the Y-axis. Indeed, the median produced Y-axis range is much smaller in the Bottom than Middle condition, whereas they are essentially identical in X-axis range. The non-normality of the Y-axis range distributions thus requires that we use a different analytic approach to
 addressing the experiment's main question.
 
 \begin{figure}
     \begin{center} \inputpgf{figs/}{e2-yranges.pgf}
-    \caption{Y-Axis range and position of the participant-generated categories
+    \caption{Y-axis range and position of the participant-generated categories
 from Experiment 2. Each line corresponds to a participant's category, with
 notches corresponding to the Y-axis position of exemplars within the category
 (notches may overlap). Participants are sorted by overall range, and then by
@@ -1255,16 +1259,16 @@ weakness of each model's account of category generation.
 
 \subsection{Parameter-Fitting}
 
-To obtain a global measure of the quality of each model's account, we fitted the
+To obtain a global measure of the quality of each model's account, we fit the
 parameters of each model to our entire dataset (Experiments 1 and 2 combined),
 using a hill-climbing algorithm which maximized the log-likelihood of the
 model's predictions of the observed responses (1220 responses from 305 total
-participants). We fitted three parameters in the PACKER model ($c$, $\theta_t$,
+participants). We fit three parameters in the PACKER model ($c$, $\theta_t$,
 and $\theta_c$; see Section \ref{section:PACKER-definition}), as well as four in
 the representativeness model and the hierarchical Bayesian model ($\kappa$,
 $\lambda$, $\nu$, and $\theta$; see Section
 \ref{section:representativeness-definition} and Appendix
-\ref{ap:hsampling-definition} respectively). We fitted only two parameters for
+\ref{ap:hsampling-definition} respectively). We fit only two parameters for
 the copy-and-tweak model ($c$, and $\theta_t$), as $\theta_c$ is held constant
 ($\theta_c = 0$). Attention ($w$, see Equation \ref{eq:similarity}) in PACKER
 and copy-and-tweak was set uniformly. Parameters were not allowed to vary
@@ -1306,17 +1310,19 @@ exemplar-based theory (PACKER), whereas between the non-contrast models, the
 reverse is observed. Specifically, here the exemplar-based model
 (copy-and-tweak) performed somewhat better than the hierarchical Bayesian model.
 
-While PACKER's advantage may tentatively be attributed to the model's
-sensitivity to category contrast (this will be explored in detail below), the
-advantage shown by copy-and-tweak over the hierarchical Bayesian model may be
-attributed to its exemplar-based representation of category B, as opposed to forcing a
-prototype-based representation as assumed by the hierarchical Bayesian model. As
-observed in Figures \ref{fig:e1-samples} and \ref{fig:e2-samples}, the generated
-categories we observed were often widely distributed, with no items near the
-category prototype. This aspect of the data is inconsistent with the
-multivariate normal distributions (similar to prototypes) used to represent
-categories in the \cite{jern2013probabilistic} model, but can be easily
-accounted for using an exemplar-based approach. Interestingly, representativeness using a prototype approach fits better than an exemplar-based approach. Understanding these differences more thoroughly is left for future research.
+While PACKER's advantage over copy-and-tweak may tentatively be attributed to
+the model's sensitivity to category contrast (this will be explored in detail
+below), the advantage shown by copy-and-tweak over the hierarchical Bayesian
+model may be attributed to its exemplar-based representation of category B, as
+opposed to forcing a prototype-based representation as assumed by the
+hierarchical Bayesian model. As observed in Figures \ref{fig:e1-samples} and
+\ref{fig:e2-samples}, the generated categories we observed were often widely
+distributed, with no items near the category prototype. This aspect of the data
+is inconsistent with the multivariate normal distributions (similar to
+prototypes) used to represent categories in the \cite{jern2013probabilistic}
+model, but can be easily accounted for using an exemplar-based approach.
+Interestingly, representativeness using a prototype approach fits better than an
+exemplar-based approach. 
 
 A key distinction between the contrast and classical models is that only the
 contrast models are capable of making strong predictions about the location of
@@ -1661,19 +1667,24 @@ feature space in the XOR condition.
     \end{center}
 \end{figure}
 
-The effect of contrast for both models is similar in that they both tend to produce exemplars that are distant from the
-Alpha category. However, this is realized in different ways for the two models. The representativeness model does not
-explicitly use a measure sensitive to distance from the location of exemplars in the contrasting category. Instead, it
-is the assumption of unimodal distributions that results in the model producing novel exemplars dissimilar to learned
-exemplars. Consequently, it is possible to design a configuration of Alpha exemplars where the representativeness model
-predicts novel exemplars should be \emph{similar} to the learned exemplars. However, PACKER cannot predict this because
-it assumes that the similarity weight for contrasting exemplars is negative.
+The effect of contrast for both models is similar in that they both tend to
+produce exemplars that are distant from the Alpha category. However, this is
+realized in different ways for the two models. The representativeness model does
+not explicitly use a measure sensitive to distance from the location of
+exemplars in the contrasting category. Instead, it is the assumption of unimodal
+distributions that results in the model producing novel exemplars dissimilar to
+learned exemplars. Consequently, it is possible to design a configuration of
+Alpha exemplars where the representativeness model predicts novel exemplars
+should be \emph{similar} to the learned exemplars. However, PACKER cannot
+predict this because it assumes that the similarity weight for contrasting
+exemplars is negative.
 
-In this section, we focus on a different category type -- the Corner category -- that contrasts the two models of
-contrast. Here, each Alpha exemplar is located at the corners of the feature space (see Figure \ref{fig:e3-squares}a).
-
-We first identify the predictions of each model in this condition. Second, we test these contrasting predictions in a
-behavioral experiment. We then conduct a model-based analysis of the two contrast models.
+In this section, we focus on a different category type -- the Corner category --
+that contrasts the two models of contrast. Here, each Alpha exemplar is located
+at the corners of the feature space (see Figure \ref{fig:e3-squares}a). We first
+identify the predictions of each model in this condition. Second, we test these
+contrasting predictions in a behavioral experiment. We then conduct a
+model-based analysis of the two contrast models.
 
 In the Corner condition, the representativeness model estimates the underlying Alpha category distribution to be
 centered on the feature space, with probability densities highest in the center and lowest in the corners. The
@@ -1702,15 +1713,20 @@ boundaries. Boundaries tend to be where distance to the contrasting category exe
 like the Corner condition (Figure \ref{fig:e3-squares}a), this is not always the case; Beta exemplars should be as far
 from the Alphas as possible, which is maximized in the center of feature space. 
 
-Thus, in this experiment, we also examine how making a boundary toroidal (e.g., line rotation) affects the prediction of
-each model. The representativeness model prefers to generate categories on the feature that still has a boundary.
-PACKER, in contrast, should continue to generate categories that are most distant from the learn category regardless of
-the presence or absence of feature boundaries -- in this condition it would be the center of the feature space.
-Experiment 3 manipulates whether one feature is bounded or toroidal (always displayed as the Y-axis). One condition uses
-the same stimuli as before, squares varying in lightness and size, both of which are bounded features. The other
-condition use a new set of stimuli: circles that vary in size (a bounded feature) and orientation (an unbounded feature;
-Figure \ref{fig:e3-circles}a). Before describing the details of the experiment, we explain in detail each model's
-predictions given the Corner Alphas for a feature space where one feature is bounded and the other is toroidal.
+Thus, in this experiment, we also examine how making one feature toroidal (e.g.,
+line orientation) affects the prediction of each model. The representativeness
+model prefers to generate categories on the feature that still has a boundary.
+PACKER, in contrast, should continue to generate categories that are most
+distant from the learn category regardless of the presence or absence of feature
+boundaries -- in this condition it would be the center of the bounded feature.
+Experiment 3 manipulates whether one feature is bounded or toroidal (always
+displayed as the Y-axis). One condition uses the same stimuli as before, squares
+varying in lightness and size, both of which are bounded features. The other
+condition use a new set of stimuli: circles that vary in size (a bounded
+feature) and orientation (an unbounded feature; Figure \ref{fig:e3-circles}a).
+Before describing the details of the experiment, we explain in detail each
+model's predictions given the Corner Alphas for a feature space where one
+feature is bounded and the other is toroidal.
 
 
 \begin{figure}[p]
@@ -1718,29 +1734,35 @@ predictions given the Corner Alphas for a feature space where one feature is bou
       \includegraphics[width=.8\textwidth]{figs/e3-circles.pdf}
       \caption{Circle stimulus domain (a) and predictions from contrast models
         PACKER (b) and the representativeness model (c). The unbounded feature
-        (orientation) is represented on the y-axis, while the bounded feature
-        (size) is represented on a x-axis. As with the square stimuli, feature
+        (orientation) is represented on the Y-axis, while the bounded feature
+        (size) is represented on a X-axis. As with the square stimuli, feature
         and direction assignment were counterbalanced across participants (in
-        the displayed example, circles are rotated clockwise up the y-axis). }
+        the displayed example, circles are rotated clockwise up the Y-axis). }
       \label{fig:e3-circles}
     \end{center}
 \end{figure}
 
 
-Compared to stimuli with two bounded features, PACKER makes a similar prediction in generating the first Beta exemplar
-when one feature is unbounded, with the curious exception that the highest density regions appear compressed along the
-toroidal feature. Due to the toroidal nature of orientation, the maximum distance from the Alpha exemplars is half of
-the full range of the feature -- for an Alpha exemplar oriented at 0 radians, the furthest distance to another exemplar
-is $\pi$ radians.
+Compared to stimuli with two bounded features, PACKER makes a similar prediction
+in generating the first Beta exemplar when one feature is unbounded, with the
+curious exception that the highest density regions appear compressed along the
+toroidal feature. Due to the toroidal nature of orientation, the maximum
+distance from the Alpha exemplars is half of the full range of the feature --
+for an Alpha exemplar oriented at 0 radians, the furthest distance to another
+exemplar is $\pi$ radians.
 
-For the representativeness model, adding a toroidal feature changes the probability distribution for the underlying
-Bayesian model. For the toroidal feature, space wraps back to $0$ radians once it reaches $2\pi$ (we have conducted a
-change of variables where $y \rightarrow y$ mod $2\pi$, where mod is the modulus operator). As we cross $2\pi$ and reach
-$0$ again, the remaining probability density also gets wrapped around, meaning that the density at $2\pi$ is added to
-$0$ (and $2\pi + \epsilon$ to $\epsilon$, and so on). This is called the {\em wrapped} Gaussian distribution
-\citep{mardia1972}. Note that the more familiar distribution for circular features, the Von Mises distribution, is an
-approximation to the wrapped Gaussian distribution. See Appendix B for implementational details of the
-representativeness model in a bounded and toroidal feature.
+For the representativeness model, adding a toroidal feature changes the
+probability distribution for the underlying Bayesian model. For the toroidal
+feature, space wraps back to $0$ radians once it reaches $2\pi$ (we have
+conducted a change of variables where $y \rightarrow y$ mod $2\pi$, where mod is
+the modulus operator). As we cross $2\pi$ and reach $0$ again, the remaining
+probability density also gets wrapped around, meaning that the density at $2\pi$
+is added to $0$ (and $2\pi + \epsilon$ to $\epsilon$, and so on). This is called
+the {\em wrapped} Gaussian distribution \citep{mardia1972}. Note that the more
+familiar distribution for circular features, the Von Mises distribution, is an
+approximation to the wrapped Gaussian distribution. See Appendix B for
+implementation details of the representativeness model in a bounded and
+toroidal feature space.
 
 The consequence of employing a wrapped Gaussian is presented in Figure \ref{fig:e3-circles}c. Edge effects along the
 unbounded feature (displayed as the vertical axis) are no longer present since the edges themselves no longer exist.
@@ -1753,61 +1775,22 @@ contrast. The representativeness model predicts categories should be distributed
 features. PACKER predicts category exemplars should be centered in space and decay exponentially over bounded
 dimension(s).
 
-% It may be argued that our expectation that the representativeness model should
-% \emph{always} tend to produce first-Betas at the edges may be too strong.
-% Specifically, this prediction is based on the model that is optimized to data
-% from Experiments 1 and 2, and it is conceivable that the model may make
-% drastically different predictions (such as some favoring the initial generation
-% of centrally-located Betas more than Betas at the edges) in the current
-% experiment when it is actually fit to empirical data from this experiment.
-% However, we contend that this prediction of the representativeness model is a
-% fundamental property of the model due to its assumption of unimodal category
-% distributions. At the very least, the maximum probability of generating a
-% centrally located first Beta should almost never be higher than the maximum
-% probability of generating a first Beta at an edge.
-
-% It is also worth noting that since the representativeness model does not explicitly
-% recognize similarities as distances within the feature space (unlike PACKER),
-% there is no compression in density regions along the unbounded feature axis.
-% This provides us with an additional qualitative marker distinguishing the
-% representativeness model from PACKER -- if the range of the entire Beta category
-% along the unbounded feature is observed to be shorter than that of the bounded
-% feature, this would be stronger evidence for PACKER rather than the
-% representativeness model.
-
-
-% In the following
-% section, we explore -- using both qualitative comparisons and quantitative fits
-% -- whether PACKER or the representativeness model is a better account of
-% behavioral data in this Corner experiment.
-
-% For the representativeness model, the single unbounded feature essentially
-% prevents the formation of edge effects along that feature. Consequently, this results in higher probabilities of the generating the first Beta exemplars along the edges of the bounded feature (Figure \ref{fig:e3-circles}c). As this
-% model does not explicitly recognize similarities as distances along the feature
-% space (unlike PACKER), it does not experience the compression in density regions
-% along the unbounded feature axis. Intuitively, this suggests that the
-% representativeness model (which prefers generating exemplars at the boundaries) will prefer to generate stimuli on the boundaries of the bounded feature with some amount of variance over unbounded feature.
-
-
-% We have identified the conditions under which the contrast models may make
-% differing predictions, however this distinction is not very useful without any
-% empirical support. Data from the next experiment will most certainly support one
-% model or the other
-
-%[Maybe work on transition if there's time]
-
-
 \subsection{Participants, Materials, and Procedure}
 
-We recruited 89 participants from Amazon Mechanical Turk who were randomly assigned to the square stimuli ($N=46$), or
-to the circle stimuli ($N=43$). The square stimuli were exactly the same as in Experiments 1 and 2, but with Alpha
-exemplars in the corners of the feature space. The circle stimuli were made up of unfilled circles with a radial line
-extending from its center to its edge. These stimuli varied along two features -- their diameter ranging from 3.0--5.8
-cm, and their orientation ranging from $2.587$--$2\pi + 2.587$ radians, with $0$ radians indicating a completely
-horizontal line. The line widths of the circles and radial line were set to 0.05 cm. Similar to Experiments 1 and 2,
-participants first observed a training phase where four Alpha exemplars were presented across three blocks followed by
-the generation phase, and the features values are divided into 9 discrete steps. The training condition was the Corner
-category for all participants.
+We recruited 89 participants from Amazon Mechanical Turk who were randomly
+assigned to the square stimuli ($N=46$), or to the circle stimuli ($N=43$). The
+square stimuli were exactly the same as in Experiments 1 and 2, but with Alpha
+exemplars in the corners of the feature space. The circle stimuli were made up
+of unfilled circles with a radial line extending from its center to its edge.
+These stimuli varied along two features: their diameter within the range of
+[3.0, 5.8] cm (inclusive), and their orientation in the range [$2.587$,
+$2\pi + 2.587$] radians (inclusive), with $0$ radians indicating a completely
+horizontal line and orientation increasing in an anti-clockwise direction. The
+line widths of the circles and radial line were set to 0.05 cm. Similar to
+Experiments 1 and 2, participants first observed a training phase where four
+Alpha exemplars were presented across three blocks followed by the generation
+phase, and the features values are divided into 9 discrete steps. The training
+condition was the Corner category for all participants.
 
 \subsection{Results and Discussion}
 
@@ -1839,29 +1822,18 @@ the X Range represents size.}
     \end{center}
 \end{figure}
 
-The distributions of generated first-Betas (Figure \ref{fig:e3-behave}) indicate further qualitative support for PACKER.
-In particular, the probability of generating the first Beta exemplar for circles along the bounded dimension is
-significantly negatively correlated with distance from the center ($r(3) = -.95, p = .01$). Although the correlations
-for squares ($r(3)= -.50, p = .40$ and $r(3)= -.31 p = .61$ for x and y dimensions) were not significant, they were in
-the directions predicted by PACKER. Mean probabilities of of generating first-Betas are presented in Figure
-\ref{fig:e3-distcent}. This analysis was excluded for the toroidal dimension of the circle stimuli because the
-boundaries (and consequently a center) are not defined for this feature.
+The distributions of generated first-Betas (Figure \ref{fig:e3-behave}) indicate
+further qualitative support for PACKER. In particular, the probability of
+generating the first Beta exemplar for circles along the bounded dimension is
+significantly negatively correlated with distance from the center
+($r(3) = -.95, p = .01$). Although the correlations for squares
+($r(3)= -.50, p = .40$ and $r(3)= -.31, p = .61$ for X and Y dimensions
+respectively) were not significant, they were in the directions predicted by
+PACKER. Mean probabilities of generating first-Betas are presented in Figure
+\ref{fig:e3-distcent}. This analysis was excluded for the toroidal dimension of
+the circle stimuli because the boundaries (and consequently a center) are not
+defined for this feature.
 
-% An inspection of the distributions of generated first-Betas (Figure
-% \ref{fig:e3-behave}) does not immediately indicate support for either model. The
-% square condition reveals first Betas generated at the corners as well as the
-% center of the feature space, while the circle condition shows greater
-% frequencies at the center. However, we also found that 65\% and 87\% of
-% participants generated their first squares and first circles, respectively, away
-% from the edge of the feature space.\footnote{Strictly speaking, the circle
-%   stimuli do not have edges along its orientation feature, However, for ease of
-%   comparison we will continue to refer to these comparable regions between
-%   stimuli as edges.} Further, the maximum proportion of first-Betas generated
-% off the edges (.13) is higher than that of the maximum proportion in an edge
-% (.04) for the circle stimuli, although the maximum proportions are the same for
-% squares (.06 for both edge and off-edge). This preference for generating
-% first-Betas away from the edge is in line with our hypothesis
-% supporting PACKER.
 
 \begin{figure}
     \begin{center}
@@ -1875,9 +1847,11 @@ boundaries (and consequently a center) are not defined for this feature.
 \begin{figure}
     \begin{center}
       \includegraphics[width=.6\textwidth]{figs/e3-distcent.pdf}
-      \caption{Empirical mean probabilities of generating first Beta exemplars at each point of distance from the center
-        of the feature space. Plot for the toroidal feature of circle stimuli is not presented because a center is not
-        defined for this feature.}
+      \caption{Empirical mean probabilities of generating first Beta exemplars
+        at each point of distance from the center of the feature space.
+        Distances are normalized such that 0 represented the center and 1
+        represents the edge. Plot for the toroidal feature of circle stimuli is
+        not presented because a center is not defined for this feature.}
     \label{fig:e3-distcent}
     \end{center}
 \end{figure}
@@ -1931,7 +1905,7 @@ observations, PACKER emerges as the best-fitting model in aggregate.
   \hline $AIC = 2954$ &$AIC = 2963$ &$AIC = 2971$  &$AIC = 3025$\\ 
   $L = -1474$          &$L = -1479$   &$L = -1481$    &$L = -1508$\\ 
   $c = 2.08$           &$c = 3.73$    &$\kappa = 0.00$&$\kappa = 0.29$  \\ 
-  $\theta_c = 0.87$    &$\theta_c = 0$ (fixed)  &$\nu = 4.07 \times 10^20$ &$\nu
+  $\theta_c = 0.87$    &$\theta_c = 0$ (fixed)  &$\nu = 4.07 \times 10^{20}$ &$\nu
                                                                              = 1.00$\\
   $\theta_t = 2.18$    &$\theta_t = 2.57$       &$\lambda = 0.14$ &$\lambda = 0.00$\\
                        &              &$\theta = 0.73$ &$\theta = 7.50$\\
@@ -1945,11 +1919,7 @@ the 89 participants better than PACKER; two-tailed Binomial test $p < 0.001$).
 Further, this is mostly due to the representativeness model capturing participants
 in the unbounded circle condition worse than PACKER (8 of 43 better fit by
 representativeness; two-tailed Binomial test, $p<0.001$). The representativeness
-model only trended towards fitting participants in the bounded, Square condition
-better (18 out of 46; two-tailed Binomial test $p = 0.18$). 
-%In addition, these results agree with our prediction that the representativeness model would be poorer in predicting data from circle stimuli (26\% of participants observing circle stimuli) compared to square stimuli (39\% participants observing square stimuli). 
-
-
+model fit the bounded Square condition better, but still worse than PACKER (18 out of 46; two-tailed Binomial test $p = 0.18$). 
 
 \begin{table} \centering
   \caption{Frequencies of individual participants best fit by each contrast
@@ -2031,17 +2001,12 @@ While we found that the representativeness model was found to be a better fit to
 data from Experiments 1 and 2, both contrast models essentially made
 qualitatively similar predictions across all conditions in those experiments. In
 Experiment 3, we collected behavioral data on a category generation condition
-that qualitatively distinguished the two contrast models. Specifically, in this
+that was designed to qualitatively distinguish the two contrast models. Specifically, in this
 condition where exemplars were located at the corners of the feature space,
 PACKER predicted the initial generation of centrally-located novel exemplars
 while the representativeness model predicted novel exemplars similarly located
-at the corners. Interestingly, data from this experiment was better fit,
+at the corners. Interestingly, data from this experiment were better fit,
 qualitatively and quantitatively, by PACKER than the representativeness model.
-
-% Ultimately, our category generation data were best explained by the
-% representativeness model. The exact nature of its superiority over the other
-% models is still not yet clear, although we find evidence that it only barely
-% surpasses PACKER when considering known categories with extreme exemplars.
 
 \subsection{Similarity and Contrast in Cognition}
 We propose category contrast as a primary constraint in categorization. For
@@ -2153,17 +2118,15 @@ underlie the learning and use of categories. Category learning tasks are
 generally about figuring out which items belong to which category. Once learned,
 categories are generally used to classify new stimuli and to make inferences
 beyond the available information. Our work is fairly unique in that people learn
-a single category through positive examples and then create another category
-that would make sense in the domain. In other words, only one category is
-provided to be learned and the use that is required of that category is to
-generate a contrast category. Such scenarios have direct application to
-real-world situations. For instance, consider being stranded in an unfamiliar
-environment where you eat and get sick from a mushroom with certain features. In
-avoiding such mushrooms and seeking alternative sources of nutrition, it would
-behoove you to imagine what features an edible, safe mushroom would possess (e.g.,
-if the poisonous mushroom had a long stem and gills, perhaps a mushroom with a short stem that did not have gills would be safe to
-consume). In the present studies, we have learned something about the form that
-such expectations are likely to take. 
+a category through positive examples and then create another category that would
+make sense in the domain. Such scenarios have direct application to real-world
+situations. For instance, consider a rock musician in the 1970s who wants to
+write new types of rock music. Given the diversity existing rock music that the
+musician is aware of, the musician must identify features of this new sub-genre
+that are unique to that sub-genre (e.g., introduce instruments that may not
+typical to rock music at the time, such as accordions or synthesizers). In the
+present studies, we have learned something about the form that such expectations
+on new categories are likely to take.
 
 We can think of the category generation task in our studies as asking a person
 to formulate an idea about what set of items in the domain are most
@@ -2195,7 +2158,7 @@ not yet been attempted in the unsupervised categorization literature.
 Interestingly, the unidimensional sort bias that is commonly observed in
 unsupervised categorization
 \citep{imai1965discriminability,milton2004influence,ahn1992two}, where
-participants sort unlabelled family resemblance category exemplars by focusing
+participants sort unlabeled family resemblance category exemplars by focusing
 on a single feature, was not consistently observed in our tasks. In our
 experiments we only observed this bias in the row condition of Experiment 1,
 whereas in other conditions participants generated categories that typically
@@ -2249,29 +2212,26 @@ likelihood.\footnote{An analogous implementation of the representativeness
   copy-and-tweak model with representativeness.}
 
 How well does a representativeness model that uses exemplar similarity to
-represent the category’s density over features explain our experimental results?
-We find that for data across all experiments, this model substantially
+represent the category's density over features explain our experimental results?
+We find that for data from experiments 1 and 2, this model substantially
 outperforms its classical counterpart, but not to the extent of PACKER or the
-representativeness model. Specifically, the model fits yielded $L = -4815$ and
-$AIC=9633$ for the entire set of data from Experiments 1 and 2, and $L = -3474$,
-$AIC=6953$ for the same data excluding the first trials. When we fit the model
-to data from Experiments 1,2 and 3, we find that $L = -6301$, $AIC = 12606$.
-These results suggest that the predictive advantages to including the
-representativeness mechanism is not limited to a hierarchical Bayesian model,
-but can also be found when applied to an exemplar model. Although its
-performance is not as strong as either of the fully-developed contrast models,
-there is a benefit to the representativeness mechanism that is independent from
-any interaction with a hierarchical Bayesian framework.
-
-Ultimately, it appears that there is no single model that can capture the
-entirety of our empirical data. While the representativeness model, and indeed
-the representativeness mechanism itself, offers a predictive advantage in
-category generation across all out models, PACKER performs better when
-accounting for data from the Corner conditions. While we have established that contrast
-mechanisms are essential in modeling category generation, there is no conclusive
-evidence that one form of contrast is superior to the other across all
-conditions. 
-%Xian: Consider rewriting paragraph if there's time.
+representativeness model. Specifically, the model fits here yielded $L = -4815$
+and $AIC=9633$ for the entire set of data from Experiments 1 and 2 and
+$L = -3474$, $AIC=6953$ for the same data excluding the first trials (cf. Table
+\ref{table:global-model-fits}). When we fit the model to data from Experiment 3,
+we find that $L = -1486$, $AIC = 2975$, which indicates a poorer fit than its
+classical counterpart (cf. Table \ref{table:corner-model-fits}). Overall, the
+representativeness model performed best when generating categories where
+previous category examples were not at the edges of the feature space.
+Conversely, PACKER performed better when the previous category was at the
+extremes of the features or if a feature is bounded. These results suggest that
+the predictive advantages to including the representativeness mechanism is not
+limited to a hierarchical Bayesian model, but can also be found when applied to
+an exemplar model. Although its performance is not as strong as either of the
+fully-developed contrast models, there can be a benefit to the
+representativeness mechanism that is independent from any interaction with a
+hierarchical Bayesian framework. Ultimately, it appears that there is no single
+model that can capture the entirety of our empirical data.
 
 \subsection{Limitations and Future Directions} 
 
@@ -2344,7 +2304,7 @@ there is a combination of clearly defined constraints on the domain boundary
 that are imposed by the external environment (insects must be arthropods with
 six legs) but also ill-defined constraints that are imposed by the observer
 (insects are probably small and have patterns on their body that suit the
-environment). However, the relation of these contraints (and the interactions
+environment). However, the relation of these constraints (and the interactions
 between them) to the role of contrast is not currently well understood.
 
 The definition of the domain boundary is only one possible factor that could
@@ -2368,11 +2328,7 @@ contrast in generation: People seek to create concepts that are distinct from
 what they already know, and the nature of what is created can be influenced by
 what does not yet exist. Our simulations with traditional exemplar models, as
 well as a hierarchical Bayesian model, provide strong support for the claim that
-category contrast is of fundamental importance to categorization. More broadly,
-our results demonstrate that popular explanatory approaches from basic research
-in cognitive science can offer a precise, quantitative account of a behavior as
-complex as that of category generation, and in exploring them, we can increase
-our understanding of categorization as well.
+category contrast is of fundamental importance to categorization.
 
 
 \clearpage
@@ -2380,8 +2336,9 @@ our understanding of categorization as well.
 Thirty-Ninth Annual Conference of the Cognitive Science Society and Forty-Ninth
 Annual Meeting of the Society for Mathematical Psychology. Support for this
 research was provided by the Office of the VCRGE at the UW - Madison with
-funding from the WARF. We thank Charles Kemp for feedback on a previous version
-of this manuscript. We also thank him and Alan Jern for providing code and data.
+funding from the WARF and the Vilas Life Cycle Fellowship. We thank Charles Kemp
+for feedback on a previous version of this manuscript. We also thank him and
+Alan Jern for providing code and data.
 \end{flushleft}
 
 
@@ -2496,7 +2453,7 @@ In practice, we can approximate the infinite summation by constraining $i$
 within a limited range (e.g., $[-50,50]$). For increased efficiency, we can also
 approximate $p'(x|h)$ by stopping the summation once the ratio of the maximum
 and minimum values of $p(x + 2\pi i|h)$ computed thus far is large enough (e.g.,
-10,000). For our modeling exercises here we impose both contraints, although the
+10,000). For our modeling exercises here we impose both constraints, although the
 first constraint shows some redundancy since we find that $i$ rarely, if ever,
 exceeds a value of 4. Given the unimodal nature of the Gaussian distribution,
 this procedure allows for comparatively efficient approximation of the wrapped

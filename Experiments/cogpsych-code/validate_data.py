@@ -7,6 +7,9 @@ choices = ['pooled',
            'catassign',
            'xcr',
            'xcrABC',
+           'xcrA',
+           'xcrB',
+           'xcrC',
            'midbot',
            'midbotABC',
            'corner',
@@ -60,6 +63,21 @@ elif dataname == 'xcrABC':
         filename = dataname
         raw_db = 'experiment-xcrABC.db'
         task = "generate"
+elif dataname == 'xcrA':
+        # XOR, Cluster, Row conditions with Not-Alpha condition
+        filename = dataname
+        raw_db = 'experiment-xcrA.db'
+        task = "generate"
+elif dataname == 'xcrB':
+        # XOR, Cluster, Row conditions with Beta-only condition
+        filename = dataname
+        raw_db = 'experiment-xcrB.db'
+        task = "generate"
+elif dataname == 'xcrC':
+        # XOR, Cluster, Row conditions with Beta-Gamma condition
+        filename = dataname
+        raw_db = 'experiment-xcrC.db'
+        task = "generate"        
 elif dataname == 'midbot':
         # experiment 2 only mid bottom conditions
         filename = dataname

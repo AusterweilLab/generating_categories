@@ -22,10 +22,14 @@ else:
     expName = 'corner' #default experiment name
     compilation = False
 
+#Extract only specific generation category types. Specify as a list and script will loop over it.
+extractgt = [0,1,2]#None
+
 #This list of exps are known to be compilations:
 if expName in ['pooled','5con','5con_s']:
     compilation = True
 
+    
 #Toggle construction of trialset pickle without first trial?
 # This is in addition to the usual.
 # Regular full set of trials is always constructed.
@@ -42,7 +46,7 @@ else:
     expNameExt = '-'
     
 con = sqlite3.connect('experiment{}{}{}.db'.format(pluralStr,expNameExt,expName))
-participants = pd.read_sql_query("SELECT participant, condition from participants", con)
+participants = pd.read_sql_query("SELECT participant, condition, gentype from participants", con)
 generation = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
 stimuli = pd.read_sql_query("SELECT * from stimuli", con).values
@@ -75,15 +79,38 @@ elif expName == 'pooled-no1st':
     saveName = 'trials_2-4_e1_e2'
 else:
     saveName = expName
-    
-with open('pickles/{}.p'.format(saveName),'wb') as f:
-    pickle.dump(trials, f)
 
-if no1st:
-    # weed out all but last trials
-    trials.Set = [i for i in trials.Set if len(i['categories'][1])>0]
-    trials._update()
-
-    with open('pickles/{}-no1st.p'.format(saveName),'wb') as f:
+if extractgt is None: 
+    with open('pickles/{}.p'.format(saveName),'wb') as f:
         pickle.dump(trials, f)
 
+    if no1st:
+        # weed out all but last trials
+        trials.Set = [i for i in trials.Set if len(i['categories'][1])>0]
+        trials._update()
+
+        with open('pickles/{}-no1st.p'.format(saveName),'wb') as f:
+            pickle.dump(trials, f)
+
+else:
+    print('Extracting separate category types...')
+    for gentype in extractgt:
+        print(gentype)
+        #Extract relevant generation rows
+        genbatch = generation[generation.gentype==gentype]
+        #Make as trial object
+        trialsbatch = Simulation.Trialset(stimuli)
+        trialsbatch = trialsbatch.add_frame(genbatch)
+
+        with open('pickles/{}{}.p'.format(saveName,gentype),'wb') as f:
+            pickle.dump(trialsbatch, f)
+
+        if no1st:
+            # weed out all but last trials
+            trialsbatch.Set = [i for i in trialsbatch.Set if len(i['categories'][1])>0]
+            trialsbatch._update()
+
+            with open('pickles/{}{}-no1st.p'.format(saveName,gentype),'wb') as f:
+                pickle.dump(trialsbatch, f)
+
+print('Done')

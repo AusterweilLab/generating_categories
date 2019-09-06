@@ -1,0 +1,26 @@
+Model,Parm,5con,5con_s,corner_c,corner,corner_s,all_data_e1_e2,all_data_e1_e2_old
+PACKER,specificity,0.510,0.443,1.993,2.079,3.834,0.506,0.483
+PACKER,theta_cntrst,3.028,3.341,1.467,0.869,0.000,3.088,3.163
+PACKER,theta_target,3.461,3.679,2.527,2.180,2.131,3.473,3.494
+PACKER,nLL,6008.584,5321.183,682.030,1473.926,780.097,4531.399,4544.614
+PACKER,AIC,12023.169,10648.365,1370.060,2953.852,1566.195,9068.798,9095.228
+CopyTweak,specificity,3.238,3.239,3.191,3.730,3.841,3.216,3.197
+CopyTweak,determinism,2.896,2.888,2.935,2.567,2.134,3.004,2.972
+CopyTweak,nLL,6387.599,5691.037,696.544,1479.491,780.097,4904.745,4919.173
+CopyTweak,AIC,12779.198,11386.075,1397.088,2962.982,1564.195,9813.489,9842.346
+CopyTweakRep,specificity, , , , , , ,0.263
+CopyTweakRep,determinism, , , , , , ,9.807
+CopyTweakRep,nLL, , , , , , ,4836.538
+CopyTweakRep,AIC, , , , , , ,9677.076
+Representative,category_mean_bias,6.289,8.328,0.016,0.000,3.293,12.226,6.967
+Representative,category_variance_bias,1.099,1.000,371900064021730.125,407069612822425960448.000,1.000,1.000,2.883
+Representative,domain_variance_bias,1.421,2.898,0.095,0.137,0.001,7.041,1.029
+Representative,determinism,1.989,3.879,0.504,0.725,1.122,10.214,2.861
+Representative,nLL,5971.343,5212.282,681.855,1481.327,793.859,4387.738,4439.218
+Representative,AIC,11950.686,10432.565,1371.711,2970.653,1595.718,8783.476,8886.436
+Hier. Samp.,category_mean_bias,0.000,0.000,0.410,0.287,0.164,0.000,0.000
+Hier. Samp.,category_variance_bias,3.284,4.595,1.000,1.000,1.000,5.440,5.597
+Hier. Samp.,domain_variance_bias,0.074,0.059,0.001,0.001,0.001,0.052,0.055
+Hier. Samp.,determinism,3.148,3.126,9.991,7.496,5.746,3.090,3.175
+Hier. Samp.,nLL,6484.436,5736.442,716.398,1508.624,788.604,4936.980,4952.054
+Hier. Samp.,AIC,12976.873,11480.885,1440.796,3025.248,1585.207,9881.960,9912.108
