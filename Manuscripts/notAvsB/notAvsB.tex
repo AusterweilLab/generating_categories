@@ -1,0 +1,204 @@
+%!TEX output_directory = latex_out/
+\documentclass[12pt]{article}
+\usepackage[letterpaper, margin=1in, headheight=15pt]{geometry}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{pgfplots}
+\usepackage{fancyhdr}
+\usepackage{csquotes}
+\usepackage{todonotes}
+\usepackage{verbatim}
+\usepackage[toc]{appendix}
+\usepackage[natbibapa]{apacite}
+
+% set up PGF
+\pgfplotsset{compat=1.6}
+\newcommand\inputpgf[2]{{
+\let\pgfimageWithoutPath\pgfimage
+\renewcommand{\pgfimage}[2][]{\pgfimageWithoutPath[##1]{#1/##2}}
+\input{#1/#2}
+}}
+
+% set up notes-- different backgrounds for Nolan and Joe!
+\newcommand\jlanote[1]{\todo[inline, backgroundcolor = lime]{\textbf{JLA}: #1}}
+\newcommand\sxlnote[1]{\todo[inline, backgroundcolor = cyan]{\textbf{SXL}: #1}}
+
+% set up header % 
+\pagestyle{fancy}
+\fancyhf{} % sets both header and footer to nothing
+\renewcommand{\headrulewidth}{0pt}
+\lhead{RUNNING HEAD: Independently identified categories vs. categories-by-negation}
+\fancyhead[R]{\thepage}
+
+
+\begin{document}
+
+% ------- TITLE PAGE ------- %
+% \begin{center}
+% \hfill
+% \\[1in]
+
+% Some NotAvsB Title
+
+% \vfill
+% Shi Xian Liew\textsuperscript{1},
+% Kenneth J. Kurtz?,
+% Joseph L. Austerweil\textsuperscript{1}
+% \\[\baselineskip]
+% \textsuperscript{1}Department of Psychology, University of Wisconsin-Madison, Madison, WI, USA
+% \\[1in]
+
+% \vfill
+
+% Author Note
+
+% Correspondence concerning this article should be addressed to: 
+% Shi Xian Liew, 1202 West Johnson Street, Madison, WI 53706.
+% E-mail: shixianliew@gmail.com
+
+% %\textsuperscript{+}These authors share equal contribution to this work.
+
+% \end{center}
+% \clearpage
+
+
+% % ------- ABSTRACT PAGE ------- %
+% \doublespacing
+% \section*{Abstract}
+% Add abstract here
+
+% \setlength\parindent{0.5in}
+% {\em Keywords}: categorization; concepts; generation;
+% computational modeling; exemplar models; representativeness
+% \clearpage
+
+\doublespacing
+\begin{flushleft}
+\setlength\parindent{0.5in}
+
+\section{Modeling NotA vs B}
+
+This document is a brief presentation of recent modeling work on distinguishing independently-identified categories from
+categories-by-negation. Previous work identified a number of descriptive differences between novel
+independently-identified categories (i.e., categories that were generated with a label such as 'Beta') compared to
+categories-by-negation (i.e., categories generated with respect to \emph{not} being some other learned category, such as
+'not Alpha') \citep{liew2019nota}. Specifically, categories-by-negation were found to be larger and spread more widely
+than independently-identified categories.
+
+These results are the first indication that categories-by-negation are distinct from independently identified
+categories. These are patterns that no current model of category generation can account for -- to our knowledge every
+category generation model assumes that all novel categories are independently identified categories. In order to
+appropriately capture the data from categories-by-negation, we require a mechanism that takes into account the regions
+of the feature space that is in some way \emph{not} where the learned category members are.
+
+One straightforward way to implement this is by placing a distribution over the learned category, and assuming that
+every new exemplar from a category-by-negation is sampled with probability inversely proportional to the distribution
+over the learned category. For simplicity, we can assume that the exemplars of the learned category are distributed as a
+multivariate Gaussian with a mean and covariance directly estimated from the existing learned category members (i.e.,
+with the empirical mean and covariance matrix). Formally, the function describing this negative space can be written as:
+\begin{equation}\label{eq:negmech}
+n(y|C') = -\sum_{c \in C'} \textrm{MvN}(y; M_c,S_c)
+\end{equation}
+where $y$ is the candidate novel exemplar, $C'$ is the relevant subset of learned categories (for our experiments here
+there is only one -- Alpha), MvN is the probability density function for the multivariate Gaussian, and $M_c$ and $S_c$
+are the mean and covariance matrix of each learned category respectively.
+
+To obtain the generation probabilities, we can use the exponentiated Luce choice rule over all possible generation
+candidates in the feature space: 
+\begin{equation}\label{eq:negluce}
+p(y|C') = \dfrac
+{\textrm{exp}(\theta \cdot n(y|C'))}
+{\sum_i \textrm{exp}(\theta \cdot n(y|C'))}
+\end{equation}
+where $\theta$ is a response determinism parameter that is freely estimated. A tentative name for this model can be the
+Simple Negative-Space model (SNS).
+
+\citet{austerweil2019catgen} tested four category generation models in their performance to a basic category generation
+task where participants were told to generate a novel 'Beta' category after having observed members of an 'Alpha'
+category. These models, PACKER, copy-and-tweak, \citet{jern2013probabilistic}'s hierarchical Bayesian model, and the
+representativeness model, can be easily extended to include a negative-space mechanism by linearly combining the
+negative-space function in Equation \ref{eq:negmech} with the density estimates of each model. The specific details of
+how this is done within each model are presented in the supplemental document [though in the full draft I'll provide
+more detail here...], but essentially, $n(y|C')$ is weighted by a free parameter $\gamma$ and then added to each model's
+function prior to their normalization via the exponentiated Luce's choice rule. Each of the non-negative-space (positive
+space??) models becomes nested within its negative-space variant, but with $\gamma$ set to 0.
+
+Prior to fitting these models, we might have expected that the negative-space models should better predict the data from
+the Not-Alpha generation condition compared to the positive-space models. Conversely, the positive-space models should
+be better at predicting independently-identified categories, and should therefore be better fit to categories from the
+Beta-only generation condition. However, the resulting fits were less straightforward while being more interesting.
+
+%We refer to this new class of models as negative-space (NS) models, and prepend this description to the relevant model
+%when referring to the negative-space variant of the model (e.g., negative-space PACKER is NS-PACKER; negative-space
+%copy-and-tweak is NS-CT...ugh cumbersome
+
+Models were fit to each generation condition (i.e., Not-Alpha, Beta-Only, and Beta-and-Gamma) separately and the results
+are presented in Table \ref{table:lrtest}. The SNS model was the poorest-performing model overall -- however this is not
+surprising because the SNS model does not take into account any within-category structure. The SNS model predicts
+exemplar generation completely based on the structure of learned categories without any regard for existing exemplars of
+the novel category. 
+
+\begin{table}
+\begin{center} 
+  \caption{Fit results and likelihood ratio tests between positive- and negative-space models. PS-LL refers to
+    log-likelihood values for positive-space variants of the models. NS-LL refers to log-likelihood values for
+    negative-space variants of the models. }
+\label{table:lrtest} 
+%\vskip 0.12in
+\begin{tabular}{llccccc} 
+\hline
+Condition & &SNS&  Copy-Tweak & Hier. Bayes & PACKER & Represent. \\
+\hline
+Not-Alpha & PS-LL    & --     & -4818  & -4916   & -4724 & -4767   \\
+          & NS-LL    & -5094  & -4801  & -4667   & -4724 & -4677   \\
+          & $\chi^2$ & --     & 34.9** & 497.5** & 0     & 177.3** \\
+          &          &        &        &         &       &         \\
+Beta-Only & PS-LL    & --     & -4644  & -4680   & -4540 & -4575   \\
+          & NS-LL    & -5117  & -4643  & -4579   & -4540 & -4575   \\
+          & $\chi^2$ & --     &  2.2   & 202.1** & 0     &   0     \\
+          &          &        &        &         &       &         \\
+Beta-Gamma& PS-LL    & --     & -4348  & -4359   & -4274 & -4333   \\
+          & NS-LL    & -4747  & -4344  & -4335   & -4274 & -4306   \\
+          & $\chi^2$ & --     &  6.5*  &  46.8** & 0     &  53.7** \\
+\hline
+*$p<.05$, **$p<.001$
+\end{tabular} 
+\end{center} 
+\end{table}
+
+The best-performing model appears to be PACKER -- this is interesting for a few reasons. First,
+\cite{austerweil2019catgen} found that with the same Alpha conditions (i.e., XOR, cluster, and row), the
+representativeness model fit better than PACKER. The relative difference in fit for this analysis might be due to the
+slight methodological differences between this study and \cite{austerweil2019catgen}, specifically here we ran twice
+the number of generated Betas, we had the XOR condition adjusted to an equally-spaced diagonal structure, the feature
+space was increased from a 9-by-9 grid to a 50-by-50 grid, and slight jitter was added to the Alpha exemplars. 
+
+Second, PACKER is the best-fitting model while also being the only model that has its positive-space variant performing
+just as well as the negative-space variant. For this model, adding the negative-space mechanism did not yield any
+benefits in prediction.
+
+The models that appeared to benefit the most with a negative-space mechanism are the non-contrast models (5 out of
+the 6 likelihood ratio tests were significant, compared to the 2 out of 6 for the contrast models). This suggests that
+the negative-space mechanism is also useful as a contrast mechanism -- although the negative-space variants of the
+non-contrast models generally do not do as well as their positive-space variants of their contrast counterparts (a
+notable exceptiion is the negative-space hierarchical Bayesian model compared to the positive-space representativeness
+model). [This is a point I think will want to emphasise in the full paper -- that the negative-space mechanism might act
+like a contrast mechanism but it really isn't. Look at how the representativeness model can still benefit from it, especially
+in the Not-Alpha condition where it even outperforms PACKER.]
+
+Our initial hypotheses regarding the performance of the negative-space mechanism is most clearly reflected in the
+representativeness model. Here, we see that the negative-space mechanism offers a benefit for the Not-Alpha generation
+condition, but not the Beta-Only condition. There is also a benefit for the Beta-Gamma condition, suggesting something
+about generating multiple (i.e., more than just one) categories that we are not quite capturing yet.
+
+[From here, one of the main things I'm aiming to complete are the fits to individual data. I think it would be really
+interesting to look at the advantage of including the negative-space mechanism at the individual level. The other thing
+is to consider what it is about PACKER that makes it so good, but yet not quite good enough to beat negative-space
+Representativeness in the Not-Alpha condition. ]
+
+\end{flushleft}
+% references section
+\clearpage \bibliographystyle{apacite} \bibliography{citations.bib}
+
+\end{document}
+

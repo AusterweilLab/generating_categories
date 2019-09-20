@@ -1,0 +1,55 @@
+Model,Parm,xcrA,xcrB,xcrC,xcrABC,,,,,,,,,,xcr
+,,,,,,,NCopyTweak,specificity,5.074,2.963,2.824,3.602,,,
+CopyTweak,specificity,4.883,2.933,2.798,3.54,,NCopyTweak,determinism,1.997,2.042,3.323,2.214,,,2.323
+CopyTweak,determinism,2.014,2.053,3.341,2.229,,NCopyTweak,negwt,0.379,0.072,0.059,0.137,,,2.781
+CopyTweak,nLL,4818.3,4644.047,4347.721,13874.481,,NCopyTweak,nLL,4800.873,4642.948,4344.476,13859.977,,,2955.925
+CopyTweak,AIC,9640.599,9292.094,8699.442,27752.961,,NCopyTweak,AIC,9607.745,9291.896,8694.951,27725.953,,,5915.851
+,,,,,,,,,,,,,,,
+,,,,,,,N. Representative,category_mean_bias,21.884,6.68,11.184,11.822,,,
+Representative,category_mean_bias,11.155,6.682,14.167,11.36,,N. Representative,category_variance_bias,5.404,2.136,2.034,2.229,,,6.84
+Representative,category_variance_bias,2.285,2.139,1.682,2.068,,N. Representative,domain_variance_bias,1.8445E+13,0.652,4.336,1.788,,,2.931
+Representative,domain_variance_bias,0.995,0.651,4.116,1.516,,N. Representative,determinism,4.15684E+13,1.917,12.053,5.249,,,2.035
+Representative,determinism,2.929,1.918,10.27,4.39,,N. Representative,negwt,5.51187E+13,0,0,0.362,,,4.62
+Representative,nLL,4765.681,4575.199,4332.897,13704.129,,N. Representative,nLL,4677.024,4575.199,4306.072,13682.663,,,2694.231
+Representative,AIC,9539.362,9158.399,8673.795,27416.258,,N. Representative,AIC,9364.048,9160.399,8622.144,27375.326,,,5396.462
+,,,,,,,,,,,,,,,
+,,,,,,,N. PACKER,specificity,2.533,1.323,0.853,1.616,,,
+PACKER,specificity,2.532,1.326,0.853,1.619,,N. PACKER,theta_cntrst,1.599,1.702,1.316,1.322,,,0.293
+PACKER,theta_cntrst,1.599,1.701,1.317,1.322,,N. PACKER,theta_target,1.566,2.139,4.596,2.122,,,3.748
+PACKER,theta_target,1.565,2.137,4.596,2.121,,N. PACKER,negwt,0,0,0,0,,,5.124
+PACKER,nLL,4724.214,4539.944,4274.085,13630.644,,N. PACKER,nLL,4724.214,4539.943,4274.085,13630.644,,,2795.267
+PACKER,AIC,9454.427,9085.887,8554.169,27267.288,,N. PACKER,AIC,9456.427,9087.887,8556.169,27269.288,,,5596.534
+,,,,,,,,,,,,,,, 
+,,,,,,,N. Hier. Samp.,category_mean_bias,19.924,9.624,0,7.174,,, 
+Hier. Samp.,category_mean_bias,0,0,0,0,,N. Hier. Samp.,category_variance_bias,8.106,5.54,5.254,3.36513E+60,,,0
+Hier. Samp.,category_variance_bias,9.78,32.991,3.386,18.92,,N. Hier. Samp.,domain_variance_bias,31401808.92,46353384.26,0.128,29530662.66,,,6.23
+Hier. Samp.,domain_variance_bias,0.082,0.029,0.081,0.053,,N. Hier. Samp.,determinism,1.04862E+16,1.52602E+16,5.84,1.05832E+16,,,0.064
+Hier. Samp.,determinism,3.491,3.321,4.038,3.895,,N. Hier. Samp.,negwt,1.911,1.81,0.288,2.003,,,3.58
+Hier. Samp.,nLL,4915.846,4679.939,4358.862,13983.358,,N. Hier. Samp.,nLL,4667.098,4578.912,4335.462,13863.214,,,2968.349
+Hier. Samp.,AIC,9839.692,9367.879,8725.723,27974.716,,N. Hier. Samp.,AIC,9344.197,9167.824,8680.923,27736.428,,,5944.699
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+Neg. Sp.,determinism,1.027,0.482,0.307,0.522,,,,,,,,,, 
+Neg. Sp.,nLL,5093.907,5117.386,4747.291,14967.98,,,,,,,,,, 
+Neg. Sp.,AIC,10189.814,10236.771,9496.581,29937.961,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+,,,,,,,,,,,,,,, 
+N. Representative,category_mean_bias,21.884,6.68,11.184,11.822,,,,,,,,,, 
+N. Representative,category_variance_bias,5.404,2.136,2.034,2.229,,,,,,,,,, 
+N. Representative,domain_variance_bias,1.8445E+13,0.652,4.336,1.788,,,,,,,,,, 
+N. Representative,determinism,4.15684E+13,1.917,12.053,5.249,,,,,,,,,, 
+N. Representative,negwt,5.51187E+13,0,0,0.362,,,,,,,,,, 
+N. Representative,nLL,4677.024,4575.199,4306.072,13682.663,,,,,,,,,, 
+N. Representative,AIC,9364.048,9160.399,8622.144,27375.326,,,,,,,,,, 
+CopyTweakRep,specificity,2.366,2.43,0.907, ,,,,,,,,,, 
+CopyTweakRep,determinism,1.128,1.523,4.432, ,,,,,,,,,, 
+CopyTweakRep,nLL,4848.711,4640.614,4332.433, ,,,,,,,,,, 
+CopyTweakRep,AIC,9701.423,9285.228,8668.866, ,,,,,,,,,, 
