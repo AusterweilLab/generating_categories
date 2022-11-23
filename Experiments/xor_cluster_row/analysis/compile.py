@@ -3,9 +3,13 @@ import pandas as pd
 import numpy as np
 from scipy.spatial import ConvexHull
 
-pd.set_option('display.width', 200, 'precision', 2)
+pd.set_option('display.width', 200)
+pd.set_option('display.precision', 2)
 
-execfile('Imports.py')
+my_import_loc = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/analysis/Imports.py'
+
+#execfile('Imports.py')
+exec(open(my_import_loc).read())
 import Modules.Funcs as funcs
 
 db_dst = '../data/experiment.db'
@@ -38,7 +42,7 @@ for i, row in assignments.iterrows():
 		try: json.loads(S)
 		except ValueError: 
 			S = S[:-25]
-			print pid, json.loads(S)['info']['browser']
+			print(pid, json.loads(S)['info']['browser'])
 
 	pdata = json.loads(S)
 	if pdata['info']['lab']: continue
