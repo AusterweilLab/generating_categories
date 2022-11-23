@@ -1,0 +1,161 @@
+%!TEX output_directory = latex_out/
+
+\documentclass[12pt]{article}
+\usepackage[letterpaper, margin=1in, headheight=15pt]{geometry}
+\usepackage{amsmath,fancyvrb}
+\usepackage[natbibapa]{apacite}
+\usepackage{pgfplots}
+\usepackage{setspace}
+
+% set up PGF
+\pgfplotsset{compat=1.6}
+\newcommand\inputpgf[2]{{
+\let\pgfimageWithoutPath\pgfimage
+\renewcommand{\pgfimage}[2][]{\pgfimageWithoutPath[##1]{#1/##2}}
+\input{#1/#2}
+}}
+
+\begin{document}
+\doublespacing
+\section{Finding Contrast Effects in Prior Work}
+
+Although existing accounts of category generation broadly overlook the role of
+category contrast in determining what is novel versus familiar, it was
+implicitly assumed that learners in previous experiments were {\em successful}
+in creating new categories. Thus, if contrast plays a robust role in category
+genration, its effects should be discernable within the experimental results of
+these studies. To provide a test of the influence of category contrast within
+existing data, we conducted a novel analysis of Experiment 3 from
+\cite{jern2013probabilistic}.\footnote{Although \cite{jern2013probabilistic}
+	reported four experiments, we focus on Experiment 3 because their first two
+	experiments tested generation of items into known categories, and their fourth
+	experiment was identical to Experiment 3 but with a restricted generation
+	space.}
+
+Participants in their experiment were exposed to members of two
+experimenter-defined categories of `crystals' varying in hue, saturation, and
+size. Each category possessed a unique hue, but varied in saturation and size:
+In the `Positive' condition, there was a positive correlation between these
+features (i.e., larger sized crystals were more saturated), and in the
+`Negative' condition this relation was reversed. In the `Neutral' condition,
+there was no correlation between saturation and size. After learning about the
+categories from each condition, participants were asked to generate six
+exemplars belonging to a novel class. As noted above,
+\cite{jern2013probabilistic} found that the generated categories tended to
+follow the distributional properties of the experimenter-defined categories:
+Generated categories were tightly distributed along the hue feature, and
+possessed the same saturation-size correlations as in the learned categories.
+\cite{jern2013probabilistic}, however, did not analyze or discuss how the
+generated categories {\em differed} from the experimenter-defined categories.
+
+Because each experimenter-defined category in the \cite{jern2013probabilistic}
+experiment possessed a distinct hue shared by all members of the category, it is
+sensible that participants might generate a category with a hue distinct from
+the experimenter-provided categories. If category generation were influenced by
+category contrast in this way, the hues of generated categories should be
+systematically different from those of the experimenter-defined categories.
+Unfortunately, stimulus hue was encoded and presented in the
+Hue-Saturation-Value (HSV) color space, which is device-dependent and not
+perceptually normed such that perceived color similarity corresponds to
+proximity in the color space (as opposed to a color space such as CIELAB that is
+device-independent and equidistant sets of points correspond to pairs of colors
+that have the same perceptual similarity; \citealp{wyszecki1967}). Further, they
+did not calibrate their monitor, and so we cannot know the precise colors
+presented to participants. As \cite{jern2013probabilistic} were interested in
+relations between the saturation and length of examples in generated into novel
+categories, these issues do not undercut their analyses and results. However,
+these issues pose a significant challenge to evaluating contrast between the
+experimenter-defined and participant-generated categories along the hue
+dimension. It is plausible that two uncalibrated monitors could display the same
+HSV color and the colors be perceived in different color categories (especially
+for color boundaries that vary over lightness, such as the yellow-brown
+boundary).
+
+Although we cannot know the precise colors that were displayed or perceived, we
+can still analyze their results from a coarse perspective to see whether there
+is preliminary support for contrast. To do so, we binned all possible hues into
+one of eight uniformly-spaced color groups: \{{\em Red}: $0-0.063$, $0.938-1$,
+{\em Yellow}: $0.063-0.188$, {\em Yellow-Green}: $0.188-0.313$, {\em
+	Green-Teal}: $0.313-0.438$, {\em Teal}: $0.438-0.563$, {\em Teal-Blue}:
+$0.563-0.688$, {\em Purple}: $0.688-0.813$, {\em Pink}: $0.813-0.938$\}. In the
+\cite{jern2013probabilistic} experiment, the hue of each experimenter-defined
+category was selected from one of six possible values, each of which falls into
+one of the color groups above (two color groups were not used as a possible hue
+for the experimenter-defined categories). By categorizing the
+participant-generated crystals likewise, we can obtain a broad measure of
+category contrast by determining the proportion of participant-generated
+crystals that fall into the same groups as the experimenter-defined categories:
+If contrast influences the hues of the generated categories, we should observe
+minimal overlap between in the color groupings.
+
+
+
+\begin{figure}
+	\begin{center} \inputpgf{figs/}{jk13-huecontrast.pgf}
+		\caption{Analysis of data from \cite{jern2013probabilistic}, Experiment
+			3. Plotted is the number of generated items that share a color group with one of
+			the experimenter-defined classes. The ``Expected'' data follows a Binomial
+			distribution with $p = 2/8 = 1/4$, given there were two experimenter-defined
+			classes, and eight color groups.}
+		\label{fig:jk13-huecontrast}
+	\end{center}
+\end{figure}
+
+These data, shown in Figure \ref{fig:jk13-huecontrast}, reveal a clear pattern:
+The majority of participants in each condition ($n = 22$) generated categories
+possessing entirely distinct hues; with 0/6 exemplars sharing a hue with the
+experimenter-defined categories. These results can be compared to the
+predictions of a Binomial model, which proposes that participants generate hues
+at random. That is, if hue selection is not systematic, the probability that any
+given example will lie in the same color group as an experimenter-defined
+category is given by a Binomial distribution with $p = 2/8=1/4$, as there were
+two experimenter-defined categories and eight possible color groups. Chi-square
+goodness-of-fit tests reveal that the observed distribution in each condition is
+highly inconsistent with the hues being chosen at random, all
+$\chi^2(6,N=22)>200$, $p < .001$. Participants tended to generate items that were
+perceptually distinct from the categories they had learned, and were less likely
+to generate hues possessed by members of the experimenter-defined categories.
+
+It is possible, however, that this data can be explained by a process that does
+not involve contrast. Specifically, since participants were trained on exemplars
+that share the same hue within a category, it is plausible that they generate
+exemplars that all share a common hue. If this were the case, given a $6/8 = .75$
+probability that a hue distinct from the experimenter-defined categories is
+selected, there is a corresponding $.75$ probability (or about 17 out of 22
+participants) that the generated category will have no exemplars that share a
+hue with any  of the experimenter-defined categories. In addition, that there is
+a $2/8 = .25$ probability (about 6 out of 22 participants) that the generated
+category will have all six exemplars that share a hue with any of the
+experimenter-defined categories. This prediction of regularity across categories
+is much closer to the data than the prediction from a Binomial model and does
+not require any mechanism of category contrast.
+
+However, upon analyzing the consistency of hues in the generated categories, it
+is clear that participants do not generally produce categories with entirely
+similar hues across all exemplars. Specifically, only 55\%  of all generated
+categories comprised exemplars with a common hue. Consequently, the assumption
+of regularity across categories may be inappropriate for this data set, leaving
+the contrast-based explanation as the most plausible for our purposes.
+
+Re-analyzing the results from \cite{jern2013probabilistic} provides some
+corroborating support for contrast playing a role in category generation. Taken
+alongside the analyses reported by \cite{jern2013probabilistic}, our analysis
+suggests that generated categories tend to be distinct from {\em and}
+distributionally similar to what is already known. However, it is worth noting
+that our analysis is still limited: The color groups defined above are
+imprecise, and it is not clear that our color grouping is consistent with the
+psychological color boundaries perceived by participants. While we did obtain
+similar results using a variety of alternative groupings, the hue dimension used
+in the \cite{jern2013probabilistic} study does not lend itself straightforwardly
+to the computation of similarities, and thus we cannot be certain of whether our
+coding accurately approximates the psychological space of the stimuli. This
+precludes traditional applications of categorization models to their data as it
+is usually necessary to encode objects in psychological space in order to
+accurately determine the similarity between objects. By consequence, although
+these results likely indicate that contrast exerts {\em some} influence, they do
+not precisely describe the nature of that influence. 
+
+\bibliographystyle{apacite} \bibliography{citations.bib}
+
+\end{document}
+
