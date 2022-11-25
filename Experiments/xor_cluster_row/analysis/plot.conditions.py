@@ -1,18 +1,21 @@
 import sqlite3, sys
 import numpy as np
 import pandas as pd
+import os
 
 np.set_printoptions(precision = 1)
 
 import matplotlib.pyplot as plt
-my_import_loc = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/analysis/Imports.py'
-exec(open(my_import_loc).read())
+#set wd to where this program expects
+os.chdir(sys.path[0])
+
+exec(open('Imports.py').read())
 
 #execfile('Imports.py')
 import Modules.Funcs as funcs
 
 
-con = sqlite3.connect('/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/data/experiment.db')
+con = sqlite3.connect('../data/experiment.db')
 stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 alphas = pd.read_sql_query("SELECT * from alphas", con)
 con.close()
