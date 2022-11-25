@@ -3,19 +3,19 @@ import pandas as pd
 import numpy as np
 from scipy.spatial import ConvexHull
 
+os.chdir(sys.path[0])
+
 pd.set_option('display.width', 200)
 pd.set_option('display.precision', 2)
 
-my_import_loc = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/analysis/Imports.py'
+#my_import_loc = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/analysis/Imports.py'
 
 #execfile('Imports.py')
-exec(open(my_import_loc).read())
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
-proj_data_dir = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/data/'
-
-db_dst = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/data/experiment.db'
-assignmentdb = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/data/assignments.db'
+db_dst = '../data/experiment.db'
+assignmentdb = '../data/assignments.db'
 exclude = [
 	]
 
@@ -34,7 +34,7 @@ for i, row in assignments.iterrows():
 
 	# skip if data file does not exist or is manually excluded
 	pid = int(row.Participant)
-	path = proj_data_dir + str(pid) + '.json'
+	path = '../data/' + str(pid) + '.json'
 	if pid in exclude: continue
 	if not os.path.exists(path): continue
 

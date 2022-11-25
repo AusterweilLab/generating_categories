@@ -2,18 +2,20 @@ import sqlite3, os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import sys
+os.chdir(sys.path[0])
 
-execfile('Imports.py')
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # import data
 con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT participant, condition from participants", con)
 generation = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 
 con.close()
 
@@ -66,7 +68,7 @@ for i, h in enumerate(ax_flat):
 	pid = assignments[str(i)]
 	curr_cond = list(info.loc[info.participant == pid, 'condition'])[0]
 
-	As = alphas[curr_cond].as_matrix()
+	As = alphas[curr_cond].to_numpy()
 	Bs = generation.loc[generation.participant == pid, 'stimulus']
 
 	funcs.plotclasses(h, stimuli, As, Bs, textsettings = textsettings)
@@ -78,6 +80,6 @@ fig.subplots_adjust(wspace = 0.09, hspace = 0.01)
 fig.savefig('samples.pdf', bbox_inches='tight', transparent=False)
 
 
-path = '../../../Manuscripts/cog-psych/figs/e1-samples.pgf'
-funcs.save_as_pgf(fig, path)
+# path = '../../../Manuscripts/cog-psych/figs/e1-samples.pgf'
+# funcs.save_as_pgf(fig, path)
 

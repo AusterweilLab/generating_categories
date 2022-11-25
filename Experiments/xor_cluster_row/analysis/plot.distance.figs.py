@@ -99,8 +99,8 @@ fh.subplots_adjust(wspace=0.3)
 fname = 'distance.figs'
 fh.savefig(fname + '.pdf', bbox_inches = 'tight', pad_inches=0.0)
 
-path = '../../../Manuscripts/cog-psych/figs/e1-distanceplots.pgf'
-funcs.save_as_pgf(fh, path)
+# path = '../../../Manuscripts/cog_psych/figs/e1_distanceplots.pgf'
+# funcs.save_as_pgf(fh, path)
 
 
 		
