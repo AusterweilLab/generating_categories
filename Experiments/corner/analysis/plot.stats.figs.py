@@ -1,15 +1,17 @@
-import sqlite3, sys
+import sqlite3, sys, os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from BF import BFtt #bayes factor from bayesian t-test
+
 from statsmodels.stats.multicomp import pairwise_tukeyhsd as tukey
 from statsmodels.stats.libqsturng import psturng
 sns.set_style("whitegrid")
 colors = ["#34495e", "#e74c3c"]
 sns.set_palette(colors)
 
+os.chdir(sys.path[0])
 
 
 #count only first 4 trials?
@@ -26,10 +28,10 @@ if 'condition' in testconds:
 if 'condcomb' in testconds:
     savestr += 'comb'
     
-pd.set_option('display.width', 1000, 'precision', 2, 'display.max_rows', 999)
+pd.set_option('display.width', 1000, 'display.precision', 2, 'display.max_rows', 999)
 
 
-execfile('Imports.py')
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 # import data
@@ -199,12 +201,12 @@ def print_ttest(g1, g2, fun):
     for j in [g1, g2]:
         S += ' ' + str(round(np.mean(j), 4))
         S +=  ' (' + str(round(np.std(j), 4)) + '),'
-    print S
+    print(S)
     with open(savetext,'a') as f:
         f.write(S+'\n')
     
 pstr = '\n---- Corner_S X vs. Y:'
-print pstr
+print(pstr)
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
 g1 = stats.loc[stats.condition == 'Corner_S', 'xrange']
@@ -212,7 +214,7 @@ g2 = stats.loc[stats.condition == 'Corner_S', 'yrange']
 print_ttest(g1,g2, ttest_rel)
 
 pstr =  '\n---- Corner_C X vs. Y:'
-print pstr
+print(pstr)
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
 g1 = stats.loc[stats.condition == 'Corner_C', 'xrange']
@@ -221,11 +223,11 @@ print_ttest(g1,g2, ttest_rel)
 
 
 pstr = '\n---- within vs. between?'
-print pstr
+print(pstr)
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
 for n, rows in stats.groupby('condcomb'):
-    print '\t'+n+':'
+    print('\t'+n+':')
     g1 = rows.loc[:,'between']
     g2 = rows.loc[:,'within']
     print_ttest(g1,g2, ttest_rel)
@@ -292,7 +294,7 @@ for stats_interest in stats_interests:
                 resstr = resstr.replace('False \n', 'False {0:.4f} {1:.2f}({2:d}) {3:.2E} {4:.2E} \n'.format(float(pvals[ri]),float(ts[ri]),dfs[ri],BF01s[ri],1/BF01s[ri]),1)
 
         pstr = resstr + '\n p = ' + str(pvals) + '\n ---------------------------------------------'
-        print pstr
+        print(pstr)
         with open(savetext,'a') as f:
             f.write(pstr+'\n')
 
@@ -300,4 +302,4 @@ for stats_interest in stats_interests:
     # print '-
 
 cols = ['condition', 'between', 'correlation', 'within', 'xrange', 'yrange']
-print stats[cols].groupby('condition').describe()
+print(stats[cols].groupby('condition').describe())

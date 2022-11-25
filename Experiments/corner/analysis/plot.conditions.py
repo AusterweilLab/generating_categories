@@ -1,17 +1,20 @@
 import sqlite3, sys
 import numpy as np
 import pandas as pd
+import os,sys
+
+os.chdir(sys.path[0])
 
 np.set_printoptions(precision = 1)
 
 import matplotlib.pyplot as plt
 
-execfile('Imports.py')
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 
 con = sqlite3.connect('../data/experiment.db')
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 alphas = pd.read_sql_query("SELECT * from alphas", con)
 con.close()
 
@@ -33,7 +36,7 @@ for i, k  in enumerate(list(alphas)):
     # h.text(-1.1, 1.1, k, ha = 'left', va = 'top')
     title = k
     h.set_title(title)
-    [i.set_linewidth(0.5) for i in h.spines.itervalues()]
+    [i.set_linewidth(0.5) for i in iter(h.spines.values())]
 
 
 # plot stimulus domain
