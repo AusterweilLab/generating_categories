@@ -1,5 +1,7 @@
 import sqlite3
 import pandas as pd
+import os,sys
+os.chdir(sys.path[0])
 
 # import data
 con = sqlite3.connect('../data/experiment.db')
@@ -9,11 +11,11 @@ con.close()
 
 stats = pd.merge(stats, info[['participant', 'condition']], on = 'participant')
 
-print 'Raw counts for table:'
+print('Raw counts for table:')
 for condition, rows in stats.groupby('condition'):
-	print condition
+	print(condition)
 	g = rows.groupby(['top_used', 'bottom_used']).size().reset_index()
-	print pd.pivot_table(g, index = 'top_used', columns = 'bottom_used')
+	print(pd.pivot_table(g, index = 'top_used', columns = 'bottom_used'))
 
 
 from scipy.stats import fisher_exact
@@ -29,7 +31,7 @@ for i in ['top_used', 'bottom_used', 'top_and_bottom', 'bottom_only', 'top_only'
 	S +='\t\tp = ' + str(pval)
 	S +='\t\todds = ' + str(odds)
 	
-	print S
+	print(S)
 	# print c
 
 

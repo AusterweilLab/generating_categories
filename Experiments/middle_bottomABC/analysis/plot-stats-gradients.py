@@ -1,12 +1,15 @@
 import numpy as np
 import pandas as pd
-pd.set_option('precision', 3)
+pd.set_option('display.precision', 3)
 np.set_printoptions(precision = 3)
 
 import sqlite3
 import pickle
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
+import os,sys
+os.chdir(sys.path[0])
+
 
 # set statistic of interest
 STAT_OF_INTEREST = 'drange'
@@ -39,7 +42,7 @@ info = pd.read_sql_query("SELECT * from participants", con)
 stats = pd.read_sql_query("SELECT * from betastats", con)
 generation = pd.read_sql_query("SELECT participant, stimulus, trial from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 con.close()
 
 #Exclude latter half of trials (just for comparison to original midbot?)
@@ -57,7 +60,7 @@ observed = observed.reset_index()
 all_data = dict(Behavioral = observed)
 
 # custom modules
-execfile('Imports.py')
+exec(open('Imports.py').read())
 #from Modules.Classes import CopyTweak, Packer, ConjugateJK13, RepresentJK13, CopyTweakRep
 import Modules.Funcs as funcs
 
@@ -143,11 +146,11 @@ for rownum, c in enumerate(row_order):
         # compute color value of each example
         vals = np.zeros(stimuli.shape[0])
         for i, row in df.groupby('stimulus'):
-            n = row['size'].as_matrix()
-            sumx = row['mean'].as_matrix() * n
+            n = row['size'].to_numpy()
+            sumx = row['mean'].to_numpy() * n
             vals[int(i)] = (PRIOR_NU * PRIOR_MU +  sumx) / (PRIOR_NU + n)
 
-        print c, colnum, min(vals), max(vals)
+        print(c, colnum, min(vals), max(vals))
 
         # smoothing
         g = funcs.gradientroll(vals,'roll')[:,:,0]

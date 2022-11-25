@@ -1,4 +1,4 @@
-import sqlite3, sys
+import sqlite3, sys, os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +8,10 @@ sns.set_style("whitegrid")
 colors = ["#34495e", "#e74c3c"]
 sns.set_palette(colors)
 
-execfile('Imports.py')
+os.chdir(sys.path[0])
+
+
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 # import data
@@ -16,7 +19,7 @@ con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT participant, condition, gentype from participants", con)
 generation = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 stats = pd.read_sql_query("SELECT * from betastats", con)
 con.close()
 
@@ -63,7 +66,7 @@ for i, (c, rows) in enumerate(ngenerations.groupby('condition')):
     for j in x:
         nums = np.where(D == j)[0]
         curr_rows = rows.loc[rows.stimulus.isin(nums)]
-        counts = curr_rows['count'].as_matrix()
+        counts = curr_rows['count'].to_numpy()
         y.append(np.mean(counts))
     #print y
 
