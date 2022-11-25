@@ -3,11 +3,14 @@
 import pandas as pd
 import sqlite3
 import pickle
+import os,sys
+os.chdir(sys.path[0])
 
-execfile('Imports.py')
+
+exec(open('Imports.py').read())
 from Modules.Classes import Simulation
 
-pd.set_option('display.width', 200, 'precision', 2)
+pd.set_option('display.width', 200, 'display.precision', 2)
 
 
 dbpath = '../data/experiment.db'                           
@@ -21,17 +24,21 @@ keep_tables = [
     'generation',       # add rows; INCREMENET PID
 ]
 
+
+#TODO: NEED A BIGGER FIX HERE
+# SQL DB HAS NO GENERATION TABLE
+# TABLES ARE (participants, assignment, goodnessExemplars,goodnessCategories,stimuli, counterbalance)
 # grab data
 with sqlite3.connect(dbpath) as con:
     participants = pd.read_sql_query("SELECT * from participants", con)
     generation = pd.read_sql_query("SELECT * from generation", con)
     alphas = pd.read_sql_query("SELECT * from alphas", con)
-    stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+    stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 
 # create categories mapping
 mapping = pd.DataFrame(columns = ['condition', 'categories'])
 for i in alphas.columns:
-    As = alphas[i].as_matrix().flatten()
+    As = alphas[i].to_numpy().flatten()
     mapping = mapping.append(
         dict(condition = i, categories =[As]), 
         ignore_index = True
