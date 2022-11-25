@@ -5,13 +5,15 @@ import pandas as pd
 np.set_printoptions(precision = 1)
 
 import matplotlib.pyplot as plt
+my_import_loc = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/analysis/Imports.py'
+exec(open(my_import_loc).read())
 
-execfile('Imports.py')
+#execfile('Imports.py')
 import Modules.Funcs as funcs
 
 
-con = sqlite3.connect('../data/experiment.db')
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+con = sqlite3.connect('/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/data/experiment.db')
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 alphas = pd.read_sql_query("SELECT * from alphas", con)
 con.close()
 
@@ -27,7 +29,7 @@ for i, k  in enumerate(list(alphas)):
 	h.axis(np.array([-1, 1, -1, 1])*1.25)
 	# h.text(-1.1, 1.1, k, ha = 'left', va = 'top')
 	h.set_title(lab + ' ' + k)
-	[i.set_linewidth(0.5) for i in h.spines.itervalues()]
+	[i.set_linewidth(0.5) for i in iter(h.spines.values())]
 
 
 # plot stimulus domain
@@ -60,7 +62,7 @@ h.set_ylabel('Color')
 h.set_yticks([])
 
 h.set_aspect('equal', adjustable='box')
-[i.set_linewidth(0.5) for i in h.spines.itervalues()]
+[i.set_linewidth(0.5) for i in iter(h.spines.values())]
 
 f.savefig('conditions.pdf', bbox_inches='tight', transparent=False)
 

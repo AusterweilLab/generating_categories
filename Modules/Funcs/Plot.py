@@ -51,7 +51,7 @@ def plotclasses(h, stimuli, alphas, betas,
     h.set_yticks([])
     h.set_xticks([])
     h.set_aspect('equal', adjustable='box')
-    [i.set_linewidth(spinewidth) for i in h.spines.itervalues()]
+    [i.set_linewidth(spinewidth) for i in iter(h.spines.values())]
 
 
 def plotgradient(h, G, alphas, betas, 
