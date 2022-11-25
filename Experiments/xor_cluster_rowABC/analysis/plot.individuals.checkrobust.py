@@ -1,13 +1,15 @@
-import sqlite3, os
+import sqlite3, os,sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
 
-execfile('Imports.py')
+os.chdir(sys.path[0])
+
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 makeplots = False #Do plots?
 
@@ -26,9 +28,12 @@ gentypeStrDisp = ['A\'','B','C'] #not alpha, only beta, beta-gamma
 gentypeCols = [[.3,0,.5],[0,0,.5],[0,.5,0]]
 
 
-# var_thresh = .25
-# cor_thresh = .7
-# drat = 5 #dimension ratio for col vs row
+#these were commented out but no other def for the vars used later
+var_thresh = .25
+cor_thresh = .7
+drat = 5 #dimension ratio for col vs row
+
+
 groupcount = {'Positive':0,'Negative':0,'Cluster':0,'Dispersed':0,'Row':0,'Column':0}
 data_arr = []
 

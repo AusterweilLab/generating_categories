@@ -2,7 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import sqlite3
-execfile('Imports.py')
+import os,sys
+os.chdir(sys.path[0])
+
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 #pd.set_option('precision', 2)
@@ -12,7 +15,7 @@ con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT condition,gentype,participant from participants", con)
 df = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 
 
 data = {'condition':'','gentype':0}
@@ -41,14 +44,14 @@ for group in manual.keys():
 manual_pd = pd.DataFrame(columns=('participant','betagroup'),data = manual_arr)
 info_merge = pd.merge(info.copy(),manual_pd,on='participant',how='left')
 
-print 'Total n (Manual) = ' + str(total_len)
-print 'Total n (Actual) = ' + str(len(info))
+print('Total n (Manual) = ' + str(total_len))
+print('Total n (Actual) = ' + str(len(info)))
 if total_len == len(info):
-    print 'Cool, ns are equal.'
+    print('Cool, ns are equal.')
 else:
-    print 'Looks like ns are not equal.'
+    print('Looks like ns are not equal.')
     #Check for where participants might not be assigned a betagroup
-    print [row['participant']  for i,row in info_merge.iterrows() if type(row['betagroup']) != str]
+    print([row['participant']  for i,row in info_merge.iterrows() if type(row['betagroup']) != str])
 
 #Build histogram
 

@@ -1,8 +1,10 @@
 import sqlite3, sys
 import pandas as pd
 import numpy as np
+import os
+os.chdir(sys.path[0])
 
-pd.set_option('display.width', 120, 'precision', 2)
+pd.set_option('display.width', 120, 'display.precision', 2)
 
 con = sqlite3.connect('../data/experiment.db')
 participants = pd.read_sql_query("SELECT * from participants", con)
@@ -10,7 +12,7 @@ counterbalance = pd.read_sql_query("SELECT * from counterbalance", con)
 stats = pd.read_sql_query("SELECT * from betastats", con)
 con.close()
 
-print participants.shape
+print(participants.shape)
 
 # counts per condition
 #print(participants.groupby('condition').size())
@@ -18,12 +20,12 @@ print(participants.groupby(['condition','gentype']).size())
 
 
 participants = pd.merge(participants, counterbalance, on = 'counterbalance')
-print pd.pivot_table(
+print(pd.pivot_table(
     data = participants,
     columns = 'xax',
     index = 'condition',
     aggfunc = 'size'
-    )
+    ))
 
 
 
@@ -49,11 +51,11 @@ for i in cols:
     #S += '\t' + 'p = ' + str(round(p,3))
     for cond in conds:
         S += '\t' + cond + ' = ' + str(tempdict[cond])
-    print S
+    print(S)
 
 
 for j, rows in stats.groupby('condition'):
-    g1 = rows['within'].as_matrix()
-    g2 = rows['between'].as_matrix()
-    print j, ttest_rel(g1, g2)
+    g1 = rows['within'].to_numpy()
+    g2 = rows['between'].to_numpy()
+    print(j, ttest_rel(g1, g2))
 

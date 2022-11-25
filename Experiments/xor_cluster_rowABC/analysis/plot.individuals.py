@@ -1,13 +1,15 @@
-import sqlite3, os
+import sqlite3, os, sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
 
-execfile('Imports.py')
+os.chdir(sys.path[0])
+
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 makeplots = True #Do plots?
 

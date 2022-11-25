@@ -4,15 +4,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 np.set_printoptions(precision = 2)
+import os,sys
 
-execfile('Imports.py')
+os.chdir(sys.path[0])
+
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 
 
 con = sqlite3.connect('../data/experiment.db')
 infodf = pd.read_sql_query("SELECT * from participants", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 alphas = pd.read_sql_query("SELECT * from alphas", con)
 generation = pd.read_sql_query("SELECT * from generation", con)
 con.close()

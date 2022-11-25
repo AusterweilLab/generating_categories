@@ -1,12 +1,13 @@
-import sqlite3, sys
+import sqlite3, sys,os
 import numpy as np
 import pandas as pd
 
 np.set_printoptions(precision = 1)
 
 import matplotlib.pyplot as plt
+os.chdir(sys.path[0])
 
-execfile('Imports.py')
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 #Plot it two by two? otherwise default to one by four
@@ -42,7 +43,7 @@ for i, k  in enumerate(list(alphas)):
     if title=='XOR':
         title = 'Diagonal'
     h.set_title(lab + ' ' + title)
-    [i.set_linewidth(0.5) for i in h.spines.itervalues()]
+    [i.set_linewidth(0.5) for i in iter(h.spines.values())]
 
 
 # plot stimulus domain
@@ -78,7 +79,7 @@ h.set_ylabel('Color')
 h.set_yticks([])
 
 h.set_aspect('equal', adjustable='box')
-[i.set_linewidth(0.5) for i in h.spines.itervalues()]
+[i.set_linewidth(0.5) for i in iter(h.spines.values())]
 
 f.savefig('conditions{}.pdf'.format(savestr), bbox_inches='tight', transparent=False)
 

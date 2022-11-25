@@ -1,4 +1,4 @@
-import sqlite3, sys
+import sqlite3, sys, os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,6 +10,7 @@ sns.set_style("whitegrid")
 #colors = ["#000000", "#222222"]#["#34495e", "#e74c3c"]
 #sns.set_palette('binary')
 #Colormap is now set to grayscale and is determined once the number of conditions per plot is known
+os.chdir(sys.path[0])
 
 
 
@@ -27,10 +28,10 @@ if 'condition' in testconds:
 if 'condcomb' in testconds:
     savestr += 'comb'
     
-pd.set_option('display.width', 1000, 'precision', 2, 'display.max_rows', 999)
+pd.set_option('display.width', 1000, 'display.precision', 2, 'display.max_rows', 999)
 
 
-execfile('Imports.py')
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 # import data
@@ -206,12 +207,12 @@ def print_ttest(g1, g2, fun):
     for j in [g1, g2]:
         S += ' ' + str(round(np.mean(j), 4))
         S +=  ' (' + str(round(np.std(j), 4)) + '),'
-    print S
+    print(S)
     with open(savetext,'a') as f:
         f.write(S+'\n')
     
 pstr = '\n---- XOR X vs. Y:'
-print pstr
+print(pstr)
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
 g1 = stats.loc[stats.condition == 'XOR', 'xrange']
@@ -219,7 +220,7 @@ g2 = stats.loc[stats.condition == 'XOR', 'yrange']
 print_ttest(g1,g2, ttest_rel)
 
 pstr =  '\n---- Cluster X vs. Y:'
-print pstr
+print(pstr)
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
 g1 = stats.loc[stats.condition == 'Cluster', 'xrange']
@@ -227,7 +228,7 @@ g2 = stats.loc[stats.condition == 'Cluster', 'yrange']
 print_ttest(g1,g2, ttest_rel)
 
 pstr =  '\n---- Row X vs. Y:'
-print pstr
+print(pstr)
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
 g1 = stats.loc[stats.condition == 'Row', 'xrange']
@@ -235,19 +236,19 @@ g2 = stats.loc[stats.condition == 'Row', 'yrange']
 print_ttest(g1,g2, ttest_rel)
 
 pstr = '\n---- XOR positive correlation?'
-print pstr
+print(pstr)
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
 g1 = stats.loc[stats.condition == 'XOR', 'correlation']
-print ttest_1samp(g1, 0).pvalue
-print wilcoxon(g1).pvalue
+print(ttest_1samp(g1, 0).pvalue)
+print(wilcoxon(g1).pvalue)
 
 pstr = '\n---- within vs. between?'
-print pstr
+print(pstr)
 with open(savetext,'a') as f:
     f.write(pstr+'\n')
 for n, rows in stats.groupby('condcomb'):
-    print '\t'+n+':'
+    print('\t'+n+':')
     g1 = rows.loc[:,'between']
     g2 = rows.loc[:,'within']
     print_ttest(g1,g2, ttest_rel)
@@ -256,18 +257,18 @@ for n, rows in stats.groupby('condcomb'):
 stats_interests = [stats.condition,stats.gentype]
 for stats_interest in stats_interests:
     pstr = '\n---- Between conditions-{}'.format(stats_interest.name)
-    print pstr
+    print(pstr)
     with open(savetext,'a') as f:
         f.write(pstr+'\n')
     for j in ['xrange','yrange','correlation','area']:
         pstr = 'Variable: ' + j + '\n' + 'Omnibus test'
-        print pstr
+        print(pstr)
         with open(savetext,'a') as f:
             f.write(pstr+'\n')
         d = [stats.loc[stats_interest==statsi,j] for statsi in pd.unique(stats_interest)]
         f,p = f_oneway(d[0],d[1],d[2])#Note this needs to account for number of levels, not fix it at 3. 
         pstr =  'F = {}, p = {}'.format(f,p)
-        print pstr
+        print(pstr)
         with open(savetext,'a') as f:
             f.write(pstr+'\n')
         res = tukey(stats[j],stats_interest)
@@ -308,7 +309,7 @@ for stats_interest in stats_interests:
                 resstr = resstr.replace('False \n', 'False {0:.4f} {1:.2f}({2:d}) {3:.2E} {4:.2E} \n'.format(pvals[ri],ts[ri],dfs[ri],BF01s[ri],1/BF01s[ri]),1)
 
         pstr = resstr + '\n p = ' + str(pvals) + '\n ---------------------------------------------'
-        print pstr
+        print(pstr)
         with open(savetext,'a') as f:
             f.write(pstr+'\n')
 
@@ -316,4 +317,4 @@ for stats_interest in stats_interests:
     # print '-
 
 cols = ['condition', 'between', 'correlation', 'within', 'xrange', 'yrange']
-print stats[cols].groupby('condition').describe()
+print(stats[cols].groupby('condition').describe())
