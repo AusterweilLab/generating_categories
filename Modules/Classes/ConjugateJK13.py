@@ -5,7 +5,7 @@ from scipy.stats import invwishart
 
 # imports from module
 import Modules.Funcs as Funcs
-from Model import HierSamp
+from Modules.Classes.Model import HierSamp
 
 class ConjugateJK13(HierSamp):
     """

@@ -12,8 +12,10 @@ my_import_loc = '/home/jausterw/work/generating_categories/Experiments/xor_clust
 exec(open(my_import_loc).read())
 import Modules.Funcs as funcs
 
-db_dst = '../data/experiment.db'
-assignmentdb = '../data/assignments.db'
+proj_data_dir = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/data/'
+
+db_dst = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/data/experiment.db'
+assignmentdb = '/home/jausterw/work/generating_categories/Experiments/xor_cluster_row/data/assignments.db'
 exclude = [
 	]
 
@@ -28,11 +30,11 @@ c.close()
 data = []
 for i, row in assignments.iterrows():
 	
-	if not row.Complete: continue
+	if row.Complete!=1: continue
 
 	# skip if data file does not exist or is manually excluded
 	pid = int(row.Participant)
-	path = '../data/' + str(pid) + '.json'
+	path = proj_data_dir + str(pid) + '.json'
 	if pid in exclude: continue
 	if not os.path.exists(path): continue
 
@@ -120,9 +122,14 @@ for pid, rows in generation.groupby('participant'):
 
 	condition = participants.loc[participants.participant == pid, 'condition']
 	betas = rows.stimulus
-	betas = stimuli.as_matrix()[betas,:]
-	p_alphas = alphas[condition].as_matrix()[:,0]
-	p_alphas = stimuli.as_matrix()[p_alphas,:]
+	#betas = stimuli.as_matrix()[betas,:]
+	betas = stimuli.to_numpy()[betas,:]
+	#p_alphas = alphas[condition].as_matrix()[:,0]
+	#p_alphas = stimuli.as_matrix()[p_alphas,:]
+
+	p_alphas = alphas[condition].to_numpy()[:,0]
+	p_alphas = stimuli.to_numpy()[p_alphas,:]
+
 
 	# stats battery
 	stats = funcs.stats_battery(betas, alphas = p_alphas)
@@ -131,7 +138,7 @@ for pid, rows in generation.groupby('participant'):
 	betastats.append(stats)
 betastats = pd.DataFrame(betastats)
 
-
+#betastats.to_clipboard()
 c = sqlite3.connect(db_dst)
 participants.to_sql('participants', c, index = False, if_exists = 'replace', dtype ={'finish':'INTEGER'})
 generation.to_sql('generation', c, index = False, if_exists = 'replace')

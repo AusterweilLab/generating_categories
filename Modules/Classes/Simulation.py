@@ -499,14 +499,14 @@ def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None
     if inits is None:    
         inits = model_obj.rvs(fmt = list) #returns random parameters as list
         if results:
-            print '\nStarting parms (randomly selected):'
-            print inits
+            print('\nStarting parms (randomly selected):')
+            print(inits)
     #transform inits to be bounded within rules
     inits = model_obj.parmxform(inits, direction = 1)
     # run search
     itcount = 0
     if results:
-        print 'Fitting: ' + model_obj.model
+        print('Fitting: ' + model_obj.model)
                 
     res = op.minimize(    trials_obj.loglike, 
                 inits, 
@@ -519,17 +519,17 @@ def hillclimber(model_obj, trials_obj, options, fixedparams = None, inits = None
         
     # print results
     if results:
-        print '\n' + model_obj.model + ' Results:'
-        print '\tIterations = ' + str(res.nit)
-        print '\tMessage = ' + str(res.message)
+        print('\n' + model_obj.model + ' Results:')
+        print('\tIterations = ' + str(res.nit))
+        print('\tMessage = ' + str(res.message))
         
         X = model_obj.params2dict(model_obj.clipper(res.x))
         for k, v in X.items():
-            print '\t' + k + ' = ' + str(v) + ','
+            print('\t' + k + ' = ' + str(v) + ',')
             
-        print '\tLogLike = ' + str(res.fun)            
+        print('\tLogLike = ' + str(res.fun))    
         AIC = funcs.aic(res.fun,len(inits))
-        print '\tAIC = ' + str(AIC)
+        print('\tAIC = ' + str(AIC))
                         
     return res
 
@@ -567,14 +567,14 @@ def hillclimber_corr(model_obj, pptdata, tso, options, fixedparams = None, inits
     if inits is None:    
         inits = model_obj.rvs(fmt = list) #returns random parameters as list
         if results:
-            print '\nStarting parms (randomly selected):'
-            print inits
+            print('\nStarting parms (randomly selected):')
+            print(inits)
     #transform inits to be bounded within rules
     inits = model_obj.parmxform(inits, direction = 1)
     # run search
     itcount = 0
     if results:
-        print 'Fitting: ' + model_obj.model
+        print('Fitting: ' + model_obj.model)
                 
     res = op.minimize(funcs.get_corr, 
                 inits, 
@@ -587,17 +587,17 @@ def hillclimber_corr(model_obj, pptdata, tso, options, fixedparams = None, inits
         
     # print results
     if results:
-        print '\n' + model_obj.model + ' Results:'
-        print '\tIterations = ' + str(res.nit)
-        print '\tMessage = ' + str(res.message)
+        print('\n' + model_obj.model + ' Results:')
+        print('\tIterations = ' + str(res.nit))
+        print('\tMessage = ' + str(res.message))
         
         X = model_obj.params2dict(model_obj.clipper(res.x))
         for k, v in X.items():
-            print '\t' + k + ' = ' + str(v) + ','
+            print('\t' + k + ' = ' + str(v) + ',')
             
-        print '\tLogLike = ' + str(res.fun)            
+        print('\tLogLike = ' + str(res.fun) )        
         AIC = funcs.aic(res.fun,len(inits))
-        print '\tAIC = ' + str(AIC)
+        print('\tAIC = ' + str(AIC))
                         
     return res
 
@@ -625,13 +625,13 @@ def _callback_fun_(xk):
             import Modules.Funcs as funcs
             fit = funcs.get_corr(xk,pptdata,tso,model_obj,print_on=False) #220618 hmm not entirely sure if this works but can try
         xk = model_obj.parmxform(xk, direction = -1)
-        print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + '] f(x) = ' + str(round(fit,4))        
+        print('\t[' + ', '.join([str(round(i,4)) for i in xk]) + '] f(x) = ' + str(round(fit,4)) )
     elif display is '.':                
         if (np.mod(itcount,printcol)!=0) & (itcount>0):
-            print '\b.',
+            print('\b.')
             sys.stdout.flush()
         elif (itcount>0):
-            print '\b.'
+            print('\b.')
 
                         
                 #print '\t[' + ', '.join([str(round(i,4)) for i in xk]) + ']'
@@ -674,10 +674,10 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
         
         
         if show_data is False:
-            print 'Model Predictions:'
+            print('Model Predictions:')
             dsize = int(np.sqrt(len(ps0)))
-            print np.atleast_2d(ps0).reshape(dsize,-1)
-            print np.atleast_2d(ps1).reshape(dsize,-1)
+            print(np.atleast_2d(ps0).reshape(dsize,-1))
+            print(np.atleast_2d(ps1).reshape(dsize,-1))
         else:                        
             dsize = int(np.sqrt(len(ps0)))
             cat0ct = []
@@ -706,12 +706,12 @@ def show_final_p(model_obj, trial_obj, params, show_data = False):
                 ps0 = [round(i,4) for i in ps0]
                 ps1 = [round(i,4) for i in ps1]
                 
-                print 'Condition ' + str(idx)
-                print 'SSE = ' + str(sse)
-                print 'Model Predictions (Cat0):'
-                print np.flipud(np.atleast_2d(ps0).reshape(dsize,-1))
-                print 'Observed Data (Cat0):'
-                print np.flipud(np.atleast_2d(cat0pt).reshape(dsize,-1))
+                print('Condition ' + str(idx))
+                print('SSE = ' + str(sse))
+                print('Model Predictions (Cat0):')
+                print(np.flipud(np.atleast_2d(ps0).reshape(dsize,-1)))
+                print('Observed Data (Cat0):')
+                print(np.flipud(np.atleast_2d(cat0pt).reshape(dsize,-1)))
                 # print 'Model Predictions (Cat1):'
                 # print np.flipud(np.atleast_2d(ps1).reshape(dsize,-1))
                 # print 'Observed Data (Cat1):'

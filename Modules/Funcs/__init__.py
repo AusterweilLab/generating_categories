@@ -1,2 +1,2 @@
-from Misc import *
-from Plot import *
+from Modules.Funcs.Misc import *
+from Modules.Funcs.Plot import *
