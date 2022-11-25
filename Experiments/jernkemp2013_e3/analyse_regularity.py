@@ -4,8 +4,12 @@ import pickle
 import pandas as pd
 import scipy.stats
 import sqlite3
+import os,sys
 
-execfile('Imports.py')
+os.chdir(sys.path[0])
+exec(open('Imports.py').read())
+
+#TODO: import of local files in JK13 needs to be fixed 
 import Modules.Funcs as funcs
 from JK13 import JK13, JKFuncs
 import numpy as np
@@ -43,8 +47,8 @@ for (i, c), rows in generation.groupby(['participant','condition']):
 regularity_prop = sum(checkregularity)/float(len(checkregularity))
 mode_mean = sum(mode_prop)/len(mode_prop)
 
-print 'Total number of generated categories: {}'.format(len(mode_prop))
-print 'Generated categories with complete regularity (all exemplars of same hue): {}({})'.format(sum(checkregularity),regularity_prop)
-print 'Mean regularity (mean proportion of category with modal hue): {}'.format(mode_mean[0])
-print 'Mean distance between trained and generated category: {}'.format(distances.Between.mean())
-print 'Mean distance within generated category: {}'.format(distances.Within.mean())
+print('Total number of generated categories: {}'.format(len(mode_prop)))
+print('Generated categories with complete regularity (all exemplars of same hue): {}({})'.format(sum(checkregularity),regularity_prop))
+print('Mean regularity (mean proportion of category with modal hue): {}'.format(mode_mean[0]))
+print('Mean distance between trained and generated category: {}'.format(distances.Between.mean()))
+print('Mean distance within generated category: {}'.format(distances.Within.mean()))

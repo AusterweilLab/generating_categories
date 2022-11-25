@@ -1,12 +1,15 @@
-import sqlite3
+import sqlite3, sys, os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-np.set_printoptions(precision = 2)
-pd.set_option('precision', 2)
+#TODO: type issues for stats < 0.3 (string to float)
 
-execfile('Imports.py')
+np.set_printoptions(precision = 2)
+pd.set_option('display.precision', 2)
+os.chdir(sys.path[0])
+
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 # import data
@@ -20,13 +23,13 @@ con.close()
 
 stats = pd.merge(stats, info[['participant', 'condition']], on = 'participant')
 df = pd.merge(df, info[['participant', 'condition']], on = 'participant')
-df['y'] = stimuli.loc[df.stimulus, 'F2'].as_matrix()
-df['x'] = stimuli.loc[df.stimulus, 'F1'].as_matrix()
+df['y'] = stimuli.loc[df.stimulus, 'F2'].to_numpy()
+df['x'] = stimuli.loc[df.stimulus, 'F1'].to_numpy()
 
 
-print stats[['condition','yrange']]
-print np.sum(stats[['condition','yrange']] <0.3)
-print np.sum(stats[['condition','yrange']] >1.9)
+print(stats[['condition','yrange']])
+print(np.sum(stats[['condition','yrange']] <0.3))
+print(np.sum(stats[['condition','yrange']] >1.9))
 
 
 def plotlines(h, data, stats):
@@ -74,7 +77,7 @@ def plotlines(h, data, stats):
 
 fh = plt.figure(figsize = (8,2))
 plotlines(fh.gca(), df, stats)
-[i.set_linewidth(1.0) for i in fh.gca().spines.itervalues()]
+[i.set_linewidth(1.0) for i in iter(fh.gca().spines.values())]
 
 
 fh.savefig('yranges.png', bbox_inches = 'tight')

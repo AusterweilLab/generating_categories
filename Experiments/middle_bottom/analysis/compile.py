@@ -3,9 +3,10 @@ import pandas as pd
 import numpy as np
 from scipy.spatial import ConvexHull
 
-pd.set_option('display.width', 200, 'precision', 2)
+pd.set_option('display.width', 200, 'display.precision', 2)
+os.chdir(sys.path[0])
 
-execfile('Imports.py')
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 db_dst = '../data/experiment.db'
@@ -38,7 +39,7 @@ for i, row in assignments.iterrows():
 		try: json.loads(S)
 		except ValueError: 
 			S = S[:-25]
-			print pid, json.loads(S)['info']['browser']
+			print(pid, json.loads(S)['info']['browser'])
 
 	pdata = json.loads(S)
 	if pdata['info']['lab']: continue
@@ -118,9 +119,9 @@ for pid, rows in generation.groupby('participant'):
 
 	condition = participants.loc[participants.participant == pid, 'condition']
 	betas = rows.stimulus
-	betas = stimuli.as_matrix()[betas,:]
-	p_alphas = alphas[condition].as_matrix()[:,0]
-	p_alphas = stimuli.as_matrix()[p_alphas,:]
+	betas = stimuli.to_numpy()[betas,:]
+	p_alphas = alphas[condition].to_numpy()[:,0]
+	p_alphas = stimuli.to_numpy()[p_alphas,:]
 
 	# stats battery
 	stats = funcs.stats_battery(betas, alphas = p_alphas)

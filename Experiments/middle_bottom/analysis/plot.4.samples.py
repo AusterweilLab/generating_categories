@@ -2,8 +2,10 @@ import sqlite3
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os,sys
+os.chdir(sys.path[0])
 
-execfile('Imports.py')
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 
@@ -11,7 +13,7 @@ con = sqlite3.connect('../data/experiment.db')
 participants = pd.read_sql_query("SELECT * from participants", con)
 generation = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 con.close()
 
 samples = dict(

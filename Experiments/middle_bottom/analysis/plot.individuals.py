@@ -2,18 +2,21 @@ import sqlite3, os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import sys
+os.chdir(sys.path[0])
 
-execfile('Imports.py')
+
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # import data
 con = sqlite3.connect('../data/experiment.db')
 info = pd.read_sql_query("SELECT * from participants", con)
 df = pd.read_sql_query("SELECT * from generation", con)
 alphas = pd.read_sql_query("SELECT * from alphas", con)
-stimuli = pd.read_sql_query("SELECT * from stimuli", con).as_matrix()
+stimuli = pd.read_sql_query("SELECT * from stimuli", con).to_numpy()
 
 con.close()
 

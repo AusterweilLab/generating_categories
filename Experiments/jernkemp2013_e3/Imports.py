@@ -12,11 +12,11 @@ def _add_modules_path():
 
 	# keep moving up until the folder is the main path.
 	splitted = os.path.split(os.getcwd())
-	while splitted[1] != 'generating-categories':
+	while splitted[1] != 'generating_categories':
 		splitted = os.path.split(splitted[0])
 		
 		if splitted[0] == os.sep:
-			S = "generating-categories is not a parent directory. You are here:\n\n"
+			S = "generating_categories is not a parent directory. You are here:\n\n"
 			S+= os.getcwd()
 			raise Exception(S)
 

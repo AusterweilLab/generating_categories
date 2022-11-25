@@ -1,4 +1,4 @@
-import sqlite3, sys
+import sqlite3, sys,os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,12 +6,14 @@ import seaborn as sns
 sns.set_style("whitegrid")
 colors = ["#34495e", "#e74c3c"]
 sns.set_palette(colors)
+os.chdir(sys.path[0])
+
+#TODO: RUNS BUT ONE PLOT CHANGED TO CAT_PLOT
+#		SEABORNS DOES NOT HAVE FACTOR_PLOT ANYMORE
+pd.set_option('display.width', 1000, 'display.precision', 2, 'display.max_rows', 999)
 
 
-pd.set_option('display.width', 1000, 'precision', 2, 'display.max_rows', 999)
-
-
-execfile('Imports.py')
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 # import data
@@ -22,14 +24,14 @@ con.close()
 
 stats = pd.merge(stats, info, on = 'participant')
 
-print stats[['condition','yrange']]
+print(stats[['condition','yrange']])
 #lll
 
 fh, axes = plt.subplots(1,3,figsize = (7.5,2.5))
 
 for i, col in enumerate(['xrange','yrange','correlation']):
 	ax = axes[i]
-	hs = sns.factorplot(x = 'condition', y = col, data= stats, ax = ax, kind = 'box', 
+	hs = sns.catplot(x = 'condition', y = col, data= stats, ax = ax, kind = 'box', 
 		order = ['Bottom', 'Middle'])
 
 	ax.set_title(col, fontsize = 12)
@@ -67,27 +69,27 @@ def print_ttest(g1, g2, fun):
 	for j in [g1, g2]:
 		S += ' ' + str(round(np.mean(j), 4))
 		S +=  ' (' + str(round(np.std(j), 4)) + '),'
-	print S
+	print(S)
 
 
-print '\n---- Bottom X vs. Y:'
+print('\n---- Bottom X vs. Y:')
 g1 = stats.loc[stats.condition == 'Bottom', 'xrange']
 g2 = stats.loc[stats.condition == 'Bottom', 'yrange']
 print_ttest(g1,g2, ttest_rel)
 
-print '\n---- Middle X vs. Y:'
+print('\n---- Middle X vs. Y:')
 g1 = stats.loc[stats.condition == 'Middle', 'xrange']
 g2 = stats.loc[stats.condition == 'Middle', 'yrange']
 print_ttest(g1,g2, ttest_rel)
 
-print '\n---- Bottom positive correlation?'
+print('\n---- Bottom positive correlation?')
 g1 = stats.loc[stats.condition == 'Bottom', 'correlation']
-print ttest_1samp(g1, 0).pvalue
-print wilcoxon(g1).pvalue
+print(ttest_1samp(g1, 0).pvalue)
+print(wilcoxon(g1).pvalue)
 
-print '\n---- within vs. between?'
+print('\n---- within vs. between?')
 for n, rows in stats.groupby('condition'):
-	print '\t'+n+':'
+	print('\t'+n+':')
 	g1 = rows.loc[:,'between']
 	g2 = rows.loc[:,'within']
 	print_ttest(g1,g2, ttest_rel)
@@ -97,8 +99,8 @@ for j in ['xrange','yrange','correlation']:
 	for a, b in combinations(pd.unique(stats.condition), r=2):
 		g1 = stats.loc[stats.condition == a, j]
 		g2 = stats.loc[stats.condition == b, j]
-		print '\n---- ' + ' ' + j + ': ' + a + ', ' + b
+		print('\n---- ' + ' ' + j + ': ' + a + ', ' + b)
 		print_ttest(g1,g2, ttest_ind)
 
 cols = ['condition', 'between', 'correlation', 'within', 'xrange', 'yrange']
-print stats[cols].groupby('condition').describe()
+print(stats[cols].groupby('condition').describe())

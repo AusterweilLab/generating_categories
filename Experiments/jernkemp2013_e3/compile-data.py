@@ -3,14 +3,17 @@
 # 
 # This script converts the matlab-formatted data 
 # into a more useful sql format.
-execfile('Imports.py')
+
 
 import pandas as pd
-import os
+import os,sys
 from JK13 import JK13Participant
 from JK13 import JK13
 import sqlite3
 
+os.chdir(sys.path[0])
+
+exec(open('Imports.py').read())
 
 # list all mat files
 matfile_dir = 'mat-files'
