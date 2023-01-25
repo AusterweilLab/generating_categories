@@ -1,4 +1,4 @@
-import sqlite3, sys
+import sqlite3, sys, os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +8,9 @@ sns.set_style("whitegrid")
 colors = ["#34495e", "#e74c3c"]
 sns.set_palette(colors)
 
-execfile('Imports.py')
+os.chdir(sys.path[0])
+
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 # import data

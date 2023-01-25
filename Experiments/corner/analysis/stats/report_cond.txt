@@ -11,41 +11,41 @@ T = 17.05, p = 0.0	Means: 1.0 (0.0), 0.5438 (0.251),
 ---- Between conditions-condition
 
 xrange
-Multiple Comparison of Means - Tukey HSD,FWER=0.05
-===============================================
- group1   group2  meandiff lower  upper  reject   p     t(df)    BF01   BF10
------------------------------------------------
-Corner_C Corner_S  0.0222  -0.234 0.2784 False 0.8662 -0.17(87) 8.42E+00 1.19E-01 
------------------------------------------------
+ Multiple Comparison of Means - Tukey HSD, FWER=0.05  
+======================================================
+ group1   group2  meandiff p-adj  lower  upper  reject   p     t(df)    BF01   BF10
+------------------------------------------------------
+Corner_C Corner_S   0.0222 0.8634 -0.234 0.2784  False
+------------------------------------------------------
  p = [array([0.86623032])]
  ---------------------------------------------
 
 yrange
-Multiple Comparison of Means - Tukey HSD,FWER=0.05
-===============================================
- group1   group2  meandiff lower  upper  reject   p     t(df)    BF01   BF10
------------------------------------------------
-Corner_C Corner_S  0.5311  0.3174 0.7447  True 0.0010 -4.94(87) 2.39E-04 4.18E+03 
------------------------------------------------
+ Multiple Comparison of Means - Tukey HSD, FWER=0.05 
+=====================================================
+ group1   group2  meandiff p-adj lower  upper  reject   p     t(df)    BF01   BF10
+-----------------------------------------------------
+Corner_C Corner_S   0.5311   0.0 0.3174 0.7447   True
+-----------------------------------------------------
  p = [0.001]
  ---------------------------------------------
 
 correlation
-Multiple Comparison of Means - Tukey HSD,FWER=0.05
-================================================
- group1   group2  meandiff  lower  upper  reject   p     t(df)    BF01   BF10
-------------------------------------------------
-Corner_C Corner_S -0.0308  -0.2623 0.2006 False 0.7993 0.26(87) 8.25E+00 1.21E-01 
-------------------------------------------------
+  Multiple Comparison of Means - Tukey HSD, FWER=0.05  
+=======================================================
+ group1   group2  meandiff p-adj   lower  upper  reject   p     t(df)    BF01   BF10
+-------------------------------------------------------
+Corner_C Corner_S  -0.0308 0.7918 -0.2623 0.2006  False
+-------------------------------------------------------
  p = [array([0.79932366])]
  ---------------------------------------------
 
 area
-Multiple Comparison of Means - Tukey HSD,FWER=0.05
-==============================================
- group1   group2  meandiff lower  upper reject   p     t(df)    BF01   BF10
-----------------------------------------------
-Corner_C Corner_S  0.3938  0.1196 0.668  True 0.0054 -2.85(87) 1.94E-01 5.15E+00 
-----------------------------------------------
- p = [array([0.00538934])]
+ Multiple Comparison of Means - Tukey HSD, FWER=0.05  
+======================================================
+ group1   group2  meandiff p-adj  lower  upper  reject   p     t(df)    BF01   BF10
+------------------------------------------------------
+Corner_C Corner_S   0.3937 0.0054 0.1195 0.6679   True
+------------------------------------------------------
+ p = [array([0.00539522])]
  ---------------------------------------------

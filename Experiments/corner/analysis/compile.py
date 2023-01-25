@@ -3,9 +3,10 @@ import pandas as pd
 import numpy as np
 from scipy.spatial import ConvexHull
 #Are we calculating stats crrectly? 280119
-pd.set_option('display.width', 200, 'precision', 2)
+pd.set_option('display.width', 200, 'display.precision', 2)
+os.chdir(sys.path[0])
 
-execfile('Imports.py')
+exec(open('Imports.py').read())
 import Modules.Funcs as funcs
 
 #db_dst = '../data/experiment.db'
@@ -39,7 +40,7 @@ for i, row in assignments.iterrows():
         except ValueError:
             fail = True
             S = S[:-25]
-            print pid, json.loads(S)['info']['browser']
+            print(pid, json.loads(S)['info']['browser'])
 
     pdata = json.loads(S)
     if pdata['info']['lab']: continue

@@ -691,22 +691,22 @@ def printProg(i,print_ct = 0, steps = 1, breakline = 40, breakby = 'char'):
                         leni = len(str(i))
                         if print_ct + leni > breakline:
                                 #Line break
-                                print i
+                                print(i)
                                 print_ct = 0
                         else:
                                 #No line break
-                                print i,
+                                print(i,end="")
                                 sys.stdout.flush()                                
                                 print_ct += leni+1
                 
                 elif breakby == 'mult':
                         if np.mod(i,breakline) != 0:
                                 #No line break
-                                print i,
+                                print(i,end="")
                                 sys.stdout.flush()
                         elif i>0:
                                 #Line break
-                                print i
+                                print(i)
                 else:
                         raise Exception('Please specify breakby as either \'char\' or \'mult\'.')
         return print_ct
@@ -885,7 +885,7 @@ def prep_corrvar(info,assignment,stimuli,stats,WT_THETA=1.5,print_on=True):
     #Prepare all trialset objects in the order of pptdata
     tso = []
     print_ct = 0
-    print 'Preparing trialset objects for each participant. This could take a couple of minutes.'
+    print('Preparing trialset objects for each participant. This could take a couple of minutes.')
     for i,row in info.iterrows():
         ppt = row.participant
         pptAssign = assignment.loc[assignment['participant']==ppt].sort_values('trial')

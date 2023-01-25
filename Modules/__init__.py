@@ -1,2 +1,2 @@
-import Funcs
-import Classes
+import Modules.Funcs
+import Modules.Classes

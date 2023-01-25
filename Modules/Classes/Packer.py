@@ -3,7 +3,7 @@ from scipy.stats import multivariate_normal
 
 # imports from module
 import Modules.Funcs as Funcs
-from Model import Exemplar
+from Modules.Classes.Model import Exemplar
 
 
 class Packer(Exemplar):
