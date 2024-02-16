@@ -26,6 +26,7 @@ latex_out/
 *.fdb_latexmk
 *.synctex.gz
 *.gz
+*:Zone.Identifier
 
 
 Modules/tests/
