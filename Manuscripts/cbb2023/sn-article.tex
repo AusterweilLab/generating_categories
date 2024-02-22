@@ -98,19 +98,22 @@
 %% sample for unstructured abstract %%
 %%==================================%%
 
-\abstract{The ability to generate new concepts and ideas is among the most fascinating aspects of human cognition, but we do not have a strong understanding of the
-cognitive processes and representations underlying concept generation. In this
-paper, we study the generation of new categories using the computational and
-behavioral toolkit of traditional artificial category learning. Previous work in
+\abstract{The ability to generate new concepts and ideas is among the most fascinating aspects of human cognition,
+but we do not have a strong understanding of the
+cognitive processes and representations underlying concept generation. Previous work in
 this domain has focused on how the statistical structure of known categories
 generalizes to generated categories, overlooking whether (and if so, how)
-contrast between the known and generated categories is a factor. We report three
-experiments demonstrating that contrast between what is known and what is
-created is of fundamental importance for categorization. We propose two novel
+contrast between the known and generated categories is a factor. In this paper, 
+we explore a different factor: contrast from known categories. We propose two novel
 approaches to modeling category contrast: one focused on exemplar dissimilarity
-and another on the representativeness heuristic. Our experiments and
-computational analyses demonstrate that both models capture different aspects of
-contrast's role in categorization.}
+and another based on the representativeness heuristic. Across three behavioral experiments, 
+we find that people generate new categories that contrast from observed categories and 
+distribute exemplars acoss "unoccupied" regions of stimulus space. The model based on 
+the representativeness heuristic captured human category generation better when 
+the known category was well captured by a Gaussian distribution. Conversely, the 
+exemplar-based model captured human generated categories better when the known category
+was not Gaussian distributed. Our results suggest contrast is a fundamental principle used in
+generating exemplars of a new category.}
 
 %%================================%%
 %% Sample for structured abstract %%
@@ -270,7 +273,7 @@ of the opposite of the current category, or contrast as {\em
 \citep{tenenbaum01}, which has been used successfully to capture human
 performance in color categorization \citep{abbott16}, image category learning
 \citep{abbott11}, and language grammar learning \citep{rafferty10}. We do so by
-extending the state-of-the-art category generation model
+extending a Bayesian category generation model
 \citep{jern2013probabilistic} and find that human category generation can
 also be captured as generating representative, rather than probable, samples.
 
@@ -283,9 +286,11 @@ systematically differ from existing categories in the domain. The second assumes
 that the goal of category generation is to create representative samples of the
 opposite of the observed categories. We present two experiments demonstrating
 strong and systematic effects of category contrast on concept generation, and we
-qualitatively and quantitatively analyze the behavioral results and the performance of each model in
-capturing human category generation. A third experiment is performed to
-highlight the differences between the two contrast models. We conclude with a
+analyze the behavioral results and the performance of each model in
+capturing human category generation at the individual-level. Based on the model-
+based analyses, we develop and conduct a third experiment that distinguishes the two
+computational formulations of contrast. The third experiment found the exemplar-based
+version of contrast to capture human performance better. We conclude with a
 discussion of the implications of our results for categorization and directions
 for future work.
 
